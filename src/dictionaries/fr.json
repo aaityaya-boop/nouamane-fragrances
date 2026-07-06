@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "shop": "Boutique",
+    "brands": "Maisons",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "trackOrder": "Suivre ma commande",
+    "cart": "Panier",
+    "allFragrances": "Toutes les fragrances"
+  },
+  "common": {
+    "search": "Rechercher",
+    "addToCart": "Ajouter au panier",
+    "outOfStock": "Rupture de stock",
+    "viewDetails": "Voir détails",
+    "price": "Prix",
+    "total": "Total",
+    "checkout": "Commander",
+    "language": "Langue"
+  },
+  "footer": {
+    "aboutText": "Revendeur officiel des parfums Valentino, Yves Saint Laurent et Emporio Armani au Maroc. 100% authentiques, livrés partout au royaume.",
+    "address": "Boulevard Mohammed V, Casablanca, Maroc",
+    "boutique": "Boutique",
+    "quickLinks": "Liens Rapides",
+    "customerService": "Service Client",
+    "rights": "Tous droits réservés.",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Restez informé des nouvelles arrivées et des offres exclusives.",
+    "newsletterSuccess": "Merci ! Vous êtes inscrit à notre newsletter."
+  }
+}

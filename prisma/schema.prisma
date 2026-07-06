@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Order {
+  id                 String   @id @default(cuid())
+  orderNumber        String   @unique
+  customerName       String
+  customerEmail      String
+  customerPhone      String
+  shippingAddress    String
+  shippingCity       String
+  shippingPostalCode String
+  paymentMethod      String
+  items              String   // JSON string
+  subtotal           Float
+  shippingCost       Float
+  total              Float
+  promoCode          String?
+  discount           Float?
+  status             String   @default("pending")
+  affiliateCode      String?
+  affiliate          Affiliate? @relation(fields: [affiliateCode], references: [code])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Product {
+  id                  Int      @id @default(autoincrement())
+  slug                String   @unique
+  name                String
+  brandId             String   @default("valentino")
+  brand               Brand    @relation(fields: [brandId], references: [slug])
+  brandLabel          String
+  gender              String
+  subcategory         String
+  subcategoryLabel    String
+  tagline             String
+  price               Float
+  originalPrice       Float?
+  description         String
+  longDescription     String
+  images              String   // JSON string array
+  notes               String   // JSON object
+  ingredients         String
+  sizes               String   // JSON string array
+  bottleColor         String
+  bottleColorLabel    String
+  bottleMaterial      String
+  bottleMaterialLabel String
+  rating              Float    @default(0)
+  reviewCount         Int      @default(0)
+  releaseDate         String
+  tags                String   // JSON string array
+  inStock             Boolean  @default(true)
+  stock               Int      @default(10)
+  perfectSeason       String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  reviews             Review[]
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  productSlug String
+  author      String
+  city        String
+  rating      Int
+  title       String
+  comment     String
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  product     Product  @relation(fields: [productSlug], references: [slug])
+}
+
+model SiteConfig {
+  id              Int      @id @default(autoincrement())
+  adminUsername   String   @default("admin")
+  adminPassword   String   @default("nouamane2024")
+  shippingFee     Float    @default(35)
+  contactPhone    String   @default("+212 5 35 63 42 18")
+  contactEmail    String   @default("contact@nouamane.ma")
+  heroTitle       String   @default("L'Essence de l'Élégance")
+  heroSubtitle    String   @default("Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.")
+  instagramUrl    String?
+  facebookUrl     String?
+  tiktokUrl       String?
+  whatsappUrl     String?
+  updatedAt       DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model LandingPage {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  subtitle     String
+  heroImage    String
+  deadline     DateTime?
+  badgeText    String
+  productSlugs String   // JSON string array of slugs
+  status       String   @default("active") // "active" or "draft"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Visitor {
+  id        String     @id @default(cuid())
+  ipHash    String     @unique
+  city      String?
+  country   String?
+  visits    PageView[]
+  createdAt DateTime   @default(now())
+  lastSeen  DateTime   @default(now())
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  visitorId String
+  visitor   Visitor  @relation(fields: [visitorId], references: [id])
+  pathname  String
+  createdAt DateTime @default(now())
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  label       String
+  description String
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String
+  message   String
+  status    String   @default("unread") // "unread", "read", "archived"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PromoCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  type      String   // "percentage" or "fixed"
+  value     Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  title               String
+  excerpt             String
+  content             String
+  coverImage          String
+  author              String   @default("Nouamane")
+  status              String   @default("draft") // "published" or "draft"
+  metaTitle           String?
+  metaDescription     String?
+  relatedProductSlugs String   @default("[]") // JSON string array of product slugs
+  publishedAt         DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Affiliate {
+  id               String   @id @default(cuid())
+  name             String
+  code             String   @unique
+  commissionRate   Float    @default(10) // percentage
+  visits           Int      @default(0)
+  sales            Int      @default(0)
+  revenueGenerated Float    @default(0)
+  commissionEarned Float    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  orders           Order[]
+}

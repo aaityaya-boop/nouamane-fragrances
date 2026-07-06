@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "brands": "Brands",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "trackOrder": "Track Order",
+    "cart": "Cart",
+    "allFragrances": "All Fragrances"
+  },
+  "common": {
+    "search": "Search",
+    "addToCart": "Add to cart",
+    "outOfStock": "Out of stock",
+    "viewDetails": "View details",
+    "price": "Price",
+    "total": "Total",
+    "checkout": "Checkout",
+    "language": "Language"
+  },
+  "footer": {
+    "aboutText": "Official reseller of Valentino, Yves Saint Laurent, and Emporio Armani perfumes in Morocco. 100% authentic, delivered nationwide.",
+    "address": "Mohammed V Boulevard, Casablanca, Morocco",
+    "boutique": "Boutique",
+    "quickLinks": "Quick Links",
+    "customerService": "Customer Service",
+    "rights": "All rights reserved.",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Stay informed about new arrivals and exclusive offers.",
+    "newsletterSuccess": "Thank you! You are subscribed to our newsletter."
+  }
+}
