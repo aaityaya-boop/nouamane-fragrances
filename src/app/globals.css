@@ -31,7 +31,8 @@
 
 /* ---- Base ---- */
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth is intentionally removed — Lenis JS handles smooth scroll.
+     Having both causes conflicts that can break click-to-navigate behavior. */
 }
 
 body {

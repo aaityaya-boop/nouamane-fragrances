@@ -459,10 +459,12 @@ export default function ProductClient({
                 <p className="mt-4 text-[13px] text-[#9A9A9A]">
                   <span className="font-semibold text-[#0ea5e9]">Maison :</span>{' '}
                   {product.brandLabel} · Sortie le{' '}
-                  {new Date(product.releaseDate).toLocaleDateString('fr-MA', {
-                    year: 'numeric',
-                    month: 'long',
-                  })}
+                  <span suppressHydrationWarning>
+                    {new Date(product.releaseDate).toLocaleDateString('fr-MA', {
+                      year: 'numeric',
+                      month: 'long',
+                    })}
+                  </span>
                 </p>
               </div>
             )}
@@ -626,7 +628,9 @@ export default function ProductClient({
                               {review.author}
                             </div>
                             <div className="text-[11px] text-[#9A9A9A]">
-                              {review.city} · {new Date(review.createdAt).toLocaleDateString('fr-MA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                              <span suppressHydrationWarning>
+                                {review.city} · {new Date(review.createdAt).toLocaleDateString('fr-MA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                              </span>
                             </div>
                           </div>
                         </div>
