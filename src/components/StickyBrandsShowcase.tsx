@@ -46,7 +46,7 @@ function BrandCard({ brand, i, totalBrands, smoothProgress }: { brand: any, i: n
     >
       {/* Hero Image */}
       <Image
-        src={brand.image || 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600'}
+        src={brand.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900'}
         alt={brand.label || brand.name}
         fill
         className="object-cover"

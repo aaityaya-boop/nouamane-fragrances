@@ -30,10 +30,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       tags: JSON.stringify(body.tags || []),
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
+      testerPrice: body.testerPrice ? parseFloat(body.testerPrice) : null,
       rating: parseFloat(body.rating || 5),
       reviewCount: parseInt(body.reviewCount || 0, 10),
       releaseDate: body.releaseDate || new Date().toISOString(),
       inStock: body.inStock !== undefined ? body.inStock : true,
+      isTester: body.isTester !== undefined ? body.isTester : false,
     };
 
     const updatedProduct = await prisma.product.update({
@@ -51,9 +53,25 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const productId = parseInt(id, 10);
     
+    // First, find the product to get its slug
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    // Delete associated reviews first to avoid foreign key constraint error
+    await prisma.review.deleteMany({
+      where: { productSlug: product.slug },
+    });
+    
+    // Now delete the product
     await prisma.product.delete({
-      where: { id: parseInt(id, 10) },
+      where: { id: productId },
     });
 
     return NextResponse.json({ success: true });

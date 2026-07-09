@@ -75,7 +75,7 @@ export default function LandingPage() {
           </div>
           <div className="relative h-[400px] lg:h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl">
             <Image 
-              src="https://images.pexels.com/photos/965993/pexels-photo-965993.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800" 
+              src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900" 
               alt="Parfum de luxe" 
               fill 
               className="object-cover"

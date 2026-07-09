@@ -2,6 +2,11 @@
 
 @import "tailwindcss";
 
+.js-fallback-opacity {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* =============================================
    NOUAMANE PARFUMS — Luxury Dark / Gold Theme
    Designed for high-end masculine market in Morocco
@@ -262,19 +267,28 @@ input[type="email"]::placeholder {
 /* =============================================
    CUSTOM LUXURY SCROLLBAR
    ============================================= */
-.lux-scrollbar::-webkit-scrollbar {
-  width: 4px;
+@layer utilities {
+  .lux-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .lux-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .lux-scrollbar::-webkit-scrollbar-thumb {
+    background: #e0ddd4;
+    border-radius: 4px;
+  }
+  .lux-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0ea5e9;
+  }
+
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
 }
 
-.lux-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.lux-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #e0ddd4;
-  border-radius: 10px;
-}
-
-.lux-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: #9A9A9A;
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }

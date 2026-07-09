@@ -1,144 +1,167 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function SplitTypographyHero({ config }: { config?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
   
-  // Track scroll position for the typography
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"]
+    offset: ['start start', 'end start'],
   });
 
-  const smoothProgress = useSpring(scrollYProgress, { damping: 20, stiffness: 100, mass: 0.5 });
+  const yBackground = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const opacityText = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const yText = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
 
-  // Map scroll progress to horizontal translation (Scrolling Effect)
-  const xLeft = useTransform(smoothProgress, [0, 1], ["0%", "-30%"]);
-  const xRight = useTransform(smoothProgress, [0, 1], ["-20%", "10%"]);
-  
-  // Parallax for the main image
-  const yImage = useTransform(smoothProgress, [0, 1], ["0%", "30%"]);
-  const opacityFade = useTransform(smoothProgress, [0, 0.8], [1, 0]);
-
-  const textString = "NOUAMANE PARFUMS — ".repeat(6);
-  const heroTitle = config?.heroTitle || "L'Essence de l'Élégance";
-  const heroSubtitle = config?.heroSubtitle || "Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.";
+  const heroTitle = config?.heroTitle || "L'Essence\nde l'Élégance";
+  const heroSubtitle = config?.heroSubtitle || "Découvrez une collection de parfums de luxe, sélectionnée avec soin pour laisser une empreinte inoubliable.";
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative h-[120vh] w-full bg-[#fafaf7] overflow-hidden"
-    >
-      {/* Sticky container holds everything in place while scrolling the 120vh */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
-        
-        {/* PARALLAX BACKGROUND IMAGE */}
+    <section ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#0D0D0D]">
+      {/* 1. BACKGROUND IMAGE PARALLAX */}
+      <motion.div
+        className="absolute inset-0 will-change-transform"
+        style={{ y: yBackground }}
+      >
         <motion.div 
-          style={{ y: yImage, opacity: opacityFade }} 
-          className="absolute inset-0 w-full h-full"
+          className="relative w-full h-full"
+          animate={{ scale: [1, 1.05] }}
+          transition={{ duration: 25, ease: 'linear', repeat: Infinity, repeatType: 'reverse' }}
         >
           <Image
-            src="https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=2400"
-            alt="Parfums de luxe"
+            src="https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+            alt="Parfum de luxe"
             fill
             priority
             className="object-cover object-[center_30%]"
           />
-          {/* Subtle gradient to blend the image into the background */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fafaf7] via-transparent to-black/30" />
+          {/* Refined gradient overlays for maximum luxury feel */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-transparent opacity-80" />
         </motion.div>
+      </motion.div>
 
-        {/* SCROLLING TYPOGRAPHY BACKGROUND (Stylish Effect) */}
-        <div className="absolute inset-0 flex flex-col justify-center gap-12 lg:gap-24 pointer-events-none opacity-40 mix-blend-overlay">
-          {/* Moving Left */}
-          <motion.div style={{ x: xLeft }} className="whitespace-nowrap flex items-center">
-            <h1 
-              className="heading-font text-[10vw] md:text-[8vw] leading-none tracking-widest text-transparent uppercase"
-              style={{ WebkitTextStroke: '1px rgba(255,255,255,0.8)' }}
-            >
-              {textString}
-            </h1>
-          </motion.div>
-          
-          {/* Moving Right */}
-          <motion.div style={{ x: xRight }} className="whitespace-nowrap flex items-center">
-            <h1 
-              className="heading-font text-[10vw] md:text-[8vw] leading-none tracking-widest text-transparent uppercase"
-              style={{ WebkitTextStroke: '1px rgba(255,255,255,0.8)' }}
-            >
-              {textString}
-            </h1>
-          </motion.div>
-        </div>
-
-        {/* CENTERED CONTENT (Glassmorphism & Elegant Typography) */}
-        <motion.div 
-          style={{ opacity: opacityFade }}
-          className="relative z-20 flex flex-col items-center justify-center text-center px-6 mt-20"
-        >
+      {/* 2. MAIN CONTENT (LEFT ALIGNED EDITORIAL) */}
+      <motion.div 
+        className="relative z-20 h-full max-w-[1400px] mx-auto px-6 lg:px-10 flex flex-col justify-center pb-10"
+        style={{ opacity: opacityText, y: yText }}
+      >
+        <div className="max-w-4xl mt-20">
+          {/* Eyebrow */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-            className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full mb-6"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="flex items-center gap-4 mb-8 sm:mb-12"
           >
-            <span className="text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-white shadow-sm">
-              Collection Exclusive
+            <span className="w-12 h-[1px] bg-[#0ea5e9]/70" />
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9]">
+              Maison de Haute Parfumerie
             </span>
           </motion.div>
 
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-            className="heading-font text-5xl md:text-7xl lg:text-[80px] text-white tracking-wide max-w-4xl leading-[1.1] mb-6 drop-shadow-2xl"
-          >
-            {heroTitle}
-          </motion.h2>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
-            className="text-[14px] md:text-[16px] text-white/90 font-medium max-w-2xl mx-auto mb-10 leading-relaxed drop-shadow-md"
-          >
-            {heroSubtitle}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.8 }}
-          >
-            <Link 
-              href="/shop"
-              className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-white px-12 py-4 shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all hover:scale-105"
+          {/* Title */}
+          <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[110px] text-white tracking-wide leading-[1.05] mb-10 sm:mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+              className="overflow-hidden"
             >
-              <span className="relative z-10 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] transition-colors group-hover:text-white">
-                Explorer la boutique
+              L'Essence
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
+              className="flex items-center gap-4 sm:gap-6 mt-2"
+            >
+              <span className="text-3xl sm:text-5xl lg:text-7xl font-serif text-[#0ea5e9]/60 italic font-light">&</span>
+              <span className="text-[#e0ddd4]">de l'Élégance</span>
+            </motion.div>
+          </h1>
+
+          {/* Subtitle & CTA in a sophisticated layout */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-8 lg:gap-16 pl-0 sm:pl-16 border-l border-transparent sm:border-white/10"
+          >
+            <p className="text-[14px] md:text-[16px] text-[#9A9A9A] font-light max-w-[320px] leading-[1.9] tracking-wide">
+              {heroSubtitle}
+            </p>
+            <Link
+              href={`/${locale}/shop`}
+              className="group relative inline-flex items-center justify-center overflow-hidden border border-[#e0ddd4]/20 bg-white/5 backdrop-blur-sm px-12 py-5 transition-all duration-700 hover:bg-white hover:border-white"
+            >
+              <span className="relative z-10 text-[10px] font-bold tracking-[0.3em] uppercase text-white transition-colors duration-500 group-hover:text-black">
+                Découvrir
               </span>
-              <div className="absolute inset-0 z-0 h-full w-full bg-[#0ea5e9] -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
             </Link>
           </motion.div>
-        </motion.div>
+        </div>
+      </motion.div>
 
-        {/* Scroll down indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
-          <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/70">Scroll</span>
-          <div className="w-[1px] h-10 bg-white/20 overflow-hidden">
-            <motion.div 
-              animate={{ y: ["-100%", "100%"] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-              className="w-full h-1/2 bg-white"
-            />
+      {/* 3. FLOATING GLASS CARD (RIGHT SIDE) */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.9 }}
+        style={{ opacity: opacityText, y: yText }}
+        className="absolute bottom-24 right-6 lg:right-12 z-20 hidden lg:flex flex-col gap-6"
+      >
+        <div className="bg-[#0D0D0D]/40 backdrop-blur-xl border border-white/10 p-10 w-[360px]">
+          <div className="flex items-center gap-3 mb-8">
+            <span className="w-1.5 h-1.5 bg-[#0ea5e9] rounded-full animate-pulse" />
+            <div className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/60">
+              L'Art du Parfum
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="flex justify-between items-end border-b border-white/10 pb-4 group">
+              <span className="text-white/50 text-[11px] font-bold tracking-[0.2em] uppercase transition-colors group-hover:text-white/80">Authenticité</span>
+              <span className="heading-font text-3xl text-white group-hover:text-[#0ea5e9] transition-colors">100%</span>
+            </div>
+            <div className="flex justify-between items-end border-b border-white/10 pb-4 group">
+              <span className="text-white/50 text-[11px] font-bold tracking-[0.2em] uppercase transition-colors group-hover:text-white/80">Livraison</span>
+              <span className="heading-font text-3xl text-white group-hover:text-[#0ea5e9] transition-colors">24H</span>
+            </div>
+            <div className="flex justify-between items-end group">
+              <span className="text-white/50 text-[11px] font-bold tracking-[0.2em] uppercase transition-colors group-hover:text-white/80">Clients</span>
+              <span className="heading-font text-3xl text-white group-hover:text-[#0ea5e9] transition-colors">500+</span>
+            </div>
           </div>
         </div>
+      </motion.div>
 
-      </div>
+      {/* 4. SCROLL INDICATOR */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.5 }}
+        style={{ opacity: opacityText }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4"
+      >
+        <div className="w-[1px] h-16 bg-white/10 overflow-hidden relative">
+          <motion.div
+            animate={{ y: ['-100%', '100%'] }}
+            transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+            className="absolute top-0 bottom-0 left-0 right-0 bg-white"
+          />
+        </div>
+        <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/40">
+          Scroll
+        </span>
+      </motion.div>
     </section>
   );
 }

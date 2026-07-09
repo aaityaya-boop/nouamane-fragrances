@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       // Create JWT token
       const token = await new SignJWT({ role: 'admin' })
         .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('24h')
+        .setExpirationTime('7d')
         .sign(JWT_SECRET);
 
       const response = NextResponse.json({ success: true });
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 // 24 hours
+        maxAge: 60 * 60 * 24 * 7 // 7 days
       });
 
       return response;

@@ -22,11 +22,14 @@ import {
   Palette,
   Menu,
   X,
-  Tag
+  Tag,
+  TrendingUp,
+  Sparkles
 } from 'lucide-react';
 
 const MENU_ITEMS = [
   { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={20} /> },
+  { href: '/admin/finance', label: 'Finance & Rapports', icon: <TrendingUp size={20} /> },
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={20} /> },
   { href: '/admin/products', label: 'Produits', icon: <PackageSearch size={20} /> },
   { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={20} /> },
@@ -38,6 +41,7 @@ const MENU_ITEMS = [
   { href: '/admin/customers', label: 'Clients', icon: <Users size={20} /> },
   { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={20} /> },
   { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={20} /> },
+  { href: '/admin/vitrine', label: 'Vitrine Homepage', icon: <Sparkles size={20} /> },
   { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={20} /> },
 ];
 

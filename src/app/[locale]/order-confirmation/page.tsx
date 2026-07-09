@@ -294,7 +294,7 @@ function OrderConfirmationInner() {
 
                 <div className="flex flex-wrap justify-center gap-3">
                   <a
-                    href="https://wa.me/212535634218"
+                    href="https://wa.me/212694186787"
                     className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-[11px] font-semibold tracking-[0.15em] uppercase rounded-full transition-colors"
                   >
                     <Phone size={14} /> WhatsApp

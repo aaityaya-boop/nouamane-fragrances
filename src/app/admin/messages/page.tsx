@@ -9,10 +9,6 @@ export default function AdminMessages() {
   const [search, setSearch] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
   const fetchMessages = async () => {
     try {
       const res = await fetch('/api/admin/messages');
@@ -24,6 +20,10 @@ export default function AdminMessages() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   const updateStatus = async (id: string, status: string) => {
     try {

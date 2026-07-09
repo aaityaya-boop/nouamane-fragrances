@@ -13,7 +13,7 @@ export default function LandingPageForm({ initialData }: { initialData?: any }) 
     slug: initialData?.slug || '',
     title: initialData?.title || 'Le Luxe Authentique, Sans Compromis.',
     subtitle: initialData?.subtitle || 'Offrez-vous les parfums les plus prisés au monde...',
-    heroImage: initialData?.heroImage || 'https://images.pexels.com/photos/965993/pexels-photo-965993.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+    heroImage: initialData?.heroImage || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     deadline: initialData?.deadline ? new Date(initialData.deadline).toISOString().slice(0, 16) : '',
     badgeText: initialData?.badgeText || 'Offre Spéciale Maroc',
     status: initialData?.status || 'draft',

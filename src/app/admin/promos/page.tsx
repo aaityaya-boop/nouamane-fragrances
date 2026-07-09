@@ -10,10 +10,6 @@ export default function AdminPromos() {
   const [type, setType] = useState('percentage');
   const [value, setValue] = useState('');
 
-  useEffect(() => {
-    fetchPromos();
-  }, []);
-
   const fetchPromos = async () => {
     try {
       const res = await fetch('/api/admin/promos');
@@ -25,6 +21,10 @@ export default function AdminPromos() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPromos();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

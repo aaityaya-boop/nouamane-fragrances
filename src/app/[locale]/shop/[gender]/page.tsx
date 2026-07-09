@@ -21,6 +21,8 @@ import { ChevronRight } from 'lucide-react';
 
 type Params = { locale: string; gender: string };
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoryPage({
   params,
 }: {
@@ -124,10 +126,6 @@ export default async function CategoryPage({
   );
 }
 
-/* Enable static generation for all 3 categories */
-export function generateStaticParams() {
-  return MAIN_CATEGORIES.map((c) => ({ gender: c.slug }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { gender } = await params;

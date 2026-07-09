@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import { useCart } from '@/context/CartContext';
+import { usePathname } from 'next/navigation';
 import { formatMAD } from '@/lib/products';
 import { Plus, Minus, Trash2, ArrowRight, ShoppingBag, Truck, ShieldCheck, Gift, Tag, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -16,6 +17,8 @@ import { Plus, Minus, Trash2, ArrowRight, ShoppingBag, Truck, ShieldCheck, Gift,
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee, appliedPromo, applyPromo, removePromo } = useCart();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
   const subtotal = getSubtotal();
   const shipping = shippingFee || 0;
   
@@ -138,7 +141,7 @@ export default function CartPage() {
                       {/* Product */}
                       <div className="flex gap-4 lg:gap-5 flex-1">
                         <Link
-                          href={`/product/${item.slug}`}
+                          href={`/${locale}/product/${item.slug}`}
                           className="w-24 h-28 bg-transparent rounded-xl overflow-hidden flex-shrink-0 relative"
                         >
                           <Image
@@ -150,7 +153,7 @@ export default function CartPage() {
                         </Link>
                         <div>
                           <Link
-                            href={`/product/${item.slug}`}
+                            href={`/${locale}/product/${item.slug}`}
                             className="heading-font text-xl text-[#1A1A1A] hover:text-[#0ea5e9]"
                           >
                             {item.name}

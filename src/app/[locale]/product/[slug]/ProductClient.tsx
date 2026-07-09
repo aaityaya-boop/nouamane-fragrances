@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -19,9 +20,14 @@ import {
   RotateCcw,
   Check,
   ChevronRight as Chev,
+  Package,
+  Gift,
+  MessageCircle,
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { formatMAD, Product } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
+import { usePreferences } from '@/context/PreferencesContext';
 
 /* ============================================================
    PRODUCT DETAIL PAGE
@@ -47,6 +53,8 @@ export default function ProductClient({
   );
   const [isAdded, setIsAdded] = useState(false);
   const { addToCart } = useCart();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
 
   const [reviews, setReviews] = useState(initialReviews);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -55,24 +63,79 @@ export default function ProductClient({
     city: '',
     rating: 5,
     title: '',
-    comment: ''
+    comment: '',
   });
+  const { customer, setCustomer } = useAuth();
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewAuthStep, setReviewAuthStep] = useState<'login' | 'signup' | 'review'>('login');
+  const [authData, setAuthData] = useState({ name: '', email: '', password: '' });
+  const [authError, setAuthError] = useState('');
+  const [loadingAuth, setLoadingAuth] = useState(false);
+
+  const { addRecentlyViewed } = usePreferences();
+
+  useEffect(() => {
+    // Track browsing activity via cookies (recently viewed memory)
+    addRecentlyViewed(product.id);
+  }, [product.id, addRecentlyViewed]);
+
+  useEffect(() => {
+    if (customer) {
+      setReviewAuthStep('review');
+      setReviewFormData(prev => ({ ...prev, author: customer.name }));
+    }
+  }, [customer]);
+
+  const handleReviewAuth = async (e: React.FormEvent, type: 'login' | 'register') => {
+    e.preventDefault();
+    setAuthError('');
+    setLoadingAuth(true);
+    try {
+      const res = await fetch(`/api/auth/${type}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(authData),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCustomer(data.customer);
+      } else {
+        setAuthError(data.error || 'Erreur lors de la connexion');
+      }
+    } catch (error) {
+      setAuthError('Erreur de connexion au serveur');
+    } finally {
+      setLoadingAuth(false);
+    }
+  };
 
   const currentSize = product.sizes.find((s) => s.label === selectedSize)!;
+  const currentPrice = currentSize.price;
 
   const handleAddToCart = () => {
+    const finalSize = selectedSize;
     addToCart(
       {
         id: product.id,
         slug: product.slug,
         name: product.name,
-        price: currentSize.price,
+        price: currentPrice,
         images: product.images,
       },
       quantity,
-      selectedSize
+      finalSize
     );
+    
+    // Facebook Pixel Tracking
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        content_ids: [product.id],
+        content_name: product.name,
+        value: currentPrice * quantity,
+        currency: 'MAD'
+      });
+    }
+
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
@@ -124,12 +187,12 @@ export default function ProductClient({
       {/* BREADCRUMB */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-28 lg:pt-32 pb-4">
         <nav className="flex items-center gap-2 text-[11px] text-[#9A9A9A]">
-          <Link href="/" className="hover:text-[#0ea5e9]">Accueil</Link>
+          <Link href={`/${locale}`} className="hover:text-[#0ea5e9]">Accueil</Link>
           <Chev size={12} />
-          <Link href="/shop" className="hover:text-[#0ea5e9]">Boutique</Link>
+          <Link href={`/${locale}/shop`} className="hover:text-[#0ea5e9]">Boutique</Link>
           <Chev size={12} />
           <Link
-            href={`/shop/${product.gender}`}
+            href={`/${locale}/shop/${product.gender}`}
             className="hover:text-[#0ea5e9]"
           >
             {product.subcategoryLabel}
@@ -213,10 +276,10 @@ export default function ProductClient({
           {/* -------- INFO -------- */}
           <div>
             <Link
-              href={`/brands/${product.brand}`}
+              href={`/${locale}/brands/${product.brand}`}
               className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] hover:text-[#7e22ce]"
             >
-              {product.brandLabel} · Eau de Parfum
+              {product.brandLabel} · TESTEUR 100% AUTHENTIQUE
             </Link>
 
             <h1 className="heading-font text-4xl lg:text-5xl xl:text-6xl mt-3 tracking-wide leading-none">
@@ -242,9 +305,9 @@ export default function ProductClient({
                   />
                 ))}
               </div>
-              <span className="text-[13px] text-[#1A1A1A] font-semibold">
-                {product.rating}
-              </span>
+                <span className="text-[13px] font-bold text-[#1A1A1A] mr-1">
+                  {product.rating.toFixed(1)}
+                </span>
               <a
                 href="#reviews"
                 className="text-[13px] text-[#9A9A9A] underline hover:text-[#0ea5e9]"
@@ -253,13 +316,17 @@ export default function ProductClient({
               </a>
             </div>
 
-            {/* PRICE */}
             <div className="mt-8 flex items-baseline gap-3">
               <span className="text-3xl font-semibold text-[#1A1A1A]">
-                {formatMAD(currentSize.price)}
+                {formatMAD(currentPrice)}
               </span>
+              {product.originalPrice && product.originalPrice > currentPrice && (
+                <span className="text-[15px] text-[#9A9A9A] line-through decoration-[#0ea5e9]/40 font-medium">
+                  {formatMAD(product.originalPrice)}
+                </span>
+              )}
               <span className="text-[13px] text-[#9A9A9A]">
-                / {currentSize.label}
+                / {currentSize.label} (Testeur)
               </span>
             </div>
 
@@ -321,7 +388,7 @@ export default function ProductClient({
                       <Check size={16} /> Ajouté !
                     </>
                   ) : (
-                    <>Ajouter — {formatMAD(currentSize.price * quantity)}</>
+                    <>Ajouter — {formatMAD(currentPrice * quantity)}</>
                   )}
                 </button>
               ) : (
@@ -339,6 +406,16 @@ export default function ProductClient({
               <PerkItem icon={<Truck size={18} />} label="Livraison partout au Maroc avec 35Dh" />
               <PerkItem icon={<RotateCcw size={18} />} label="Retour sous 14 jours" />
               <PerkItem icon={<ShieldCheck size={18} />} label="Paiement sécurisé" />
+            </div>
+
+            <div className="mt-4 p-4 bg-[#f8fafc] rounded-lg border border-[#e0ddd4] flex gap-4 items-center">
+              <div className="text-[#0ea5e9]">
+                <MessageCircle size={24} />
+              </div>
+              <div>
+                <p className="text-[13px] font-semibold text-[#1A1A1A] mb-0.5">Service client réactif</p>
+                <p className="text-[12px] text-[#6B6B6B]">Une équipe à votre écoute 7j/7 pour vous conseiller.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -478,8 +555,8 @@ export default function ProductClient({
             </h2>
 
             <div className="flex items-center gap-3 mt-6">
-              <div className="text-5xl heading-font font-medium text-[#1A1A1A]">
-                {product.rating}
+              <div className="heading-font text-5xl text-[#1A1A1A] mb-2">
+                {product.rating.toFixed(1)}
               </div>
               <div>
                 <div className="flex gap-0.5">
@@ -617,41 +694,99 @@ export default function ProductClient({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsReviewModalOpen(false)} />
           <div className="bg-white rounded-2xl w-full max-w-lg relative z-10 p-6 lg:p-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="heading-font text-2xl mb-6">Laisser un avis</h3>
-            <form onSubmit={handleReviewSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre Nom</label>
-                <input required type="text" value={reviewFormData.author} onChange={e => setReviewFormData({...reviewFormData, author: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Salma B." />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Ville</label>
-                <input required type="text" value={reviewFormData.city} onChange={e => setReviewFormData({...reviewFormData, city: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Casablanca" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Note globale</label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button type="button" key={star} onClick={() => setReviewFormData({...reviewFormData, rating: star})}>
-                      <Star size={24} className={star <= reviewFormData.rating ? 'text-[#0ea5e9] fill-[#0ea5e9]' : 'text-[#e0ddd4] fill-[#e0ddd4]'} />
-                    </button>
-                  ))}
+            
+            {reviewAuthStep === 'login' && !customer && (
+              <div className="text-center py-4">
+                <h3 className="heading-font text-2xl mb-2">Connexion</h3>
+                <p className="text-[#6B6B6B] text-[13px] mb-6">Connectez-vous pour laisser un avis sur ce parfum.</p>
+                
+                {authError && <div className="bg-red-50 text-red-600 text-[12px] p-2 rounded mb-4">{authError}</div>}
+
+                <form className="space-y-4" onSubmit={(e) => handleReviewAuth(e, 'login')}>
+                  <div>
+                    <input required type="email" placeholder="Adresse e-mail" value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                  </div>
+                  <div>
+                    <input required type="password" placeholder="Mot de passe" value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                  </div>
+                  <button type="submit" disabled={loadingAuth} className="w-full btn-blue py-3 rounded-full text-[12px] mt-4 font-bold tracking-wider disabled:opacity-70">
+                    {loadingAuth ? 'Connexion...' : 'Se Connecter'}
+                  </button>
+                </form>
+                <div className="mt-6 text-[12px] text-[#6B6B6B]">
+                  Nouveau client ? <button onClick={() => {setReviewAuthStep('signup'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">Créer un compte</button>
                 </div>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Titre de l'avis</label>
-                <input required type="text" value={reviewFormData.title} onChange={e => setReviewFormData({...reviewFormData, title: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Magnifique !" />
+            )}
+
+            {reviewAuthStep === 'signup' && !customer && (
+              <div className="text-center py-4">
+                <h3 className="heading-font text-2xl mb-2">Créer un compte</h3>
+                <p className="text-[#6B6B6B] text-[13px] mb-6">Rejoignez-nous pour partager votre expérience.</p>
+                
+                {authError && <div className="bg-red-50 text-red-600 text-[12px] p-2 rounded mb-4">{authError}</div>}
+
+                <form className="space-y-4" onSubmit={(e) => handleReviewAuth(e, 'register')}>
+                  <div>
+                    <input required type="text" placeholder="Nom complet" value={authData.name} onChange={e => setAuthData({...authData, name: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                  </div>
+                  <div>
+                    <input required type="email" placeholder="Adresse e-mail" value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                  </div>
+                  <div>
+                    <input required type="password" placeholder="Mot de passe" value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                  </div>
+                  <button type="submit" disabled={loadingAuth} className="w-full btn-blue py-3 rounded-full text-[12px] mt-4 font-bold tracking-wider disabled:opacity-70">
+                    {loadingAuth ? 'Inscription...' : "S'inscrire"}
+                  </button>
+                </form>
+                <div className="mt-6 text-[12px] text-[#6B6B6B]">
+                  Déjà un compte ? <button onClick={() => {setReviewAuthStep('login'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">Se connecter</button>
+                </div>
               </div>
-              <div>
-                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre avis</label>
-                <textarea required rows={4} value={reviewFormData.comment} onChange={e => setReviewFormData({...reviewFormData, comment: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9] resize-none" placeholder="Partagez votre expérience avec ce parfum..."></textarea>
-              </div>
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setIsReviewModalOpen(false)} className="flex-1 btn-outline-blue py-3 text-[11px] rounded-full">Annuler</button>
-                <button type="submit" disabled={isSubmittingReview} className="flex-1 btn-blue py-3 text-[11px] rounded-full disabled:opacity-50">
-                  {isSubmittingReview ? 'Envoi...' : 'Soumettre'}
-                </button>
-              </div>
-            </form>
+            )}
+
+            {(reviewAuthStep === 'review' || customer) && (
+              <>
+                <h3 className="heading-font text-2xl mb-6">Laisser un avis</h3>
+                <form onSubmit={handleReviewSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre Nom</label>
+                      <input required type="text" value={reviewFormData.author} onChange={e => setReviewFormData({...reviewFormData, author: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Salma B." />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Ville</label>
+                      <input required type="text" value={reviewFormData.city} onChange={e => setReviewFormData({...reviewFormData, city: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Casablanca" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Note globale</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button type="button" key={star} onClick={() => setReviewFormData({...reviewFormData, rating: star})}>
+                          <Star size={24} className={star <= reviewFormData.rating ? 'text-[#0ea5e9] fill-[#0ea5e9]' : 'text-[#e0ddd4] fill-[#e0ddd4]'} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Titre de l'avis</label>
+                    <input required type="text" value={reviewFormData.title} onChange={e => setReviewFormData({...reviewFormData, title: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Magnifique !" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre avis</label>
+                    <textarea required rows={4} value={reviewFormData.comment} onChange={e => setReviewFormData({...reviewFormData, comment: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9] resize-none" placeholder="Partagez votre expérience avec ce parfum..."></textarea>
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <button type="button" onClick={() => setIsReviewModalOpen(false)} className="flex-1 btn-outline-blue py-3 text-[11px] rounded-full">Annuler</button>
+                    <button type="submit" disabled={isSubmittingReview} className="flex-1 btn-blue py-3 text-[11px] rounded-full disabled:opacity-50">
+                      {isSubmittingReview ? 'Envoi...' : 'Publier'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}

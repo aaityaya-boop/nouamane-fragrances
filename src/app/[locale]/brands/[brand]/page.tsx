@@ -60,7 +60,7 @@ export default async function BrandPage({
       {/* HERO */}
       <section className="relative h-[55vh] min-h-[420px] flex items-center overflow-hidden">
         <Image
-          src={brand.image || 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600'}
+          src={brand.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900'}
           alt={brand.label}
           fill
           priority
@@ -129,14 +129,17 @@ export default async function BrandPage({
               <Link
                 key={b.slug}
                 href={`/brands/${b.slug}`}
-                className="group relative h-48 rounded-2xl overflow-hidden border border-[#e0ddd4] hover:border-[#0ea5e9]/50 transition-all"
+                className="group border border-[#e0ddd4] bg-white rounded-xl overflow-hidden hover:border-[#0ea5e9] transition-all hover:shadow-lg flex flex-col h-40"
               >
-                <Image src={b.image || '/images/dg_imperatrice.png'} alt={b.label} fill className="object-cover brightness-50 group-hover:brightness-75 transition-all duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-6">
-                  <div className="heading-font text-2xl text-white mt-1 tracking-wide">
-                    {b.label}
-                  </div>
+                <div className="relative h-full w-full flex flex-col items-center justify-center p-6">
+                  <Image 
+                    src={`/images/brands/${b.slug}-logo.jpg`} 
+                    alt={b.name} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, 300px"
+                    className="object-contain p-8 pb-10 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 mix-blend-multiply" 
+                  />
+                  <div className="absolute bottom-4 text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors line-clamp-1">{b.label}</div>
                 </div>
               </Link>
             ))}

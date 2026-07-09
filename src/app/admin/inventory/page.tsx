@@ -11,10 +11,7 @@ export default function AdminInventoryPage() {
   
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editStockValue, setEditStockValue] = useState<number>(0);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -27,12 +24,19 @@ export default function AdminInventoryPage() {
         images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
       }));
       setProducts(parsedData);
+      
+      const uniqueSubcategories = Array.from(new Set(data.map((p: any) => p.subcategoryLabel))) as string[];
+      setCategories(['Toutes', ...uniqueSubcategories]);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleEditClick = (product: any) => {
     setEditingId(product.id);

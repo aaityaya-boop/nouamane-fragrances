@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
+import Cookies from 'js-cookie';
 
 export type CartItem = {
   id: number;
@@ -57,7 +58,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('nouamaneCart');
+    // Migration: Read from localStorage first, then fallback to Cookies.
+    // This prevents losing existing carts for current users.
+    let saved = localStorage.getItem('nouamaneCart');
+    if (!saved) {
+      saved = Cookies.get('nouamaneCart') || null;
+    }
+    
     if (saved) {
       try {
         setCart(JSON.parse(saved));
@@ -66,7 +73,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
     
-    const savedPromo = localStorage.getItem('nouamanePromo');
+    let savedPromo = localStorage.getItem('nouamanePromo');
+    if (!savedPromo) {
+      savedPromo = Cookies.get('nouamanePromo') || null;
+    }
+    
     if (savedPromo) {
       try {
         setAppliedPromo(JSON.parse(savedPromo));
@@ -90,11 +101,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('nouamaneCart', JSON.stringify(cart));
+      const cartStr = JSON.stringify(cart);
+      Cookies.set('nouamaneCart', cartStr, { expires: 30, path: '/' });
+      // Remove from localStorage to finish migration
+      localStorage.removeItem('nouamaneCart');
+      
       if (appliedPromo) {
-        localStorage.setItem('nouamanePromo', JSON.stringify(appliedPromo));
-      } else {
+        const promoStr = JSON.stringify(appliedPromo);
+        Cookies.set('nouamanePromo', promoStr, { expires: 30, path: '/' });
         localStorage.removeItem('nouamanePromo');
+      } else {
+        Cookies.remove('nouamanePromo', { path: '/' });
       }
     }
   }, [cart, appliedPromo, isLoaded]);

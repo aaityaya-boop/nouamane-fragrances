@@ -15,10 +15,6 @@ export default function AdminBrandsPage() {
   // Form state
   const [formData, setFormData] = useState<any>({});
 
-  useEffect(() => {
-    fetchBrands();
-  }, []);
-
   const fetchBrands = async () => {
     setIsLoading(true);
     try {
@@ -31,6 +27,10 @@ export default function AdminBrandsPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchBrands();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette marque ? Cela ne fonctionnera que si aucun produit n'y est associé.")) return;

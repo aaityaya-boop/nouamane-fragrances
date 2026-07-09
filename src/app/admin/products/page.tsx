@@ -9,20 +9,16 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
-  
+    
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<any>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   const [brands, setBrands] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchProducts();
-    fetchBrands();
-  }, []);
 
   const fetchBrands = async () => {
     try {
@@ -42,11 +38,12 @@ export default function AdminProductsPage() {
       
       const parsedData = data.map((p: any) => ({
         ...p,
-        images: JSON.parse(p.images),
-        notes: JSON.parse(p.notes),
-        sizes: JSON.parse(p.sizes),
-        tags: JSON.parse(p.tags),
+        images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images,
+        sizes: typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes,
+        notes: typeof p.notes === 'string' ? JSON.parse(p.notes) : p.notes,
+        tags: typeof p.tags === 'string' ? JSON.parse(p.tags) : p.tags,
       }));
+      
       setProducts(parsedData);
     } catch (error) {
       console.error(error);
@@ -54,6 +51,11 @@ export default function AdminProductsPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchBrands();
+  }, []);
 
   const handleDelete = async (id: number) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
@@ -94,6 +96,7 @@ export default function AdminProductsPage() {
       tagline: '',
       releaseDate: new Date().toISOString(),
       inStock: true,
+      isTester: true,
     });
     setIsModalOpen(true);
   };
@@ -110,21 +113,30 @@ export default function AdminProductsPage() {
     const uploadData = new FormData();
     uploadData.append('file', file);
     
+    setIsUploading(true);
     try {
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
         body: uploadData,
       });
       const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur serveur lors de l\'upload');
+      }
+      
       if (data.url) {
         setFormData((prev: any) => ({
           ...prev,
           images: [...(prev.images || []), data.url]
         }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to upload image', error);
-      alert('Erreur lors du téléchargement de l\'image');
+      alert(`Erreur lors du téléchargement de l'image: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      e.target.value = ''; // Reset input to allow re-uploading the same file
     }
   };
 
@@ -171,10 +183,14 @@ export default function AdminProductsPage() {
     }
   };
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
-    p.brandLabel.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = products
+    .filter((p: any) => {
+      const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
+                            p.brandLabel.toLowerCase().includes(search.toLowerCase());
+      return matchesSearch;
+    })
+    .sort((a: any, b: any) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto">
@@ -191,6 +207,7 @@ export default function AdminProductsPage() {
           <Plus size={16} /> Ajouter un produit
         </button>
       </div>
+
 
       <div className="bg-white rounded-2xl border border-[#e0ddd4] overflow-hidden">
         <div className="p-4 border-b border-[#e0ddd4] flex items-center gap-3">
@@ -244,15 +261,14 @@ export default function AdminProductsPage() {
                     <td className="p-4 font-medium text-[#1A1A1A]">
                       {p.price} Dh
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 flex gap-1 items-center">
                       {p.inStock ? (
-                        <span className="text-green-600 bg-green-50 px-2.5 py-1 rounded-full text-[11px] font-medium border border-green-100">
-                          En stock
-                        </span>
+                        <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">EN STOCK</span>
                       ) : (
-                        <span className="text-red-600 bg-red-50 px-2.5 py-1 rounded-full text-[11px] font-medium border border-red-100">
-                          Rupture
-                        </span>
+                        <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">RUPTURE</span>
+                      )}
+                      {(p as any).isTester && (
+                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold">TESTEUR</span>
                       )}
                     </td>
                     <td className="p-4">
@@ -342,7 +358,21 @@ export default function AdminProductsPage() {
                     value={formData.originalPrice || ''} onChange={e => setFormData({...formData, originalPrice: e.target.value ? Number(e.target.value) : null})} 
                     placeholder="Ex: 850 (Si le prix de vente est 650)" />
                 </div>
-
+                <div className="col-span-2 flex items-center gap-3 bg-[#f8fafc] p-4 rounded-lg border border-[#e0ddd4]">
+                  <input 
+                    type="checkbox" 
+                    id="isTesterToggle"
+                    className="w-5 h-5 accent-[#0ea5e9] cursor-pointer"
+                    checked={formData.isTester} 
+                    onChange={e => setFormData({...formData, isTester: e.target.checked})} 
+                  />
+                  <label htmlFor="isTesterToggle" className="text-[13px] font-bold text-[#1A1A1A] cursor-pointer">
+                    Est-ce un testeur ?
+                  </label>
+                  <span className="text-[11px] text-[#9A9A9A] ml-auto">
+                    Cochez cette case si le produit est un format testeur.
+                  </span>
+                </div>
                 <div className="col-span-2">
                   <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Genre</label>
                   <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
@@ -350,6 +380,29 @@ export default function AdminProductsPage() {
                     <option value="women">Femme</option>
                     <option value="men">Homme</option>
                     <option value="unisex">Unisex</option>
+                  </select>
+                </div>
+                
+                <div className="col-span-2">
+                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
+                  <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                    value={formData.subcategory} 
+                    onChange={e => {
+                      const labelMap: any = {
+                        floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
+                        aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
+                        'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées'
+                      };
+                      setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
+                    }}>
+                    <option value="floral">Floral</option>
+                    <option value="oriental">Oriental</option>
+                    <option value="fresh">Frais</option>
+                    <option value="woody">Boisé</option>
+                    <option value="aromatic">Aromatique</option>
+                    <option value="discovery-sets">Coffrets Découverte</option>
+                    <option value="gift-bundles">Coffrets Cadeaux</option>
+                    <option value="limited-editions">Éditions Limitées</option>
                   </select>
                 </div>
 
@@ -404,9 +457,13 @@ export default function AdminProductsPage() {
                         </button>
                       </div>
                     ))}
-                    <label className="w-16 h-16 border-2 border-dashed border-[#e0ddd4] rounded-lg flex items-center justify-center text-[#9A9A9A] hover:text-[#0ea5e9] hover:border-[#0ea5e9] cursor-pointer transition-colors">
-                      <Upload size={20} />
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                    <label className={`w-16 h-16 border-2 border-dashed border-[#e0ddd4] rounded-lg flex items-center justify-center text-[#9A9A9A] hover:text-[#0ea5e9] hover:border-[#0ea5e9] cursor-pointer transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      {isUploading ? (
+                        <div className="w-5 h-5 border-2 border-gray-400 border-t-[#0ea5e9] rounded-full animate-spin"></div>
+                      ) : (
+                        <Upload size={20} />
+                      )}
+                      <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                     </label>
                   </div>
                   <input type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"

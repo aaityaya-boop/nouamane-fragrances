@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search as SearchIcon, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Product } from '@/lib/products';
 
 interface SearchModalProps {
@@ -17,6 +18,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [results, setResults] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
 
   useEffect(() => {
     if (isOpen) {
@@ -107,7 +110,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   {results.map((product) => (
                     <Link
                       key={product.id}
-                      href={`/product/${product.slug}`}
+                      href={`/${locale}/product/${product.slug}`}
                       onClick={onClose}
                       className="group flex flex-col gap-4"
                     >

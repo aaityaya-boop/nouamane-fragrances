@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { X, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
@@ -15,6 +16,8 @@ import { formatMAD } from '@/lib/products';
 export default function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee } = useCart();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
 
   useEffect(() => {
     const handler = () => setIsOpen(true);
@@ -58,7 +61,7 @@ export default function CartDrawer() {
               marocains.
             </p>
             <Link
-              href="/shop"
+              href={`/${locale}/shop`}
               onClick={() => setIsOpen(false)}
               className="mt-10 btn-outline-blue px-10 py-4 text-[11px] rounded-full inline-block"
             >
@@ -74,7 +77,7 @@ export default function CartDrawer() {
                   className="flex gap-5 pb-6 border-b border-[#eeece5] last:border-0"
                 >
                   <Link
-                    href={`/product/${item.slug}`}
+                    href={`/${locale}/product/${item.slug}`}
                     onClick={() => setIsOpen(false)}
                     className="w-24 h-28 bg-transparent rounded-xl overflow-hidden flex-shrink-0 relative"
                   >
@@ -90,7 +93,7 @@ export default function CartDrawer() {
                     <div className="flex justify-between">
                       <div>
                         <Link
-                          href={`/product/${item.slug}`}
+                          href={`/${locale}/product/${item.slug}`}
                           onClick={() => setIsOpen(false)}
                           className="heading-font text-lg text-[#1A1A1A] tracking-wide hover:text-[#0ea5e9]"
                         >
@@ -152,7 +155,7 @@ export default function CartDrawer() {
               </div>
 
               <Link
-                href="/cart"
+                href={`/${locale}/cart`}
                 onClick={() => setIsOpen(false)}
                 className="btn-blue w-full py-4 text-[11px] rounded-full inline-block text-center"
               >

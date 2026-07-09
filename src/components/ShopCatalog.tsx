@@ -5,7 +5,7 @@
  * Used by /shop, /shop/[gender], and /brands/[brand] pages.
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
 import {
@@ -14,6 +14,7 @@ import {
   type Brand,
   type Gender,
 } from '@/lib/products';
+import { useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, X, Star, ChevronDown, Check } from 'lucide-react';
 
 type SortKey = 'featured' | 'price-low' | 'price-high' | 'rating' | 'newest' | 'name';
@@ -56,24 +57,49 @@ const SIZE_RANGES = [
   { key: 'xlarge', label: '150ml+', min: 150, max: 500 },
 ];
 
-export default function ShopCatalog({
+function ShopCatalogInner({
   products,
   brands,
   lockedGender,
   lockedBrand,
   lockedSubcategory,
 }: Props) {
+  const searchParams = useSearchParams();
+  const initialSub = searchParams?.get('sub') || 'all';
+  const initialSort = searchParams?.get('sort') as SortKey || 'featured';
+  const initialSpecial = searchParams?.get('special') || 'all';
+
   const [brand, setBrand] = useState<string>('all');
   const [gender, setGender] = useState<string>(lockedGender || 'all');
-  const [subcategory, setSubcategory] = useState<string>(lockedSubcategory || 'all');
+  const [subcategory, setSubcategory] = useState<string>(lockedSubcategory || initialSub);
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<SortKey>('featured');
+  const [sortBy, setSortBy] = useState<SortKey>(initialSort);
+  const [specialFilter, setSpecialFilter] = useState<string>(initialSpecial);
   const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Sync state if URL changes (useful for navigation within the same page)
+  useEffect(() => {
+    if (searchParams) {
+      const sub = searchParams.get('sub');
+      const sort = searchParams.get('sort');
+      const special = searchParams.get('special');
+      if (sub && sub !== subcategory && !lockedSubcategory) setSubcategory(sub);
+      if (sort && sort !== sortBy) setSortBy(sort as SortKey);
+      if (special && special !== specialFilter) setSpecialFilter(special);
+      setCurrentPage(1); // Reset page on navigation
+    }
+  }, [searchParams]);
+
+  // Reset page when any filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, specialFilter]);
 
   const toggleFrom = (list: string[], value: string): string[] =>
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -88,6 +114,8 @@ export default function ShopCatalog({
     else if (gender !== 'all') list = list.filter((p) => p.gender === gender);
 
     if (subcategory !== 'all') list = list.filter((p) => p.subcategory === subcategory);
+
+
 
     list = list.filter(
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
@@ -131,7 +159,7 @@ export default function ShopCatalog({
         });
     }
     return list;
-  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons]);
+  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons, specialFilter]);
 
   const clearFilters = () => {
     if (!lockedBrand) setBrand('all');
@@ -143,6 +171,7 @@ export default function ShopCatalog({
     setSelectedColors([]);
     setSelectedMaterials([]);
     setMinRating(0);
+    setSpecialFilter('all');
   };
 
   const activeCount =
@@ -154,7 +183,8 @@ export default function ShopCatalog({
     selectedSizes.length +
     selectedColors.length +
     selectedMaterials.length +
-    (minRating > 0 ? 1 : 0);
+    (minRating > 0 ? 1 : 0) +
+    (specialFilter !== 'all' ? 1 : 0);
 
   return (
     <>
@@ -173,6 +203,7 @@ export default function ShopCatalog({
               selectedColors={selectedColors} toggleColor={(v) => setSelectedColors(toggleFrom(selectedColors, v))}
               selectedMaterials={selectedMaterials} toggleMaterial={(v) => setSelectedMaterials(toggleFrom(selectedMaterials, v))}
               minRating={minRating} setMinRating={setMinRating}
+              specialFilter={specialFilter} setSpecialFilter={setSpecialFilter}
               clearFilters={clearFilters} activeCount={activeCount}
               lockedBrand={!!lockedBrand} lockedGender={!!lockedGender} lockedSubcategory={!!lockedSubcategory}
             />
@@ -225,21 +256,46 @@ export default function ShopCatalog({
               </button>
             </div>
           ) : (
-            <motion.div 
-              layout
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: { opacity: 0 },
-                show: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.1 }
-                }
-              }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10"
-            >
-              {filtered.map((p) => <ProductCard key={p.id} product={p} />)}
-            </motion.div>
+            <>
+              <motion.div 
+                layout
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.1 }
+                  }
+                }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10"
+              >
+                {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((p) => <ProductCard key={p.id} product={p} />)}
+              </motion.div>
+              
+              {/* Pagination UI */}
+              {Math.ceil(filtered.length / 20) > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-12 border-t border-[#e0ddd4] pt-8">
+                  <button 
+                    onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    disabled={currentPage === 1}
+                    className="px-5 py-2 border border-[#e0ddd4] rounded-full text-[11px] font-semibold tracking-[0.1em] uppercase disabled:opacity-30 hover:border-[#0ea5e9] transition-colors"
+                  >
+                    Précédent
+                  </button>
+                  <div className="text-[12px] text-[#6B6B6B] px-4 font-semibold tracking-widest uppercase">
+                    Page {currentPage} / {Math.ceil(filtered.length / 20)}
+                  </div>
+                  <button 
+                    onClick={() => { setCurrentPage(p => Math.min(Math.ceil(filtered.length / 20), p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    disabled={currentPage === Math.ceil(filtered.length / 20)}
+                    className="px-5 py-2 border border-[#e0ddd4] rounded-full text-[11px] font-semibold tracking-[0.1em] uppercase disabled:opacity-30 hover:border-[#0ea5e9] transition-colors"
+                  >
+                    Suivant
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -266,6 +322,7 @@ export default function ShopCatalog({
               selectedColors={selectedColors} toggleColor={(v) => setSelectedColors(toggleFrom(selectedColors, v))}
               selectedMaterials={selectedMaterials} toggleMaterial={(v) => setSelectedMaterials(toggleFrom(selectedMaterials, v))}
               minRating={minRating} setMinRating={setMinRating}
+              specialFilter={specialFilter} setSpecialFilter={setSpecialFilter}
               clearFilters={clearFilters} activeCount={activeCount}
               lockedBrand={!!lockedBrand} lockedGender={!!lockedGender} lockedSubcategory={!!lockedSubcategory}
             />
@@ -279,6 +336,14 @@ export default function ShopCatalog({
         </div>
       )}
     </>
+  );
+}
+
+export default function ShopCatalog(props: Props) {
+  return (
+    <Suspense fallback={<div className="py-24 text-center text-[#9A9A9A]">Chargement du catalogue...</div>}>
+      <ShopCatalogInner {...props} />
+    </Suspense>
   );
 }
 
@@ -297,6 +362,7 @@ function FiltersPanel(props: {
   selectedColors: string[]; toggleColor: (v: string) => void;
   selectedMaterials: string[]; toggleMaterial: (v: string) => void;
   minRating: number; setMinRating: (r: number) => void;
+  specialFilter: string; setSpecialFilter: (v: string) => void;
   clearFilters: () => void; activeCount: number;
   lockedBrand: boolean; lockedGender: boolean; lockedSubcategory: boolean;
 }) {

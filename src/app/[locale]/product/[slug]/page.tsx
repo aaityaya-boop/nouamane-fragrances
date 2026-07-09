@@ -4,7 +4,32 @@ import prisma from '@/lib/prisma';
 import ProductClient from './ProductClient';
 import { Product } from '@/lib/products';
 
-export const dynamic = 'force-dynamic';
+import { Metadata } from 'next';
+
+export const revalidate = 3600;
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const product = await prisma.product.findUnique({
+    where: { slug: resolvedParams.slug },
+  });
+
+  if (!product) {
+    return { title: 'Produit introuvable - Nouamane Parfums' };
+  }
+
+  const images = JSON.parse(product.images);
+
+  return {
+    title: `${product.name} - ${product.brandLabel} | Acheter au Maroc`,
+    description: product.description || product.tagline,
+    openGraph: {
+      title: `${product.name} - ${product.brandLabel}`,
+      description: product.description || product.tagline,
+      images: images.length > 0 ? [{ url: images[0] }] : [],
+    }
+  };
+}
 
 export default async function ProductPage({
   params,
@@ -37,24 +62,77 @@ export default async function ProductPage({
   });
 
   const transformProduct = (p: any): Product => ({
-    ...p,
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
     brand: p.brandId,
+    brandLabel: p.brandLabel,
     gender: p.gender,
     subcategory: p.subcategory,
-    images: JSON.parse(p.images),
-    notes: JSON.parse(p.notes),
-    sizes: JSON.parse(p.sizes),
-    tags: JSON.parse(p.tags),
+    subcategoryLabel: p.subcategoryLabel ?? '',
+    tagline: p.tagline ?? '',
+    price: p.price,
+    originalPrice: p.originalPrice ?? undefined,
+    description: p.description ?? '',
+    longDescription: p.longDescription ?? '',
+    images: JSON.parse(p.images || '[]'),
+    notes: JSON.parse(p.notes || '{"top":[],"heart":[],"base":[]}'),
+    ingredients: p.ingredients ?? '',
+    sizes: JSON.parse(p.sizes || '[]'),
     bottleColor: p.bottleColor,
+    bottleColorLabel: p.bottleColorLabel ?? '',
     bottleMaterial: p.bottleMaterial,
-    perfectSeason: p.perfectSeason,
+    bottleMaterialLabel: p.bottleMaterialLabel ?? '',
+    rating: p.rating ?? 0,
+    reviewCount: p.reviewCount ?? 0,
+    releaseDate: p.releaseDate ?? '',
+    tags: JSON.parse(p.tags || '[]'),
+    inStock: p.inStock ?? true,
+    perfectSeason: p.perfectSeason ?? 'Toutes Saisons',
   });
 
+  // Serialize reviews — convert Date objects to ISO strings
+  const serializedReviews = dbReviews.map((r: any) => ({
+    ...r,
+    createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : r.createdAt,
+    updatedAt: r.updatedAt instanceof Date ? r.updatedAt.toISOString() : r.updatedAt,
+  }));
+
+  const transformedProduct = transformProduct(dbProduct);
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: transformedProduct.name,
+    image: transformedProduct.images[0],
+    description: transformedProduct.description,
+    brand: {
+      '@type': 'Brand',
+      name: transformedProduct.brandLabel,
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://nouamane-fr.vercel.app/product/${transformedProduct.slug}`,
+      priceCurrency: 'MAD',
+      price: transformedProduct.price,
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: transformedProduct.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+    aggregateRating: transformedProduct.reviewCount > 0 ? {
+      '@type': 'AggregateRating',
+      ratingValue: transformedProduct.rating.toFixed(1),
+      reviewCount: transformedProduct.reviewCount,
+    } : undefined,
+  };
+
   return (
-    <ProductClient 
-      product={transformProduct(dbProduct)} 
-      relatedProducts={dbRelated.map(transformProduct)} 
-      initialReviews={dbReviews}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <ProductClient 
+        product={transformedProduct} 
+        relatedProducts={dbRelated.map(transformProduct)} 
+        initialReviews={serializedReviews}
+      />
+    </>
   );
 }

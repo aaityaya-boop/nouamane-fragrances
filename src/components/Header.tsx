@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { MAIN_CATEGORIES } from '@/lib/products';
 import SearchModal from './SearchModal';
@@ -15,7 +16,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<'shop' | 'brands' | null>(null);
+  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | null>(null);
   const { getItemCount } = useCart();
   const pathname = usePathname();
   const dict = useDictionary();
@@ -23,7 +24,6 @@ export default function Header() {
 
   const locale = pathname?.split('/')[1] || 'fr';
   const isHome = pathname === `/${locale}`;
-  const alwaysLight = !isHome;
 
   const [brands, setBrands] = useState<any[]>([]);
   useEffect(() => {
@@ -34,236 +34,357 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 60);
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isLight = alwaysLight || isScrolled;
+  // Determine if header should be solid white
+  const isSolid = !isHome || isScrolled || activeMenu !== null || isMobileMenuOpen;
 
   return (
     <>
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      onMouseLeave={() => setActiveMenu(null)}
-      className={`fixed top-4 left-4 right-4 lg:top-6 lg:left-1/2 lg:-translate-x-1/2 lg:w-[1200px] lg:max-w-[calc(100vw-3rem)] z-50 transition-all duration-500 bg-white/80 backdrop-blur-xl shadow-lg border border-white/50 ${isMobileMenuOpen ? 'rounded-3xl' : 'rounded-full'}`}
-    >
-      <div className="px-6 lg:px-10">
-        <div className="flex items-center justify-between h-[60px] lg:h-[70px]">
-          {/* LEFT NAV */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <button
-              onMouseEnter={() => setActiveMenu('shop')}
-              className={`text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-300 hover:text-[#0ea5e9] flex items-center gap-1 text-[#1A1A1A]/70`}
-            >
-              {dict.nav.shop || 'Boutique'} <ChevronDown size={12} />
-            </button>
-            <button
-              onMouseEnter={() => setActiveMenu('brands')}
-              className={`text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-300 hover:text-[#0ea5e9] flex items-center gap-1 text-[#1A1A1A]/70`}
-            >
-              {dict.nav.brands || 'Marques'} <ChevronDown size={12} />
-            </button>
-            <Link
-              href="/suivi-commande"
-              onMouseEnter={() => setActiveMenu(null)}
-              className={`text-[11px] font-semibold tracking-[0.2em] uppercase transition-colors duration-300 hover:text-[#0ea5e9] text-[#1A1A1A]/70`}
-            >
-              {dict.nav.trackOrder || 'Suivi'}
-            </Link>
-          </nav>
+      <header
+        onMouseLeave={() => setActiveMenu(null)}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          isSolid ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-[#e0ddd4]/60' : 'bg-transparent'
+        }`}
+      >
+        
 
-          {/* LOGO */}
-          <div className="flex-1 flex justify-center lg:flex-none lg:absolute lg:left-1/2 lg:-translate-x-1/2">
-            <Link href={`/${locale}`} className="group flex flex-col items-center">
-              <span
-                className={`heading-font text-[22px] lg:text-[26px] font-light tracking-[0.28em] transition-colors duration-500 group-hover:text-[#0ea5e9] text-[#1A1A1A]`}
-              >
-                NOUAMANE
-              </span>
-              <span
-                className={`text-[8px] font-semibold tracking-[0.35em] uppercase mt-[-2px] text-[#0ea5e9]`}
-              >
-                Parfums
-              </span>
-            </Link>
-          </div>
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
+          <div className="flex items-center justify-between h-[60px] lg:h-[75px]">
+            {/* LEFT NAV (Desktop) */}
+            <nav className="hidden lg:flex items-center gap-8 w-1/3">
+              {['women', 'men', 'brands'].map((menuKey) => {
+                const labels: any = { women: 'Femme', men: 'Homme', brands: 'Marques' };
+                return (
+                  <div 
+                    key={menuKey} 
+                    className="h-full flex items-center"
+                    onMouseEnter={() => setActiveMenu(menuKey as any)}
+                  >
+                    <button
+                      className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 flex items-center gap-1.5 h-[75px] border-b-2 ${
+                        activeMenu === menuKey ? 'border-[#0ea5e9] text-[#0ea5e9]' : 'border-transparent ' + (isSolid ? 'text-[#1A1A1A]' : 'text-white hover:text-white/80')
+                      }`}
+                    >
+                      {labels[menuKey]}
+                    </button>
+                  </div>
+                );
+              })}
+            </nav>
 
-          {/* RIGHT ICONS */}
-          <div className="flex items-center gap-5 lg:gap-6">
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className={`hidden lg:block hover:text-[#0ea5e9] transition-colors duration-300 text-[#1A1A1A]/60`}
-              aria-label="Recherche"
-            >
-              <Search className="w-[18px] h-[18px]" strokeWidth={1.6} />
-            </button>
-
-            <Link
-              href="/cart"
-              className={`hover:text-[#0ea5e9] transition-colors duration-300 relative text-[#1A1A1A]/60`}
-              aria-label="Panier"
-            >
-              <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.6} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-[#0ea5e9] text-white text-[9px] font-bold w-[16px] h-[16px] flex items-center justify-center rounded-full leading-none">
-                  {cartCount}
+            {/* LOGO */}
+            <div className="w-1/3 flex justify-center">
+              <Link href={`/${locale}`} className="group flex flex-col items-center">
+                <span
+                  className={`heading-font text-[24px] lg:text-[28px] font-light tracking-[0.25em] transition-colors duration-300 group-hover:text-[#0ea5e9] ${
+                    isSolid ? 'text-[#1A1A1A]' : 'text-white'
+                  }`}
+                >
+                  NOUAMANE
                 </span>
-              )}
-            </Link>
+                <span
+                  className={`text-[8px] font-semibold tracking-[0.35em] uppercase mt-[-2px] ${
+                    isSolid ? 'text-[#0ea5e9]' : 'text-white/80'
+                  }`}
+                >
+                  Parfums
+                </span>
+              </Link>
+            </div>
 
-            <Link
-              href="/suivi-commande"
-              className={`hidden lg:block hover:text-[#0ea5e9] transition-colors duration-300 text-[#1A1A1A]/60`}
-              aria-label="Compte"
-            >
-              <User className="w-[18px] h-[18px]" strokeWidth={1.6} />
-            </Link>
+            {/* RIGHT ICONS */}
+            <div className="w-1/3 flex items-center justify-end gap-5 lg:gap-6">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className={`hidden lg:block transition-colors duration-300 ${
+                  isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'
+                }`}
+                aria-label="Recherche"
+              >
+                <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              </button>
 
-            <LanguageSwitcher />
+              <Link
+                href={`/${locale}/cart`}
+                className={`transition-colors duration-300 relative ${
+                  isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'
+                }`}
+                aria-label="Panier"
+              >
+                <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-[#0ea5e9] text-white text-[9px] font-bold w-[16px] h-[16px] flex items-center justify-center rounded-full leading-none">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
 
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`lg:hidden ${isLight ? 'text-[#1A1A1A]/80' : 'text-white'}`}
-              aria-label="Menu"
-            >
-              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+              <Link
+                href={`/${locale}/account`}
+                className={`hidden lg:block transition-colors duration-300 ${
+                  isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'
+                }`}
+                aria-label="Compte"
+              >
+                <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              </Link>
+
+              <div className="hidden lg:block">
+                <LanguageSwitcher />
+              </div>
+
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`lg:hidden ${isSolid ? 'text-[#1A1A1A]' : 'text-white'}`}
+                aria-label="Menu"
+              >
+                {isMobileMenuOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* MEGA MENU — Shop */}
-      {activeMenu === 'shop' && (
-        <div className="hidden lg:block absolute top-full left-0 right-0 glass border-t border-[#e0ddd4] shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
-          <div className="max-w-[1400px] mx-auto px-10 py-10 grid grid-cols-3 gap-10">
-            {MAIN_CATEGORIES.map((cat) => (
-              <div key={cat.slug}>
-                <Link
-                  href={`/shop/${cat.slug}`}
-                  className="heading-font text-2xl text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors block mb-4"
-                >
-                  {cat.label}
-                </Link>
-                <ul className="space-y-2.5">
-                  {cat.subcategories.map((sc) => (
-                    <li key={sc.slug}>
-                      <Link
-                        href={`/shop/${cat.slug}`}
-                        className="text-[12px] text-[#6B6B6B] hover:text-[#0ea5e9] transition-colors"
+        {/* ============================================================== */}
+        {/* MEGA MENUS DESKTOP */}
+        {/* ============================================================== */}
+        <AnimatePresence>
+          {activeMenu && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.2 }}
+              className="hidden lg:block absolute top-[60px] lg:top-[75px] left-0 right-0 bg-white/95 backdrop-blur-xl shadow-2xl border-t border-[#e0ddd4]/60"
+            >
+              <div 
+                className="max-w-[1400px] mx-auto px-10 py-10 flex gap-16 overflow-y-auto lux-scrollbar overscroll-contain"
+                style={{ maxHeight: 'calc(100vh - 100px)' }}
+              >
+                
+                {/* --- WOMEN MEGA MENU --- */}
+                {activeMenu === 'women' && (
+                  <>
+                    <div className="flex-1 grid grid-cols-3 gap-12">
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Familles Olfactives</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=floral`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Floraux</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=oriental`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Orientaux</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=woody`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Boisés</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=fresh`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Frais</Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Marques Phares</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/yves-saint-laurent`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Yves Saint Laurent</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/valentino`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Valentino</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/armani`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Giorgio Armani</Link></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* --- MEN MEGA MENU --- */}
+                {activeMenu === 'men' && (
+                  <>
+                    <div className="flex-1 grid grid-cols-3 gap-12">
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Familles Olfactives</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=woody`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Boisés</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=oriental`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Orientaux</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=aromatic`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Aromatiques</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=fresh`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Frais</Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Marques Phares</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/armani`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Giorgio Armani</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/yves-saint-laurent`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Yves Saint Laurent</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/brands/valentino`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Valentino</Link></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* --- UNISEX & COFFRETS MEGA MENU --- */}
+                {activeMenu === 'unisex' && (
+                  <>
+                    <div className="flex-1 grid grid-cols-2 gap-12">
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Idées Cadeaux</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=gift-bundles" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Cadeaux</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=discovery-sets" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Découverte</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=limited-editions" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Éditions Limitées</Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Parfums de niche / Unisexe</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Collection Privée Armani</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Le Vestiaire des Parfums YSL</Link></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* --- BRANDS MEGA MENU --- */}
+                {activeMenu === 'brands' && (
+                  <div className="w-full">
+                    <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Toutes Nos Maisons</div>
+                    <div className="grid grid-cols-4 gap-6">
+                      {brands.map((brand) => (
+                        <Link
+                          key={brand.slug}
+                          href={`/${locale}/brands/${brand.slug}`}
+                          onClick={() => setActiveMenu(null)}
+                          className="group border border-[#e0ddd4] bg-white rounded-xl overflow-hidden hover:border-[#0ea5e9] transition-all hover:shadow-lg flex flex-col"
+                        >
+                          <div className="relative h-24 w-full flex items-center justify-center p-6">
+                            <Image 
+                              src={`/images/brands/${brand.slug}-logo.jpg`} 
+                              alt={brand.name} 
+                              fill
+                              sizes="(max-width: 768px) 100vw, 200px"
+                              className="object-contain p-4 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 mix-blend-multiply" 
+                            />
+                          </div>
+                          <div className="p-3 bg-[#f8fafc] flex justify-between items-center border-t border-[#e0ddd4] mt-auto">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors line-clamp-1">{brand.label}</span>
+                            <ChevronRight size={14} className="text-[#9A9A9A] group-hover:text-[#0ea5e9] transition-colors flex-shrink-0" />
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* MOBILE MENU */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-white border-t border-[#e0ddd4] overflow-y-auto"
+              style={{ maxHeight: 'calc(100vh - 60px)' }}
+            >
+              <div className="px-6 py-8 space-y-8">
+                {/* Mobile Categories */}
+                <div className="space-y-6">
+                  {MAIN_CATEGORIES.map((cat) => (
+                    <div key={cat.slug} className="border-b border-[#e0ddd4] pb-6 last:border-0 last:pb-0">
+                      <Link 
+                        href={`/${locale}/shop/${cat.slug}`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="heading-font text-2xl text-[#1A1A1A] block mb-4"
                       >
-                        {sc.label}
+                        {cat.label}
                       </Link>
-                    </li>
+                      <div className="grid grid-cols-2 gap-3 pl-2">
+                        {cat.subcategories.map(sub => (
+                          <Link 
+                            key={sub.slug}
+                            href={`/${locale}/shop/${cat.slug}?sub=${sub.slug}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-[14px] text-[#6B6B6B]"
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* MEGA MENU — Brands */}
-      {activeMenu === 'brands' && (
-        <div className="hidden lg:block absolute top-full left-0 right-0 glass border-t border-[#e0ddd4] shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
-          <div className="max-w-[1400px] mx-auto px-10 py-10 grid grid-cols-3 gap-10">
-            {brands.map((brand) => (
-              <Link
-                key={brand.slug}
-                href={`/brands/${brand.slug}`}
-                className="group"
-              >
-                <div className="heading-font text-2xl text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors mb-2">
-                  {brand.label}
+                  <div className="border-b border-[#e0ddd4] pb-6">
+                    <div className="heading-font text-2xl text-[#1A1A1A] block mb-4">Marques</div>
+                    <div className="grid grid-cols-2 gap-3 pl-2">
+                      {brands.map(brand => (
+                        <Link 
+                          key={brand.slug}
+                          href={`/${locale}/brands/${brand.slug}`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex flex-col items-center justify-center border border-[#e0ddd4] bg-[#f8fafc] rounded-lg p-3 hover:border-[#0ea5e9] transition-colors"
+                        >
+                          <div className="relative w-full h-10 mb-2">
+                            <Image 
+                              src={`/images/brands/${brand.slug}-logo.jpg`} 
+                              alt={brand.name} 
+                              fill
+                              sizes="(max-width: 768px) 50vw, 100px"
+                              className="object-contain mix-blend-multiply grayscale opacity-70" 
+                            />
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] text-center line-clamp-1">{brand.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <Link href="/shop" className="text-[12px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">
-                  Boutique
-                </Link>
-                <Link href="/blog" className="text-[12px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">
-                  Le Blog
-                </Link>
-                <div className="text-[12px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
-                  Depuis {brand.founded} · {brand.origin}
+
+                {/* Mobile Footer Nav */}
+                <div className="pt-6 border-t border-[#e0ddd4] flex flex-col gap-5">
+                  <Link
+                    href={`/${locale}/suivi-commande`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-[15px] font-medium text-[#1A1A1A]"
+                  >
+                    <Package className="w-5 h-5 text-[#6B6B6B]" /> Suivi de commande
+                  </Link>
+                  <Link
+                    href={`/${locale}/account`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-[15px] font-medium text-[#1A1A1A]"
+                  >
+                    <User className="w-5 h-5 text-[#6B6B6B]" /> Mon Compte
+                  </Link>
+                  <Link
+                    href={`/${locale}/cart`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-[15px] font-medium text-[#1A1A1A]"
+                  >
+                    <ShoppingBag className="w-5 h-5 text-[#6B6B6B]" /> Mon Panier ({cartCount})
+                  </Link>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* MOBILE MENU */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-black/5 max-h-[calc(100vh-100px)] overflow-y-auto">
-          <div className="px-6 py-6 space-y-6">
-            <div>
-              <div className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#9A9A9A] mb-3">Boutique</div>
-              <div className="space-y-3 pl-2">
-                <Link
-                  href="/shop"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-2xl heading-font text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors"
-                >
-                  Boutique
-                </Link>
-                {MAIN_CATEGORIES.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/shop/${cat.slug}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-[15px] font-medium text-[#1A1A1A] hover:text-[#0ea5e9]"
-                  >
-                    {cat.label}
-                  </Link>
-                ))}
               </div>
-            </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            <div>
-              <div className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#9A9A9A] mb-3">Marques</div>
-              <div className="space-y-3 pl-2">
-                {brands.map((brand) => (
-                  <Link
-                    key={brand.slug}
-                    href={`/brands/${brand.slug}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-[15px] font-medium text-[#1A1A1A] hover:text-[#0ea5e9]"
-                  >
-                    {brand.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-black/5 flex flex-col gap-5">
-              <Link
-                href="/suivi-commande"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 text-[14px] font-medium text-[#1A1A1A]"
-              >
-                <Package className="w-5 h-5 text-[#6B6B6B]" /> Suivi de commande
-              </Link>
-              <Link
-                href="/suivi-commande"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 text-[14px] font-medium text-[#1A1A1A]"
-              >
-                <User className="w-5 h-5 text-[#6B6B6B]" /> Compte
-              </Link>
-              <Link
-                href="/cart"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 text-[14px] font-medium text-[#1A1A1A]"
-              >
-                <ShoppingBag className="w-5 h-5 text-[#6B6B6B]" /> Panier ({cartCount})
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      </motion.header>
+      </header>
 
       {/* SEARCH MODAL */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

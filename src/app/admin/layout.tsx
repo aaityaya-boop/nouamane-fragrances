@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import AdminSidebar from "@/components/AdminSidebar";
 import "../globals.css";
 
@@ -18,10 +19,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         
         {/* Mobile Bottom Nav */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-3 z-50">
-          <a href="/admin/orders" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Commandes</a>
-          <a href="/admin/products" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Produits</a>
-          <a href="/admin/landing-pages" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Ads</a>
-          <a href="/admin/newsletter" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Emails</a>
+          <Link href="/admin/finance" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Finance</Link>
+          <Link href="/admin/orders" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Commandes</Link>
+          <Link href="/admin/products" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Produits</Link>
+          <Link href="/admin/landing-pages" className="text-gray-500 hover:text-sky-600 text-[10px] uppercase font-bold flex flex-col items-center gap-1">Ads</Link>
         </div>
       </body>
     </html>

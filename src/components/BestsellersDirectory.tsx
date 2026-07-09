@@ -2,9 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Product } from '@/lib/products';
 
 export default function BestsellersDirectory({ products }: { products: Product[] }) {
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
   return (
     <div className="relative w-full border-t border-[#e0ddd4] pt-4">
       {/* The Floating Image Reveal */}
@@ -14,7 +17,7 @@ export default function BestsellersDirectory({ products }: { products: Product[]
       <div className="flex flex-col w-full relative z-10">
         {products.map((p, index) => (
           <Link
-            href={`/product/${p.slug}`}
+            href={`/${locale}/product/${p.slug}`}
             key={p.id}
             className="group flex flex-col md:flex-row items-start md:items-center justify-between border-b border-[#e0ddd4]/60 py-8 lg:py-14 px-2 hover:px-8 transition-all duration-500 cursor-pointer"
           >

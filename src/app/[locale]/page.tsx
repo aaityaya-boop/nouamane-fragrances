@@ -3,7 +3,7 @@ import HomePageClient from './HomePageClient';
 import prisma from '@/lib/prisma';
 import { Product } from '@/lib/products';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const dbProducts = await prisma.product.findMany();
@@ -31,5 +31,12 @@ export default async function HomePage() {
     originalPrice: p.originalPrice ?? undefined,
   }));
 
-  return <HomePageClient products={products} config={siteConfig} />;
+  const dbReviews = await prisma.review.findMany({
+    where: { verified: true },
+    orderBy: { createdAt: 'desc' },
+    take: 6,
+    include: { product: true }
+  });
+
+  return <HomePageClient products={products} config={siteConfig} latestReviews={dbReviews} />;
 }

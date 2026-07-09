@@ -71,8 +71,15 @@ export default function CheckoutPage() {
 
   // Redirect if cart empty (client-side check after mount)
   useEffect(() => {
-    // Do nothing if cart is filled; render CTA otherwise
-  }, []);
+    // Initiate Checkout Event
+    if (typeof window !== 'undefined' && window.fbq && cart.length > 0) {
+      window.fbq('track', 'InitiateCheckout', {
+        value: subtotal,
+        currency: 'MAD',
+        num_items: cart.length
+      });
+    }
+  }, [cart.length, subtotal]);
 
   const update = (field: keyof typeof form, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -173,6 +180,21 @@ export default function CheckoutPage() {
 
       clearCart();
       removePromo();
+      
+      // Facebook Pixel Tracking for Purchase
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'Purchase', {
+          value: total,
+          currency: 'MAD',
+          content_type: 'product',
+          contents: cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            item_price: item.price
+          }))
+        });
+      }
+
       router.push(`/order-confirmation?order=${orderNumber}`);
     } catch (err) {
       console.error(err);

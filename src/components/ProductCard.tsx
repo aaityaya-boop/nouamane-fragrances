@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ShoppingBag, Star, Flower, Sun, Leaf, Snowflake, Sparkles } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatMAD, type Product } from '@/lib/products';
@@ -15,6 +16,8 @@ type ProductCardProps = {
 
 export default function ProductCard({ product, showRating = true }: ProductCardProps) {
   const { addToCart } = useCart();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
   const isBestseller = product.tags.includes('bestseller');
   const isNew = product.tags.includes('new-arrival');
   const isDiscounted = !!product.originalPrice && product.originalPrice > product.price;
@@ -37,12 +40,12 @@ export default function ProductCard({ product, showRating = true }: ProductCardP
 
   return (
     <motion.div
-      variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }}
+      variants={{ hidden: { opacity: 0.01, y: 30 }, show: { opacity: 1, y: 0 } }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="h-full"
+      className="h-full js-fallback-opacity"
     >
       <Link
-        href={`/product/${product.slug}`}
+        href={`/${locale}/product/${product.slug}`}
         className="product-card group block h-full bg-white border border-[#e0ddd4] rounded-[24px] overflow-hidden hover:border-[#1A1A1A]/20 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] transition-all duration-700 ease-out"
       >
         <div className="relative h-[340px] lg:h-[380px] overflow-hidden bg-[#f8fafc]">
@@ -50,6 +53,7 @@ export default function ProductCard({ product, showRating = true }: ProductCardP
           src={product.images[0]}
           alt={product.name}
           fill
+          loading="lazy"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover perfume-bottle group-hover:scale-110 transition-transform duration-[1500ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
         />
@@ -135,7 +139,7 @@ export default function ProductCard({ product, showRating = true }: ProductCardP
               ))}
             </div>
             <span className="text-[11px] text-[#9A9A9A]">
-              {product.rating} ({product.reviewCount})
+              {Number(product.rating).toFixed(1)} ({product.reviewCount})
             </span>
           </div>
         )}

@@ -14,7 +14,7 @@ export const metadata = {
     'Découvrez toute la collection de parfums Valentino, YSL et Armani. Filtrage par marque, genre, prix, taille, couleur et note.',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export default async function ShopPage() {
   const dbProducts = await prisma.product.findMany();

@@ -27,8 +27,25 @@ model Order {
   status             String   @default("pending")
   affiliateCode      String?
   affiliate          Affiliate? @relation(fields: [affiliateCode], references: [code])
+  customerId         String?
+  customer           Customer?  @relation(fields: [customerId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  name       String
+  phone      String?
+  address    String?
+  city       String?
+  postalCode String?
+  wishlist   String   @default("[]") // JSON string array of product slugs
+  orders     Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Product {
@@ -44,6 +61,7 @@ model Product {
   tagline             String
   price               Float
   originalPrice       Float?
+  testerPrice         Float?
   description         String
   longDescription     String
   images              String   // JSON string array
@@ -58,6 +76,7 @@ model Product {
   reviewCount         Int      @default(0)
   releaseDate         String
   tags                String   // JSON string array
+  isTester            Boolean  @default(false)
   inStock             Boolean  @default(true)
   stock               Int      @default(10)
   perfectSeason       String
@@ -81,19 +100,21 @@ model Review {
 }
 
 model SiteConfig {
-  id              Int      @id @default(autoincrement())
-  adminUsername   String   @default("admin")
-  adminPassword   String   @default("nouamane2024")
-  shippingFee     Float    @default(35)
-  contactPhone    String   @default("+212 5 35 63 42 18")
-  contactEmail    String   @default("contact@nouamane.ma")
-  heroTitle       String   @default("L'Essence de l'Élégance")
-  heroSubtitle    String   @default("Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.")
-  instagramUrl    String?
-  facebookUrl     String?
-  tiktokUrl       String?
-  whatsappUrl     String?
-  updatedAt       DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  adminUsername       String   @default("admin")
+  adminPassword       String   @default("nouamane2024")
+  shippingFee         Float    @default(35)
+  contactPhone        String   @default("+212 5 35 63 42 18")
+  contactEmail        String   @default("contact@nouamane.ma")
+  heroTitle           String   @default("L'Essence de l'Élégance")
+  heroSubtitle        String   @default("Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.")
+  instagramUrl        String?
+  facebookUrl         String?
+  tiktokUrl           String?
+  whatsappUrl         String?
+  featuredBestsellers String   @default("[]") // JSON array of product slugs
+  featuredSeasonal    String   @default("[]") // JSON array of product slugs
+  updatedAt           DateTime @updatedAt
 }
 
 model NewsletterSubscriber {

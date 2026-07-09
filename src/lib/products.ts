@@ -79,9 +79,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Born in Roma Donna incarne l\'esprit couture-street de la Maison Valentino. Une composition qui célèbre le contraste entre l\'élégance intemporelle et l\'audace contemporaine. Le flacon en verre à facettes cloutées reproduit l\'iconique motif Rockstud.',
     images: [
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Blackcurrant'],
@@ -121,9 +121,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Born in Roma Uomo capture l\'énergie créative de la jeunesse romaine. Un mélange audacieux d\'ingrédients contrastés qui reflète le style Valentino : couture et streetwear, tradition et rébellion.',
     images: [
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Ginger', 'Mineral Notes'],
@@ -163,9 +163,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Créé en collaboration avec Lady Gaga, Voce Viva est une ode à l\'expression féminine. Un sillage frais, féminin et profondément moderne pour les femmes qui n\'ont pas peur de faire entendre leur voix.',
     images: [
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Blood Orange', 'Mandarin'],
@@ -205,9 +205,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Uomo Intense pousse plus loin la sensualité masculine avec un cuir plus riche et un fond de vanille absolue. Un parfum de séducteur, pensé pour le soir.',
     images: [
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Myrtle'],
@@ -246,9 +246,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Une interprétation moderne et lumineuse de la rose, sublimée par une touche verte inattendue. Idéal pour les journées ensoleillées.',
     images: [
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Green Tea', 'Bergamot'],
@@ -287,9 +287,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Une déclinaison plus fraîche et estivale de l\'Uomo original. Le parfait compagnon pour les journées ensoleillées et les soirées en bord de mer.',
     images: [
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Grapefruit', 'Bergamot', 'Ginger'],
@@ -330,9 +330,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Libre célèbre la fusion parfaite entre la fleur d\'oranger de Meknès et la lavande de Provence — un accord inédit qui incarne la liberté à la YSL. La signature de la femme moderne, forte et sensuelle.',
     images: [
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Mandarin', 'Blackcurrant', 'Lavandin'],
@@ -372,9 +372,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'L\'incontournable Black Opium associe le café à la vanille pour créer un sillage ultra-féminin et audacieux. Le parfum culte de toute une génération.',
     images: [
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Pear', 'Pink Pepper', 'Orange Blossom'],
@@ -414,9 +414,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Mon Paris raconte une histoire d\'amour audacieuse et impétueuse. Un floral fruité qui bouscule les codes, aussi passionné qu\'une déclaration d\'amour parisienne.',
     images: [
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Strawberry', 'Raspberry', 'Pear'],
@@ -456,9 +456,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Un aromatique boisé moderne qui incarne la génération créative — celle qui dit "yes" à ses ambitions. Puissant, contemporain et rassurant.',
     images: [
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Ginger', 'Apple'],
@@ -498,9 +498,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'MYSLF redéfinit la masculinité contemporaine avec un accord floral-boisé inédit. Sensible, sensuel, sans compromis. Le nouveau parfum culte YSL Homme.',
     images: [
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Pear Nectar'],
@@ -540,9 +540,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Le classique intemporel d\'YSL Homme. Un boisé aromatique équilibré et raffiné qui convient à toutes les occasions.',
     images: [
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Ginger', 'Bergamot', 'Lemon'],
@@ -585,9 +585,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Stronger With You a redéfini la parfumerie masculine avec son accord gourmand et sensuel. Cardamome pétillante, sauge boisée et un fond addictif de vanille et de châtaigne glacée.',
     images: [
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Cardamom', 'Pink Pepper', 'Violet Leaves'],
@@ -627,9 +627,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'La déclinaison Eau de Parfum de l\'iconique Stronger With You. Plus profond, plus enveloppant, plus sensuel — parfait pour les rendez-vous du soir.',
     images: [
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Cardamom', 'Toffee', 'Pink Pepper'],
@@ -668,9 +668,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Sì incarne l\'élégance italienne intemporelle. Un floriental chypré moderne avec un cœur de fruits noirs et une base ambrée profondément sensuelle.',
     images: [
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Blackcurrant', 'Mandarin', 'Freesia'],
@@ -710,9 +710,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'La version Profumo d\'Acqua di Giò intensifie l\'ADN aquatique original avec des notes profondes d\'encens et un cœur boisé. L\'élégance méditerranéenne dans sa forme la plus noble.',
     images: [
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Sea Notes', 'Bergamot', 'Geranium'],
@@ -752,9 +752,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'Un oriental épicé aux facettes tabac et bois, iconique depuis 2004. La séduction en toute élégance.',
     images: [
-      'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834015/pexels-photo-36834015.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Lemon'],
@@ -794,9 +794,9 @@ export const PRODUCTS: Product[] = [
     longDescription:
       'My Way célèbre les rencontres qui nous transforment. Un floral blanc lumineux qui allie les plus beaux ingrédients du monde entier.',
     images: [
-      'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
-      'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=800',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
+      'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     ],
     notes: {
       top: ['Bergamot', 'Orange Blossom'],
@@ -980,7 +980,7 @@ export const MAIN_CATEGORIES = [
     ],
     description:
       'Notre sélection complète des parfums féminins iconiques signés Valentino, Yves Saint Laurent et Armani. Des florals lumineux comme YSL Libre aux orientaux addictifs comme Black Opium, trouvez le parfum qui définira votre signature. Chaque flacon est authentique, importé directement des maisons officielles, et livré offert partout au Maroc.',
-    heroImage: 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg?auto=compress&cs=tinysrgb&w=2000',
   },
   {
     key: 'men',
@@ -995,21 +995,7 @@ export const MAIN_CATEGORIES = [
     ],
     description:
       'La sélection définitive des parfums masculins de créateurs. De la sensualité gourmande d\'Armani Stronger With You à la fraîcheur méditerranéenne d\'Acqua di Giò Profumo, en passant par la nouvelle icône YSL MYSLF — ce sont les fragrances que portent les hommes de goût au Maroc. Authenticité garantie, produits authentiques.',
-    heroImage: 'https://images.pexels.com/photos/31771395/pexels-photo-31771395.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
-  },
-  {
-    key: 'unisex',
-    label: 'Unisexe & Coffrets',
-    labelShort: 'Coffrets',
-    slug: 'unisex',
-    subcategories: [
-      { key: 'discovery-sets', label: 'Coffrets Découverte', slug: 'discovery-sets' },
-      { key: 'gift-bundles', label: 'Coffrets Cadeaux', slug: 'gift-bundles' },
-      { key: 'limited-editions', label: 'Éditions Limitées', slug: 'limited-editions' },
-    ],
-    description:
-      'Le meilleur du parfum de créateur en formats découverte, coffrets cadeaux et éditions limitées. Idéal pour explorer plusieurs signatures avant de choisir votre favori, ou pour offrir un cadeau élégant lors d\'un mariage, d\'un Eid ou d\'un anniversaire. Emballage cadeau offert à la demande.',
-    heroImage: 'https://images.pexels.com/photos/29986521/pexels-photo-29986521.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.pexels.com/photos/18321516/pexels-photo-18321516/free-photo-of-perfume-bottle-and-pine-needles.jpeg?auto=compress&cs=tinysrgb&w=2000',
   },
 ] as const;
 
@@ -1021,7 +1007,7 @@ export const BRANDS = [
     tagline: 'L\'audace couture de la Maison romaine',
     description:
       'Depuis 1960, Valentino incarne l\'élégance couture et l\'esprit rebelle romain. Ses fragrances — Born in Roma, Voce Viva, Uomo — fusionnent tradition italienne et modernité provocante.',
-    heroImage: 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1960,
     origin: 'Rome, Italie',
   },
@@ -1032,7 +1018,7 @@ export const BRANDS = [
     tagline: 'L\'esprit libre de la parfumerie parisienne',
     description:
       'Yves Saint Laurent révolutionne la mode et la beauté depuis 1961. Ses parfums — Libre, Black Opium, MYSLF — libèrent une audace, une sensualité et une modernité inégalées.',
-    heroImage: 'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1961,
     origin: 'Paris, France',
   },
@@ -1043,7 +1029,7 @@ export const BRANDS = [
     tagline: 'L\'élégance intemporelle à l\'italienne',
     description:
       'Giorgio Armani définit l\'élégance italienne moderne depuis 1975. Sì, Acqua di Giò, Stronger With You, Code — ses fragrances sont devenues des classiques mondiaux, portés par des générations.',
-    heroImage: 'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1975,
     origin: 'Milan, Italie',
   },
@@ -1053,7 +1039,7 @@ export const BRANDS = [
     slug: 'dolce-gabbana',
     tagline: "L'esprit flamboyant de la Sicile",
     description: 'Dolce & Gabbana célèbre le glamour italien. Leurs créations olfactives expriment une passion méditerranéenne inégalée.',
-    heroImage: 'https://images.pexels.com/photos/11216321/pexels-photo-11216321.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1985,
     origin: 'Milan, Italie',
   },
@@ -1063,7 +1049,7 @@ export const BRANDS = [
     slug: 'burberry',
     tagline: "L'élégance britannique intemporelle",
     description: "Burberry capture l'esprit de Londres. Des fragrances sophistiquées qui mêlent l'audace contemporaine à l'héritage anglais.",
-    heroImage: 'https://images.pexels.com/photos/7850600/pexels-photo-7850600.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1856,
     origin: 'Londres, Royaume-Uni',
   },
@@ -1073,7 +1059,7 @@ export const BRANDS = [
     slug: 'prada',
     tagline: "L'avant-garde intellectuelle",
     description: 'Prada réinvente la parfumerie avec une approche intellectuelle et avant-gardiste. Des compositions inattendues, minimalistes et luxueuses.',
-    heroImage: 'https://images.pexels.com/photos/36834014/pexels-photo-36834014.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600',
+    heroImage: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900',
     founded: 1913,
     origin: 'Milan, Italie',
   }

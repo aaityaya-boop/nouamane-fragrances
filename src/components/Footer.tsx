@@ -2,11 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { MAIN_CATEGORIES } from '@/lib/products';
 import { useDictionary } from '@/context/DictionaryContext';
 
 export default function Footer() {
   const dict = useDictionary();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] || 'fr';
   const [config, setConfig] = useState<any>({});
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -31,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
-            <Link href="/" className="inline-block group">
+            <Link href={`/${locale}/`} className="inline-block group">
               <span className="heading-font text-3xl font-light tracking-[0.28em] text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors duration-500">
                 NOUAMANE
               </span>
@@ -90,14 +93,14 @@ export default function Footer() {
             </h4>
             <ul className="space-y-4">
               <li>
-                <Link href="/shop" className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                <Link href={`/${locale}/shop`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
                   {dict.nav.allFragrances}
                 </Link>
               </li>
               {MAIN_CATEGORIES.map((c) => (
                 <li key={c.slug}>
                   <Link
-                    href={`/shop/${c.slug}`}
+                    href={`/${locale}/shop/${c.slug}`}
                     className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors"
                   >
                     {c.label}
@@ -113,16 +116,21 @@ export default function Footer() {
               {dict.nav.brands}
             </h4>
             <ul className="space-y-4">
-              {brands.map((b) => (
+              {brands.slice(0, 5).map((b) => (
                 <li key={b.slug}>
                   <Link
-                    href={`/brands/${b.slug}`}
+                    href={`/${locale}/brands/${b.slug}`}
                     className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors"
                   >
                     {b.label}
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href={`/${locale}/shop`} className="text-[11px] font-bold tracking-wider text-[#0ea5e9] hover:text-[#0284c7] transition-colors uppercase mt-2 inline-block">
+                  + Voir toutes
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -187,12 +195,13 @@ export default function Footer() {
             </form>
 
             <div className="mt-10 flex flex-wrap gap-x-5 gap-y-3 text-[10px] tracking-[0.15em] text-[#1A1A1A]/50 uppercase">
-              <Link href="/legal/terms" className="hover:text-[#1A1A1A]/70 transition-colors">Conditions</Link>
-              <Link href="/legal/privacy" className="hover:text-[#1A1A1A]/70 transition-colors">Confidentialité</Link>
-              <Link href="/contact" className="hover:text-[#1A1A1A]/70 transition-colors">Contact</Link>
-              <Link href="/suivi-commande" className="hover:text-[#1A1A1A]/70 transition-colors">Suivi de commande</Link>
-              <Link href="/legal/returns" className="hover:text-[#1A1A1A]/70 transition-colors">Retours</Link>
-              <Link href="/faq" className="hover:text-[#1A1A1A]/70 transition-colors">FAQ</Link>
+              <Link href={`/${locale}/blog`} className="hover:text-[#1A1A1A]/70 font-bold transition-colors">Journal & Blog</Link>
+              <Link href={`/${locale}/legal/terms`} className="hover:text-[#1A1A1A]/70 transition-colors">Conditions</Link>
+              <Link href={`/${locale}/legal/privacy`} className="hover:text-[#1A1A1A]/70 transition-colors">Confidentialité</Link>
+              <Link href={`/${locale}/contact`} className="hover:text-[#1A1A1A]/70 transition-colors">Contact</Link>
+              <Link href={`/${locale}/suivi-commande`} className="hover:text-[#1A1A1A]/70 transition-colors">Suivi de commande</Link>
+              <Link href={`/${locale}/legal/returns`} className="hover:text-[#1A1A1A]/70 transition-colors">Retours</Link>
+              <Link href={`/${locale}/faq`} className="hover:text-[#1A1A1A]/70 transition-colors">FAQ</Link>
             </div>
 
             <div className="mt-4 text-[10px] text-[#1A1A1A]/40">

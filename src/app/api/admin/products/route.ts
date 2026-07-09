@@ -40,10 +40,12 @@ export async function POST(request: Request) {
       tags: JSON.stringify(body.tags || []),
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
+      testerPrice: body.testerPrice ? parseFloat(body.testerPrice) : null,
       rating: parseFloat(body.rating || 5),
       reviewCount: parseInt(body.reviewCount || 0, 10),
       releaseDate: new Date().toISOString(),
       inStock: body.inStock !== undefined ? body.inStock : true,
+      isTester: body.isTester !== undefined ? body.isTester : false,
     };
 
     const newProduct = await prisma.product.create({
