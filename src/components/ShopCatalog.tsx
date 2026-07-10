@@ -8,6 +8,7 @@
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
+import QuickViewModal from '@/components/QuickViewModal';
 import {
   MAIN_CATEGORIES,
   type Product,
@@ -82,6 +83,7 @@ function ShopCatalogInner({
   const [specialFilter, setSpecialFilter] = useState<string>(initialSpecial);
   const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   // Sync state if URL changes (useful for navigation within the same page)
   useEffect(() => {
@@ -240,14 +242,14 @@ function ShopCatalogInner({
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
-                {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((p) => (
+                {paginated.map((p) => (
                   <motion.div
                     key={p.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <ProductCard product={p} />
+                    <ProductCard product={p} onQuickView={setQuickViewProduct} />
                   </motion.div>
                 ))}
               </div>
@@ -313,7 +315,12 @@ function ShopCatalogInner({
             </button>
           </div>
         </div>
-      )}
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
     </>
   );
 }
@@ -345,9 +352,22 @@ function FiltersPanel(props: {
   clearFilters: () => void; activeCount: number;
   lockedBrand: boolean; lockedGender: boolean; lockedSubcategory: boolean;
 }) {
-  const availableSubcategories = props.gender !== 'all'
-    ? MAIN_CATEGORIES.find((c) => c.slug === props.gender)?.subcategories || []
-    : [];
+  const allSubcategories = React.useMemo(() => {
+    const map = new Map();
+    MAIN_CATEGORIES.forEach(c => {
+      c.subcategories.forEach(s => map.set(s.key, s));
+    });
+    return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
+
+  // Sort brands alphabetically
+  const sortedBrands = React.useMemo(() => {
+    return [...props.brands].sort((a, b) => {
+      const labelA = a.label || a.name || '';
+      const labelB = b.label || b.name || '';
+      return labelA.localeCompare(labelB);
+    });
+  }, [props.brands]);
 
   return (
     <div className="space-y-8">
@@ -364,7 +384,7 @@ function FiltersPanel(props: {
       {!props.lockedBrand && (
         <FilterGroup title="Marque">
           <RadioOption label="Toutes les marques" checked={props.brand === 'all'} onChange={() => props.setBrand('all')} />
-          {props.brands.map((b) => (
+          {sortedBrands.map((b) => (
             <RadioOption key={b.slug} label={b.label || b.name} checked={props.brand === b.slug} onChange={() => props.setBrand(b.slug)} />
           ))}
         </FilterGroup>
@@ -381,10 +401,10 @@ function FiltersPanel(props: {
       )}
 
       {/* Subcategory */}
-      {props.gender !== 'all' && availableSubcategories.length > 0 && !props.lockedSubcategory && (
+      {!props.lockedSubcategory && (
         <FilterGroup title="Famille olfactive">
           <RadioOption label="Toutes" checked={props.subcategory === 'all'} onChange={() => props.setSubcategory('all')} />
-          {availableSubcategories.map((s) => (
+          {allSubcategories.map((s) => (
             <RadioOption key={s.key} label={s.label} checked={props.subcategory === s.key} onChange={() => props.setSubcategory(s.key)} />
           ))}
         </FilterGroup>

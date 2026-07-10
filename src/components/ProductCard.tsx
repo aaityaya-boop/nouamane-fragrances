@@ -12,9 +12,10 @@ import { formatMAD, type Product } from '@/lib/products';
 type ProductCardProps = {
   product: Product;
   showRating?: boolean;
+  onQuickView?: (product: Product) => void;
 };
 
-export default function ProductCard({ product, showRating = true }: ProductCardProps) {
+export default function ProductCard({ product, showRating = true, onQuickView }: ProductCardProps) {
   const { addToCart } = useCart();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
@@ -61,11 +62,24 @@ export default function ProductCard({ product, showRating = true }: ProductCardP
         {/* Subtle Dark Gradient that sweeps up on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         
-        {/* Hidden 'Découvrir' button that slides up */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100 z-30">
-          <span className="bg-white/90 backdrop-blur-sm text-[#1A1A1A] text-[10px] font-bold tracking-widest uppercase px-6 py-3 rounded-full whitespace-nowrap shadow-xl">
-            Découvrir la fragrance
-          </span>
+        {/* Hidden 'Aperçu Rapide' button that slides up */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 w-full px-6 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100 z-30">
+          {onQuickView ? (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onQuickView(product);
+              }}
+              className="w-full bg-white/90 backdrop-blur-sm text-[#1A1A1A] text-[10px] font-bold tracking-widest uppercase py-3 rounded-full shadow-xl hover:bg-[#1A1A1A] hover:text-white transition-colors flex justify-center items-center"
+            >
+              Aperçu Rapide
+            </button>
+          ) : (
+            <span className="bg-white/90 backdrop-blur-sm text-[#1A1A1A] text-[10px] font-bold tracking-widest uppercase px-6 py-3 rounded-full whitespace-nowrap shadow-xl">
+              Découvrir la fragrance
+            </span>
+          )}
         </div>
 
         {!product.inStock && (

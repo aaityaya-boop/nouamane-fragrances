@@ -48,9 +48,6 @@ export default function ProductClient({
     product.sizes.length > 1 ? product.sizes[1].label : product.sizes[0].label
   ); // Default to middle size if available, else first size
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<'description' | 'notes' | 'ingredients' | 'shipping'>(
-    'description'
-  );
   const [isAdded, setIsAdded] = useState(false);
   const { addToCart } = useCart();
   const pathname = usePathname();
@@ -421,126 +418,107 @@ export default function ProductClient({
         </div>
       </section>
 
-      {/* ====== TABS: DESCRIPTION / NOTES / INGREDIENTS / SHIPPING ====== */}
-      <section className="border-y border-[#e0ddd4] bg-white border border-[#e0ddd4]">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14 lg:py-20">
-          <div className="flex flex-wrap gap-x-8 gap-y-2 border-b border-[#e0ddd4] mb-10">
-            {[
-              { key: 'description', label: 'Description' },
-              { key: 'notes', label: 'Notes olfactives' },
-              { key: 'ingredients', label: 'Ingrédients' },
-              { key: 'shipping', label: 'Livraison & Retours' },
-            ].map((t) => (
-              <button
-                key={t.key}
-                onClick={() =>
-                  setActiveTab(t.key as 'description' | 'notes' | 'ingredients' | 'shipping')
-                }
-                className={`pb-4 text-[11px] font-semibold tracking-[0.15em] uppercase transition-colors relative ${
-                  activeTab === t.key
-                    ? 'text-[#0ea5e9]'
-                    : 'text-[#6B6B6B] hover:text-[#1A1A1A]'
-                }`}
-              >
-                {t.label}
-                {activeTab === t.key && (
-                  <span className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#0ea5e9]" />
-                )}
-              </button>
-            ))}
+      {/* ====== PRO DESCRIPTION: SEO & MARKETING LAYOUT ====== */}
+      <section className="bg-white border-y border-[#e0ddd4]">
+        <div className="max-w-[1000px] mx-auto px-6 lg:px-10 py-16 lg:py-24 space-y-20">
+          
+          {/* L'Histoire (Description) */}
+          <div className="text-center">
+            <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6">
+              L'Histoire du Parfum
+            </h2>
+            <p className="text-[16px] md:text-[18px] text-[#555] leading-[2] font-light">
+              {product.longDescription || product.description}
+            </p>
           </div>
 
-          <div className="max-w-3xl">
-            {activeTab === 'description' && (
-              <div>
-                <p className="text-[16px] text-[#1A1A1A]/85 leading-[1.8]">
-                  {product.longDescription}
-                </p>
-                <p className="mt-4 text-[13px] text-[#9A9A9A]">
-                  <span className="font-semibold text-[#0ea5e9]">Maison :</span>{' '}
-                  {product.brandLabel} · Sortie le{' '}
-                  <span suppressHydrationWarning>
-                    {new Date(product.releaseDate).toLocaleDateString('fr-MA', {
-                      year: 'numeric',
-                      month: 'long',
-                    })}
-                  </span>
-                </p>
-              </div>
-            )}
+          <div className="w-px h-24 bg-gradient-to-b from-[#e0ddd4] to-transparent mx-auto" />
 
-            {activeTab === 'notes' && (
-              <div className="grid sm:grid-cols-3 gap-8">
-                {[
-                  { title: 'Notes de tête', items: product.notes.top },
-                  { title: 'Notes de cœur', items: product.notes.heart },
-                  { title: 'Notes de fond', items: product.notes.base },
-                ].map((n) => (
-                  <div key={n.title}>
-                    <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0ea5e9] mb-3">
-                      {n.title}
-                    </div>
-                    <ul className="space-y-2">
-                      {n.items.map((item) => (
-                        <li
-                          key={item}
-                          className="heading-font text-lg text-[#1A1A1A]/85"
-                        >
-                          · {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'ingredients' && (
-              <div>
-                <p className="text-[13px] text-[#6B6B6B] leading-[1.9]">
-                  {product.ingredients}
-                </p>
-                <p className="text-[12px] text-[#9A9A9A] mt-6">
-                  Conforme aux normes IFRA. Fabriqué au Maroc. Ne pas ingérer.
-                  Éviter le contact avec les yeux.
-                </p>
-              </div>
-            )}
-
-            {activeTab === 'shipping' && (
-              <div className="space-y-6 text-[14px] text-[#6B6B6B] leading-[1.8]">
-                <div>
-                  <div className="font-semibold text-[#1A1A1A] mb-2">
-                    Livraison au Maroc
-                  </div>
-                  <p>
-                    Livraison partout au Maroc avec 35Dh pour toute commande. Nos
-                    parfums sont expédiés depuis notre atelier à Fès sous 24
-                    heures ouvrées. Délai de livraison estimé : 1-3 jours ouvrés.
-                  </p>
+          {/* Pyramide Olfactive */}
+          <div>
+            <div className="text-center mb-12">
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block">
+                La Composition
+              </span>
+              <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide">
+                Pyramide Olfactive
+              </h2>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 md:gap-4 text-center">
+              {[
+                { title: 'Notes de tête', desc: 'Une ouverture fraîche et captivante', items: product.notes.top },
+                { title: 'Notes de cœur', desc: 'Un cœur riche et profond', items: product.notes.heart },
+                { title: 'Notes de fond', desc: 'Un sillage mémorable', items: product.notes.base },
+              ].map((n) => (
+                <div key={n.title} className="bg-[#fafaf7] rounded-[32px] p-8 border border-[#e0ddd4] hover:shadow-xl hover:border-[#0ea5e9]/30 transition-all duration-500">
+                  <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2">{n.title}</h3>
+                  <p className="text-[11px] font-semibold tracking-widest uppercase text-[#9A9A9A] mb-6">{n.desc}</p>
+                  <ul className="space-y-3">
+                    {n.items.map((item) => (
+                      <li key={item} className="text-[15px] text-[#555] font-medium">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div>
-                  <div className="font-semibold text-[#1A1A1A] mb-2">
-                    Paiement à la livraison
-                  </div>
-                  <p>
-                    Vous pouvez régler en espèces directement au livreur lors de
-                    la réception de votre commande.
-                  </p>
-                </div>
-                <div>
-                  <div className="font-semibold text-[#1A1A1A] mb-2">
-                    Retours & Échanges
-                  </div>
-                  <p>
-                    Retours acceptés sous 14 jours pour les produits non ouverts
-                    et dans leur emballage d&apos;origine. Contactez-nous par
-                    WhatsApp au +212 5 35 63 42 18 pour organiser le retour.
-                  </p>
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
+
+          {/* Caractéristiques Clés */}
+          <div className="bg-[#1A1A1A] rounded-[40px] p-10 md:p-16 text-white text-center shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+            <h2 className="heading-font text-3xl md:text-5xl tracking-wide mb-10">
+              Caractéristiques Clés
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Concentration</span>
+                <span className="text-lg font-semibold tracking-wide">Eau de Parfum</span>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Genre</span>
+                <span className="text-lg font-semibold tracking-wide">{product.gender === 'women' ? 'Femme' : product.gender === 'men' ? 'Homme' : 'Unisexe'}</span>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Famille</span>
+                <span className="text-lg font-semibold tracking-wide">{product.subcategoryLabel}</span>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Saison Idéale</span>
+                <span className="text-lg font-semibold tracking-wide">{product.perfectSeason || 'Toutes Saisons'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pourquoi Choisir */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="heading-font text-3xl text-[#1A1A1A] tracking-wide mb-6">
+                Pourquoi choisir {product.name} ?
+              </h2>
+              <p className="text-[15px] text-[#555] leading-relaxed mb-6">
+                Une fragrance captivante, mystique et charismatique. Conçue avec des ingrédients de la plus haute qualité, cette composition assure une tenue exceptionnelle et un sillage remarquable qui vous accompagnera tout au long de la journée avec élégance et assurance.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-[#0ea5e9] mt-1 shrink-0" />
+                  <span className="text-[#1A1A1A] font-medium text-[14px]">Qualité supérieure et longue tenue</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-[#0ea5e9] mt-1 shrink-0" />
+                  <span className="text-[#1A1A1A] font-medium text-[14px]">Testeur 100% authentique de la maison {product.brandLabel}</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-[#f8fafc] p-8 rounded-[32px] border border-[#e0ddd4]">
+              <h3 className="heading-font text-2xl text-[#1A1A1A] tracking-wide mb-4">Quand le porter ?</h3>
+              <p className="text-[14px] text-[#555] leading-relaxed mb-0">
+                Idéal en toute occasion. Grâce à sa composition riche et parfaitement équilibrée, cette fragrance s'adapte à tous les styles et ambiances, devenant votre véritable signature olfactive.
+              </p>
+            </div>
+          </div>
+
         </div>
       </section>
 
