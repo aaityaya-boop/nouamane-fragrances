@@ -26,6 +26,32 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
       ref={containerRef} 
       className="relative h-screen w-full bg-white overflow-hidden flex items-center justify-center selection:bg-[#0ea5e9] selection:text-white"
     >
+      {/* CSS for Liquid Glass Effect */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes liquid-glace {
+          0% { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+        .liquid-glace-text {
+          background: linear-gradient(
+            110deg,
+            #111111 10%,
+            #0ea5e9 30%,
+            #ffffff 45%,
+            #e0f2fe 50%,
+            #0ea5e9 55%,
+            #111111 75%
+          );
+          background-size: 200% auto;
+          color: transparent;
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: liquid-glace 8s linear infinite;
+          /* Add a tiny drop shadow to enhance the glass extrusion */
+          filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
+        }
+      `}} />
+
       {/* 1. THE INVISIBLE AURA (Animated Background) */}
       <motion.div 
         className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
@@ -67,19 +93,17 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
         className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center justify-center"
         style={{ opacity: opacityText, scale: scaleText, y: yText }}
       >
-        {/* Brand Logo Placeholder */}
+        {/* Typo Logo with Liquid Glace Effect */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-10 w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-[0_10px_40px_rgba(14,165,233,0.15)] flex flex-col items-center justify-center border border-[#0ea5e9]/20 relative overflow-hidden group"
+          className="mb-12 flex flex-col items-center justify-center"
         >
-          {/* Subtle hover effect on the logo container */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#0ea5e9]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          
-          {/* TODO: Replace this inner content with an actual <Image src="/logo.png" /> when the brand logo is ready */}
-          <span className="heading-font text-4xl md:text-5xl font-light text-[#111] leading-none">N</span>
-          <span className="text-[7px] md:text-[8px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] mt-1.5">
+          <h2 className="heading-font text-3xl md:text-5xl tracking-[0.3em] font-light liquid-glace-text">
+            NOUAMANE
+          </h2>
+          <span className="text-[7px] md:text-[9px] font-bold tracking-[0.5em] uppercase text-[#0ea5e9] mt-2 opacity-80">
             Parfums
           </span>
         </motion.div>
@@ -88,8 +112,8 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center gap-4 mb-8 sm:mb-12"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          className="flex flex-col items-center gap-4 mb-8 sm:mb-10"
         >
           <span className="w-[1px] h-12 bg-gradient-to-b from-transparent to-[#0ea5e9]" />
           <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9]">
@@ -97,13 +121,13 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           </span>
         </motion.div>
 
-        {/* Main Headline */}
-        <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[120px] leading-[1.05] tracking-tight mb-8 text-[#111]">
+        {/* Main Headline with Liquid Glace Effect */}
+        <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[120px] leading-[1.05] tracking-tight mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="overflow-hidden font-light"
+            className="overflow-hidden font-light liquid-glace-text py-2"
           >
             L'Authenticité
           </motion.div>
@@ -113,8 +137,8 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
             className="flex items-center justify-center gap-4 sm:gap-6 mt-2"
           >
-            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-7xl lg:text-[110px]">&</span>
-            <span className="font-light text-[#111]/90">l'Élégance</span>
+            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-7xl lg:text-[110px] liquid-glace-text">&</span>
+            <span className="font-light liquid-glace-text">l'Élégance</span>
           </motion.div>
         </h1>
 

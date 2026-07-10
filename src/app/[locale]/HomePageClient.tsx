@@ -141,53 +141,83 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
           </div>
         </div>
 
-        {/* Three-column minimalist portrait cards */}
+        {/* Three-column Glassmorphism Marketing Cards */}
         <div className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 pb-24 lg:pb-32">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-80px" }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
           >
-            {MAIN_CATEGORIES.map((cat, index) => (
+            {MAIN_CATEGORIES.map((cat, index) => {
+              // Add marketing hooks based on category
+              const hooks = [
+                { label: 'Sélection Exclusive', badge: 'bg-[#0ea5e9] text-white' },
+                { label: 'Meilleures Ventes', badge: 'bg-black text-white' },
+                { label: 'Nouveau', badge: 'bg-white text-black border border-black/10' }
+              ];
+              const hook = hooks[index % hooks.length];
+
+              return (
               <motion.div
                 variants={staggerItem}
                 key={cat.slug}
-                className="group cursor-pointer flex flex-col"
+                className="group cursor-pointer relative h-[500px] lg:h-[600px] rounded-[40px] overflow-hidden"
               >
-                <Link href={`/${locale}/shop/${cat.slug}`} className="block w-full">
-                  {/* Image Container with Aura hover */}
-                  <div className="relative w-full aspect-[3/4] mb-8 transition-transform duration-700 ease-out group-hover:-translate-y-2">
-                    <div className="absolute inset-0 bg-[#0ea5e9]/0 group-hover:bg-[#0ea5e9]/20 blur-[40px] rounded-full transition-all duration-700" />
-                    <div className="relative w-full h-full rounded-[30px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)] group-hover:shadow-[0_20px_40px_rgba(14,165,233,0.15)] transition-shadow duration-700">
-                      <Image
-                        src={cat.heroImage}
-                        alt={cat.label}
-                        fill
-                        className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
-                        priority={index === 0}
-                      />
-                      {/* Very light elegant overlay */}
-                      <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-700" />
-                    </div>
+                <Link href={`/${locale}/shop/${cat.slug}`} className="block w-full h-full relative">
+                  {/* Background Immersive Image */}
+                  <div className="absolute inset-0 w-full h-full">
+                    <Image
+                      src={cat.heroImage}
+                      alt={cat.label}
+                      fill
+                      className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-110"
+                      priority={index === 0}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-700" />
                   </div>
 
-                  {/* Minimalist Editorial Text Below Image */}
-                  <div className="flex flex-col items-center text-center">
-                    <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3">
-                      0{index + 1}
+                  {/* Marketing Badge */}
+                  <div className="absolute top-8 left-8 z-20">
+                    <span className={`text-[9px] font-bold tracking-[0.2em] uppercase px-4 py-2 rounded-full shadow-lg ${hook.badge}`}>
+                      {hook.label}
                     </span>
-                    <h3 className="heading-font text-3xl lg:text-4xl text-[#111] tracking-wide mb-4 group-hover:text-[#0ea5e9] transition-colors duration-500">
-                      {cat.labelShort}
-                    </h3>
-                    <p className="text-[#555] text-[13px] font-light leading-[1.8] tracking-wide line-clamp-2 max-w-[280px]">
-                      {cat.description}
-                    </p>
+                  </div>
+
+                  {/* Floating Glassmorphism Content Panel */}
+                  <div className="absolute bottom-6 left-6 right-6 lg:bottom-8 lg:left-8 lg:right-8 z-20">
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 lg:p-8 rounded-[30px] transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 shadow-[0_20px_40px_rgba(0,0,0,0.2)] group-hover:bg-white/20">
+                      
+                      <div className="flex items-end justify-between mb-4">
+                        <div>
+                          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/80 mb-2 block">
+                            Collection 0{index + 1}
+                          </span>
+                          <h3 className="heading-font text-3xl lg:text-5xl text-white tracking-wide">
+                            {cat.labelShort}
+                          </h3>
+                        </div>
+                        {/* Elegant CTA Arrow */}
+                        <div className="w-12 h-12 rounded-full border border-white/30 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors duration-500">
+                          <ArrowRight size={18} />
+                        </div>
+                      </div>
+
+                      <p className="text-white/80 text-[13px] font-light leading-[1.6] tracking-wide line-clamp-2 pr-12">
+                        {cat.description}
+                      </p>
+                      
+                      {/* Secondary Action / Trust Signal */}
+                      <div className="mt-6 pt-5 border-t border-white/20 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
+                        <span className="text-[10px] uppercase tracking-widest text-white/90 font-semibold">Découvrir la gamme</span>
+                        <span className="text-[10px] uppercase tracking-widest text-[#0ea5e9] font-bold bg-white px-3 py-1 rounded-full">Testeurs 100% Originaux</span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </section>
