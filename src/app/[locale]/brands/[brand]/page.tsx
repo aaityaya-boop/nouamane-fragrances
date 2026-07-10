@@ -58,51 +58,45 @@ export default async function BrandPage({
       <Header />
 
       {/* HERO */}
-      <section className="relative h-[55vh] min-h-[420px] flex items-center overflow-hidden">
+      <section className="relative h-[70vh] min-h-[550px] flex items-center justify-center text-center overflow-hidden">
         <Image
           src={brand.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=1600&h=900'}
           alt={brand.label}
           fill
           priority
-          className="object-cover brightness-[0.5]"
+          className="object-cover brightness-[0.4]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/75" />
-        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-6 lg:px-10 pt-16">
-          <nav className="flex items-center gap-2 text-[11px] text-white/70 mb-6">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/80" />
+        
+        <div className="relative z-10 max-w-3xl w-full mx-auto px-6 pt-16 flex flex-col items-center">
+          <nav className="flex items-center justify-center gap-2 text-[11px] text-white/70 mb-10">
             <Link href={`/${locale}`} className="hover:text-[#0ea5e9]">Accueil</Link>
             <ChevronRight size={12} />
-            <span className="text-white/50">Marques</span>
+            <Link href={`/${locale}/shop`} className="hover:text-[#0ea5e9]">Marques</Link>
             <ChevronRight size={12} />
             <span className="text-white">{brand.label}</span>
           </nav>
 
-          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#38bdf8]">
-            La Maison
-          </span>
-          <h1 className="heading-font text-white text-5xl lg:text-8xl mt-3 tracking-wide leading-none">
-            {brand.label}
-          </h1>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-white/60">
-            <span>{products.length} parfums disponibles</span>
+          {/* Brand Logo Container */}
+          <div className="w-36 h-36 md:w-48 md:h-48 bg-white/95 backdrop-blur-md rounded-full shadow-2xl flex items-center justify-center p-6 md:p-8 mb-8 border border-white/20">
+            <div className="relative w-full h-full">
+              <Image 
+                src={`/images/brands/${brand.slug}-logo.jpg`} 
+                alt={`${brand.label} Logo`}
+                fill
+                sizes="(max-width: 768px) 150px, 200px"
+                className="object-contain mix-blend-multiply" 
+              />
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* BRAND STORY */}
-      <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 border-b border-[#e0ddd4]">
-        <div className="max-w-3xl">
-          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">
-            Notre Histoire avec {brand.label}
-          </span>
-          <p className="mt-4 text-[15px] lg:text-base text-[#6B6B6B] leading-[1.85]">
+          <p className="text-[14px] md:text-[16px] text-white/90 leading-relaxed font-light mb-8 max-w-2xl">
             {brand.description}
           </p>
-          <p className="mt-4 text-[14px] text-[#9A9A9A] leading-[1.85]">
-            <span className="font-semibold text-[#1A1A1A]">Authenticité 100% garantie.</span>{' '}
-            Nouamane est un revendeur autorisé — tous nos parfums {brand.label} sont
-            importés directement depuis les distributeurs officiels, avec facture
-            d&apos;origine. Livraison partout au Maroc avec 35Dh.
-          </p>
+
+          <div className="inline-flex items-center justify-center px-6 py-2.5 border border-white/30 rounded-full text-[11px] font-bold uppercase tracking-widest text-white/80 bg-white/5 backdrop-blur-sm">
+            {products.length} parfums disponibles
+          </div>
         </div>
       </section>
 
