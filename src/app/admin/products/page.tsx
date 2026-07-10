@@ -297,208 +297,242 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* FULL-SCREEN SLIDE-OVER MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-[#e0ddd4] p-5 flex items-center justify-between z-10">
-              <h2 className="heading-font text-xl">{editingProduct ? 'Modifier le produit' : 'Ajouter un produit'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#9A9A9A] hover:text-[#1A1A1A]">
-                <X size={20} />
-              </button>
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm transition-opacity">
+          <div className="bg-[#f8fafc] w-full max-w-4xl h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            {/* Header */}
+            <div className="bg-white border-b border-[#e0ddd4] px-8 py-5 flex items-center justify-between sticky top-0 z-20">
+              <div>
+                <h2 className="heading-font text-2xl text-[#1A1A1A]">
+                  {editingProduct ? 'Modifier le produit' : 'Nouveau parfum'}
+                </h2>
+                <p className="text-[#9A9A9A] text-[13px] mt-1">
+                  {editingProduct ? 'Mettez à jour les fiches produits et les pyramides olfactives.' : 'Ajoutez un nouveau parfum au catalogue.'}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={() => setIsModalOpen(false)} className="px-5 py-2 text-[13px] font-medium text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors">
+                  Annuler
+                </button>
+                <button onClick={handleSave} className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#0ea5e9] transition-all shadow-md">
+                  {editingProduct ? 'Enregistrer' : 'Créer le produit'}
+                </button>
+              </div>
             </div>
             
-            <form onSubmit={handleSave} className="p-6 space-y-6">
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Nom du parfum</label>
-                  <input required type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Slug (URL)</label>
-                  <input required type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
-                </div>
+            {/* Form Content */}
+            <div className="flex-1 overflow-y-auto p-8">
+              <form onSubmit={handleSave} className="max-w-3xl mx-auto space-y-8">
                 
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Tagline (L'Accroche)</label>
-                  <input type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.tagline} onChange={e => setFormData({...formData, tagline: e.target.value})} 
-                    placeholder="Ex: L'étincelle de la conviction." />
-                </div>
-                
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Marque</label>
-                  <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.brand} onChange={e => {
-                      const selectedBrand = brands.find(b => b.slug === e.target.value);
-                      setFormData({
-                        ...formData, 
-                        brand: e.target.value,
-                        brandLabel: selectedBrand ? selectedBrand.label : ''
-                      });
-                    }}>
-                    <option value="">Sélectionnez une marque</option>
-                    {brands.map(b => (
-                      <option key={b.id} value={b.slug}>{b.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Label Marque (Affichage)</label>
-                  <input type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.brandLabel} onChange={e => setFormData({...formData, brandLabel: e.target.value})} />
-                </div>
-                
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Prix de Vente (MAD)</label>
-                  <input required type="number" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2 flex justify-between">
-                    <span>Ancien Prix (pour remises)</span>
-                    <span className="text-red-500 font-normal lowercase italic">Optionnel</span>
-                  </label>
-                  <input type="number" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-red-500"
-                    value={formData.originalPrice || ''} onChange={e => setFormData({...formData, originalPrice: e.target.value ? Number(e.target.value) : null})} 
-                    placeholder="Ex: 850 (Si le prix de vente est 650)" />
-                </div>
-                <div className="col-span-2 flex items-center gap-3 bg-[#f8fafc] p-4 rounded-lg border border-[#e0ddd4]">
-                  <input 
-                    type="checkbox" 
-                    id="isTesterToggle"
-                    className="w-5 h-5 accent-[#0ea5e9] cursor-pointer"
-                    checked={formData.isTester} 
-                    onChange={e => setFormData({...formData, isTester: e.target.checked})} 
-                  />
-                  <label htmlFor="isTesterToggle" className="text-[13px] font-bold text-[#1A1A1A] cursor-pointer">
-                    Est-ce un testeur ?
-                  </label>
-                  <span className="text-[11px] text-[#9A9A9A] ml-auto">
-                    Cochez cette case si le produit est un format testeur.
-                  </span>
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Genre</label>
-                  <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})}>
-                    <option value="women">Femme</option>
-                    <option value="men">Homme</option>
-                    <option value="unisex">Unisex</option>
-                  </select>
-                </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
-                  <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.subcategory} 
-                    onChange={e => {
-                      const labelMap: any = {
-                        floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
-                        aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
-                        'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées'
-                      };
-                      setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
-                    }}>
-                    <option value="floral">Floral</option>
-                    <option value="oriental">Oriental</option>
-                    <option value="fresh">Frais</option>
-                    <option value="woody">Boisé</option>
-                    <option value="aromatic">Aromatique</option>
-                    <option value="discovery-sets">Coffrets Découverte</option>
-                    <option value="gift-bundles">Coffrets Cadeaux</option>
-                    <option value="limited-editions">Éditions Limitées</option>
-                  </select>
+                {/* SECTION 1: Informations Générales */}
+                <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Informations Générales</h3>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Nom du parfum</label>
+                      <input required type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Slug (URL)</label>
+                      <input required type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
+                    </div>
+                    
+                    <div className="col-span-2">
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Tagline (L'Accroche / Slogan)</label>
+                      <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.tagline} onChange={e => setFormData({...formData, tagline: e.target.value})} 
+                        placeholder="Ex: Le sillage des légendes." />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Marque</label>
+                      <select className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.brand} onChange={e => {
+                          const selectedBrand = brands.find(b => b.slug === e.target.value);
+                          setFormData({
+                            ...formData, 
+                            brand: e.target.value,
+                            brandLabel: selectedBrand ? selectedBrand.label : ''
+                          });
+                        }}>
+                        <option value="">Sélectionnez une marque</option>
+                        {brands.map(b => (
+                          <option key={b.id} value={b.slug}>{b.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Genre</label>
+                      <select className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.gender} onChange={e => setFormData({...formData, gender: e.target.value})}>
+                        <option value="women">Femme</option>
+                        <option value="men">Homme</option>
+                        <option value="unisex">Unisex</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="col-span-2 flex items-center gap-3 bg-[#f8fafc] p-4 rounded-lg border border-[#e0ddd4]">
-                  <input 
-                    type="checkbox" 
-                    id="inStockToggle"
-                    className="w-5 h-5 accent-[#0ea5e9] cursor-pointer"
-                    checked={formData.inStock} 
-                    onChange={e => setFormData({...formData, inStock: e.target.checked})} 
-                  />
-                  <label htmlFor="inStockToggle" className="text-[13px] font-bold text-[#1A1A1A] cursor-pointer">
-                    Produit en stock
-                  </label>
-                  <span className="text-[11px] text-[#9A9A9A] ml-auto">
-                    Décochez cette case pour afficher le produit en "Rupture de stock" sur le site.
-                  </span>
-                </div>
-                
-                <div className="col-span-2 border-t border-b border-[#e0ddd4] py-4 my-2">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase">Contenances et Prix (ML)</label>
-                    <button type="button" onClick={handleAddSize} className="text-[#0ea5e9] text-[11px] font-semibold hover:underline flex items-center gap-1">
-                      <Plus size={12} /> Ajouter une taille
-                    </button>
+                {/* SECTION 2: Marketing & Pyramide Olfactive */}
+                <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Marketing & Pyramide Olfactive</h3>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
+                      <select className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.subcategory} 
+                        onChange={e => {
+                          const labelMap: any = {
+                            floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
+                            aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
+                            'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées'
+                          };
+                          setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
+                        }}>
+                        <option value="floral">Floral</option>
+                        <option value="oriental">Oriental</option>
+                        <option value="fresh">Frais</option>
+                        <option value="woody">Boisé</option>
+                        <option value="aromatic">Aromatique</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
+                      <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.perfectSeason || ''} onChange={e => setFormData({...formData, perfectSeason: e.target.value})} 
+                        placeholder="Ex: Automne, Hiver" />
+                    </div>
+
+                    <div className="col-span-2 grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Tête</label>
+                        <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
+                          placeholder="Séparées par des virgules..."
+                          value={(formData.notes?.top || []).join(', ')} 
+                          onChange={e => setFormData({...formData, notes: {...formData.notes, top: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Cœur</label>
+                        <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
+                          placeholder="Séparées par des virgules..."
+                          value={(formData.notes?.heart || []).join(', ')} 
+                          onChange={e => setFormData({...formData, notes: {...formData.notes, heart: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Fond</label>
+                        <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
+                          placeholder="Séparées par des virgules..."
+                          value={(formData.notes?.base || []).join(', ')} 
+                          onChange={e => setFormData({...formData, notes: {...formData.notes, base: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
+                      </div>
+                    </div>
+
+                    <div className="col-span-2">
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">L'Histoire du Parfum (Longue Description)</label>
+                      <textarea className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-4 text-[14px] leading-relaxed min-h-[200px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.longDescription} onChange={e => setFormData({...formData, longDescription: e.target.value})} 
+                        placeholder="Rédigez l'histoire et les émotions de ce parfum..." />
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    {formData.sizes?.map((size: any, idx: number) => (
-                      <div key={idx} className="flex gap-3 items-center">
-                        <input type="text" placeholder="Ex: 50ml" className="flex-1 border border-[#e0ddd4] rounded-lg p-2.5 text-[13px]"
-                          value={size.label} onChange={e => handleUpdateSize(idx, 'label', e.target.value)} />
-                        <input type="number" placeholder="Prix" className="flex-1 border border-[#e0ddd4] rounded-lg p-2.5 text-[13px]"
-                          value={size.price} onChange={e => handleUpdateSize(idx, 'price', Number(e.target.value))} />
-                        <button type="button" onClick={() => handleRemoveSize(idx)} className="text-red-500 p-2 hover:bg-red-50 rounded">
-                          <Trash2 size={16} />
+                </div>
+
+                {/* SECTION 3: Prix & Inventaire */}
+                <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Prix & Stock</h3>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Prix de Vente (MAD)</label>
+                      <input required type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-semibold"
+                        value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Ancien Prix (Optionnel)</label>
+                      <input type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-red-500 transition-all text-red-500 font-semibold"
+                        value={formData.originalPrice || ''} onChange={e => setFormData({...formData, originalPrice: e.target.value ? Number(e.target.value) : null})} 
+                        placeholder="Prix barré..." />
+                    </div>
+                    
+                    <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
+                      <div>
+                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">État du Stock</h4>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">Désactivez pour afficher "Rupture de stock" sur la boutique.</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" checked={formData.inStock} onChange={e => setFormData({...formData, inStock: e.target.checked})} />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0ea5e9]"></div>
+                      </label>
+                    </div>
+
+                    <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
+                      <div>
+                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">Format Testeur</h4>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">Cochez si ce produit est vendu sans la boîte d'origine scellée.</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" checked={formData.isTester} onChange={e => setFormData({...formData, isTester: e.target.checked})} />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                      </label>
+                    </div>
+
+                    <div className="col-span-2 border-t border-[#e0ddd4] pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et Déclinaisons</label>
+                        <button type="button" onClick={handleAddSize} className="text-[#0ea5e9] text-[12px] font-medium hover:underline flex items-center gap-1">
+                          <Plus size={14} /> Nouvelle taille
                         </button>
                       </div>
-                    ))}
+                      <div className="space-y-3">
+                        {formData.sizes?.map((size: any, idx: number) => (
+                          <div key={idx} className="flex gap-3 items-center">
+                            <input type="text" placeholder="Ex: 50ml, 100ml" className="flex-1 bg-[#f8fafc] border border-[#e0ddd4] rounded-lg p-2.5 text-[13px]"
+                              value={size.label} onChange={e => handleUpdateSize(idx, 'label', e.target.value)} />
+                            <input type="number" placeholder="Prix optionnel" className="flex-1 bg-[#f8fafc] border border-[#e0ddd4] rounded-lg p-2.5 text-[13px]"
+                              value={size.price} onChange={e => handleUpdateSize(idx, 'price', Number(e.target.value))} />
+                            <button type="button" onClick={() => handleRemoveSize(idx)} className="text-red-500 p-2.5 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Images du parfum</label>
-                  <div className="flex gap-4 mb-3 flex-wrap">
+                {/* SECTION 4: Médias */}
+                <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Médias & Images</h3>
+                  
+                  <div className="flex gap-4 flex-wrap">
                     {formData.images?.map((img: string, idx: number) => (
-                      <div key={idx} className="relative w-16 h-16 border border-[#e0ddd4] rounded-lg overflow-hidden group">
+                      <div key={idx} className="relative w-24 h-24 border border-[#e0ddd4] rounded-xl overflow-hidden group shadow-sm">
                         <Image src={img} alt="Preview" fill className="object-cover" />
                         <button type="button" 
                           onClick={() => setFormData((prev: any) => ({ ...prev, images: prev.images.filter((_: any, i: number) => i !== idx) }))}
                           className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Trash2 size={14} />
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     ))}
-                    <label className={`w-16 h-16 border-2 border-dashed border-[#e0ddd4] rounded-lg flex items-center justify-center text-[#9A9A9A] hover:text-[#0ea5e9] hover:border-[#0ea5e9] cursor-pointer transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    <label className={`w-24 h-24 border-2 border-dashed border-[#cbd5e1] bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#9A9A9A] hover:text-[#0ea5e9] hover:border-[#0ea5e9] hover:bg-[#f0f9ff] cursor-pointer transition-all ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                       {isUploading ? (
-                        <div className="w-5 h-5 border-2 border-gray-400 border-t-[#0ea5e9] rounded-full animate-spin"></div>
+                        <div className="w-6 h-6 border-2 border-[#cbd5e1] border-t-[#0ea5e9] rounded-full animate-spin"></div>
                       ) : (
-                        <Upload size={20} />
+                        <Upload size={24} />
                       )}
                       <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                     </label>
                   </div>
-                  <input type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.images?.join(', ')} 
-                    onChange={e => setFormData({...formData, images: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})} 
-                    placeholder="Ou collez des URLs directement (séparées par des virgules)" />
                 </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Description</label>
-                  <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-                </div>
-                
-                <div className="col-span-2">
-                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Longue Description</label>
-                  <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] min-h-[120px] focus:outline-none focus:border-[#0ea5e9]"
-                    value={formData.longDescription} onChange={e => setFormData({...formData, longDescription: e.target.value})} />
-                </div>
-              </div>
-              
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#e0ddd4]">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-[13px] text-[#6B6B6B] hover:text-[#1A1A1A]">Annuler</button>
-                <button type="submit" className="bg-[#0ea5e9] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-blue-600 transition-colors">
-                  {editingProduct ? 'Enregistrer les modifications' : 'Ajouter le produit'}
-                </button>
-              </div>
-            </form>
+
+                <div className="h-10"></div> {/* Spacer */}
+              </form>
+            </div>
           </div>
         </div>
       )}
