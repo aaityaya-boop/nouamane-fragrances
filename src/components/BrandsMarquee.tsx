@@ -28,7 +28,7 @@ export default function BrandsMarquee({ brands }: { brands: Brand[] }) {
         .animate-marquee {
           display: flex;
           width: fit-content;
-          animation: marquee 30s linear infinite;
+          animation: marquee 80s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;

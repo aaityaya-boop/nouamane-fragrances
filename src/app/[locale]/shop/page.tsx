@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-import ShopExploreSection from '@/components/ShopExploreSection';
 import ShopCatalog from '@/components/ShopCatalog';
 import prisma from '@/lib/prisma';
 import { Product, MAIN_CATEGORIES } from '@/lib/products';
@@ -102,8 +101,6 @@ export default async function ShopPage() {
 
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
-        <ShopExploreSection />
-        
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
           <ShopCatalog products={products} brands={dbBrands} />
         </Suspense>
