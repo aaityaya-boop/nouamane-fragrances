@@ -193,46 +193,46 @@ export default function AdminProductsPage() {
 
 
   return (
-    <div className="p-8 lg:p-12 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="heading-font text-3xl font-light text-[#1A1A1A]">Produits</h1>
-          <p className="text-[#6B6B6B] text-[13px] mt-1">Gérez votre catalogue de parfums ({products.length} au total)</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Produits</h1>
+          <p className="text-[14px] text-[#666]">Gérez votre catalogue de parfums ({products.length} au total).</p>
         </div>
         
         <button 
           onClick={openAddModal}
-          className="flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 rounded-lg text-[13px] hover:bg-[#0ea5e9] transition-colors"
+          className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
         >
           <Plus size={16} /> Ajouter un produit
         </button>
       </div>
 
 
-      <div className="bg-white rounded-2xl border border-[#e0ddd4] overflow-hidden">
-        <div className="p-4 border-b border-[#e0ddd4] flex items-center gap-3">
-          <Search size={16} className="text-[#9A9A9A]" />
+      <div className="bg-white rounded-2xl border border-[#eaeaea] shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-[#eaeaea] flex items-center gap-3 bg-white">
+          <Search size={16} className="text-[#999]" />
           <input 
             type="text" 
             placeholder="Rechercher un parfum..." 
-            className="flex-1 bg-transparent border-none focus:outline-none text-[13px]"
+            className="flex-1 bg-transparent border-none focus:outline-none text-[14px] text-[#111] placeholder:text-[#999]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-[13px]">
-            <thead className="bg-[#f8fafc] text-[#6B6B6B] border-b border-[#e0ddd4]">
+          <table className="w-full text-left">
+            <thead className="bg-[#fafafa] border-b border-[#eaeaea]">
               <tr>
-                <th className="p-4 font-medium">Produit</th>
-                <th className="p-4 font-medium">Marque</th>
-                <th className="p-4 font-medium">Prix (MAD)</th>
-                <th className="p-4 font-medium">Stock/Statut</th>
-                <th className="p-4 font-medium text-right">Actions</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Produit</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Prix (MAD)</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Stock/Statut</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e0ddd4]">
+            <tbody className="divide-y divide-[#eaeaea]">
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Chargement...</td>
@@ -243,46 +243,48 @@ export default function AdminProductsPage() {
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-[#f8fafc] transition-colors">
-                    <td className="p-4 flex items-center gap-4">
-                      <div className="w-10 h-10 bg-[#eeece5] rounded-lg overflow-hidden relative border border-[#e0ddd4]">
+                  <tr key={p.id} className="hover:bg-[#fafafa] transition-colors group">
+                    <td className="px-6 py-4 flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#fafafa] rounded-xl overflow-hidden relative border border-[#eaeaea] shadow-sm">
                         {p.images[0] && <Image src={p.images[0]} alt={p.name} fill className="object-cover" />}
                       </div>
                       <div>
-                        <div className="font-semibold text-[#1A1A1A]">{p.name}</div>
-                        <div className="text-[11px] text-[#9A9A9A] mt-0.5">{p.sizes[0]?.label}</div>
+                        <div className="font-semibold text-[13px] text-[#111]">{p.name}</div>
+                        <div className="text-[12px] text-[#666] mt-0.5">{p.sizes[0]?.label}</div>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <span className="bg-[#f0f9ff] text-[#0ea5e9] px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider border border-[#e0f2fe]">
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-500/20 uppercase tracking-wider">
                         {p.brandLabel}
                       </span>
                     </td>
-                    <td className="p-4 font-medium text-[#1A1A1A]">
+                    <td className="px-6 py-4 font-semibold text-[13px] text-[#111]">
                       {p.price} Dh
                     </td>
-                    <td className="p-4 flex gap-1 items-center">
-                      {p.inStock ? (
-                        <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold">EN STOCK</span>
-                      ) : (
-                        <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">RUPTURE</span>
-                      )}
-                      {(p as any).isTester && (
-                        <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold">TESTEUR</span>
-                      )}
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 items-center flex-wrap">
+                        {p.inStock ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-500/20">EN STOCK</span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-50 text-red-700 ring-1 ring-inset ring-red-500/20">RUPTURE</span>
+                        )}
+                        {(p as any).isTester && (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-500/20">TESTEUR</span>
+                        )}
+                      </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => openEditModal(p)}
-                          className="w-8 h-8 flex items-center justify-center rounded bg-[#f8fafc] text-[#6B6B6B] hover:text-[#0ea5e9] hover:bg-[#e0f2fe] transition-colors border border-[#e0ddd4]"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-[#0ea5e9] hover:bg-sky-50 transition-colors border border-[#eaeaea] shadow-sm"
                           aria-label="Modifier"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button 
                           onClick={() => handleDelete(p.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded bg-[#f8fafc] text-[#6B6B6B] hover:text-red-500 hover:bg-red-50 transition-colors border border-[#e0ddd4]"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-red-600 hover:bg-red-50 transition-colors border border-[#eaeaea] shadow-sm"
                           aria-label="Supprimer"
                         >
                           <Trash2 size={14} />

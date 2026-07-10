@@ -28,6 +28,7 @@ import { useAuth } from '@/context/AuthContext';
 import { formatMAD, Product } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { usePreferences } from '@/context/PreferencesContext';
+import ReactMarkdown from 'react-markdown';
 
 /* ============================================================
    PRODUCT DETAIL PAGE
@@ -423,13 +424,30 @@ export default function ProductClient({
         <div className="max-w-[1000px] mx-auto px-6 lg:px-10 py-16 lg:py-24 space-y-20">
           
           {/* L'Histoire (Description) */}
-          <div className="text-center">
-            <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6">
-              L'Histoire du Parfum
-            </h2>
-            <p className="text-[16px] md:text-[18px] text-[#555] leading-[2] font-light">
-              {product.longDescription || product.description}
-            </p>
+          <div className="text-left md:text-center prose prose-lg prose-[#555] max-w-none mx-auto">
+            {product.longDescription ? (
+              <ReactMarkdown 
+                components={{
+                  h1: ({node, ...props}) => <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6 text-center" {...props} />,
+                  h2: ({node, ...props}) => <h3 className="heading-font text-2xl md:text-3xl text-[#1A1A1A] mt-8 mb-4 text-center" {...props} />,
+                  h3: ({node, ...props}) => <h4 className="heading-font text-xl text-[#1A1A1A] mt-6 mb-3" {...props} />,
+                  p: ({node, ...props}) => <p className="text-[16px] md:text-[18px] text-[#555] leading-[2] font-light mb-4" {...props} />,
+                  ul: ({node, ...props}) => <ul className="list-disc list-inside text-left mx-auto max-w-2xl text-[16px] md:text-[18px] text-[#555] leading-[2] font-light mb-4 space-y-2" {...props} />,
+                  li: ({node, ...props}) => <li {...props} />
+                }}
+              >
+                {product.longDescription}
+              </ReactMarkdown>
+            ) : (
+              <>
+                <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6 text-center">
+                  L'Histoire du Parfum
+                </h2>
+                <p className="text-[16px] md:text-[18px] text-[#555] leading-[2] font-light text-center">
+                  {product.description}
+                </p>
+              </>
+            )}
           </div>
 
           <div className="w-px h-24 bg-gradient-to-b from-[#e0ddd4] to-transparent mx-auto" />
