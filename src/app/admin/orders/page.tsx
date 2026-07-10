@@ -10,6 +10,7 @@ interface OrderItem {
   quantity: number;
   price: number;
   size?: string;
+  sku?: string;
 }
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -294,7 +295,9 @@ export default function OrdersPage() {
                       <tr key={idx}>
                         <td className="px-6 py-4">
                           <div className="text-[13px] font-semibold text-[#111]">{item.name}</div>
-                          {item.size && <div className="text-[12px] text-[#666] mt-0.5">{item.size}</div>}
+                          <div className="text-[12px] text-[#666] mt-0.5">
+                            {item.size} {item.sku && `• Réf: ${item.sku}`}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-[13px] font-medium text-center text-[#111]">{item.quantity}</td>
                         <td className="px-6 py-4 text-[13px] font-bold text-right text-[#111]">{formatMAD(item.price * item.quantity)}</td>

@@ -61,6 +61,25 @@ export async function POST(request: Request) {
       }
     }
 
+    // Fetch SKUs for items
+    const itemsWithSKU = await Promise.all(
+      items.map(async (item: any) => {
+        try {
+          if (!item.id) return item;
+          const product = await prisma.product.findUnique({
+            where: { id: item.id },
+            select: { sku: true },
+          });
+          return {
+            ...item,
+            sku: product?.sku || null,
+          };
+        } catch (err) {
+          return item;
+        }
+      })
+    );
+
     const created = await prisma.order.create({
       data: {
         orderNumber,
@@ -71,7 +90,7 @@ export async function POST(request: Request) {
         shippingCity,
         shippingPostalCode: shippingPostalCode || '',
         paymentMethod,
-        items: JSON.stringify(items),
+        items: JSON.stringify(itemsWithSKU),
         subtotal: Number(subtotal),
         shippingCost: Number(shippingCost),
         total: Number(total),

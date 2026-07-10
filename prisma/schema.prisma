@@ -51,6 +51,7 @@ model Customer {
 model Product {
   id                  Int      @id @default(autoincrement())
   slug                String   @unique
+  sku                 String?  @unique
   name                String
   brandId             String   @default("valentino")
   brand               Brand    @relation(fields: [brandId], references: [slug])

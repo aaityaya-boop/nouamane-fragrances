@@ -68,6 +68,39 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleQuickUpdate = async (id: number, field: string, value: any) => {
+    try {
+      await fetch(`/api/admin/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: value }),
+      });
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+    } catch (error) {
+      console.error(error);
+      alert('Erreur lors de la modification rapide');
+    }
+  };
+
+  const handleGenerateSKUs = async () => {
+    if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les produits qui n\'en ont pas ?')) return;
+    
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/admin/products/generate-skus', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(`${data.updatedCount} SKU(s) générés avec succès.`);
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erreur lors de la génération des SKUs');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const openAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -185,8 +218,10 @@ export default function AdminProductsPage() {
 
   const filteredProducts = products
     .filter((p: any) => {
-      const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
-                            p.brandLabel.toLowerCase().includes(search.toLowerCase());
+      const searchLower = search.toLowerCase();
+      const matchesSearch = p.name.toLowerCase().includes(searchLower) || 
+                            p.brandLabel.toLowerCase().includes(searchLower) ||
+                            (p.sku && p.sku.toLowerCase().includes(searchLower));
       return matchesSearch;
     })
     .sort((a: any, b: any) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
@@ -200,12 +235,20 @@ export default function AdminProductsPage() {
           <p className="text-[14px] text-[#666]">Gérez votre catalogue de parfums ({products.length} au total).</p>
         </div>
         
-        <button 
-          onClick={openAddModal}
-          className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
-        >
-          <Plus size={16} /> Ajouter un produit
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleGenerateSKUs}
+            className="flex items-center gap-2 bg-white border border-[#eaeaea] text-[#111] px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-50 transition-all shadow-sm"
+          >
+            Générer SKUs
+          </button>
+          <button 
+            onClick={openAddModal}
+            className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
+          >
+            <Plus size={16} /> Ajouter un produit
+          </button>
+        </div>
       </div>
 
 
@@ -225,7 +268,7 @@ export default function AdminProductsPage() {
           <table className="w-full text-left">
             <thead className="bg-[#fafafa] border-b border-[#eaeaea]">
               <tr>
-                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Produit</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Produit & SKU</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Prix (MAD)</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Stock/Statut</th>
@@ -250,7 +293,17 @@ export default function AdminProductsPage() {
                       </div>
                       <div>
                         <div className="font-semibold text-[13px] text-[#111]">{p.name}</div>
-                        <div className="text-[12px] text-[#666] mt-0.5">{p.sizes[0]?.label}</div>
+                        <input 
+                          type="text" 
+                          placeholder="SKU / Réf"
+                          className="text-[11px] font-mono text-[#666] bg-transparent border-b border-transparent hover:border-[#eaeaea] focus:border-[#0ea5e9] focus:outline-none transition-colors w-24 px-1 py-0.5 mt-0.5 block"
+                          defaultValue={p.sku || ''}
+                          onBlur={(e) => {
+                            if (e.target.value !== (p.sku || '')) {
+                              handleQuickUpdate(p.id, 'sku', e.target.value);
+                            }
+                          }}
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -259,14 +312,26 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-semibold text-[13px] text-[#111]">
-                      {p.price} Dh
+                      <div className="flex items-center gap-1">
+                        <input 
+                          type="number" 
+                          className="w-16 bg-transparent border-b border-transparent hover:border-[#eaeaea] focus:border-[#0ea5e9] focus:outline-none transition-colors text-right px-1 py-0.5 font-semibold"
+                          defaultValue={p.price}
+                          onBlur={(e) => {
+                            if (Number(e.target.value) !== p.price) {
+                              handleQuickUpdate(p.id, 'price', Number(e.target.value));
+                            }
+                          }}
+                        />
+                        <span>Dh</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 items-center flex-wrap">
                         {p.inStock ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-500/20">EN STOCK</span>
+                          <button onClick={() => handleQuickUpdate(p.id, 'inStock', false)} className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-500/20 hover:bg-emerald-100 transition-colors cursor-pointer">EN STOCK</button>
                         ) : (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-50 text-red-700 ring-1 ring-inset ring-red-500/20">RUPTURE</span>
+                          <button onClick={() => handleQuickUpdate(p.id, 'inStock', true)} className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-red-50 text-red-700 ring-1 ring-inset ring-red-500/20 hover:bg-red-100 transition-colors cursor-pointer">RUPTURE</button>
                         )}
                         {(p as any).isTester && (
                           <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-500/20">TESTEUR</span>
@@ -341,6 +406,12 @@ export default function AdminProductsPage() {
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Slug (URL)</label>
                       <input required type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">SKU / Numéro de Série</label>
+                      <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-mono"
+                        value={formData.sku || ''} onChange={e => setFormData({...formData, sku: e.target.value})} 
+                        placeholder="Ex: REF-VAL-001" />
                     </div>
                     
                     <div className="col-span-2">

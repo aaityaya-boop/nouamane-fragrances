@@ -19,6 +19,7 @@ export async function POST(request: Request) {
     // Convert arrays/objects to JSON strings for SQLite
     const data = {
       slug: body.slug,
+      sku: body.sku || null,
       name: body.name,
       brandId: body.brand,
       brandLabel: body.brandLabel || body.brand,

@@ -72,7 +72,9 @@ export default function InvoiceClient({ order }: { order: any }) {
               <tr key={idx} className="border-b border-gray-100 last:border-0">
                 <td className="py-4">
                   <p className="font-semibold text-sm">{item.name}</p>
-                  <p className="text-xs text-gray-500 mt-1">{item.size}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {item.size} {item.sku && `• Réf: ${item.sku}`}
+                  </p>
                 </td>
                 <td className="py-4 text-sm text-center">{item.quantity}</td>
                 <td className="py-4 text-sm text-right">{formatMAD(item.price)}</td>

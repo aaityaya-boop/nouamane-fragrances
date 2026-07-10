@@ -30,6 +30,7 @@ export type Season = 'Printemps' | 'Été' | 'Automne' | 'Hiver' | 'Toutes Saiso
 export type Product = {
   id: number;
   slug: string;
+  sku?: string | null;
   name: string;
   brand: Brand;
   brandLabel: string;
