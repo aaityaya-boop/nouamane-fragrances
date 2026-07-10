@@ -62,11 +62,28 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
       {/* Subtle Luxury Texture */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }}></div>
 
-      {/* 2. CENTRAL TYPOGRAPHY */}
+      {/* 2. CENTRAL TYPOGRAPHY & LOGO */}
       <motion.div 
         className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center justify-center"
         style={{ opacity: opacityText, scale: scaleText, y: yText }}
       >
+        {/* Brand Logo Placeholder */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-10 w-24 h-24 md:w-32 md:h-32 bg-white rounded-full shadow-[0_10px_40px_rgba(14,165,233,0.15)] flex flex-col items-center justify-center border border-[#0ea5e9]/20 relative overflow-hidden group"
+        >
+          {/* Subtle hover effect on the logo container */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#0ea5e9]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          {/* TODO: Replace this inner content with an actual <Image src="/logo.png" /> when the brand logo is ready */}
+          <span className="heading-font text-4xl md:text-5xl font-light text-[#111] leading-none">N</span>
+          <span className="text-[7px] md:text-[8px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] mt-1.5">
+            Parfums
+          </span>
+        </motion.div>
+
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
