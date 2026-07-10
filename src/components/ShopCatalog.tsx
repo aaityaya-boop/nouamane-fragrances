@@ -315,6 +315,7 @@ function ShopCatalogInner({
             </button>
           </div>
         </div>
+      )}
       {/* Quick View Modal */}
       <QuickViewModal
         product={quickViewProduct}
