@@ -997,6 +997,21 @@ export const MAIN_CATEGORIES = [
       'La sélection définitive des parfums masculins de créateurs. De la sensualité gourmande d\'Armani Stronger With You à la fraîcheur méditerranéenne d\'Acqua di Giò Profumo, en passant par la nouvelle icône YSL MYSLF — ce sont les fragrances que portent les hommes de goût au Maroc. Authenticité garantie, produits authentiques.',
     heroImage: 'https://images.pexels.com/photos/18321516/pexels-photo-18321516/free-photo-of-perfume-bottle-and-pine-needles.jpeg?auto=compress&cs=tinysrgb&w=2000',
   },
+  {
+    key: 'unisex',
+    label: 'Parfums Unisex',
+    labelShort: 'Unisex',
+    slug: 'unisex',
+    subcategories: [
+      { key: 'woody', label: 'Boisé', slug: 'woody' },
+      { key: 'oriental', label: 'Oriental', slug: 'oriental' },
+      { key: 'fresh', label: 'Frais', slug: 'fresh' },
+      { key: 'floral', label: 'Floral', slug: 'floral' },
+    ],
+    description:
+      'La parfumerie unisexe par excellence. L\'harmonie parfaite où les frontières s\'effacent. Découvrez des créations olfactives magistrales qui transcendent le genre et épousent chaque peau différemment.',
+    heroImage: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg?auto=compress&cs=tinysrgb&w=2000',
+  },
 ] as const;
 
 export const BRANDS = [

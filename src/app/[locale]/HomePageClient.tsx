@@ -29,6 +29,7 @@ import {
   Sparkles,
   Flame,
   Leaf,
+  Sun,
 } from 'lucide-react';
 import {
   Product,
@@ -273,10 +274,15 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
       {/* ===============================
           FEATURED — SEASONAL
           =============================== */}
-      <section className="relative bg-[#1A1A1A] overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-24 lg:py-32">
+      <section className="relative bg-gradient-to-br from-[#fefce8] via-[#f0f9ff] to-[#e0f2fe] overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+        
+        {/* Decorative elements for summer vibes */}
+        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] bg-[#fde047] rounded-full blur-[150px] opacity-30 pointer-events-none" />
+        <div className="absolute bottom-[-100px] left-[-100px] w-[500px] h-[500px] bg-[#38bdf8] rounded-full blur-[150px] opacity-20 pointer-events-none" />
+
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-24 lg:py-32 relative z-10">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -286,17 +292,17 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
           >
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Leaf size={14} className="text-[#0ea5e9]" />
+                {isFallWinter ? <Leaf size={14} className="text-[#ea580c]" /> : <Sun size={14} className="text-[#eab308]" />}
                 <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9]">Édition saisonnière</span>
               </div>
-              <h2 className="heading-font text-5xl lg:text-7xl text-white tracking-wide">
+              <h2 className="heading-font text-5xl lg:text-7xl text-[#1A1A1A] tracking-wide">
                 {isFallWinter ? 'Tendances' : 'Tendances'}<br />
-                <span className="text-[#9A9A9A] italic">{isFallWinter ? 'Automne-Hiver' : 'Printemps-Été'}</span>
+                <span className="text-[#0ea5e9] italic">{isFallWinter ? 'Automne-Hiver' : 'Printemps-Été'}</span>
               </h2>
             </div>
             <div className="flex flex-col items-start lg:items-end gap-4">
-              <p className="text-[#9A9A9A] text-[14px] max-w-xs text-left lg:text-right">{seasonalSubtitle}</p>
-              <Link href={`/${locale}/shop`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-white border border-white/30 hover:bg-white hover:text-black transition-all px-6 py-3 rounded-full">
+              <p className="text-[#1A1A1A]/70 text-[14px] max-w-xs text-left lg:text-right font-medium">{seasonalSubtitle}</p>
+              <Link href={`/${locale}/shop`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
                 Explorer la sélection <ArrowRight size={14} />
               </Link>
             </div>
@@ -352,30 +358,20 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
             >
               <Link href={`/${locale}/brands/${brand.slug}`} className="block w-full h-full bg-white relative">
                 <Image
-                  src={brand.img}
+                  src={brand.logo}
                   alt={brand.name}
                   fill
-                  className="object-cover brightness-[0.4] group-hover:brightness-[0.9] transition-all duration-[1.5s] scale-110 group-hover:scale-100"
+                  className="object-contain p-10 mix-blend-multiply opacity-30 group-hover:opacity-100 transition-all duration-[1.5s] scale-90 group-hover:scale-100"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent md:opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                 
                 {/* Vertical Text (Collapsed state on desktop) */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 md:opacity-100 group-hover:opacity-0 transition-opacity duration-500 pointer-events-none">
-                  <span className="heading-font text-white text-3xl -rotate-90 whitespace-nowrap tracking-widest">{brand.name}</span>
+                  <span className="heading-font text-[#1A1A1A] text-3xl -rotate-90 whitespace-nowrap tracking-widest">{brand.name}</span>
                 </div>
 
                 {/* Content shown on hover */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none transform translate-y-8 group-hover:translate-y-0 z-10">
-                  <div className="w-48 h-48 bg-white/95 rounded-full flex items-center justify-center p-6 shadow-2xl mb-8 transform scale-90 group-hover:scale-100 transition-transform duration-700 backdrop-blur-sm border border-white/50 overflow-hidden">
-                    <Image
-                      src={brand.logo}
-                      alt={`${brand.name} logo`}
-                      width={160}
-                      height={160}
-                      className="object-contain w-full h-full mix-blend-multiply"
-                    />
-                  </div>
-                  <span className="text-[12px] font-bold tracking-[0.3em] uppercase text-white bg-black/30 backdrop-blur-md px-6 py-3 rounded-full border border-white/20">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none transform translate-y-8 group-hover:translate-y-0 z-10">
+                  <span className="text-[12px] font-bold tracking-[0.3em] uppercase text-white bg-[#1A1A1A] shadow-xl px-6 py-3 rounded-full border border-black/10">
                     Découvrir {brand.name}
                   </span>
                 </div>
