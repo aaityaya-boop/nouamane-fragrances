@@ -188,45 +188,27 @@ function ShopCatalogInner({
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-12">
-        {/* --- Desktop Filters --- */}
-        <aside className="hidden lg:block">
-          <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto lux-scrollbar pr-6 pb-12">
-            <FiltersPanel
-              brand={brand} setBrand={setBrand}
-              brands={brands}
-              gender={gender} setGender={setGender}
-              subcategory={subcategory} setSubcategory={setSubcategory}
-              priceRange={priceRange} setPriceRange={setPriceRange}
-              selectedSeasons={selectedSeasons} toggleSeason={(v) => setSelectedSeasons(toggleFrom(selectedSeasons, v))}
-              selectedSizes={selectedSizes} toggleSize={(v) => setSelectedSizes(toggleFrom(selectedSizes, v))}
-              selectedColors={selectedColors} toggleColor={(v) => setSelectedColors(toggleFrom(selectedColors, v))}
-              selectedMaterials={selectedMaterials} toggleMaterial={(v) => setSelectedMaterials(toggleFrom(selectedMaterials, v))}
-              minRating={minRating} setMinRating={setMinRating}
-              specialFilter={specialFilter} setSpecialFilter={setSpecialFilter}
-              clearFilters={clearFilters} activeCount={activeCount}
-              lockedBrand={!!lockedBrand} lockedGender={!!lockedGender} lockedSubcategory={!!lockedSubcategory}
-            />
-          </div>
-        </aside>
-
+      <div className="w-full">
         {/* --- Products --- */}
         <div>
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#e0ddd4]">
-            <button
-              onClick={() => setFiltersOpenMobile(true)}
-              className="lg:hidden flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-[#1A1A1A]"
-            >
-              <SlidersHorizontal size={16} /> Filtres
-              {activeCount > 0 && (
-                <span className="bg-[#0ea5e9] text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px]">
-                  {activeCount}
-                </span>
-              )}
-            </button>
-            <div className="text-[11px] text-[#9A9A9A] hidden lg:block">
-              {filtered.length} produit{filtered.length > 1 ? 's' : ''}
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => setFiltersOpenMobile(true)}
+                className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors"
+              >
+                <SlidersHorizontal size={16} /> Filtres
+                {activeCount > 0 && (
+                  <span className="bg-[#0ea5e9] text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px]">
+                    {activeCount}
+                  </span>
+                )}
+              </button>
+              <div className="text-[11px] font-medium tracking-widest uppercase text-[#9A9A9A] hidden sm:block">
+                {filtered.length} produit{filtered.length > 1 ? 's' : ''}
+              </div>
             </div>
+            {/* Zara-style Sorting */}
             <div className="relative">
               <select
                 value={sortBy}
@@ -257,21 +239,18 @@ function ShopCatalogInner({
             </div>
           ) : (
             <>
-              <motion.div 
-                layout
-                initial="hidden"
-                animate="show"
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: {
-                    opacity: 1,
-                    transition: { staggerChildren: 0.1 }
-                  }
-                }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10"
-              >
-                {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((p) => <ProductCard key={p.id} product={p} />)}
-              </motion.div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
+                {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((p) => (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <ProductCard product={p} />
+                  </motion.div>
+                ))}
+              </div>
               
               {/* Pagination UI */}
               {Math.ceil(filtered.length / 20) > 1 && (
@@ -300,10 +279,10 @@ function ShopCatalogInner({
         </div>
       </div>
 
-      {/* Mobile filters drawer */}
+      {/* Unified Filters Drawer (Desktop & Mobile) */}
       {filtersOpenMobile && (
-        <div className="fixed inset-0 z-[90] lg:hidden">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setFiltersOpenMobile(false)} />
+        <div className="fixed inset-0 z-[90]">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity duration-300" onClick={() => setFiltersOpenMobile(false)} />
           <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-white border border-[#e0ddd4] overflow-auto p-6">
             <div className="flex items-center justify-between mb-8">
               <h3 className="heading-font text-2xl">Filtres</h3>

@@ -7,6 +7,7 @@ import CartDrawer from '@/components/CartDrawer';
 import ShopCatalog from '@/components/ShopCatalog';
 import prisma from '@/lib/prisma';
 import { Product, MAIN_CATEGORIES } from '@/lib/products';
+import { ShieldCheck, Truck, Clock } from 'lucide-react';
 
 export const metadata = {
   title: 'Boutique | Nouamane Parfums',
@@ -36,50 +37,70 @@ export default async function ShopPage() {
   }));
 
   return (
-    <div className="bg-[#fafaf7] text-[#1A1A1A] min-h-screen">
+    <div className="bg-[#fafaf7] text-[#1A1A1A] min-h-screen relative overflow-hidden">
+      {/* Background Aura */}
+      <div className="absolute top-0 left-1/2 w-[800px] h-[800px] bg-[#0ea5e9]/5 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+      
+      {/* CSS for Liquid Glass Effect */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes liquid-glace {
+          0% { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+        .liquid-glace-text {
+          background: linear-gradient(
+            110deg,
+            #111111 10%,
+            #0ea5e9 30%,
+            #ffffff 45%,
+            #e0f2fe 50%,
+            #0ea5e9 55%,
+            #111111 75%
+          );
+          background-size: 200% auto;
+          color: transparent;
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: liquid-glace 8s linear infinite;
+        }
+      `}} />
+
       <Header />
 
-      <section className="pt-32 pb-8 lg:pt-40 lg:pb-12 border-b border-[#e0ddd4]">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
-          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">
+      <section className="relative pt-32 pb-12 lg:pt-48 lg:pb-16">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 text-center relative z-10 flex flex-col items-center">
+          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-4">
             La Boutique
           </span>
-          <h1 className="heading-font text-4xl lg:text-6xl mt-3 tracking-wide">
-            Tous les parfums
+          <h1 className="heading-font text-5xl sm:text-6xl lg:text-[90px] leading-none tracking-tight mb-6">
+            <span className="liquid-glace-text">L'EXCELLENCE</span>
+            <br />
+            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Olfactive</span>
           </h1>
-          <p className="mt-4 text-[15px] text-[#6B6B6B] max-w-2xl leading-relaxed">
-            {products.length} fragrances authentiques signées Valentino, Yves
-            Saint Laurent et Emporio Armani. Livraison partout au Maroc avec 35Dh
-            en 24-48h. Paiement à la livraison disponible.
+          <p className="mt-2 text-[13px] md:text-[15px] text-[#555] font-light max-w-xl leading-[2] tracking-widest uppercase mb-10">
+            Découvrez notre collection exclusive de <span className="font-semibold text-[#111]">testeurs 100% authentiques</span>. Le luxe des grandes maisons, désormais accessible.
           </p>
 
-          {/* Quick category nav */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            {MAIN_CATEGORIES.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/shop/${c.slug}`}
-                className="text-[11px] font-semibold tracking-[0.15em] uppercase text-[#6B6B6B] hover:text-[#0ea5e9] border border-[#e0ddd4] hover:border-[#0ea5e9]/50 rounded-full px-5 py-2 transition-all"
-              >
-                {c.label}
-              </Link>
-            ))}
-            <span className="w-px bg-[#e0ddd4] mx-2 self-stretch hidden sm:block" />
-            {dbBrands.map((b) => (
-              <Link
-                key={b.slug}
-                href={`/brands/${b.slug}`}
-                className="text-[11px] font-semibold tracking-[0.15em] uppercase text-[#6B6B6B] hover:text-[#0ea5e9] border border-[#e0ddd4] hover:border-[#0ea5e9]/50 rounded-full px-5 py-2 transition-all"
-              >
-                {b.label}
-              </Link>
-            ))}
+          {/* Minimalist Trust Signals */}
+          <div className="flex flex-wrap justify-center gap-6 lg:gap-12 mt-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={18} className="text-[#0ea5e9]" />
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#111]">100% Authentique</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Truck size={18} className="text-[#0ea5e9]" />
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#111]">Paiement à la livraison</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={18} className="text-[#0ea5e9]" />
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#111]">Livraison 24-48h</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CATALOG */}
-      <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-10 lg:py-14">
+      <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
           <ShopCatalog products={products} brands={dbBrands} />
         </Suspense>
