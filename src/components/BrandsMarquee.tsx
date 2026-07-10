@@ -63,7 +63,7 @@ export default function BrandsMarquee({ brands }: { brands: Brand[] }) {
                     src={brand.image} 
                     alt={brand.name} 
                     fill 
-                    className="object-contain" 
+                    className="object-contain mix-blend-multiply" 
                   />
                 </div>
               ) : (
