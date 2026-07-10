@@ -12,7 +12,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import FacebookPixel from "@/components/FacebookPixel";
 import CookieConsent from "@/components/CookieConsent";
 import { PreferencesProvider } from "@/context/PreferencesContext";
-import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Nouamane Parfums | Valentino · YSL · Armani",
@@ -59,7 +58,6 @@ export default async function LocaleLayout({
             })
           }}
         />
-        <CustomCursor />
         <DictionaryProvider dictionary={dictionary}>
           <PreferencesProvider>
             {/* <SmoothScrollProvider> */}
