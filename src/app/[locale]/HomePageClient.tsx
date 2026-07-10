@@ -123,85 +123,67 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
           =============================== */}
       <SplitTypographyHero config={config} />
       {/* ===============================
-          CATEGORY SHORTCUTS (Redesigned v2)
+          CATEGORY SHORTCUTS (Minimalist Editorial Aura)
           =============================== */}
       <section className="relative w-full bg-white overflow-hidden">
-        {/* Section title strip */}
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-20 lg:pt-28 pb-12">
-          <div className="flex items-end justify-between gap-6">
-            <div>
-              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block">
-                Nos collections
-              </span>
-              <h2 className="heading-font text-5xl lg:text-6xl tracking-wide text-[#1A1A1A]">
-                Parcourir par <span className="italic text-[#9A9A9A]">Catégorie</span>
-              </h2>
-            </div>
-            <div className="hidden lg:block h-[1px] flex-1 bg-gradient-to-r from-[#e0ddd4] to-transparent mb-4" />
+        {/* Subtle background aura to link with Hero */}
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-[#0ea5e9]/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#0ea5e9]/5 rounded-full blur-[100px] pointer-events-none translate-y-1/3 translate-x-1/3" />
+
+        <div className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 pt-24 lg:pt-32 pb-16">
+          <div className="flex flex-col items-center text-center mb-16">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.5em] uppercase text-[#0ea5e9] mb-6">
+              Nos collections
+            </span>
+            <h2 className="heading-font text-5xl sm:text-6xl lg:text-7xl tracking-tight text-[#111] leading-none">
+              Parcourir par <span className="font-serif italic font-light text-[#0ea5e9]">&nbsp;Catégorie</span>
+            </h2>
           </div>
         </div>
 
-        {/* Two-column horizontal cards */}
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pb-20 lg:pb-28">
+        {/* Three-column minimalist portrait cards */}
+        <div className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 pb-24 lg:pb-32">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-80px" }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
           >
             {MAIN_CATEGORIES.map((cat, index) => (
               <motion.div
                 variants={staggerItem}
                 key={cat.slug}
-                className="group relative overflow-hidden rounded-2xl lg:rounded-3xl cursor-pointer"
-                style={{ height: '480px' }}
+                className="group cursor-pointer flex flex-col"
               >
-                <Link href={`/${locale}/shop/${cat.slug}`} className="block w-full h-full">
-                  <Image
-                    src={cat.heroImage}
-                    alt={cat.label}
-                    fill
-                    className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-110"
-                    priority={index === 0}
-                  />
-                  {/* Dark overlay - stronger at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10" />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-[#0ea5e9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                  {/* Number badge */}
-                  <div className="absolute top-6 left-6">
-                    <span className="heading-font text-[80px] lg:text-[120px] leading-none font-black text-white/10 group-hover:text-white/20 transition-all duration-700 select-none">
-                      {(index + 1).toString().padStart(2, '0')}
-                    </span>
+                <Link href={`/${locale}/shop/${cat.slug}`} className="block w-full">
+                  {/* Image Container with Aura hover */}
+                  <div className="relative w-full aspect-[3/4] mb-8 transition-transform duration-700 ease-out group-hover:-translate-y-2">
+                    <div className="absolute inset-0 bg-[#0ea5e9]/0 group-hover:bg-[#0ea5e9]/20 blur-[40px] rounded-full transition-all duration-700" />
+                    <div className="relative w-full h-full rounded-[30px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)] group-hover:shadow-[0_20px_40px_rgba(14,165,233,0.15)] transition-shadow duration-700">
+                      <Image
+                        src={cat.heroImage}
+                        alt={cat.label}
+                        fill
+                        className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
+                        priority={index === 0}
+                      />
+                      {/* Very light elegant overlay */}
+                      <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-700" />
+                    </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-end">
-                    <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                      <h3 className="heading-font text-4xl lg:text-6xl text-white tracking-wide mb-3">
-                        {cat.labelShort}
-                      </h3>
-                      <p className="text-white/70 text-[13px] mb-5 line-clamp-2 max-w-xs">
-                        {cat.description?.slice(0, 80)}...
-                      </p>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75">
-                      {cat.subcategories.slice(0, 4).map((sc) => (
-                        <span
-                          key={sc.slug}
-                          className="text-[10px] font-bold tracking-[0.15em] uppercase bg-white text-[#1A1A1A] px-3 py-1.5 rounded-full"
-                        >
-                          {sc.label}
-                        </span>
-                      ))}
-                      <span className="text-[10px] font-bold tracking-[0.15em] uppercase border border-white/50 text-white px-3 py-1.5 rounded-full flex items-center gap-1">
-                        Explorer <ArrowRight size={10} />
-                      </span>
-                    </div>
+                  {/* Minimalist Editorial Text Below Image */}
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3">
+                      0{index + 1}
+                    </span>
+                    <h3 className="heading-font text-3xl lg:text-4xl text-[#111] tracking-wide mb-4 group-hover:text-[#0ea5e9] transition-colors duration-500">
+                      {cat.labelShort}
+                    </h3>
+                    <p className="text-[#555] text-[13px] font-light leading-[1.8] tracking-wide line-clamp-2 max-w-[280px]">
+                      {cat.description}
+                    </p>
                   </div>
                 </Link>
               </motion.div>
