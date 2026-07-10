@@ -72,7 +72,8 @@ export default function AdminInventoryPage() {
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(search.toLowerCase()) || 
     p.brandLabel.toLowerCase().includes(search.toLowerCase()) ||
-    p.slug.toLowerCase().includes(search.toLowerCase())
+    p.slug.toLowerCase().includes(search.toLowerCase()) ||
+    (p.sku && p.sku.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -102,6 +103,7 @@ export default function AdminInventoryPage() {
               <tr>
                 <th className="p-4 font-medium w-[80px]">Image</th>
                 <th className="p-4 font-medium">Produit</th>
+                <th className="p-4 font-medium">SKU / Réf</th>
                 <th className="p-4 font-medium">Marque</th>
                 <th className="p-4 font-medium">Statut</th>
                 <th className="p-4 font-medium w-[150px]">Quantité en Stock</th>
@@ -145,6 +147,9 @@ export default function AdminInventoryPage() {
                       <td className="p-4 font-medium text-[#1A1A1A]">
                         {p.name}
                         <div className="text-[11px] text-[#9A9A9A] font-normal mt-0.5">{p.slug}</div>
+                      </td>
+                      <td className="p-4 font-mono text-[12px] text-[#666]">
+                        {p.sku || <span className="text-[#999] italic">N/A</span>}
                       </td>
                       <td className="p-4 text-[#6B6B6B]">
                         {p.brandLabel}

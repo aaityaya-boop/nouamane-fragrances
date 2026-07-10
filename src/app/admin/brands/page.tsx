@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, X, Hash } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Hash, Upload } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -45,6 +46,41 @@ export default function AdminBrandsPage() {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    
+    setIsUploading(true);
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: uploadData,
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur serveur lors de l\'upload');
+      }
+      
+      if (data.url) {
+        setFormData((prev: any) => ({
+          ...prev,
+          image: data.url
+        }));
+      }
+    } catch (error: any) {
+      console.error('Failed to upload image', error);
+      alert(`Erreur lors du téléchargement de l'image: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -142,8 +178,12 @@ export default function AdminBrandsPage() {
                   <tr key={b.id} className="hover:bg-[#fafafa] transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[14px] font-black text-gray-800 shadow-sm border border-[#eaeaea] shrink-0 font-serif italic">
-                          {b.name.charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[14px] font-black text-gray-800 shadow-sm border border-[#eaeaea] shrink-0 font-serif italic overflow-hidden relative">
+                          {b.image ? (
+                            <Image src={b.image} alt={b.name} fill className="object-cover" />
+                          ) : (
+                            b.name.charAt(0).toUpperCase()
+                          )}
                         </div>
                         <span className="text-[14px] font-bold text-[#111]">{b.name}</span>
                       </div>
@@ -220,6 +260,36 @@ export default function AdminBrandsPage() {
                   <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Description / Histoire</label>
                   <textarea className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-3 text-[13px] text-[#111] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all resize-y"
                     value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Histoire de la marque..." />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Logo de la marque</label>
+                  <div className="flex gap-4 items-start">
+                    {formData.image ? (
+                      <div className="relative w-24 h-24 border border-[#eaeaea] rounded-xl overflow-hidden bg-white shadow-sm group">
+                        <Image src={formData.image} alt="Logo" fill className="object-contain p-2" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                          <button
+                            type="button"
+                            onClick={() => setFormData({...formData, image: ''})}
+                            className="bg-white text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors shadow-sm"
+                            title="Supprimer l'image"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className={`w-24 h-24 border-2 border-dashed border-[#eaeaea] bg-[#fafafa] rounded-xl flex items-center justify-center text-[#999] hover:text-[#111] hover:border-[#111] hover:bg-gray-50 cursor-pointer transition-all ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        {isUploading ? (
+                          <div className="w-5 h-5 border-2 border-[#111] border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Upload size={20} />
+                        )}
+                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
+                      </label>
+                    )}
+                  </div>
                 </div>
               </div>
               

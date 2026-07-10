@@ -11,7 +11,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         name, 
         label, 
         description, 
-        image: image || undefined 
+        image 
       }
     });
     return NextResponse.json(updated);
