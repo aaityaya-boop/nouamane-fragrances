@@ -60,7 +60,7 @@ export default async function LocaleLayout({
         />
         <DictionaryProvider dictionary={dictionary}>
           <PreferencesProvider>
-            <SmoothScrollProvider>
+            {/* <SmoothScrollProvider> */}
               <AuthProvider>
                 <CartProvider>
                   <FacebookPixel />
@@ -68,7 +68,7 @@ export default async function LocaleLayout({
                   {children}
                 </CartProvider>
               </AuthProvider>
-            </SmoothScrollProvider>
+            {/* </SmoothScrollProvider> */}
             <WhatsAppButton />
             <CookieConsent />
           </PreferencesProvider>

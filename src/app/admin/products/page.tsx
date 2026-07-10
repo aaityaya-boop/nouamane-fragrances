@@ -321,6 +321,13 @@ export default function AdminProductsPage() {
                     value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
                 </div>
                 
+                <div className="col-span-2">
+                  <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Tagline (L'Accroche)</label>
+                  <input type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                    value={formData.tagline} onChange={e => setFormData({...formData, tagline: e.target.value})} 
+                    placeholder="Ex: L'étincelle de la conviction." />
+                </div>
+                
                 <div>
                   <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Marque</label>
                   <select className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
