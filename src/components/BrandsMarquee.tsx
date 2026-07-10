@@ -58,12 +58,12 @@ export default function BrandsMarquee({ brands }: { brands: Brand[] }) {
               className="flex-shrink-0 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-500 opacity-60 hover:opacity-100 px-4 group/item"
             >
               {brand.image ? (
-                <div className="relative w-40 h-20 md:w-56 md:h-28">
+                <div className="relative w-32 h-10 md:w-40 md:h-14 flex items-center justify-center">
                   <Image 
                     src={brand.image} 
                     alt={brand.name} 
                     fill 
-                    className="object-contain mix-blend-multiply" 
+                    className="object-contain mix-blend-multiply drop-shadow-sm p-1 md:p-2" 
                   />
                 </div>
               ) : (
