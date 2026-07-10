@@ -242,7 +242,7 @@ function ShopCatalogInner({
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
-                {paginated.map((p) => (
+                {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((p) => (
                   <motion.div
                     key={p.id}
                     initial={{ opacity: 0, y: 20 }}
