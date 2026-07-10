@@ -38,10 +38,13 @@ export default function SmoothScrollProvider({
         // Prevent Lenis from interfering with anchor tag navigation
         prevent: (node: Element) => {
           // Allow native navigation on anchor tags that link to other pages
-          if (node.tagName === 'A') {
-            const href = node.getAttribute('href');
+          // IMPORTANT: we must check the node itself AND its ancestors because clicks 
+          // often target inner spans or images inside the anchor tag.
+          const anchor = node.closest('a');
+          if (anchor) {
+            const href = anchor.getAttribute('href');
             if (href && !href.startsWith('#')) {
-              return true;
+              return true; // Return true to tell Lenis NOT to intercept this interaction
             }
           }
           return false;
