@@ -1,0 +1,195 @@
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function addProducts() {
+  const products = [
+    {
+      slug: 'emporio-armani-stronger-with-you-absolutely-tester',
+      name: 'Stronger With You Absolutely',
+      brandId: 'armani',
+      brandLabel: 'Emporio Armani',
+      gender: 'men',
+      subcategory: 'oriental',
+      subcategoryLabel: 'Oriental Boisé',
+      tagline: 'Une signature sensuelle et addictive.',
+      price: 1190,
+      originalPrice: 1590,
+      testerPrice: null,
+      description: "Stronger With You Absolutely est un parfum oriental boisé, une expression intense et irrésistible de l'amour absolu.",
+      longDescription: "Stronger With You Absolutely d'Emporio Armani est un parfum oriental boisé, une expression intense et irrésistible de l'amour absolu. Les notes de rhum, de lavande et de vanille créent un sillage chaud et captivant.",
+      images: JSON.stringify(['/images/swy-absolutely-tester.jpg']),
+      notes: JSON.stringify({
+        top: ['Rum', 'Elemi', 'Bergamot'],
+        heart: ['Lavender', 'Davana'],
+        base: ['Chestnut', 'Madagascar Vanilla', 'Cedar', 'Patchouli']
+      }),
+      ingredients: 'Alcohol Denat, Parfum (Fragrance)...',
+      sizes: JSON.stringify([{ label: '100ml', price: 1190 }]),
+      bottleColor: 'brown',
+      bottleColorLabel: 'Ambré',
+      bottleMaterial: 'glass',
+      bottleMaterialLabel: 'Verre',
+      rating: 4.8,
+      reviewCount: 24,
+      releaseDate: '2021',
+      tags: JSON.stringify(['niche', 'tester', 'armani']),
+      isTester: true,
+      inStock: true,
+      stock: 8,
+      perfectSeason: 'Winter'
+    },
+    {
+      slug: 'armani-prive-rose-milano-tester',
+      name: 'Armani Privé Rose Milano',
+      brandId: 'armani',
+      brandLabel: 'Giorgio Armani',
+      gender: 'women',
+      subcategory: 'floral',
+      subcategoryLabel: 'Chypre Floral',
+      tagline: "L'élégance milanaise incarnée.",
+      price: 1590,
+      originalPrice: 2190,
+      testerPrice: null,
+      description: "Rose Milano est un chypre floral délicat qui sublime la rose de Damas avec des notes terreuses de patchouli.",
+      longDescription: "Rose Milano de la collection Armani Privé est un chypre floral délicat qui sublime la majestueuse rose de Damas avec des notes terreuses de patchouli et de citron de Sicile.",
+      images: JSON.stringify(['/images/rose-milano-tester.jpg']),
+      notes: JSON.stringify({
+        top: ['Pear', 'Lemon', 'Bergamot'],
+        heart: ['Rose', 'Jasmine'],
+        base: ['Patchouli', 'Moss']
+      }),
+      ingredients: 'Alcohol Denat, Parfum (Fragrance)...',
+      sizes: JSON.stringify([{ label: '100ml', price: 1590 }]),
+      bottleColor: 'pink',
+      bottleColorLabel: 'Rose pâle',
+      bottleMaterial: 'glass',
+      bottleMaterialLabel: 'Verre',
+      rating: 4.7,
+      reviewCount: 15,
+      releaseDate: '2020',
+      tags: JSON.stringify(['niche', 'tester', 'armani']),
+      isTester: true,
+      inStock: true,
+      stock: 5,
+      perfectSeason: 'Spring'
+    },
+    {
+      slug: 'armani-prive-vert-malachite-tester',
+      name: 'Armani Privé Vert Malachite',
+      brandId: 'armani',
+      brandLabel: 'Giorgio Armani',
+      gender: 'women',
+      subcategory: 'floral',
+      subcategoryLabel: 'Floral Boisé',
+      tagline: 'Une fleur blanche lumineuse venue de Russie.',
+      price: 1590,
+      originalPrice: 2190,
+      testerPrice: null,
+      description: "Vert Malachite est un parfum lumineux et délicat qui met à l'honneur le lys blanc vibrant.",
+      longDescription: "Armani Privé Vert Malachite est un parfum lumineux et délicat qui met à l'honneur le lys blanc vibrant. Une fragrance florale boisée inspirée des vastes paysages de Russie.",
+      images: JSON.stringify(['/images/vert-malachite-tester.jpg']),
+      notes: JSON.stringify({
+        top: ['Bitter Orange', 'Petitgrain'],
+        heart: ['Jasmine Sambac', 'Ylang-Ylang', 'Pink Pepper'],
+        base: ['Lily', 'Vanilla', 'Benzoin']
+      }),
+      ingredients: 'Alcohol Denat, Parfum (Fragrance)...',
+      sizes: JSON.stringify([{ label: '100ml', price: 1590 }]),
+      bottleColor: 'green',
+      bottleColorLabel: 'Vert émeraude',
+      bottleMaterial: 'glass',
+      bottleMaterialLabel: 'Verre',
+      rating: 4.9,
+      reviewCount: 31,
+      releaseDate: '2016',
+      tags: JSON.stringify(['niche', 'tester', 'armani']),
+      isTester: true,
+      inStock: true,
+      stock: 4,
+      perfectSeason: 'Spring'
+    },
+    {
+      slug: 'emporio-armani-stronger-with-you-oud-tester',
+      name: 'Stronger With You Oud',
+      brandId: 'armani',
+      brandLabel: 'Emporio Armani',
+      gender: 'men',
+      subcategory: 'oriental',
+      subcategoryLabel: 'Oriental Boisé',
+      tagline: 'Le bois de oud rencontre une chaleur épicée.',
+      price: 1190,
+      originalPrice: 1590,
+      testerPrice: null,
+      description: "Une édition luxueuse qui infuse l'ADN de Stronger With You avec la richesse envoûtante du bois de oud.",
+      longDescription: "Stronger With You Oud est une édition luxueuse qui infuse l'ADN signature de Stronger With You avec la richesse envoûtante du bois de oud et du lavandin mystérieux.",
+      images: JSON.stringify(['/images/swy-oud-tester.jpg']),
+      notes: JSON.stringify({
+        top: ['Lavender', 'Spices'],
+        heart: ['Oud', 'Vanilla'],
+        base: ['Cedarwood', 'Patchouli']
+      }),
+      ingredients: 'Alcohol Denat, Parfum (Fragrance)...',
+      sizes: JSON.stringify([{ label: '100ml', price: 1190 }]),
+      bottleColor: 'black',
+      bottleColorLabel: 'Noir intense',
+      bottleMaterial: 'glass',
+      bottleMaterialLabel: 'Verre',
+      rating: 4.8,
+      reviewCount: 19,
+      releaseDate: '2022',
+      tags: JSON.stringify(['niche', 'tester', 'armani']),
+      isTester: true,
+      inStock: true,
+      stock: 7,
+      perfectSeason: 'Winter'
+    },
+    {
+      slug: 'emporio-armani-stronger-with-you-intensely-tester',
+      name: 'Stronger With You Intensely',
+      brandId: 'armani',
+      brandLabel: 'Emporio Armani',
+      gender: 'men',
+      subcategory: 'oriental',
+      subcategoryLabel: 'Oriental Fougère',
+      tagline: "L'intensité d'un amour vibrant.",
+      price: 1190,
+      originalPrice: 1590,
+      testerPrice: null,
+      description: "Un parfum ambré fougère audacieux avec des notes de poivre rose, de vanille et de bois d'ambre.",
+      longDescription: "Stronger With You Intensely est un parfum ambré fougère audacieux avec des notes vibrantes de poivre rose, de vanille et de bois d'ambre. Idéal pour un sillage marquant.",
+      images: JSON.stringify(['/images/swy-intensely-tester.jpg']),
+      notes: JSON.stringify({
+        top: ['Pink Pepper', 'Juniper', 'Violet'],
+        heart: ['Toffee', 'Cinnamon', 'Lavender', 'Sage'],
+        base: ['Vanilla', 'Tonka Bean', 'Amber', 'Suede']
+      }),
+      ingredients: 'Alcohol Denat, Parfum (Fragrance)...',
+      sizes: JSON.stringify([{ label: '100ml', price: 1190 }]),
+      bottleColor: 'brown',
+      bottleColorLabel: 'Ambré clair',
+      bottleMaterial: 'glass',
+      bottleMaterialLabel: 'Verre',
+      rating: 4.9,
+      reviewCount: 42,
+      releaseDate: '2019',
+      tags: JSON.stringify(['niche', 'tester', 'armani']),
+      isTester: true,
+      inStock: true,
+      stock: 12,
+      perfectSeason: 'Autumn'
+    }
+  ];
+
+  for (const product of products) {
+    await prisma.product.upsert({
+      where: { slug: product.slug },
+      update: product,
+      create: product,
+    });
+    console.log(`Added: ${product.name}`);
+  }
+}
+
+addProducts()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

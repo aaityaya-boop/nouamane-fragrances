@@ -1,0 +1,13 @@
+{
+  "name": "grep_search",
+  "args": {
+    "CaseInsensitive": true,
+    "Includes": [],
+    "IsRegex": false,
+    "MatchPerLine": true,
+    "Query": "YSL Libre",
+    "SearchPath": "c:/Users/AYOUB/Documents/Nouamane store/website 2/src/components/Header.tsx",
+    "toolAction": "Search Header for YSL Libre",
+    "toolSummary": "Semantic search"
+  }
+}

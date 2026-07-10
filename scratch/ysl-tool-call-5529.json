@@ -1,0 +1,10 @@
+{
+  "name": "run_command",
+  "args": {
+    "CommandLine": "Select-String -Pattern \"YSL Libre\" scratch\\Header_replayed.tsx",
+    "Cwd": "c:/Users/AYOUB/Documents/Nouamane store/website 2",
+    "WaitMsBeforeAsync": 5000,
+    "toolAction": "Check replayed header",
+    "toolSummary": "Command execution"
+  }
+}

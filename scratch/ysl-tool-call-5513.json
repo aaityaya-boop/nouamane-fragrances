@@ -1,0 +1,10 @@
+{
+  "name": "run_command",
+  "args": {
+    "CommandLine": "node scratch/search-ysl.js",
+    "Cwd": "c:/Users/AYOUB/Documents/Nouamane store/website 2",
+    "WaitMsBeforeAsync": 5000,
+    "toolAction": "Run YSL Libre search",
+    "toolSummary": "Command execution"
+  }
+}
