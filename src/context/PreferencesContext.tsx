@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import Cookies from 'js-cookie';
 
 type Preferences = {
@@ -55,16 +55,16 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     setIsLoaded(true);
   }, []);
 
-  const updatePreferences = (newPrefs: Partial<Preferences>) => {
+  const updatePreferences = useCallback((newPrefs: Partial<Preferences>) => {
     setPreferences(prev => {
       const updated = { ...prev, ...newPrefs };
       // Save preferences to cookie (memory)
       Cookies.set('nouamane_preferences', JSON.stringify(updated), { expires: 365, path: '/' });
       return updated;
     });
-  };
+  }, []);
 
-  const addRecentlyViewed = (productId: number) => {
+  const addRecentlyViewed = useCallback((productId: number) => {
     setRecentlyViewed(prev => {
       // Remove if already exists to move it to the front
       const filtered = prev.filter(id => id !== productId);
@@ -74,12 +74,12 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       Cookies.set('nouamane_recently_viewed', JSON.stringify(updated), { expires: 30, path: '/' });
       return updated;
     });
-  };
+  }, []);
 
-  const clearRecentlyViewed = () => {
+  const clearRecentlyViewed = useCallback(() => {
     setRecentlyViewed([]);
     Cookies.remove('nouamane_recently_viewed', { path: '/' });
-  };
+  }, []);
 
   return (
     <PreferencesContext.Provider value={{ 
