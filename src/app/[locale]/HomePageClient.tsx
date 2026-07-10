@@ -17,6 +17,7 @@ import CartDrawer from '@/components/CartDrawer';
 import ProductCard from '@/components/ProductCard';
 import BestsellersDirectory from '@/components/BestsellersDirectory';
 import SplitTypographyHero from '@/components/SplitTypographyHero';
+import BrandsMarquee from '@/components/BrandsMarquee';
 import FAQ from '@/components/FAQ';
 import {
   ArrowRight,
@@ -524,6 +525,7 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
         </div>
       </section>
 
+      <BrandsMarquee brands={brands} />
       <FAQ />
 
       <Footer />
