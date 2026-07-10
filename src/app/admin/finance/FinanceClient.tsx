@@ -111,53 +111,58 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
       <div>
         <h2 className="text-[14px] font-bold tracking-widest uppercase text-gray-500 mb-4">Vue d'ensemble de la Trésorerie</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <KpiCard icon={<DollarSign />} title="Chiffre d'Affaires Net" value={formatMAD(netRevenue)} subtitle="Revenus validés" bg="bg-emerald-50 text-emerald-600" />
-          <KpiCard icon={<TrendingUp />} title="Revenus en Attente" value={formatMAD(pendingRevenue)} subtitle="Potentiel à confirmer" bg="bg-amber-50 text-amber-600" />
-          <KpiCard icon={<RefreshCcw />} title="Retours Clients" value={formatMAD(returnedRevenue)} subtitle={`${returnedCount} commande(s)`} bg="bg-red-50 text-red-600" />
-          <KpiCard icon={<Gift />} title="Impact Promo" value={`-${formatMAD(totalDiscounts)}`} subtitle="Réductions accordées" bg="bg-purple-50 text-purple-600" />
-          <KpiCard icon={<Truck />} title="Logistique" value={formatMAD(totalShipping)} subtitle="Frais facturés" bg="bg-blue-50 text-blue-600" />
+          <KpiCard icon={<DollarSign size={20} />} title="CA Net" value={formatMAD(netRevenue)} subtitle="Revenus validés" bg="bg-emerald-50 text-emerald-600 border-emerald-100" />
+          <KpiCard icon={<TrendingUp size={20} />} title="En Attente" value={formatMAD(pendingRevenue)} subtitle="À confirmer" bg="bg-amber-50 text-amber-600 border-amber-100" />
+          <KpiCard icon={<RefreshCcw size={20} />} title="Retours" value={formatMAD(returnedRevenue)} subtitle={`${returnedCount} commande(s)`} bg="bg-red-50 text-red-600 border-red-100" />
+          <KpiCard icon={<Gift size={20} />} title="Promos" value={`-${formatMAD(totalDiscounts)}`} subtitle="Réductions" bg="bg-purple-50 text-purple-600 border-purple-100" />
+          <KpiCard icon={<Truck size={20} />} title="Logistique" value={formatMAD(totalShipping)} subtitle="Frais facturés" bg="bg-blue-50 text-blue-600 border-blue-100" />
         </div>
       </div>
 
       {/* SECTION 2: CUSTOMER VALUE METRICS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#1A1A1A] text-white p-6 rounded-2xl shadow-lg border border-gray-800 flex items-center justify-between">
-          <div>
+        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
+          <div className="relative z-10">
             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Valeur Vie Client (LTV)</p>
-            <h3 className="text-3xl font-bold">{formatMAD(ltv)}</h3>
+            <h3 className="text-3xl font-bold tracking-tight">{formatMAD(ltv)}</h3>
             <p className="text-gray-500 text-xs mt-1">Revenu moyen par client unique</p>
           </div>
-          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-emerald-400">
+          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-emerald-400 relative z-10 shadow-inner shadow-emerald-400/10">
             <Users size={24} />
           </div>
         </div>
-        <div className="bg-[#1A1A1A] text-white p-6 rounded-2xl shadow-lg border border-gray-800 flex items-center justify-between">
-          <div>
+        
+        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-colors duration-500"></div>
+          <div className="relative z-10">
             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Panier Moyen (AOV)</p>
-            <h3 className="text-3xl font-bold">{formatMAD(avgOrderValue)}</h3>
+            <h3 className="text-3xl font-bold tracking-tight">{formatMAD(avgOrderValue)}</h3>
             <p className="text-gray-500 text-xs mt-1">Revenu par commande</p>
           </div>
-          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-sky-400">
+          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-sky-400 relative z-10 shadow-inner shadow-sky-400/10">
             <Percent size={24} />
           </div>
         </div>
-        <div className="bg-[#1A1A1A] text-white p-6 rounded-2xl shadow-lg border border-gray-800 flex items-center justify-between">
-          <div>
+        
+        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors duration-500"></div>
+          <div className="relative z-10">
             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Base Clients Active</p>
-            <h3 className="text-3xl font-bold">{uniqueCustomers}</h3>
+            <h3 className="text-3xl font-bold tracking-tight">{uniqueCustomers}</h3>
             <p className="text-gray-500 text-xs mt-1">Acheteurs confirmés uniques</p>
           </div>
-          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-purple-400">
+          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-purple-400 relative z-10 shadow-inner shadow-purple-400/10">
             <Award size={24} />
           </div>
         </div>
       </div>
 
       {/* SECTION 3: REVENUE CHART */}
-      <div className="bg-white border border-[#e0ddd4] rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[16px] font-bold text-gray-900">Croissance des Revenus (30 derniers jours)</h2>
-          <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">CA Net Uniquement</span>
+          <h2 className="text-[16px] font-bold text-[#111]">Croissance des Revenus (30 derniers jours)</h2>
+          <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded-md border border-emerald-100 uppercase tracking-wider">CA Net Uniquement</span>
         </div>
         <div className="h-[380px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -168,10 +173,10 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-              <XAxis dataKey="date" tickFormatter={(val) => { const d = new Date(val); return `${d.getDate()}/${d.getMonth()+1}`; }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9ca3af' }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9ca3af' }} tickFormatter={(val) => `${val} Dh`} dx={-10} />
-              <Tooltip formatter={(value: any) => [formatMAD(Number(value)), 'CA Net Généré']} labelFormatter={(label) => new Date(label as string).toLocaleDateString('fr-FR')} contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaea" />
+              <XAxis dataKey="date" tickFormatter={(val) => { const d = new Date(val); return `${d.getDate()}/${d.getMonth()+1}`; }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(val) => `${val} Dh`} dx={-10} />
+              <Tooltip formatter={(value: any) => [formatMAD(Number(value)), 'CA Net Généré']} labelFormatter={(label) => new Date(label as string).toLocaleDateString('fr-FR')} contentStyle={{ borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
               <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorNet)" />
             </AreaChart>
           </ResponsiveContainer>
@@ -182,20 +187,20 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Top Cities */}
-        <div className="bg-white border border-[#e0ddd4] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-gray-900 mb-6 flex items-center gap-2"><MapPin size={18} className="text-sky-500"/> Pénétration par Ville</h2>
+        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
+          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2"><MapPin size={18} className="text-[#0ea5e9]"/> Pénétration par Ville</h2>
           <div className="flex-1 flex flex-col justify-center items-center">
             {topCities.length > 0 ? (
               <>
                 <div className="h-[220px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={topCities} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                      <Pie data={topCities} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
                         {topCities.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: any) => formatMAD(Number(value))} contentStyle={{ borderRadius: '8px' }} />
+                      <Tooltip formatter={(value: any) => formatMAD(Number(value))} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -204,62 +209,67 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
                     <div key={idx} className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                        <span className="font-medium text-gray-700">{city.name}</span>
+                        <span className="font-medium text-[#111]">{city.name}</span>
                       </div>
-                      <span className="font-bold text-gray-900">{formatMAD(city.value)}</span>
+                      <span className="font-bold text-[#111]">{formatMAD(city.value)}</span>
                     </div>
                   ))}
                 </div>
               </>
             ) : (
-              <p className="text-gray-400 text-sm py-10">Pas assez de données.</p>
+              <p className="text-[#888] text-sm py-10">Pas assez de données.</p>
             )}
           </div>
         </div>
 
         {/* Top Products */}
-        <div className="bg-white border border-[#e0ddd4] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-gray-900 mb-6 flex items-center gap-2">🏆 Parfums Best-Sellers</h2>
+        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
+          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2">🏆 Parfums Best-Sellers</h2>
           <div className="space-y-4">
             {topProducts.map((product, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <div key={idx} className="flex items-center justify-between p-3 bg-[#fafafa] rounded-xl border border-[#eaeaea] group hover:bg-white transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${idx === 0 ? 'bg-amber-100 text-amber-700' : 'bg-gray-200 text-gray-600'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm border ${idx === 0 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-white text-gray-600 border-[#eaeaea]'}`}>
                     #{idx + 1}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900 line-clamp-1">{product.name}</p>
-                    <p className="text-[11px] text-gray-500 uppercase tracking-wider">{product.quantity} Unités vendues</p>
+                    <p className="text-[13px] font-bold text-[#111] line-clamp-1">{product.name}</p>
+                    <p className="text-[11px] text-[#666] uppercase tracking-wider mt-0.5">{product.quantity} Unités vendues</p>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-emerald-600">
+                <div className="text-[13px] font-bold text-emerald-600">
                   {formatMAD(product.revenue)}
                 </div>
               </div>
             ))}
-            {topProducts.length === 0 && <p className="text-sm text-gray-500 text-center py-10">Aucune vente enregistrée.</p>}
+            {topProducts.length === 0 && <p className="text-[13px] text-[#888] text-center py-10">Aucune vente enregistrée.</p>}
           </div>
         </div>
 
         {/* Top VIP Customers */}
-        <div className="bg-white border border-[#e0ddd4] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-gray-900 mb-6 flex items-center gap-2"><Award size={18} className="text-purple-500"/> Top Clients (VIPs)</h2>
+        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
+          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2"><Award size={18} className="text-purple-500"/> Top Clients (VIPs)</h2>
           <div className="space-y-4">
             {topCustomers.map((customer, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-gray-900">{customer.name}</p>
-                  <p className="text-xs text-gray-500 truncate w-32">{customer.email}</p>
+              <div key={idx} className="flex items-center justify-between p-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 flex items-center justify-center text-[11px] font-bold text-gray-700 shadow-sm border border-white shrink-0">
+                    {customer.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#111]">{customer.name}</p>
+                    <p className="text-[11px] text-[#666] truncate w-32 mt-0.5">{customer.email}</p>
+                  </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-gray-900">{formatMAD(customer.spent)}</p>
-                  <p className="text-[10px] uppercase font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full inline-block mt-1">
+                  <p className="text-[13px] font-bold text-[#111]">{formatMAD(customer.spent)}</p>
+                  <p className="text-[10px] uppercase font-bold text-[#0ea5e9] bg-sky-50 px-2 py-0.5 rounded-md inline-block mt-1 ring-1 ring-inset ring-sky-500/20">
                     {customer.count} Cmds
                   </p>
                 </div>
               </div>
             ))}
-            {topCustomers.length === 0 && <p className="text-sm text-gray-500 text-center py-10">Aucun client enregistré.</p>}
+            {topCustomers.length === 0 && <p className="text-[13px] text-[#888] text-center py-10">Aucun client enregistré.</p>}
           </div>
         </div>
 
@@ -270,16 +280,17 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
 
 function KpiCard({ icon, title, value, subtitle, bg }: { icon: React.ReactNode, title: string, value: string, subtitle: string, bg: string }) {
   return (
-    <div className="bg-white border border-[#e0ddd4] p-5 rounded-2xl shadow-sm flex flex-col justify-between h-full">
-      <div className="flex items-center gap-3 mb-4">
-        <div className={`p-2.5 rounded-xl ${bg}`}>
+    <div className="bg-white border border-[#eaeaea] p-5 rounded-2xl shadow-sm flex flex-col justify-between h-full relative overflow-hidden group hover:shadow-[0_4px_15px_-4px_rgba(0,0,0,0.08)] hover:border-[#ddd] transition-all duration-300">
+      <div className="absolute -top-10 -right-10 w-24 h-24 bg-gray-50 rounded-full blur-2xl group-hover:bg-gray-100 transition-colors duration-500 pointer-events-none"></div>
+      <div className="flex items-center gap-3 mb-4 relative z-10">
+        <div className={`p-2.5 rounded-xl border ${bg} shadow-sm`}>
           {icon}
         </div>
-        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-tight">{title}</p>
+        <p className="text-[11px] font-bold text-[#666] uppercase tracking-wider leading-tight">{title}</p>
       </div>
-      <div>
-        <h3 className="text-2xl font-black text-gray-900 mb-1 tracking-tight">{value}</h3>
-        <p className="text-[11px] font-medium text-gray-400">{subtitle}</p>
+      <div className="relative z-10">
+        <h3 className="text-2xl font-black text-[#111] mb-1 tracking-tight">{value}</h3>
+        <p className="text-[11px] font-medium text-[#888]">{subtitle}</p>
       </div>
     </div>
   );

@@ -30,10 +30,10 @@ export default async function FinancePage() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-[1600px] mx-auto p-8 lg:p-12">
       <div className="mb-10">
-        <h1 className="heading-font text-3xl font-medium text-[#1A1A1A] mb-2">Finance & Rapports</h1>
-        <p className="text-[14px] text-[#6B6B6B]">Analysez vos performances financières et vos meilleures ventes.</p>
+        <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Finance & Rapports</h1>
+        <p className="text-[14px] text-[#666]">Analysez vos performances financières et vos meilleures ventes.</p>
       </div>
 
       <FinanceClient orders={serializedOrders} />

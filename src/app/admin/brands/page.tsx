@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Search, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Hash } from 'lucide-react';
 
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -92,73 +92,83 @@ export default function AdminBrandsPage() {
   );
 
   return (
-    <div className="p-8 lg:p-12 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
         <div>
-          <h1 className="heading-font text-3xl font-light text-[#1A1A1A]">Marques</h1>
-          <p className="text-[#6B6B6B] text-[13px] mt-1">Gérez vos marques ({brands.length} au total)</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Marques</h1>
+          <p className="text-[#666] text-[14px]">Gérez vos marques partenaires et fournisseurs ({brands.length} au total)</p>
         </div>
         
         <button 
           onClick={openAddModal}
-          className="flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 rounded-lg text-[13px] hover:bg-[#0ea5e9] transition-colors"
+          className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-800 transition-colors shadow-sm"
         >
           <Plus size={16} /> Ajouter une marque
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#e0ddd4] overflow-hidden">
-        <div className="p-4 border-b border-[#e0ddd4] flex items-center gap-3">
-          <Search size={16} className="text-[#9A9A9A]" />
+      <div className="bg-white rounded-2xl border border-[#eaeaea] overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-[#eaeaea] flex items-center gap-3 bg-white">
+          <Search size={16} className="text-[#999]" />
           <input 
             type="text" 
             placeholder="Rechercher une marque..." 
-            className="flex-1 bg-transparent border-none focus:outline-none text-[13px]"
+            className="flex-1 bg-transparent border-none focus:outline-none text-[14px] text-[#111] placeholder:text-[#999]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-[13px]">
-            <thead className="bg-[#f8fafc] text-[#6B6B6B] border-b border-[#e0ddd4]">
+          <table className="w-full text-left">
+            <thead className="bg-[#fafafa] border-b border-[#eaeaea]">
               <tr>
-                <th className="p-4 font-medium">Marque</th>
-                <th className="p-4 font-medium">Slug</th>
-                <th className="p-4 font-medium text-right">Actions</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Slug (URL)</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e0ddd4]">
+            <tbody className="divide-y divide-[#eaeaea]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-[#9A9A9A]">Chargement...</td>
+                  <td colSpan={3} className="p-12 text-center text-[#666] text-[13px]">Chargement des marques...</td>
                 </tr>
               ) : filteredBrands.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-[#9A9A9A]">Aucune marque trouvée.</td>
+                  <td colSpan={3} className="p-12 text-center text-[#666] text-[13px]">Aucune marque trouvée.</td>
                 </tr>
               ) : (
                 filteredBrands.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#f8fafc] transition-colors">
-                    <td className="p-4 font-medium text-[#1A1A1A]">
-                      {b.name}
+                  <tr key={b.id} className="hover:bg-[#fafafa] transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[14px] font-black text-gray-800 shadow-sm border border-[#eaeaea] shrink-0 font-serif italic">
+                          {b.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-[14px] font-bold text-[#111]">{b.name}</span>
+                      </div>
                     </td>
-                    <td className="p-4 text-[#9A9A9A]">
-                      {b.slug}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5 text-[12px] font-mono text-[#666] bg-gray-50 inline-flex px-2 py-1 rounded-md border border-[#eaeaea]">
+                        <Hash size={12} className="text-[#999]" />
+                        {b.slug}
+                      </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => openEditModal(b)}
-                          className="w-8 h-8 flex items-center justify-center rounded bg-[#f8fafc] text-[#6B6B6B] hover:text-[#0ea5e9] hover:bg-[#e0f2fe] transition-colors border border-[#e0ddd4]"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-[#0ea5e9] hover:bg-sky-50 transition-colors border border-[#eaeaea] shadow-sm"
                           aria-label="Modifier"
+                          title="Modifier"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button 
                           onClick={() => handleDelete(b.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded bg-[#f8fafc] text-[#6B6B6B] hover:text-red-500 hover:bg-red-50 transition-colors border border-[#e0ddd4]"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-red-500 hover:bg-red-50 transition-colors border border-[#eaeaea] shadow-sm"
                           aria-label="Supprimer"
+                          title="Supprimer"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -174,47 +184,49 @@ export default function AdminBrandsPage() {
 
       {/* MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-            <div className="bg-white border-b border-[#e0ddd4] p-5 flex items-center justify-between">
-              <h2 className="heading-font text-xl">{editingBrand ? 'Modifier la marque' : 'Ajouter une marque'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#9A9A9A] hover:text-[#1A1A1A]">
-                <X size={20} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white border-b border-[#eaeaea] px-6 py-5 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-[#111] tracking-tight">{editingBrand ? 'Modifier la marque' : 'Nouvelle marque'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-[#999] hover:text-[#111] bg-gray-50 hover:bg-gray-100 p-1.5 rounded-full transition-colors">
+                <X size={18} />
               </button>
             </div>
             
-            <form onSubmit={handleSave} className="p-6 space-y-5">
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Nom de la marque</label>
-                <input required type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                  value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ex: Dior" />
-              </div>
-              
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2 flex items-center gap-2">
-                  <span>Slug (Identifiant dans l'URL)</span>
-                  <span className="bg-gray-100 px-2 py-0.5 rounded text-[10px]">nouamane.ma/fr/brands/<span className="text-blue-500">{formData.slug || 'dior'}</span></span>
-                </label>
-                <input required type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                  value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} placeholder="Ex: dior" />
-              </div>
+            <form onSubmit={handleSave} className="p-6 space-y-6 bg-[#fafafa]">
+              <div className="bg-white p-5 rounded-xl border border-[#eaeaea] space-y-5 shadow-sm">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Nom de la marque</label>
+                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-medium text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                    value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ex: Dior, Chanel..." />
+                </div>
+                
+                <div>
+                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2 flex items-center justify-between gap-2">
+                    <span>Slug (Identifiant URL)</span>
+                    <span className="font-mono text-[10px] text-[#888] normal-case bg-gray-100 px-1.5 py-0.5 rounded">nouamane.ma/fr/brands/<span className="text-[#0ea5e9] font-bold">{formData.slug || 'slug'}</span></span>
+                  </label>
+                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-mono text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                    value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} placeholder="Ex: dior" />
+                </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Label (Identique au nom en général)</label>
-                <input required type="text" className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
-                  value={formData.label} onChange={e => setFormData({...formData, label: e.target.value})} placeholder="Ex: Dior" />
+                <div>
+                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Label affiché</label>
+                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-medium text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                    value={formData.label} onChange={e => setFormData({...formData, label: e.target.value})} placeholder="Ex: Dior" />
+                </div>
+                
+                <div>
+                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Description / Histoire</label>
+                  <textarea className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-3 text-[13px] text-[#111] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all resize-y"
+                    value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Histoire de la marque..." />
+                </div>
               </div>
               
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Description / Histoire</label>
-                <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[13px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                  value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-              </div>
-              
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#e0ddd4]">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-[13px] text-[#6B6B6B] hover:text-[#1A1A1A]">Annuler</button>
-                <button type="submit" className="bg-[#0ea5e9] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-blue-600 transition-colors">
-                  {editingBrand ? 'Enregistrer' : 'Ajouter la marque'}
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-[13px] font-medium text-[#666] hover:text-[#111] bg-white border border-[#eaeaea] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">Annuler</button>
+                <button type="submit" className="bg-[#111] text-white px-6 py-2.5 rounded-lg text-[13px] font-bold hover:bg-gray-800 transition-colors shadow-sm">
+                  {editingBrand ? 'Enregistrer les modifications' : 'Créer la marque'}
                 </button>
               </div>
             </form>
