@@ -168,32 +168,19 @@ export default function OrdersPage() {
                     <div className="text-[11px] text-[#888] font-medium">{itemsCount} article(s)</div>
                   </td>
                   <td className="px-6 py-4 relative" onClick={(e) => e.stopPropagation()}>
-                    <div className={`relative inline-block ${openDropdownId === order.id ? 'z-[100]' : 'z-10'}`}>
-                      <button 
-                        onClick={() => setOpenDropdownId(openDropdownId === order.id ? null : order.id)}
-                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wide cursor-pointer transition-colors ring-1 ring-inset ${STATUS_COLORS[order.status as OrderStatus] || STATUS_COLORS.pending}`}
+                    <div className="relative inline-block w-[130px]">
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
+                        className={`w-full appearance-none flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wide cursor-pointer transition-colors ring-1 ring-inset focus:outline-none focus:ring-2 ${STATUS_COLORS[order.status as OrderStatus] || STATUS_COLORS.pending}`}
                       >
-                        {STATUS_LABELS[order.status as OrderStatus] || 'En attente'}
-                        <ChevronDown size={14} className="opacity-60" />
-                      </button>
-
-                      {openDropdownId === order.id && (
-                        <>
-                          <div className="fixed inset-0 z-[40]" onClick={() => setOpenDropdownId(null)} />
-                          <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-[#eaeaea] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden z-[50] animate-in fade-in zoom-in-95 duration-100">
-                            {(Object.keys(STATUS_LABELS) as OrderStatus[]).map((status) => (
-                              <button
-                                key={status}
-                                onClick={() => handleStatusChange(order.id, status)}
-                                className="w-full text-left px-4 py-3 text-[12px] font-medium hover:bg-[#fafafa] text-[#111] transition-colors flex items-center justify-between"
-                              >
-                                {STATUS_LABELS[status]}
-                                {order.status === status && <div className="w-2 h-2 rounded-full bg-[#0ea5e9]" />}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                        {(Object.keys(STATUS_LABELS) as OrderStatus[]).map((status) => (
+                          <option key={status} value={status}>
+                            {STATUS_LABELS[status]}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -227,9 +214,17 @@ export default function OrdersPage() {
               <div>
                 <h2 className="text-2xl font-bold text-[#111] tracking-tight flex items-center gap-3">
                   Commande {editingOrder.orderNumber}
-                  <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset ${STATUS_COLORS[editingOrder.status as OrderStatus]}`}>
-                    {STATUS_LABELS[editingOrder.status as OrderStatus]}
-                  </span>
+                  <select
+                    value={editingOrder.status}
+                    onChange={(e) => handleStatusChange(editingOrder.id, e.target.value as OrderStatus)}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset appearance-none cursor-pointer focus:outline-none focus:ring-2 ${STATUS_COLORS[editingOrder.status as OrderStatus]}`}
+                  >
+                    {(Object.keys(STATUS_LABELS) as OrderStatus[]).map((status) => (
+                      <option key={status} value={status}>
+                        {STATUS_LABELS[status]}
+                      </option>
+                    ))}
+                  </select>
                 </h2>
                 <div className="text-[13px] text-[#666] mt-1.5 font-medium">
                   Passée le {new Date(editingOrder.createdAt).toLocaleDateString('fr-MA', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
