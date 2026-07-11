@@ -55,7 +55,7 @@ export async function PUT(request: Request) {
     }
 
     const updatedCustomer = await prisma.customer.update({
-      where: { id: decoded.id },
+      where: { id: payload.id as string },
       data: { wishlist: JSON.stringify(wishlist) },
       select: {
         id: true,

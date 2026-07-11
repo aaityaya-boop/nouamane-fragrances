@@ -121,7 +121,7 @@ export default function AccountClient() {
       const fetchWishlist = async () => {
         setLoadingWishlist(true);
         try {
-          const slugs = customer.wishlist.join(',');
+          const slugs = customer.wishlist!.join(',');
           const res = await fetch(`/api/products/wishlist?slugs=${slugs}`);
           if (res.ok) {
             const data = await res.json();
@@ -212,9 +212,9 @@ export default function AccountClient() {
   const tabs = [
     { id: 'dashboard', label: 'Tableau de bord', icon: Package },
     { id: 'orders', label: 'Mes commandes', icon: Package },
-    { id: 'wishlist', label: 'Ma liste d\\'envies', icon: Heart },
+    { id: 'wishlist', label: "Ma liste d'envies", icon: Heart },
     { id: 'info', label: 'Mes informations', icon: User },
-    { id: 'address', label: 'Carnet d\\'adresses', icon: MapPin },
+    { id: 'address', label: "Carnet d'adresses", icon: MapPin },
   ];
 
   return (
