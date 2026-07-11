@@ -15,18 +15,24 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
     offset: ['start start', 'end start'],
   });
 
-  // Scroll Effects
-  const opacityText = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scaleText = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-  const yText = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
-  const yAura = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
+  // Pro Scroll Effects (Minimalist & Luxury)
+  const opacityContent = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const scaleContent = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const yContent = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const filterBlur = useTransform(scrollYProgress, [0, 0.8], ['blur(0px)', 'blur(12px)']);
+  
+  // Parallax Split Effect on Scroll
+  const xLeft = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
+  const xRight = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
+  
+  const yAura = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
 
   return (
     <section 
       ref={containerRef} 
-      className="relative h-screen w-full bg-white overflow-hidden flex items-center justify-center selection:bg-[#0ea5e9] selection:text-white"
+      className="relative h-screen w-full bg-[#FCFCFC] overflow-hidden flex items-center justify-center selection:bg-[#111] selection:text-white"
     >
-      {/* CSS for Liquid Glass Effect */}
+      {/* CSS for Liquid Glass Effect - KEPT EXACTLY AS REQUESTED */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes liquid-glace {
           0% { background-position: 200% center; }
@@ -47,63 +53,49 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           -webkit-background-clip: text;
           background-clip: text;
           animation: liquid-glace 8s linear infinite;
-          /* Add a tiny drop shadow to enhance the glass extrusion */
           filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
         }
       `}} />
 
-      {/* 1. THE INVISIBLE AURA (Animated Background) */}
+      {/* 1. PROFESSIONAL MINIMALIST BACKGROUND */}
       <motion.div 
         className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
         style={{ y: yAura }}
       >
+        {/* Luxury subtle gradient meshes instead of bright cyan blurs */}
         <motion.div
-          className="absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] bg-[#0ea5e9]/10 rounded-full blur-[100px] md:blur-[180px]"
+          className="absolute w-[90vw] h-[90vw] md:w-[70vw] md:h-[70vw] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#f3f4f6] via-[#f9fafb] to-transparent rounded-full blur-[80px] md:blur-[120px]"
           animate={{
-            x: [0, 100, -100, 0],
-            y: [0, -100, 100, 0],
-            scale: [1, 1.2, 0.9, 1],
+            scale: [1, 1.1, 0.95, 1],
+            opacity: [0.6, 0.8, 0.5, 0.6],
           }}
           transition={{
-            duration: 20,
+            duration: 15,
             repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div
-          className="absolute w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] bg-[#0ea5e9]/5 rounded-full blur-[100px] md:blur-[150px]"
-          animate={{
-            x: [0, -150, 150, 0],
-            y: [0, 150, -150, 0],
-            scale: [1, 0.8, 1.1, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
+            ease: "easeInOut"
           }}
         />
       </motion.div>
 
-      {/* Subtle Luxury Texture */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/stardust.png")' }}></div>
+      {/* Ultra-subtle luxury noise texture */}
+      <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
 
       {/* 2. CENTRAL TYPOGRAPHY & LOGO */}
       <motion.div 
         className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center justify-center"
-        style={{ opacity: opacityText, scale: scaleText, y: yText }}
+        style={{ opacity: opacityContent, scale: scaleContent, y: yContent, filter: filterBlur }}
       >
-        {/* Typo Logo with Liquid Glace Effect */}
+        {/* Typo Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-12 flex flex-col items-center justify-center"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-14 flex flex-col items-center justify-center"
         >
-          <h2 className="heading-font text-3xl md:text-5xl tracking-[0.3em] font-light liquid-glace-text">
+          <h2 className="heading-font text-2xl md:text-4xl tracking-[0.4em] font-light text-[#111]">
             NOUAMANE
           </h2>
-          <span className="text-[7px] md:text-[9px] font-bold tracking-[0.5em] uppercase text-[#0ea5e9] mt-2 opacity-80">
+          <span className="text-[8px] md:text-[10px] font-semibold tracking-[0.6em] uppercase text-[#666] mt-3">
             Parfums
           </span>
         </motion.div>
@@ -112,32 +104,34 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          className="flex flex-col items-center gap-4 mb-8 sm:mb-10"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          className="flex flex-col items-center gap-5 mb-10"
         >
-          <span className="w-[1px] h-12 bg-gradient-to-b from-transparent to-[#0ea5e9]" />
-          <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9]">
+          <span className="w-[1px] h-14 bg-gradient-to-b from-transparent via-[#111]/20 to-transparent" />
+          <span className="text-[9px] sm:text-[10px] font-medium tracking-[0.5em] uppercase text-[#333]">
             La Collection Testeurs
           </span>
         </motion.div>
 
-        {/* Main Headline with Liquid Glace Effect */}
-        <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[120px] leading-[1.05] tracking-tight mb-8">
+        {/* Main Headline with Liquid Glace Effect - KEPT EFFECT, ADDED PARALLAX SCROLL */}
+        <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[110px] leading-[1.1] tracking-tight mb-10 flex flex-col items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="overflow-hidden font-light liquid-glace-text py-2"
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+            style={{ x: xLeft }}
+            className="font-light liquid-glace-text py-2"
           >
             L'Authenticité
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
-            className="flex items-center justify-center gap-4 sm:gap-6 mt-2"
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+            style={{ x: xRight }}
+            className="flex items-center justify-center gap-4 sm:gap-8 mt-2"
           >
-            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-7xl lg:text-[110px] liquid-glace-text">&</span>
+            <span className="font-serif italic font-light text-[#111]/40 text-4xl sm:text-7xl lg:text-[100px] liquid-glace-text">&</span>
             <span className="font-light liquid-glace-text">l'Élégance</span>
           </motion.div>
         </h1>
@@ -146,25 +140,26 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-          className="text-[13px] md:text-[15px] text-[#555] font-light max-w-xl mx-auto leading-[2] tracking-widest uppercase mb-12"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
+          className="text-[12px] md:text-[14px] text-[#666] font-light max-w-lg mx-auto leading-[2.2] tracking-[0.2em] uppercase mb-14"
         >
-          Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums testeurs</span> 100% originaux. Le luxe olfactif des plus grandes maisons, sublimé.
+          Découvrez notre sélection de <span className="font-medium text-[#111]">parfums testeurs</span> 100% originaux. Le luxe olfactif des plus grandes maisons, sublimé.
         </motion.p>
         
-        {/* Découvrir Button */}
+        {/* Découvrir Button - Luxury Minimalist Version */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
         >
           <Link
             href={`/${locale}/shop`}
-            className="group relative inline-flex items-center justify-center overflow-hidden border border-[#0ea5e9]/30 bg-white/50 backdrop-blur-md px-14 py-5 transition-all duration-700 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:shadow-[0_0_40px_rgba(14,165,233,0.4)] rounded-full"
+            className="group relative inline-flex items-center justify-center overflow-hidden border border-[#111]/20 bg-white/80 backdrop-blur-xl px-16 py-5 transition-all duration-700 hover:bg-[#111] hover:border-[#111] hover:shadow-2xl rounded-none"
           >
-            <span className="relative z-10 text-[10px] font-bold tracking-[0.3em] uppercase text-[#111] transition-colors duration-500 group-hover:text-white">
+            <span className="relative z-10 text-[10px] font-semibold tracking-[0.4em] uppercase text-[#111] transition-colors duration-500 group-hover:text-white">
               Découvrir
             </span>
+            <div className="absolute inset-0 bg-[#111] transform scale-x-0 origin-left transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-x-100" />
           </Link>
         </motion.div>
       </motion.div>
@@ -173,20 +168,20 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1 }}
-        style={{ opacity: opacityText }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4"
+        transition={{ duration: 1.5, delay: 1.2 }}
+        style={{ opacity: opacityContent }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-5"
       >
-        <div className="w-[1px] h-16 bg-[#111]/10 overflow-hidden relative">
-          <motion.div
-            animate={{ y: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-            className="absolute top-0 bottom-0 left-0 right-0 bg-[#0ea5e9]"
-          />
-        </div>
-        <span className="text-[9px] font-bold tracking-[0.4em] uppercase text-[#111]/40">
+        <span className="text-[8px] font-semibold tracking-[0.5em] uppercase text-[#111]/40">
           Scroll
         </span>
+        <div className="w-[1px] h-12 bg-[#111]/10 overflow-hidden relative">
+          <motion.div
+            animate={{ y: ['-100%', '100%'] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+            className="absolute top-0 bottom-0 left-0 right-0 bg-[#111]/60"
+          />
+        </div>
       </motion.div>
     </section>
   );
