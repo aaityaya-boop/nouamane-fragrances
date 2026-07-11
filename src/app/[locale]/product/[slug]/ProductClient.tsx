@@ -37,6 +37,7 @@ import { formatMAD, Product } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { usePreferences } from '@/context/PreferencesContext';
 import ReactMarkdown from 'react-markdown';
+import { translations, Locale } from './translations';
 
 /* ============================================================
    PRODUCT DETAIL PAGE
@@ -60,7 +61,8 @@ export default function ProductClient({
   const [isAdded, setIsAdded] = useState(false);
   const { addToCart } = useCart();
   const pathname = usePathname();
-  const locale = pathname?.split('/')[1] || 'fr';
+  const locale = (pathname?.split('/')[1] || 'fr') as Locale;
+  const t = translations[locale] || translations.fr;
 
   const [reviews, setReviews] = useState(initialReviews);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -183,11 +185,11 @@ export default function ProductClient({
         setIsReviewModalOpen(false);
         setReviewFormData({ author: '', city: '', rating: 5, title: '', comment: '' });
       } else {
-        alert("Erreur lors de l'envoi de l'avis.");
+        alert("t.reviews.error");
       }
     } catch (error) {
       console.error(error);
-      alert("Erreur lors de l'envoi de l'avis.");
+      alert("t.reviews.error");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -210,9 +212,9 @@ export default function ProductClient({
       {/* BREADCRUMB */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-28 lg:pt-32 pb-4">
         <nav className="flex items-center gap-2 text-[11px] text-[#9A9A9A]">
-          <Link href={`/${locale}`} className="hover:text-[#0ea5e9]">Accueil</Link>
+          <Link href={`/${locale}`} className="hover:text-[#0ea5e9]">{t.breadcrumb.home}</Link>
           <Chev size={12} />
-          <Link href={`/${locale}/shop`} className="hover:text-[#0ea5e9]">Boutique</Link>
+          <Link href={`/${locale}/shop`} className="hover:text-[#0ea5e9]">{t.breadcrumb.shop}</Link>
           <Chev size={12} />
           <Link
             href={`/${locale}/shop/${product.gender}`}
@@ -302,7 +304,7 @@ export default function ProductClient({
               href={`/${locale}/brands/${product.brand}`}
               className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] hover:text-[#7e22ce]"
             >
-              {product.brandLabel} · TESTEUR 100% AUTHENTIQUE
+              {product.brandLabel} · {t.info.authentic}
             </Link>
 
             <h1 className="heading-font text-4xl lg:text-5xl xl:text-6xl mt-3 tracking-wide leading-none">
@@ -350,13 +352,13 @@ export default function ProductClient({
                       {formatMAD(product.originalPrice)}
                     </span>
                     <span className="bg-[#0ea5e9]/10 text-[#0ea5e9] px-2 py-0.5 rounded text-[11px] font-bold tracking-wider uppercase">
-                      Économisez {Math.round((1 - currentPrice / product.originalPrice) * 100)}%
+                      {t.info.save} {Math.round((1 - currentPrice / product.originalPrice) * 100)}%
                     </span>
                   </>
                 )}
               </div>
               <span className="text-[13px] text-[#9A9A9A]">
-                Taxes incluses. / {currentSize.label} (Testeur)
+                {currentSize.label} {t.info.tester}
               </span>
             </div>
 
@@ -364,11 +366,11 @@ export default function ProductClient({
             <div className="mt-6 flex flex-col gap-3">
               <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
                 <ShieldCheck size={18} className="text-[#0ea5e9]" />
-                <span>Paiement à la livraison sécurisé</span>
+                <span>{t.trust.cod}</span>
               </div>
               <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
                 <BadgeCheck size={18} className="text-[#0ea5e9]" />
-                <span>Testeur 100% Original Authentique</span>
+                <span>{t.trust.original}</span>
               </div>
             </div>
 
@@ -434,7 +436,7 @@ export default function ProductClient({
                 >
                   {isAdded ? (
                     <>
-                      <Check size={18} /> Ajouté avec succès !
+                      <Check size={18} /> {t.actions.addSuccess}
                     </>
                   ) : (
                     <>
@@ -450,17 +452,17 @@ export default function ProductClient({
                   disabled
                   className="bg-[#eeece5] text-[#9A9A9A] flex-1 w-full h-14 text-[13px] rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest font-semibold cursor-not-allowed"
                 >
-                  Rupture de stock
+                  {t.info.outOfStock}
                 </button>
               )}
             </div>
 
             {/* TRUST BADGES / SHIPPING PERKS */}
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-[#e0ddd4]">
-              <PerkItem icon={<BadgeCheck size={20} className="text-[#0ea5e9]" />} label="100% Authentique" sublabel="Garanti" />
-              <PerkItem icon={<Truck size={20} className="text-[#0ea5e9]" />} label="Livraison Express" sublabel="Partout au Maroc" />
-              <PerkItem icon={<ShieldCheck size={20} className="text-[#0ea5e9]" />} label="Paiement Sécurisé" sublabel="À la livraison" />
-              <PerkItem icon={<RotateCcw size={20} className="text-[#0ea5e9]" />} label="Retour Simple" sublabel="Sous 14 jours" />
+              <PerkItem icon={<BadgeCheck size={20} className="text-[#0ea5e9]" />} label={t.perks.authLabel} sublabel={t.perks.authSub} />
+              <PerkItem icon={<Truck size={20} className="text-[#0ea5e9]" />} label={t.perks.expressLabel} sublabel={t.perks.expressSub} />
+              <PerkItem icon={<ShieldCheck size={20} className="text-[#0ea5e9]" />} label={t.perks.secureLabel} sublabel={t.perks.secureSub} />
+              <PerkItem icon={<RotateCcw size={20} className="text-[#0ea5e9]" />} label={t.perks.returnLabel} sublabel={t.perks.returnSub} />
             </div>
 
             <div className="mt-6 p-5 bg-gradient-to-r from-[#f8fafc] to-white rounded-xl border border-[#0ea5e9]/20 flex gap-4 items-center hover:border-[#0ea5e9]/40 transition">
@@ -468,8 +470,8 @@ export default function ProductClient({
                 <MessageCircle size={24} />
               </div>
               <div>
-                <p className="text-[14px] font-bold text-[#1A1A1A] mb-0.5">Besoin de conseils ?</p>
-                <p className="text-[12px] text-[#6B6B6B]">Notre équipe de passionnés est à votre écoute 7j/7.</p>
+                <p className="text-[14px] font-bold text-[#1A1A1A] mb-0.5">{t.support.title}</p>
+                <p className="text-[12px] text-[#6B6B6B]">{t.support.desc}</p>
               </div>
             </div>
           </div>
@@ -497,9 +499,7 @@ export default function ProductClient({
               </ReactMarkdown>
             ) : (
               <>
-                <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6 text-center">
-                  L'Histoire du Parfum
-                </h2>
+                <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide mb-6 text-center">{t.description.history}</h2>
                 <p className="text-[16px] md:text-[18px] text-[#555] leading-[2] font-light text-center">
                   {product.description}
                 </p>
@@ -513,18 +513,16 @@ export default function ProductClient({
           <div>
             <div className="text-center mb-12">
               <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block flex items-center justify-center gap-2">
-                <Sparkles size={14} /> La Composition
+                <Sparkles size={14} /> {t.description.compositionTitle}
               </span>
-              <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide">
-                Pyramide Olfactive
-              </h2>
+              <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide">{t.description.pyramid}</h2>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 md:gap-6 text-center">
               {[
-                { title: 'Notes de Tête', desc: 'L\'envolée olfactive (0-15 min)', items: product.notes.top, icon: <Wind size={24} className="text-[#0ea5e9]" /> },
-                { title: 'Notes de Cœur', desc: 'La personnalité (15min-4h)', items: product.notes.heart, icon: <Heart size={24} className="text-[#0ea5e9]" /> },
-                { title: 'Notes de Fond', desc: 'Le sillage mémorable (4h+)', items: product.notes.base, icon: <Droplets size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.topNotes, desc: t.description.topDesc, items: product.notes.top, icon: <Wind size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.heartNotes, desc: t.description.heartDesc, items: product.notes.heart, icon: <Heart size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.baseNotes, desc: t.description.baseDesc, items: product.notes.base, icon: <Droplets size={24} className="text-[#0ea5e9]" /> },
               ].map((n, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
@@ -557,25 +555,23 @@ export default function ProductClient({
           {/* Caractéristiques Clés */}
           <div className="bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] rounded-[40px] p-10 md:p-16 text-white text-center shadow-[0_20px_40px_rgba(0,0,0,0.2)] relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <h2 className="heading-font text-3xl md:text-5xl tracking-wide mb-12 relative z-10">
-              L'Essence du Produit
-            </h2>
+            <h2 className="heading-font text-3xl md:text-5xl tracking-wide mb-12 relative z-10">{t.essence.title}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative z-10">
               <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Concentration</span>
-                <span className="text-lg font-semibold tracking-wide text-[#0ea5e9]">Eau de Parfum</span>
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">{t.essence.concentration}</span>
+                <span className="text-lg font-semibold tracking-wide text-[#0ea5e9]">{t.essence.edp}</span>
               </div>
               <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Genre</span>
-                <span className="text-lg font-semibold tracking-wide text-white">{product.gender === 'women' ? 'Femme' : product.gender === 'men' ? 'Homme' : 'Unisexe'}</span>
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">{t.essence.gender}</span>
+                <span className="text-lg font-semibold tracking-wide text-white">{product.gender === 'women' ? t.genderMap.women : product.gender === 'men' ? t.genderMap.men : t.genderMap.unisex}</span>
               </div>
               <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Famille</span>
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">{t.essence.family}</span>
                 <span className="text-lg font-semibold tracking-wide text-white">{product.subcategoryLabel}</span>
               </div>
               <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Saison Idéale</span>
-                <span className="text-lg font-semibold tracking-wide text-white">{product.perfectSeason || 'Toutes Saisons'}</span>
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">{t.essence.season}</span>
+                <span className="text-lg font-semibold tracking-wide text-white">{product.perfectSeason || t.essence.allSeasons}</span>
               </div>
             </div>
           </div>
@@ -583,28 +579,22 @@ export default function ProductClient({
           {/* Pourquoi Choisir */}
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="heading-font text-3xl text-[#1A1A1A] tracking-wide mb-6">
-                Pourquoi choisir {product.name} ?
-              </h2>
-              <p className="text-[15px] text-[#555] leading-relaxed mb-6">
-                Une fragrance captivante, mystique et charismatique. Conçue avec des ingrédients de la plus haute qualité, cette composition assure une tenue exceptionnelle et un sillage remarquable qui vous accompagnera tout au long de la journée avec élégance et assurance.
-              </p>
+              <h2 className="heading-font text-3xl text-[#1A1A1A] tracking-wide mb-6">{t.whyChoose.title} {product.name} ?</h2>
+              <p className="text-[15px] text-[#555] leading-relaxed mb-6">{t.whyChoose.desc}</p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Check size={18} className="text-[#0ea5e9] mt-1 shrink-0" />
-                  <span className="text-[#1A1A1A] font-medium text-[14px]">Qualité supérieure et longue tenue</span>
+                  <span className="text-[#1A1A1A] font-medium text-[14px]">{t.whyChoose.bullet1}</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check size={18} className="text-[#0ea5e9] mt-1 shrink-0" />
-                  <span className="text-[#1A1A1A] font-medium text-[14px]">Testeur 100% authentique de la maison {product.brandLabel}</span>
+                  <span className="text-[#1A1A1A] font-medium text-[14px]">{t.whyChoose.bullet2} {product.brandLabel}</span>
                 </li>
               </ul>
             </div>
             <div className="bg-[#f8fafc] p-8 rounded-[32px] border border-[#e0ddd4]">
-              <h3 className="heading-font text-2xl text-[#1A1A1A] tracking-wide mb-4">Quand le porter ?</h3>
-              <p className="text-[14px] text-[#555] leading-relaxed mb-0">
-                Idéal en toute occasion. Grâce à sa composition riche et parfaitement équilibrée, cette fragrance s'adapte à tous les styles et ambiances, devenant votre véritable signature olfactive.
-              </p>
+              <h3 className="heading-font text-2xl text-[#1A1A1A] tracking-wide mb-4">{t.whenToWear.title}</h3>
+              <p className="text-[14px] text-[#555] leading-relaxed mb-0">{t.whenToWear.desc}</p>
             </div>
           </div>
 
@@ -616,12 +606,8 @@ export default function ProductClient({
         <div className="grid lg:grid-cols-[320px_1fr] gap-12">
           {/* Rating Summary */}
           <div className="lg:sticky lg:top-28 self-start">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">
-              Avis Clients
-            </span>
-            <h2 className="heading-font text-3xl lg:text-4xl mt-2 tracking-wide">
-              {product.reviewCount} avis
-            </h2>
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">{t.reviews.title}</span>
+            <h2 className="heading-font text-3xl lg:text-4xl mt-2 tracking-wide">{product.reviewCount} {t.reviews.count}</h2>
 
             <div className="flex items-center gap-3 mt-6">
               <div className="heading-font text-5xl text-[#1A1A1A] mb-2">
@@ -641,7 +627,7 @@ export default function ProductClient({
                     />
                   ))}
                 </div>
-                <div className="text-[11px] text-[#9A9A9A] mt-1">sur 5</div>
+                <div className="text-[11px] text-[#9A9A9A] mt-1">{t.reviews.outOf5}</div>
               </div>
             </div>
 
@@ -664,18 +650,14 @@ export default function ProductClient({
               ))}
             </div>
 
-            <button onClick={() => setIsReviewModalOpen(true)} className="btn-outline-blue w-full mt-8 py-3 text-[11px] rounded-full">
-              Laisser un avis
-            </button>
+            <button onClick={() => setIsReviewModalOpen(true)} className="btn-outline-blue w-full mt-8 py-3 text-[11px] rounded-full">{t.reviews.leaveReview}</button>
           </div>
 
           {/* Reviews list */}
           <div>
             {reviews.length === 0 ? (
               <div className="text-center py-14">
-                <p className="text-[#9A9A9A] text-sm">
-                  Aucun avis pour ce parfum pour le moment.
-                </p>
+                <p className="text-[#9A9A9A] text-sm">{t.reviews.noReviews}</p>
               </div>
             ) : (
               <div className="space-y-10">
@@ -717,8 +699,7 @@ export default function ProductClient({
                           </div>
                           {review.verified && (
                             <span className="text-[10px] font-semibold tracking-[0.1em] uppercase text-green-600 flex items-center gap-1">
-                              <Check size={11} /> Achat vérifié
-                            </span>
+                              <Check size={11} /> {t.reviews.verified}</span>
                           )}
                         </div>
                       </div>
@@ -743,12 +724,8 @@ export default function ProductClient({
         <section className="bg-transparent border-t border-[#e0ddd4]">
           <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">
-                Vous aimerez aussi
-              </span>
-              <h2 className="heading-font text-3xl lg:text-4xl mt-2 tracking-wide">
-                Dans la même collection
-              </h2>
+              <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">{t.related.title}</span>
+              <h2 className="heading-font text-3xl lg:text-4xl mt-2 tracking-wide">{t.related.subtitle}</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -768,71 +745,69 @@ export default function ProductClient({
             
             {reviewAuthStep === 'login' && !customer && (
               <div className="text-center py-4">
-                <h3 className="heading-font text-2xl mb-2">Connexion</h3>
-                <p className="text-[#6B6B6B] text-[13px] mb-6">Connectez-vous pour laisser un avis sur ce parfum.</p>
+                <h3 className="heading-font text-2xl mb-2">{t.reviews.loginTitle}</h3>
+                <p className="text-[#6B6B6B] text-[13px] mb-6">{t.reviews.loginDesc}</p>
                 
                 {authError && <div className="bg-red-50 text-red-600 text-[12px] p-2 rounded mb-4">{authError}</div>}
 
                 <form className="space-y-4" onSubmit={(e) => handleReviewAuth(e, 'login')}>
                   <div>
-                    <input required type="email" placeholder="Adresse e-mail" value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                    <input required type="email" placeholder={t.reviews.email} value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
                   </div>
                   <div>
-                    <input required type="password" placeholder="Mot de passe" value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                    <input required type="password" placeholder={t.reviews.password} value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
                   </div>
                   <button type="submit" disabled={loadingAuth} className="w-full btn-blue py-3 rounded-full text-[12px] mt-4 font-bold tracking-wider disabled:opacity-70">
                     {loadingAuth ? 'Connexion...' : 'Se Connecter'}
                   </button>
                 </form>
-                <div className="mt-6 text-[12px] text-[#6B6B6B]">
-                  Nouveau client ? <button onClick={() => {setReviewAuthStep('signup'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">Créer un compte</button>
+                <div className="mt-6 text-[12px] text-[#6B6B6B]"> {t.reviews.newCustomer} <button onClick={() => {setReviewAuthStep('signup'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">{t.reviews.createAccount}</button>
                 </div>
               </div>
             )}
 
             {reviewAuthStep === 'signup' && !customer && (
               <div className="text-center py-4">
-                <h3 className="heading-font text-2xl mb-2">Créer un compte</h3>
-                <p className="text-[#6B6B6B] text-[13px] mb-6">Rejoignez-nous pour partager votre expérience.</p>
+                <h3 className="heading-font text-2xl mb-2">{t.reviews.signupTitle}</h3>
+                <p className="text-[#6B6B6B] text-[13px] mb-6">{t.reviews.signupDesc}</p>
                 
                 {authError && <div className="bg-red-50 text-red-600 text-[12px] p-2 rounded mb-4">{authError}</div>}
 
                 <form className="space-y-4" onSubmit={(e) => handleReviewAuth(e, 'register')}>
                   <div>
-                    <input required type="text" placeholder="Nom complet" value={authData.name} onChange={e => setAuthData({...authData, name: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                    <input required type="text" placeholder={t.reviews.fullName} value={authData.name} onChange={e => setAuthData({...authData, name: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
                   </div>
                   <div>
-                    <input required type="email" placeholder="Adresse e-mail" value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                    <input required type="email" placeholder={t.reviews.email} value={authData.email} onChange={e => setAuthData({...authData, email: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
                   </div>
                   <div>
-                    <input required type="password" placeholder="Mot de passe" value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
+                    <input required type="password" placeholder={t.reviews.password} value={authData.password} onChange={e => setAuthData({...authData, password: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]" />
                   </div>
                   <button type="submit" disabled={loadingAuth} className="w-full btn-blue py-3 rounded-full text-[12px] mt-4 font-bold tracking-wider disabled:opacity-70">
                     {loadingAuth ? 'Inscription...' : "S'inscrire"}
                   </button>
                 </form>
-                <div className="mt-6 text-[12px] text-[#6B6B6B]">
-                  Déjà un compte ? <button onClick={() => {setReviewAuthStep('login'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">Se connecter</button>
+                <div className="mt-6 text-[12px] text-[#6B6B6B]"> {t.reviews.alreadyAccount} <button onClick={() => {setReviewAuthStep('login'); setAuthError('');}} className="text-[#0ea5e9] font-bold underline">{t.reviews.loginLink}</button>
                 </div>
               </div>
             )}
 
             {(reviewAuthStep === 'review' || customer) && (
               <>
-                <h3 className="heading-font text-2xl mb-6">Laisser un avis</h3>
+                <h3 className="heading-font text-2xl mb-6">{t.reviews.reviewTitle}</h3>
                 <form onSubmit={handleReviewSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre Nom</label>
-                      <input required type="text" value={reviewFormData.author} onChange={e => setReviewFormData({...reviewFormData, author: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Salma B." />
+                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">{t.reviews.nameLabel}</label>
+                      <input required type="text" value={reviewFormData.author} onChange={e => setReviewFormData({...reviewFormData, author: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder={t.reviews.namePlace} />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Ville</label>
-                      <input required type="text" value={reviewFormData.city} onChange={e => setReviewFormData({...reviewFormData, city: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Casablanca" />
+                      <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">{t.reviews.cityLabel}</label>
+                      <input required type="text" value={reviewFormData.city} onChange={e => setReviewFormData({...reviewFormData, city: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder={t.reviews.cityPlace} />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Note globale</label>
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">{t.reviews.ratingLabel}</label>
                     <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button type="button" key={star} onClick={() => setReviewFormData({...reviewFormData, rating: star})}>
@@ -842,15 +817,15 @@ export default function ProductClient({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Titre de l'avis</label>
-                    <input required type="text" value={reviewFormData.title} onChange={e => setReviewFormData({...reviewFormData, title: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder="Ex: Magnifique !" />
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">{t.reviews.reviewTitleLabel}</label>
+                    <input required type="text" value={reviewFormData.title} onChange={e => setReviewFormData({...reviewFormData, title: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9]" placeholder={t.reviews.reviewTitlePlace} />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">Votre avis</label>
-                    <textarea required rows={4} value={reviewFormData.comment} onChange={e => setReviewFormData({...reviewFormData, comment: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9] resize-none" placeholder="Partagez votre expérience avec ce parfum..."></textarea>
+                    <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-1">{t.reviews.reviewLabel}</label>
+                    <textarea required rows={4} value={reviewFormData.comment} onChange={e => setReviewFormData({...reviewFormData, comment: e.target.value})} className="w-full border border-[#e0ddd4] rounded-lg px-4 py-2 text-[13px] focus:outline-none focus:border-[#0ea5e9] resize-none" placeholder={t.reviews.reviewPlace}></textarea>
                   </div>
                   <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={() => setIsReviewModalOpen(false)} className="flex-1 btn-outline-blue py-3 text-[11px] rounded-full">Annuler</button>
+                    <button type="button" onClick={() => setIsReviewModalOpen(false)} className="flex-1 btn-outline-blue py-3 text-[11px] rounded-full">{t.reviews.cancel}</button>
                     <button type="submit" disabled={isSubmittingReview} className="flex-1 btn-blue py-3 text-[11px] rounded-full disabled:opacity-50">
                       {isSubmittingReview ? 'Envoi...' : 'Publier'}
                     </button>
@@ -886,7 +861,7 @@ export default function ProductClient({
             <div className="flex-1 md:flex-none flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
               <div className="md:hidden">
                 <div className="text-[16px] font-bold text-[#1A1A1A]">{formatMAD(currentPrice)}</div>
-                <div className="text-[11px] text-[#0ea5e9]">Paiement à la livraison</div>
+                <div className="text-[11px] text-[#0ea5e9]">{t.sticky.cod}</div>
               </div>
               
               <button
@@ -898,7 +873,7 @@ export default function ProductClient({
                   isAdded ? '!bg-green-600' : 'hover:shadow-lg'
                 }`}
               >
-                {isAdded ? <><Check size={16} /> Ajouté</> : <><ShoppingBag size={16} /> Ajouter</>}
+                {isAdded ? <><Check size={16} /> {t.actions.added}</> : <><ShoppingBag size={16} /> {t.actions.add}</>}
               </button>
             </div>
           </motion.div>
