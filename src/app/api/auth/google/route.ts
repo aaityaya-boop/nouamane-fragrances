@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { auth as adminAuth } from '@/lib/firebase-admin';
+import { getAdminAuth } from '@/lib/firebase-admin';
 import { SignJWT } from 'jose';
 import bcrypt from 'bcryptjs';
 
@@ -17,6 +17,7 @@ export async function POST(request: Request) {
     }
 
     // 1. Verify the Firebase ID token using the Firebase Admin SDK
+    const adminAuth = getAdminAuth();
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     
     if (!decodedToken.email) {
@@ -73,8 +74,8 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Google Auth Error:', error);
-    return NextResponse.json({ error: 'Erreur serveur lors de la connexion Google' }, { status: 500 });
+    return NextResponse.json({ error: `Erreur interne: ${error.message}` }, { status: 500 });
   }
 }
