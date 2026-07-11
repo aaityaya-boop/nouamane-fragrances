@@ -44,8 +44,8 @@ export default function BlogForm({ initialData }: { initialData?: any }) {
     // Parse tags back into array before sending
     const tagsArray = formData.tags
       .split(',')
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
+      .map((t: string) => t.trim())
+      .filter((t: string) => t.length > 0);
 
     const dataToSend = {
       ...formData,
