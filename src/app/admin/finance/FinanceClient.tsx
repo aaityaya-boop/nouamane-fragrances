@@ -137,6 +137,56 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products 
     }).sort((a, b) => b.rev - a.rev);
   }, [products, validOrders, filteredViewsBySlug]);
 
+  // --- 4. GEOGRAPHIC PERFORMANCE (CITIES) ---
+  const topCities = useMemo(() => {
+    const citySales: Record<string, number> = {};
+    validOrders.forEach(o => {
+      const city = o.shippingCity.trim().toUpperCase() || 'INCONNU';
+      citySales[city] = (citySales[city] || 0) + o.total;
+    });
+    return Object.entries(citySales)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, value]) => ({ name, value }));
+  }, [validOrders]);
+
+  // --- 5. TOP CUSTOMERS (LOYALTY) ---
+  const topCustomers = useMemo(() => {
+    const customerStats: Record<string, { name: string; email: string; spent: number; count: number }> = {};
+    validOrders.forEach(o => {
+      const email = o.customerEmail.toLowerCase();
+      if (!customerStats[email]) {
+        customerStats[email] = { name: o.customerName, email, spent: 0, count: 0 };
+      }
+      customerStats[email].spent += o.total;
+      customerStats[email].count += 1;
+    });
+    return Object.values(customerStats)
+      .sort((a, b) => b.spent - a.spent)
+      .slice(0, 5);
+  }, [validOrders]);
+
+  // --- 6. RECENT ORDERS FEED ---
+  const recentOrdersList = useMemo(() => {
+    return [...filteredOrders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
+  }, [filteredOrders]);
+
+  // --- 7. ORDER STATUS DISTRIBUTION ---
+  const orderStatusDistribution = useMemo(() => {
+    const counts: Record<string, number> = {};
+    filteredOrders.forEach(o => {
+      const statusLabel = 
+        o.status === 'delivered' ? 'Livré' :
+        o.status === 'shipped' ? 'Expédié' :
+        o.status === 'processing' ? 'En cours' :
+        o.status === 'pending' ? 'En attente' :
+        o.status === 'canceled' ? 'Annulé' :
+        o.status === 'returned' ? 'Retourné' : o.status;
+      counts[statusLabel] = (counts[statusLabel] || 0) + 1;
+    });
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  }, [filteredOrders]);
+
   const formatMAD = (amount: number) => {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
   };
@@ -265,7 +315,118 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products 
         </div>
       </div>
 
-      {/* SECTION 3: WINNING PRODUCTS TABLE */}
+      {/* SECTION 3: DEEP DIVES (GEO, LOYALTY, STATUS) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Top Cities */}
+        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-[16px] font-black text-[#111] flex items-center gap-2"><MapPin size={18} className="text-[#0ea5e9]"/> Pénétration par Ville</h2>
+            <p className="text-[12px] text-[#666] mt-1">Meilleures villes en termes de CA.</p>
+          </div>
+          <div className="flex-1 flex flex-col justify-center items-center">
+            {topCities.length > 0 ? (
+              <div className="w-full space-y-4">
+                {topCities.map((city, idx) => {
+                  const maxCityValue = topCities[0].value;
+                  const percentage = (city.value / maxCityValue) * 100;
+                  return (
+                    <div key={city.name} className="relative">
+                      <div className="flex justify-between items-end mb-1">
+                        <span className="text-[13px] font-bold text-[#111]">{city.name}</span>
+                        <span className="text-[12px] font-bold text-[#666]">{formatMAD(city.value)}</span>
+                      </div>
+                      <div className="w-full h-2 bg-black/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#0ea5e9] rounded-full" style={{ width: `${percentage}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-[13px] text-[#9A9A9A]">Aucune donnée.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Top Customers */}
+        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-[16px] font-black text-[#111] flex items-center gap-2"><Users size={18} className="text-[#8b5cf6]"/> Top Clients (VIP)</h2>
+            <p className="text-[12px] text-[#666] mt-1">Clients les plus rentables.</p>
+          </div>
+          <div className="flex-1 overflow-auto">
+            {topCustomers.length > 0 ? (
+              <div className="space-y-4">
+                {topCustomers.map((c, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 hover:bg-[#f8fafc] rounded-xl transition-colors border border-transparent hover:border-black/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8b5cf6] to-[#c084fc] flex items-center justify-center text-white font-black text-[14px] shadow-sm">
+                        {c.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-bold text-[#111] truncate max-w-[120px]">{c.name}</p>
+                        <p className="text-[10px] font-medium text-[#666]">{c.count} commande(s)</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[14px] font-black text-[#10b981]">{formatMAD(c.spent)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-[13px] text-[#9A9A9A]">Aucune donnée.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Order Status Distribution */}
+        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-[16px] font-black text-[#111] flex items-center gap-2"><RefreshCcw size={18} className="text-[#f59e0b]"/> Statuts Commandes</h2>
+            <p className="text-[12px] text-[#666] mt-1">Répartition des statuts de livraison.</p>
+          </div>
+          <div className="flex-1 flex flex-col justify-center items-center">
+            {orderStatusDistribution.length > 0 ? (
+              <div className="w-full space-y-4">
+                {orderStatusDistribution.map((status, idx) => {
+                  const maxStatusValue = Math.max(...orderStatusDistribution.map(s => s.value));
+                  const percentage = (status.value / maxStatusValue) * 100;
+                  const colorMap: Record<string, string> = {
+                    'Livré': 'bg-emerald-500',
+                    'Expédié': 'bg-blue-500',
+                    'En cours': 'bg-amber-500',
+                    'En attente': 'bg-amber-300',
+                    'Annulé': 'bg-red-500',
+                    'Retourné': 'bg-red-700',
+                  };
+                  const color = colorMap[status.name] || 'bg-gray-400';
+                  
+                  return (
+                    <div key={status.name} className="relative">
+                      <div className="flex justify-between items-end mb-1">
+                        <span className="text-[13px] font-bold text-[#111]">{status.name}</span>
+                        <span className="text-[12px] font-bold text-[#666]">{status.value}</span>
+                      </div>
+                      <div className="w-full h-2 bg-black/5 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${color}`} style={{ width: `${percentage}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-[13px] text-[#9A9A9A]">Aucune donnée.</p>
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* SECTION 4: WINNING PRODUCTS TABLE */}
       <div className="bg-white border border-black/5 rounded-3xl shadow-sm overflow-hidden">
         <div className="p-6 border-b border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -345,6 +506,46 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products 
           </table>
         </div>
       </div>
+
+      {/* SECTION 5: RECENT ORDERS FEED */}
+      <div className="bg-white border border-black/5 rounded-3xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-black/5 flex items-center gap-2">
+          <Truck className="text-[#10b981]" size={20} />
+          <h2 className="text-[18px] font-black text-[#111] tracking-tight">Flux des Dernières Commandes</h2>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            {recentOrdersList.map(order => (
+              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-black/5 bg-[#f8fafc] hover:bg-white hover:shadow-sm transition-all gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-[#111] flex items-center justify-center text-white">
+                    <ShoppingCart size={16} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-bold text-[#111]">{order.orderNumber} <span className="text-[#666] font-normal mx-2">•</span> {order.customerName}</p>
+                    <p className="text-[12px] text-[#666] mt-0.5">{order.shippingCity} — {new Date(order.createdAt).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6 justify-between sm:justify-end">
+                  <span className={`px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-md ${
+                    order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                    order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                    order.status === 'canceled' ? 'bg-red-100 text-red-700' :
+                    'bg-amber-100 text-amber-700'
+                  }`}>
+                    {order.status}
+                  </span>
+                  <span className="text-[16px] font-black text-[#111] min-w-[80px] text-right">{formatMAD(order.total)}</span>
+                </div>
+              </div>
+            ))}
+            {recentOrdersList.length === 0 && (
+              <p className="text-[13px] text-[#9A9A9A] text-center py-4">Aucune commande récente.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
