@@ -81,15 +81,9 @@ export default function ProductClient({
   const { addRecentlyViewed } = usePreferences();
 
   // Marketing states
-  const [viewers, setViewers] = useState(0);
-  const [stockLeft, setStockLeft] = useState(0);
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   useEffect(() => {
-    // Generate random viewers and stock on mount
-    setViewers(Math.floor(Math.random() * (45 - 15 + 1) + 15));
-    setStockLeft(Math.floor(Math.random() * (7 - 2 + 1) + 2));
-
     // Scroll listener for sticky bar
     const handleScroll = () => {
       // Show sticky bar when scrolled past a certain point (e.g. 600px)
@@ -366,15 +360,15 @@ export default function ProductClient({
               </span>
             </div>
 
-            {/* MARKETING ALERTS */}
-            <div className="mt-5 space-y-2">
-              <div className="flex items-center gap-2 text-[13px] text-red-600 font-medium bg-red-50/50 w-fit px-3 py-1.5 rounded-full border border-red-100">
-                <Flame size={14} className="animate-pulse" />
-                <span>Très demandé : Plus que {stockLeft} en stock !</span>
+            {/* CREDIBILITY & TRUST SIGNALS */}
+            <div className="mt-6 flex flex-col gap-3">
+              <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
+                <ShieldCheck size={18} className="text-[#0ea5e9]" />
+                <span>Paiement à la livraison sécurisé</span>
               </div>
-              <div className="flex items-center gap-2 text-[13px] text-[#6B6B6B]">
-                <Eye size={14} />
-                <span>{viewers} personnes consultent ce produit</span>
+              <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
+                <BadgeCheck size={18} className="text-[#0ea5e9]" />
+                <span>Testeur 100% Original Authentique</span>
               </div>
             </div>
 
@@ -892,7 +886,7 @@ export default function ProductClient({
             <div className="flex-1 md:flex-none flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
               <div className="md:hidden">
                 <div className="text-[16px] font-bold text-[#1A1A1A]">{formatMAD(currentPrice)}</div>
-                <div className="text-[11px] text-[#0ea5e9]">Plus que {stockLeft} en stock</div>
+                <div className="text-[11px] text-[#0ea5e9]">Paiement à la livraison</div>
               </div>
               
               <button
