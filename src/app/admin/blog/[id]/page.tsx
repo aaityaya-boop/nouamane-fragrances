@@ -14,5 +14,11 @@ export default async function EditBlogPost({ params }: { params: Promise<{ id: s
     });
   }
 
-  return <BlogForm initialData={initialData} />;
+  // Fetch ALL products from DB for the "Parfums mentionnés" selector
+  const products = await prisma.product.findMany({
+    select: { slug: true, name: true, brandId: true },
+    orderBy: { name: 'asc' }
+  });
+
+  return <BlogForm initialData={initialData} dbProducts={products} />;
 }

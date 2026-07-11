@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, Trash2, ArrowLeft, Image as ImageIcon, Bold, Heading2, Link as LinkIcon, Quote } from 'lucide-react';
 import Link from 'next/link';
-import { PRODUCTS } from '@/lib/products';
 import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
-export default function BlogForm({ initialData }: { initialData?: any }) {
+export default function BlogForm({ initialData, dbProducts = [] }: { initialData?: any, dbProducts?: any[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   
@@ -350,23 +349,22 @@ export default function BlogForm({ initialData }: { initialData?: any }) {
             <p className="text-xs text-gray-500 mb-4">Ces parfums s'afficheront à la fin de l'article pour inciter à l'achat.</p>
             
             <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
-              {PRODUCTS.map(p => {
+              {dbProducts.map(p => {
                 const isSelected = formData.relatedProductSlugs.includes(p.slug);
                 return (
-                  <label key={p.id} className={`flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-colors ${isSelected ? 'bg-sky-50 border-sky-200' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
-                    <input 
-                      type="checkbox" 
-                      checked={isSelected}
-                      onChange={() => toggleProduct(p.slug)}
-                      className="rounded text-sky-500 focus:ring-sky-500 w-4 h-4"
-                    />
-                    <div className="flex items-center gap-2 flex-1">
-                      <div className="w-8 h-8 relative rounded overflow-hidden bg-gray-100 flex-shrink-0">
-                        <img src={p.images[0]} alt="" className="object-cover w-full h-full" />
-                      </div>
-                      <div className="text-xs font-medium text-gray-700 line-clamp-1">{p.name}</div>
-                    </div>
-                  </label>
+                  <button
+                    key={p.slug}
+                    type="button"
+                    onClick={() => toggleProduct(p.slug)}
+                    className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
+                      isSelected 
+                        ? 'border-[#0ea5e9] bg-[#0ea5e9]/5' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="font-medium text-gray-900">{p.name}</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">{p.brandId || p.brandLabel || 'Nouamane'}</div>
+                  </button>
                 );
               })}
             </div>
