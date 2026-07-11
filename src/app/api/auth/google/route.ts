@@ -44,7 +44,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email non fourni par Google' }, { status: 400 });
     }
 
-    const { email, name, uid } = decodedToken;
 
     // 2. Find or Create the user in our Prisma database
     let customer = await prisma.customer.findUnique({
