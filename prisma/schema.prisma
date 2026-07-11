@@ -222,12 +222,3 @@ model Affiliate {
   updatedAt        DateTime @updatedAt
   orders           Order[]
 }
-
-model AdSpend {
-  id        String   @id @default(cuid())
-  date      DateTime
-  platform  String
-  amount    Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}

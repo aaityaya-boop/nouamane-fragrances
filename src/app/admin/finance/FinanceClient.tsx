@@ -5,8 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell
 } from 'recharts';
-import { DollarSign, Percent, TrendingUp, Truck, Users, Gift, MapPin, Award, RefreshCcw, Calendar, ArrowUpRight, ArrowDownRight, Package, ShoppingCart, MousePointerClick, Megaphone, Trash2, Plus } from 'lucide-react';
-import { addAdSpend, deleteAdSpend } from './actions';
+import { DollarSign, Percent, TrendingUp, Truck, Users, Gift, MapPin, Award, RefreshCcw, Calendar, ArrowUpRight, ArrowDownRight, Package, ShoppingCart, MousePointerClick } from 'lucide-react';
 
 type OrderData = {
   id: string;
@@ -27,45 +26,17 @@ type VisitorData = {
   createdAt: string;
 };
 
-type AdSpendData = {
-  id: string;
-  date: string;
-  platform: string;
-  amount: number;
-};
-
 type FinanceClientProps = {
   orders: OrderData[];
   visitors: VisitorData[];
   viewsBySlug: Record<string, { total: number, dates: string[] }>;
   products: { id: number, slug: string, name: string, brandLabel: string, price: number, images: string, sku: string | null }[];
-  adSpends: AdSpendData[];
 };
 
 const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
 
-export default function FinanceClient({ orders, visitors, viewsBySlug, products, adSpends }: FinanceClientProps) {
+export default function FinanceClient({ orders, visitors, viewsBySlug, products }: FinanceClientProps) {
   const [dateRange, setDateRange] = useState<number>(30); // days, 0 = all time
-  
-  // Ad Spend Form State
-  const [adPlatform, setAdPlatform] = useState('Facebook');
-  const [adAmount, setAdAmount] = useState('');
-  const [adDate, setAdDate] = useState(new Date().toISOString().split('T')[0]);
-  const [isSubmittingAd, setIsSubmittingAd] = useState(false);
-
-  const handleAddAdSpend = async () => {
-    if (!adAmount || Number(adAmount) <= 0) return;
-    setIsSubmittingAd(true);
-    await addAdSpend({ platform: adPlatform, amount: Number(adAmount), date: adDate });
-    setAdAmount('');
-    setIsSubmittingAd(false);
-  };
-
-  const handleDeleteAdSpend = async (id: string) => {
-    if (confirm('Voulez-vous supprimer cette dépense ?')) {
-      await deleteAdSpend(id);
-    }
-  };
 
   // --- FILTER DATA BY DATE ---
   const filteredOrders = useMemo(() => {
@@ -101,13 +72,6 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
     return result;
   }, [viewsBySlug, dateRange]);
 
-  const filteredAdSpends = useMemo(() => {
-    if (dateRange === 0) return adSpends;
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - dateRange);
-    return adSpends.filter(a => new Date(a.date) >= cutoff);
-  }, [adSpends, dateRange]);
-
   // --- 1. CORE FINANCIAL METRICS ---
   const nonCanceledOrders = filteredOrders.filter((o) => !['refused', 'returned', 'canceled', 'annule'].includes(o.status));
   const validOrders = filteredOrders.filter((o) => ['delivered', 'shipped'].includes(o.status));
@@ -120,11 +84,6 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
   
   const totalVisitors = filteredVisitors.length;
   const globalConversionRate = totalVisitors > 0 ? (validOrders.length / totalVisitors) * 100 : 0;
-
-  const totalAdSpend = filteredAdSpends.reduce((acc, a) => acc + a.amount, 0);
-  const roas = totalAdSpend > 0 ? (netRevenue / totalAdSpend) : 0;
-  const cpa = validOrders.length > 0 ? (totalAdSpend / validOrders.length) : 0;
-  const grossMargin = netRevenue - totalAdSpend;
 
   // --- 2. TIME-SERIES DATA ---
   const chartData = useMemo(() => {
@@ -263,8 +222,7 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
       </div>
 
       {/* SECTION 1: MASTER KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* CA Net */}
         <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
           <div className="flex justify-between items-start mb-2">
@@ -277,63 +235,15 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
           </p>
         </div>
 
-        {/* Ad Spend */}
-        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-2">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Dépenses Pubs</p>
-            <div className="p-2 bg-red-50 text-red-600 rounded-lg"><Megaphone size={16} /></div>
-          </div>
-          <h3 className="text-3xl font-black text-[#111] tracking-tight">{formatMAD(totalAdSpend)}</h3>
-          <p className="text-[11px] font-medium text-red-600 mt-2 flex items-center gap-1">
-            Investissement Total
-          </p>
-        </div>
-
-        {/* Marge Brute */}
-        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-2">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Bénéfice (CA - Pubs)</p>
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Award size={16} /></div>
-          </div>
-          <h3 className="text-3xl font-black text-[#111] tracking-tight">{formatMAD(grossMargin)}</h3>
-          <p className="text-[11px] font-medium text-blue-600 mt-2 flex items-center gap-1">
-            Marge avant COGS
-          </p>
-        </div>
-
-        {/* ROAS */}
-        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-2">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">ROAS Global</p>
-            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><TrendingUp size={16} /></div>
-          </div>
-          <h3 className="text-3xl font-black text-[#111] tracking-tight">{roas.toFixed(2)}x</h3>
-          <p className="text-[11px] font-medium text-purple-600 mt-2 flex items-center gap-1">
-            Retour sur Investissement
-          </p>
-        </div>
-
         {/* Commandes */}
         <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Commandes (Qté)</p>
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Ventes (Qté)</p>
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><ShoppingCart size={16} /></div>
           </div>
           <h3 className="text-3xl font-black text-[#111] tracking-tight">{validOrders.length}</h3>
           <p className="text-[11px] font-medium text-blue-600 mt-2 flex items-center gap-1">
-            Livrées/Expédiées
-          </p>
-        </div>
-
-        {/* CPA */}
-        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-          <div className="flex justify-between items-start mb-2">
-            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">CPA (Coût / Acq)</p>
-            <div className="p-2 bg-orange-50 text-orange-600 rounded-lg"><Users size={16} /></div>
-          </div>
-          <h3 className="text-3xl font-black text-[#111] tracking-tight">{formatMAD(cpa)}</h3>
-          <p className="text-[11px] font-medium text-orange-600 mt-2 flex items-center gap-1">
-            Coût par commande
+            Commandes livrées/expédiées
           </p>
         </div>
 
@@ -341,11 +251,11 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
         <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
           <div className="flex justify-between items-start mb-2">
             <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Conversion</p>
-            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Percent size={16} /></div>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><Percent size={16} /></div>
           </div>
           <h3 className="text-3xl font-black text-[#111] tracking-tight">{globalConversionRate.toFixed(2)}%</h3>
-          <p className="text-[11px] font-medium text-indigo-600 mt-2 flex items-center gap-1">
-            Taux Visiteurs → Acheteurs
+          <p className="text-[11px] font-medium text-purple-600 mt-2 flex items-center gap-1">
+            Visiteurs → Acheteurs
           </p>
         </div>
 
@@ -361,6 +271,17 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
           </p>
         </div>
 
+        {/* Traffic */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Visiteurs</p>
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Users size={16} /></div>
+          </div>
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{totalVisitors}</h3>
+          <p className="text-[11px] font-medium text-indigo-600 mt-2 flex items-center gap-1">
+            Trafic unique généré
+          </p>
+        </div>
       </div>
 
       {/* SECTION 2: CHARTS */}
@@ -620,81 +541,6 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products,
             ))}
             {recentOrdersList.length === 0 && (
               <p className="text-[13px] text-[#9A9A9A] text-center py-4">Aucune commande récente.</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 6: GESTION DES DÉPENSES PUBLICITAIRES */}
-      <div className="bg-white border border-black/5 rounded-3xl shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Megaphone className="text-[#ec4899]" size={20} />
-            <h2 className="text-[18px] font-black text-[#111] tracking-tight">Investissements Publicitaires</h2>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input 
-              type="date" 
-              value={adDate}
-              onChange={e => setAdDate(e.target.value)}
-              className="px-3 py-2 text-[13px] border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/5"
-            />
-            <select 
-              value={adPlatform}
-              onChange={e => setAdPlatform(e.target.value)}
-              className="px-3 py-2 text-[13px] border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/5"
-            >
-              <option value="Facebook">Facebook Ads</option>
-              <option value="TikTok">TikTok Ads</option>
-              <option value="Google">Google Ads</option>
-              <option value="Snapchat">Snapchat Ads</option>
-              <option value="Influenceur">Influenceur</option>
-              <option value="Autre">Autre</option>
-            </select>
-            <input 
-              type="number" 
-              placeholder="Montant (MAD)"
-              value={adAmount}
-              onChange={e => setAdAmount(e.target.value)}
-              className="px-3 py-2 text-[13px] border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/5 w-32"
-            />
-            <button 
-              onClick={handleAddAdSpend}
-              disabled={isSubmittingAd || !adAmount}
-              className="bg-[#111] text-white px-4 py-2 rounded-lg text-[13px] font-bold flex items-center justify-center gap-2 hover:bg-black/80 transition-colors disabled:opacity-50"
-            >
-              <Plus size={16} /> Ajouter
-            </button>
-          </div>
-        </div>
-        
-        <div className="p-6">
-          <div className="space-y-2">
-            {filteredAdSpends.map(ad => (
-              <div key={ad.id} className="flex justify-between items-center p-3 rounded-lg border border-black/5 bg-[#f8fafc] hover:bg-white hover:border-black/10 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-                    <Megaphone size={14} />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-[#111]">{ad.platform}</p>
-                    <p className="text-[11px] text-[#666]">{new Date(ad.date).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-[14px] font-black text-[#111]">{formatMAD(ad.amount)}</span>
-                  <button 
-                    onClick={() => handleDeleteAdSpend(ad.id)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-            {filteredAdSpends.length === 0 && (
-              <p className="text-[13px] text-[#9A9A9A] text-center py-4">Aucune dépense enregistrée sur cette période.</p>
             )}
           </div>
         </div>
