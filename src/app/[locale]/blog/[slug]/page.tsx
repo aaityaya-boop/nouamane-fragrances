@@ -84,9 +84,34 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
 
           <article 
-            className="prose prose-lg lg:prose-xl max-w-none prose-headings:font-serif prose-headings:font-normal prose-a:text-[#0ea5e9] prose-img:rounded-xl mb-20"
+            className="prose prose-lg lg:prose-xl max-w-none prose-headings:font-serif prose-headings:font-normal prose-a:text-[#0ea5e9] prose-img:rounded-xl mb-12"
             dangerouslySetInnerHTML={createMarkup()}
           />
+          
+          {/* POST TAGS */}
+          {post.tags && post.tags !== '[]' && (
+            <div className="flex flex-wrap gap-2 mb-16">
+              {JSON.parse(post.tags).map((tag: string) => (
+                <span key={tag} className="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* CALL TO ACTION */}
+          {post.ctaText && post.ctaLink && (
+            <div className="bg-gradient-to-r from-[#0ea5e9]/10 to-transparent p-8 md:p-12 rounded-3xl border border-[#0ea5e9]/20 text-center mb-10">
+              <h3 className="heading-font text-2xl md:text-3xl mb-4">Prêt à trouver votre signature olfactive ?</h3>
+              <p className="text-[#6B6B6B] mb-8 max-w-[500px] mx-auto">Explorez notre collection exclusive et laissez-vous séduire par des fragrances d'exception.</p>
+              <Link 
+                href={post.ctaLink} 
+                className="inline-flex items-center justify-center bg-[#0ea5e9] text-white px-8 py-4 rounded-full font-bold tracking-wide uppercase text-sm hover:bg-[#0284c7] hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-[#0ea5e9]/30"
+              >
+                {post.ctaText}
+              </Link>
+            </div>
+          )}
           
         </div>
 

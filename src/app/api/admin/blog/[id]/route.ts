@@ -23,6 +23,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         status: data.status,
         metaTitle: data.metaTitle || null,
         metaDescription: data.metaDescription || null,
+        category: data.category || 'Général',
+        tags: data.tags || '[]',
+        ctaText: data.ctaText || null,
+        ctaLink: data.ctaLink || null,
         relatedProductSlugs: data.relatedProductSlugs || '[]',
       }
     });

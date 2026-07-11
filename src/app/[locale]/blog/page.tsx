@@ -45,6 +45,9 @@ export default async function BlogListingPage() {
                       fill 
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-[#1A1A1A]">
+                      {post.category || 'Général'}
+                    </div>
                   </div>
                   <div className="flex-1 flex flex-col">
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-3">

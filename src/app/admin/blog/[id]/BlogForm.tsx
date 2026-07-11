@@ -24,6 +24,10 @@ export default function BlogForm({ initialData }: { initialData?: any }) {
     status: initialData?.status || 'draft',
     metaTitle: initialData?.metaTitle || '',
     metaDescription: initialData?.metaDescription || '',
+    category: initialData?.category || 'Général',
+    tags: initialData?.tags ? JSON.parse(initialData.tags).join(', ') : '',
+    ctaText: initialData?.ctaText || '',
+    ctaLink: initialData?.ctaLink || '',
     relatedProductSlugs: initialData?.relatedProductSlugs ? JSON.parse(initialData.relatedProductSlugs) : []
   });
 
@@ -37,9 +41,15 @@ export default function BlogForm({ initialData }: { initialData?: any }) {
       
     const method = initialData ? 'PUT' : 'POST';
 
-    // Stringify the related products array before sending
+    // Parse tags back into array before sending
+    const tagsArray = formData.tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
     const dataToSend = {
       ...formData,
+      tags: JSON.stringify(tagsArray),
       relatedProductSlugs: JSON.stringify(formData.relatedProductSlugs)
     };
 
@@ -215,11 +225,68 @@ export default function BlogForm({ initialData }: { initialData?: any }) {
               </div>
             </div>
           </div>
+
+          {/* Call To Action Panel */}
+          <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 mt-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Marketing (Call To Action)</h3>
+            <p className="text-sm text-gray-500 mb-4">Ajoutez un bouton personnalisé à la fin de l'article pour convertir vos lecteurs.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Texte du bouton</label>
+                <input 
+                  type="text" 
+                  value={formData.ctaText}
+                  onChange={e => setFormData({...formData, ctaText: e.target.value})}
+                  placeholder="ex: Découvrir nos parfums d'été"
+                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Lien du bouton</label>
+                <input 
+                  type="text" 
+                  value={formData.ctaLink}
+                  onChange={e => setFormData({...formData, ctaLink: e.target.value})}
+                  placeholder="ex: /shop/femme"
+                  className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Sidebar settings */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+              <select 
+                value={formData.category}
+                onChange={e => setFormData({...formData, category: e.target.value})}
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+              >
+                <option value="Général">Général</option>
+                <option value="Guides">Guides</option>
+                <option value="Nouveautés">Nouveautés</option>
+                <option value="Conseils">Conseils</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Mots-clés (Tags)</label>
+              <input 
+                type="text" 
+                value={formData.tags}
+                onChange={e => setFormData({...formData, tags: e.target.value})}
+                placeholder="parfum, été, femme..."
+                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">Séparés par des virgules</p>
+            </div>
+
+            <hr className="border-gray-200" />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">URL (Slug)</label>
               <input 

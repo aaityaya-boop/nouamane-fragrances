@@ -32,6 +32,10 @@ export async function POST(request: Request) {
         status: data.status || 'draft',
         metaTitle: data.metaTitle || null,
         metaDescription: data.metaDescription || null,
+        category: data.category || 'Général',
+        tags: data.tags || '[]',
+        ctaText: data.ctaText || null,
+        ctaLink: data.ctaLink || null,
         relatedProductSlugs: data.relatedProductSlugs || '[]',
       }
     });

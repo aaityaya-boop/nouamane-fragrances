@@ -200,6 +200,10 @@ model BlogPost {
   status              String   @default("draft") // "published" or "draft"
   metaTitle           String?
   metaDescription     String?
+  category            String   @default("Général")
+  tags                String   @default("[]") // JSON string array
+  ctaText             String?
+  ctaLink             String?
   relatedProductSlugs String   @default("[]") // JSON string array of product slugs
   publishedAt         DateTime @default(now())
   createdAt           DateTime @default(now())
