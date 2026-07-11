@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, Legend
+  BarChart, Bar, Cell
 } from 'recharts';
-import { DollarSign, Percent, TrendingUp, Truck, Users, Gift, MapPin, Award, RefreshCcw } from 'lucide-react';
+import { DollarSign, Percent, TrendingUp, Truck, Users, Gift, MapPin, Award, RefreshCcw, Calendar, ArrowUpRight, ArrowDownRight, Package, ShoppingCart, MousePointerClick } from 'lucide-react';
 
 type OrderData = {
   id: string;
@@ -21,84 +21,121 @@ type OrderData = {
   items: string;
 };
 
+type VisitorData = {
+  id: string;
+  createdAt: string;
+};
+
 type FinanceClientProps = {
   orders: OrderData[];
+  visitors: VisitorData[];
+  viewsBySlug: Record<string, { total: number, dates: string[] }>;
+  products: { id: number, slug: string, name: string, brandLabel: string, price: number, images: string, sku: string | null }[];
 };
 
 const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
 
-export default function FinanceClient({ orders }: FinanceClientProps) {
+export default function FinanceClient({ orders, visitors, viewsBySlug, products }: FinanceClientProps) {
+  const [dateRange, setDateRange] = useState<number>(30); // days, 0 = all time
+
+  // --- FILTER DATA BY DATE ---
+  const filteredOrders = useMemo(() => {
+    if (dateRange === 0) return orders;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - dateRange);
+    return orders.filter(o => new Date(o.createdAt) >= cutoff);
+  }, [orders, dateRange]);
+
+  const filteredVisitors = useMemo(() => {
+    if (dateRange === 0) return visitors;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - dateRange);
+    return visitors.filter(v => new Date(v.createdAt) >= cutoff);
+  }, [visitors, dateRange]);
+
+  const filteredViewsBySlug = useMemo(() => {
+    if (dateRange === 0) {
+      const result: Record<string, number> = {};
+      Object.keys(viewsBySlug).forEach(slug => {
+        result[slug] = viewsBySlug[slug].total;
+      });
+      return result;
+    }
+    
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - dateRange);
+    const result: Record<string, number> = {};
+    Object.keys(viewsBySlug).forEach(slug => {
+      const dates = viewsBySlug[slug].dates.filter(d => new Date(d) >= cutoff);
+      result[slug] = dates.length;
+    });
+    return result;
+  }, [viewsBySlug, dateRange]);
+
   // --- 1. CORE FINANCIAL METRICS ---
-  const nonCanceledOrders = orders.filter((o) => !['refused', 'returned', 'canceled', 'annule'].includes(o.status));
-  const validOrders = orders.filter((o) => ['delivered', 'shipped'].includes(o.status));
+  const nonCanceledOrders = filteredOrders.filter((o) => !['refused', 'returned', 'canceled', 'annule'].includes(o.status));
+  const validOrders = filteredOrders.filter((o) => ['delivered', 'shipped'].includes(o.status));
   
   const grossRevenue = nonCanceledOrders.reduce((acc, o) => acc + o.total + (o.discount || 0), 0);
   const netRevenue = validOrders.reduce((acc, o) => acc + o.total, 0);
-  const pendingRevenue = orders.filter((o) => ['pending', 'processing', 'unconfirmed'].includes(o.status)).reduce((acc, o) => acc + o.total, 0);
-  const returnedRevenue = orders.filter((o) => o.status === 'returned').reduce((acc, o) => acc + o.total, 0);
-  const returnedCount = orders.filter((o) => o.status === 'returned').length;
-  const totalDiscounts = validOrders.reduce((acc, o) => acc + (o.discount || 0), 0);
-  const totalShipping = validOrders.reduce((acc, o) => acc + o.shippingCost, 0);
-
+  
   const uniqueCustomers = new Set(validOrders.map(o => o.customerEmail.toLowerCase())).size;
   const avgOrderValue = validOrders.length > 0 ? netRevenue / validOrders.length : 0;
-  const ltv = uniqueCustomers > 0 ? netRevenue / uniqueCustomers : 0; // Lifetime Value
+  
+  const totalVisitors = filteredVisitors.length;
+  const globalConversionRate = totalVisitors > 0 ? (validOrders.length / totalVisitors) * 100 : 0;
 
-  // --- 2. TIME-SERIES DATA (LAST 30 DAYS) ---
-  const last30DaysData = [];
-  const today = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-    const dayOrders = validOrders.filter((o) => o.createdAt.split('T')[0] === dateStr);
-    last30DaysData.push({
-      date: dateStr,
-      revenue: dayOrders.reduce((acc, o) => acc + o.total, 0),
-      ordersCount: dayOrders.length,
-    });
-  }
-
-  // --- 3. PRODUCT PERFORMANCE ---
-  const productSales: Record<string, { name: string; quantity: number; revenue: number }> = {};
-  validOrders.forEach((o) => {
-    try {
-      const items = JSON.parse(o.items);
-      items.forEach((item: any) => {
-        if (!productSales[item.id]) {
-          productSales[item.id] = { name: item.name, quantity: 0, revenue: 0 };
-        }
-        productSales[item.id].quantity += item.quantity;
-        productSales[item.id].revenue += item.price * item.quantity;
+  // --- 2. TIME-SERIES DATA ---
+  const chartData = useMemo(() => {
+    const data = [];
+    const daysToLook = dateRange === 0 ? 30 : dateRange; // Default to 30 if all time just for chart
+    const today = new Date();
+    for (let i = daysToLook - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayOrders = validOrders.filter((o) => o.createdAt.split('T')[0] === dateStr);
+      data.push({
+        date: dateStr,
+        revenue: dayOrders.reduce((acc, o) => acc + o.total, 0),
+        ordersCount: dayOrders.length,
       });
-    } catch (e) {}
-  });
-  const topProducts = Object.values(productSales).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
-
-  // --- 4. GEOGRAPHIC PERFORMANCE (CITIES) ---
-  const citySales: Record<string, number> = {};
-  validOrders.forEach(o => {
-    const city = o.shippingCity.trim().toUpperCase() || 'INCONNU';
-    citySales[city] = (citySales[city] || 0) + o.total;
-  });
-  const topCities = Object.entries(citySales)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([name, value]) => ({ name, value }));
-
-  // --- 5. TOP CUSTOMERS (LOYALTY) ---
-  const customerStats: Record<string, { name: string; email: string; spent: number; count: number }> = {};
-  validOrders.forEach(o => {
-    const email = o.customerEmail.toLowerCase();
-    if (!customerStats[email]) {
-      customerStats[email] = { name: o.customerName, email, spent: 0, count: 0 };
     }
-    customerStats[email].spent += o.total;
-    customerStats[email].count += 1;
-  });
-  const topCustomers = Object.values(customerStats)
-    .sort((a, b) => b.spent - a.spent)
-    .slice(0, 5);
+    return data;
+  }, [validOrders, dateRange]);
+
+  // --- 3. WINNING PRODUCTS ANALYTICS ---
+  const winningProducts = useMemo(() => {
+    const productStats: Record<string, { qty: number, rev: number }> = {};
+    validOrders.forEach((o) => {
+      try {
+        const items = JSON.parse(o.items);
+        items.forEach((item: any) => {
+          if (!productStats[item.slug]) {
+            productStats[item.slug] = { qty: 0, rev: 0 };
+          }
+          productStats[item.slug].qty += item.quantity;
+          productStats[item.slug].rev += item.price * item.quantity;
+        });
+      } catch (e) {}
+    });
+
+    return products.map(p => {
+      const stats = productStats[p.slug] || { qty: 0, rev: 0 };
+      const views = filteredViewsBySlug[p.slug] || 0;
+      const cvr = views > 0 ? (stats.qty / views) * 100 : 0;
+      let img = '/images/hero.png';
+      try { img = JSON.parse(p.images)[0] || img; } catch {}
+      return {
+        ...p,
+        image: img,
+        qty: stats.qty,
+        rev: stats.rev,
+        views,
+        cvr
+      };
+    }).sort((a, b) => b.rev - a.rev);
+  }, [products, validOrders, filteredViewsBySlug]);
 
   const formatMAD = (amount: number) => {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
@@ -107,190 +144,206 @@ export default function FinanceClient({ orders }: FinanceClientProps) {
   return (
     <div className="space-y-8 pb-10">
       
-      {/* SECTION 1: EXECUTIVE SUMMARY */}
-      <div>
-        <h2 className="text-[14px] font-bold tracking-widest uppercase text-gray-500 mb-4">Vue d'ensemble de la Trésorerie</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <KpiCard icon={<DollarSign size={20} />} title="CA Net" value={formatMAD(netRevenue)} subtitle="Revenus validés" bg="bg-emerald-50 text-emerald-600 border-emerald-100" />
-          <KpiCard icon={<TrendingUp size={20} />} title="En Attente" value={formatMAD(pendingRevenue)} subtitle="À confirmer" bg="bg-amber-50 text-amber-600 border-amber-100" />
-          <KpiCard icon={<RefreshCcw size={20} />} title="Retours" value={formatMAD(returnedRevenue)} subtitle={`${returnedCount} commande(s)`} bg="bg-red-50 text-red-600 border-red-100" />
-          <KpiCard icon={<Gift size={20} />} title="Promos" value={`-${formatMAD(totalDiscounts)}`} subtitle="Réductions" bg="bg-purple-50 text-purple-600 border-purple-100" />
-          <KpiCard icon={<Truck size={20} />} title="Logistique" value={formatMAD(totalShipping)} subtitle="Frais facturés" bg="bg-blue-50 text-blue-600 border-blue-100" />
+      {/* HEADER CONTROLS */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-2xl border border-black/5 shadow-sm">
+        <div className="flex items-center gap-2 mb-4 sm:mb-0">
+          <Calendar size={18} className="text-[#0ea5e9]" />
+          <span className="text-[14px] font-bold text-[#111]">Période d'analyse :</span>
+        </div>
+        <div className="flex items-center gap-2 bg-[#f8fafc] p-1 rounded-xl border border-black/5">
+          {[
+            { label: "7 Jours", value: 7 },
+            { label: "30 Jours", value: 30 },
+            { label: "Tout le temps", value: 0 },
+          ].map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setDateRange(opt.value)}
+              className={`px-4 py-2 text-[12px] font-bold rounded-lg transition-all ${
+                dateRange === opt.value 
+                  ? 'bg-white shadow-sm text-[#111]' 
+                  : 'text-[#666] hover:text-[#111]'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* SECTION 2: CUSTOMER VALUE METRICS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
-          <div className="relative z-10">
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Valeur Vie Client (LTV)</p>
-            <h3 className="text-3xl font-bold tracking-tight">{formatMAD(ltv)}</h3>
-            <p className="text-gray-500 text-xs mt-1">Revenu moyen par client unique</p>
+      {/* SECTION 1: MASTER KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* CA Net */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Chiffre d'Affaires</p>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><DollarSign size={16} /></div>
           </div>
-          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-emerald-400 relative z-10 shadow-inner shadow-emerald-400/10">
-            <Users size={24} />
-          </div>
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{formatMAD(netRevenue)}</h3>
+          <p className="text-[11px] font-medium text-emerald-600 mt-2 flex items-center gap-1">
+            <TrendingUp size={12} /> Net Validé
+          </p>
         </div>
-        
-        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-colors duration-500"></div>
-          <div className="relative z-10">
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Panier Moyen (AOV)</p>
-            <h3 className="text-3xl font-bold tracking-tight">{formatMAD(avgOrderValue)}</h3>
-            <p className="text-gray-500 text-xs mt-1">Revenu par commande</p>
+
+        {/* Commandes */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Ventes (Qté)</p>
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><ShoppingCart size={16} /></div>
           </div>
-          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-sky-400 relative z-10 shadow-inner shadow-sky-400/10">
-            <Percent size={24} />
-          </div>
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{validOrders.length}</h3>
+          <p className="text-[11px] font-medium text-blue-600 mt-2 flex items-center gap-1">
+            Commandes livrées/expédiées
+          </p>
         </div>
-        
-        <div className="bg-[#111] text-white p-6 rounded-2xl shadow-xl border border-[#222] flex items-center justify-between relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors duration-500"></div>
-          <div className="relative z-10">
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Base Clients Active</p>
-            <h3 className="text-3xl font-bold tracking-tight">{uniqueCustomers}</h3>
-            <p className="text-gray-500 text-xs mt-1">Acheteurs confirmés uniques</p>
+
+        {/* Conversion */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Conversion</p>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><Percent size={16} /></div>
           </div>
-          <div className="w-12 h-12 bg-[#222] rounded-xl flex items-center justify-center text-purple-400 relative z-10 shadow-inner shadow-purple-400/10">
-            <Award size={24} />
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{globalConversionRate.toFixed(2)}%</h3>
+          <p className="text-[11px] font-medium text-purple-600 mt-2 flex items-center gap-1">
+            Visiteurs → Acheteurs
+          </p>
+        </div>
+
+        {/* AOV */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Panier Moyen</p>
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><Package size={16} /></div>
           </div>
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{formatMAD(avgOrderValue)}</h3>
+          <p className="text-[11px] font-medium text-amber-600 mt-2 flex items-center gap-1">
+            Revenu par commande
+          </p>
+        </div>
+
+        {/* Traffic */}
+        <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-[#666]">Visiteurs</p>
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Users size={16} /></div>
+          </div>
+          <h3 className="text-3xl font-black text-[#111] tracking-tight">{totalVisitors}</h3>
+          <p className="text-[11px] font-medium text-indigo-600 mt-2 flex items-center gap-1">
+            Trafic unique généré
+          </p>
         </div>
       </div>
 
-      {/* SECTION 3: REVENUE CHART */}
-      <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-[16px] font-bold text-[#111]">Croissance des Revenus (30 derniers jours)</h2>
-          <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded-md border border-emerald-100 uppercase tracking-wider">CA Net Uniquement</span>
+      {/* SECTION 2: CHARTS */}
+      <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-[18px] font-black text-[#111] tracking-tight">Dynamique des Ventes</h2>
+            <p className="text-[12px] text-[#666] mt-1">Évolution du chiffre d'affaires net sur la période sélectionnée.</p>
+          </div>
         </div>
-        <div className="h-[380px] w-full">
+        <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={last30DaysData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaea" />
-              <XAxis dataKey="date" tickFormatter={(val) => { const d = new Date(val); return `${d.getDate()}/${d.getMonth()+1}`; }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(val) => `${val} Dh`} dx={-10} />
-              <Tooltip formatter={(value: any) => [formatMAD(Number(value)), 'CA Net Généré']} labelFormatter={(label) => new Date(label as string).toLocaleDateString('fr-FR')} contentStyle={{ borderRadius: '12px', border: '1px solid #eaeaea', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-              <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorNet)" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis dataKey="date" tickFormatter={(val) => { const d = new Date(val); return `${d.getDate()}/${d.getMonth()+1}`; }} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9A9A9A', fontWeight: 600 }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#9A9A9A', fontWeight: 600 }} tickFormatter={(val) => `${val} Dh`} dx={-10} />
+              <Tooltip 
+                formatter={(value: any) => [`${formatMAD(Number(value))}`, 'CA Net']} 
+                labelFormatter={(label) => new Date(label as string).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' })} 
+                contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)', fontWeight: 'bold' }} 
+              />
+              <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={4} fillOpacity={1} fill="url(#colorNet)" activeDot={{ r: 8, strokeWidth: 0, fill: '#0ea5e9' }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* SECTION 4: DEEP DIVES */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* SECTION 3: WINNING PRODUCTS TABLE */}
+      <div className="bg-white border border-black/5 rounded-3xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-[18px] font-black text-[#111] tracking-tight flex items-center gap-2">
+              <Award className="text-[#f59e0b]" size={20} /> Matrice "Winning Products"
+            </h2>
+            <p className="text-[12px] text-[#666] mt-1">
+              Analysez la performance individuelle de chaque parfum pour scaler vos meilleures ventes.
+            </p>
+          </div>
+        </div>
         
-        {/* Top Cities */}
-        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2"><MapPin size={18} className="text-[#0ea5e9]"/> Pénétration par Ville</h2>
-          <div className="flex-1 flex flex-col justify-center items-center">
-            {topCities.length > 0 ? (
-              <>
-                <div className="h-[220px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={topCities} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
-                        {topCities.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value: any) => formatMAD(Number(value))} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="w-full space-y-2 mt-4">
-                  {topCities.map((city, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                        <span className="font-medium text-[#111]">{city.name}</span>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead>
+              <tr className="bg-[#f8fafc]">
+                <th className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#9A9A9A]">Produit</th>
+                <th className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#9A9A9A]">Vues (Trafic)</th>
+                <th className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#9A9A9A]">Unités Vendues</th>
+                <th className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#9A9A9A]">CA Généré</th>
+                <th className="px-6 py-4 text-[11px] font-black uppercase tracking-widest text-[#9A9A9A]">Taux de Conversion</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              {winningProducts.slice(0, 20).map((product, idx) => (
+                <tr key={product.id} className="hover:bg-[#fafaf7] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#f8fafc] border border-black/5 flex-shrink-0">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                       </div>
-                      <span className="font-bold text-[#111]">{formatMAD(city.value)}</span>
+                      <div>
+                        <div className="text-[13px] font-bold text-[#111]">{product.name}</div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-[#0ea5e9] mt-0.5">{product.brandLabel}</div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-[#888] text-sm py-10">Pas assez de données.</p>
-            )}
-          </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-[14px] font-bold text-[#111]">
+                      <MousePointerClick size={16} className="text-[#9A9A9A]" />
+                      {product.views}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-[14px] font-bold text-[#111]">
+                      {product.qty} <span className="text-[12px] text-[#9A9A9A] font-medium">pcs</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-[14px] font-black text-[#10b981]">
+                      {formatMAD(product.rev)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-full max-w-[100px] h-2 bg-[#f0f0f0] rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${product.cvr >= 3 ? 'bg-emerald-500' : product.cvr >= 1 ? 'bg-amber-500' : 'bg-red-400'}`}
+                          style={{ width: `${Math.min(product.cvr * 10, 100)}%` }}
+                        />
+                      </div>
+                      <span className={`text-[13px] font-bold ${product.cvr >= 3 ? 'text-emerald-600' : product.cvr >= 1 ? 'text-amber-600' : 'text-red-500'}`}>
+                        {product.cvr.toFixed(2)}%
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {winningProducts.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-[#9A9A9A] text-[13px] font-medium">
+                    Aucune donnée disponible pour cette période.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-
-        {/* Top Products */}
-        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2">🏆 Parfums Best-Sellers</h2>
-          <div className="space-y-4">
-            {topProducts.map((product, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-[#fafafa] rounded-xl border border-[#eaeaea] group hover:bg-white transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm border ${idx === 0 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-white text-gray-600 border-[#eaeaea]'}`}>
-                    #{idx + 1}
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-[#111] line-clamp-1">{product.name}</p>
-                    <p className="text-[11px] text-[#666] uppercase tracking-wider mt-0.5">{product.quantity} Unités vendues</p>
-                  </div>
-                </div>
-                <div className="text-[13px] font-bold text-emerald-600">
-                  {formatMAD(product.revenue)}
-                </div>
-              </div>
-            ))}
-            {topProducts.length === 0 && <p className="text-[13px] text-[#888] text-center py-10">Aucune vente enregistrée.</p>}
-          </div>
-        </div>
-
-        {/* Top VIP Customers */}
-        <div className="bg-white border border-[#eaeaea] rounded-2xl p-6 shadow-sm flex flex-col">
-          <h2 className="text-[15px] font-bold text-[#111] mb-6 flex items-center gap-2"><Award size={18} className="text-purple-500"/> Top Clients (VIPs)</h2>
-          <div className="space-y-4">
-            {topCustomers.map((customer, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-100 to-gray-200 flex items-center justify-center text-[11px] font-bold text-gray-700 shadow-sm border border-white shrink-0">
-                    {customer.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-[#111]">{customer.name}</p>
-                    <p className="text-[11px] text-[#666] truncate w-32 mt-0.5">{customer.email}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-[13px] font-bold text-[#111]">{formatMAD(customer.spent)}</p>
-                  <p className="text-[10px] uppercase font-bold text-[#0ea5e9] bg-sky-50 px-2 py-0.5 rounded-md inline-block mt-1 ring-1 ring-inset ring-sky-500/20">
-                    {customer.count} Cmds
-                  </p>
-                </div>
-              </div>
-            ))}
-            {topCustomers.length === 0 && <p className="text-[13px] text-[#888] text-center py-10">Aucun client enregistré.</p>}
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-function KpiCard({ icon, title, value, subtitle, bg }: { icon: React.ReactNode, title: string, value: string, subtitle: string, bg: string }) {
-  return (
-    <div className="bg-white border border-[#eaeaea] p-5 rounded-2xl shadow-sm flex flex-col justify-between h-full relative overflow-hidden group hover:shadow-[0_4px_15px_-4px_rgba(0,0,0,0.08)] hover:border-[#ddd] transition-all duration-300">
-      <div className="absolute -top-10 -right-10 w-24 h-24 bg-gray-50 rounded-full blur-2xl group-hover:bg-gray-100 transition-colors duration-500 pointer-events-none"></div>
-      <div className="flex items-center gap-3 mb-4 relative z-10">
-        <div className={`p-2.5 rounded-xl border ${bg} shadow-sm`}>
-          {icon}
-        </div>
-        <p className="text-[11px] font-bold text-[#666] uppercase tracking-wider leading-tight">{title}</p>
-      </div>
-      <div className="relative z-10">
-        <h3 className="text-2xl font-black text-[#111] mb-1 tracking-tight">{value}</h3>
-        <p className="text-[11px] font-medium text-[#888]">{subtitle}</p>
       </div>
     </div>
   );
