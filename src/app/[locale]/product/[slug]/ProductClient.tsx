@@ -166,9 +166,9 @@ export default function ProductClient({
         setAuthError(data.error || 'Erreur lors de la connexion Google');
       }
     } catch (error: any) {
-      console.error(error);
+      console.error("Google Auth Full Error:", error);
       if (error.code !== 'auth/popup-closed-by-user') {
-        setAuthError('La connexion Google a échoué');
+        setAuthError(`Erreur Google: ${error.message || error.code || 'Inconnue'}`);
       }
     } finally {
       setLoadingAuth(false);
