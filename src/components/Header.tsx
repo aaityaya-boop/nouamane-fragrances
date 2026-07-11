@@ -50,12 +50,7 @@ export default function Header() {
           isSolid ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-[#e0ddd4]/60' : 'bg-transparent'
         }`}
       >
-        {/* MARKETING TOP BANNER */}
-        <div className="bg-[#1A1A1A] text-white text-[9px] md:text-[11px] font-bold tracking-widest uppercase py-2 text-center flex items-center justify-center gap-2 px-4">
-          <ShieldCheck size={14} className="text-[#0ea5e9] hidden md:block" />
-          <span>Paiement sécurisé à la livraison - Expédition sous 24h</span>
-          <Truck size={14} className="text-[#0ea5e9] hidden md:block ml-2" />
-        </div>
+
         
 
         <div className="max-w-[1600px] mx-auto px-6 lg:px-10">

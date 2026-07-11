@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import RecentlyViewed from '@/components/RecentlyViewed';
 import CartDrawer from '@/components/CartDrawer';
 import ProductCard from '@/components/ProductCard';
 import {
@@ -852,6 +853,9 @@ export default function ProductClient({
         </div>
       )}
 
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-10 pb-16">
+        <RecentlyViewed currentProductId={product.id} />
+      </div>
       <Footer />
       <CartDrawer />
 
