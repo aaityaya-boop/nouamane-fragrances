@@ -23,7 +23,15 @@ import {
   Package,
   Gift,
   MessageCircle,
+  Eye,
+  Flame,
+  Droplets,
+  Wind,
+  BadgeCheck,
+  Sparkles,
+  ShoppingBag,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { formatMAD, Product } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
@@ -71,6 +79,29 @@ export default function ProductClient({
   const [loadingAuth, setLoadingAuth] = useState(false);
 
   const { addRecentlyViewed } = usePreferences();
+
+  // Marketing states
+  const [viewers, setViewers] = useState(0);
+  const [stockLeft, setStockLeft] = useState(0);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  useEffect(() => {
+    // Generate random viewers and stock on mount
+    setViewers(Math.floor(Math.random() * (45 - 15 + 1) + 15));
+    setStockLeft(Math.floor(Math.random() * (7 - 2 + 1) + 2));
+
+    // Scroll listener for sticky bar
+    const handleScroll = () => {
+      // Show sticky bar when scrolled past a certain point (e.g. 600px)
+      if (window.scrollY > 700) {
+        setShowStickyBar(true);
+      } else {
+        setShowStickyBar(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     // Track browsing activity via cookies (recently viewed memory)
@@ -314,105 +345,137 @@ export default function ProductClient({
               </a>
             </div>
 
-            <div className="mt-8 flex items-baseline gap-3">
-              <span className="text-3xl font-semibold text-[#1A1A1A]">
-                {formatMAD(currentPrice)}
-              </span>
-              {product.originalPrice && product.originalPrice > currentPrice && (
-                <span className="text-[15px] text-[#9A9A9A] line-through decoration-[#0ea5e9]/40 font-medium">
-                  {formatMAD(product.originalPrice)}
+            <div className="mt-8 flex flex-col gap-3">
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-semibold text-[#1A1A1A]">
+                  {formatMAD(currentPrice)}
                 </span>
-              )}
+                {product.originalPrice && product.originalPrice > currentPrice && (
+                  <>
+                    <span className="text-[15px] text-[#9A9A9A] line-through decoration-[#0ea5e9]/40 font-medium">
+                      {formatMAD(product.originalPrice)}
+                    </span>
+                    <span className="bg-[#0ea5e9]/10 text-[#0ea5e9] px-2 py-0.5 rounded text-[11px] font-bold tracking-wider uppercase">
+                      Économisez {Math.round((1 - currentPrice / product.originalPrice) * 100)}%
+                    </span>
+                  </>
+                )}
+              </div>
               <span className="text-[13px] text-[#9A9A9A]">
-                / {currentSize.label} (Testeur)
+                Taxes incluses. / {currentSize.label} (Testeur)
               </span>
+            </div>
+
+            {/* MARKETING ALERTS */}
+            <div className="mt-5 space-y-2">
+              <div className="flex items-center gap-2 text-[13px] text-red-600 font-medium bg-red-50/50 w-fit px-3 py-1.5 rounded-full border border-red-100">
+                <Flame size={14} className="animate-pulse" />
+                <span>Très demandé : Plus que {stockLeft} en stock !</span>
+              </div>
+              <div className="flex items-center gap-2 text-[13px] text-[#6B6B6B]">
+                <Eye size={14} />
+                <span>{viewers} personnes consultent ce produit</span>
+              </div>
             </div>
 
             {/* SIZE SELECTOR */}
             <div className="mt-8">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">
-                  Contenance
+                <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A]">
+                  Sélectionnez la Contenance
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 {product.sizes.map((size) => (
                   <button
                     key={size.label}
                     onClick={() => setSelectedSize(size.label)}
-                    className={`px-5 py-3 text-[11px] font-semibold tracking-[0.1em] uppercase rounded-full transition-all ${
+                    className={`relative flex flex-col items-center justify-center py-4 px-3 rounded-xl border transition-all duration-300 ${
                       selectedSize === size.label
-                        ? 'bg-[#f8fafc] text-white'
-                        : 'border border-[#e0ddd4] text-[#6B6B6B] hover:border-[#0ea5e9] hover:text-[#0ea5e9]'
+                        ? 'border-[#0ea5e9] bg-[#f8fafc] ring-1 ring-[#0ea5e9] shadow-sm'
+                        : 'border-[#e0ddd4] bg-white text-[#6B6B6B] hover:border-[#9A9A9A]'
                     }`}
                   >
-                    {size.label} · {formatMAD(size.price)}
+                    <span className={`text-[13px] font-semibold tracking-[0.05em] mb-1 ${selectedSize === size.label ? 'text-[#1A1A1A]' : ''}`}>
+                      {size.label}
+                    </span>
+                    <span className={`text-[11px] ${selectedSize === size.label ? 'text-[#0ea5e9] font-medium' : 'text-[#9A9A9A]'}`}>
+                      {formatMAD(size.price)}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* QUANTITY + ADD */}
-            <div className="mt-8 flex items-center gap-4">
-              <div className="flex items-center border border-[#e0ddd4] rounded-full">
+            <div className="mt-8 flex flex-col md:flex-row items-center gap-4">
+              <div className="flex w-full md:w-auto items-center justify-between border border-[#e0ddd4] rounded-xl bg-white">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-11 h-11 flex items-center justify-center text-[#9A9A9A] hover:text-[#1A1A1A]"
+                  className="w-12 h-14 flex items-center justify-center text-[#9A9A9A] hover:text-[#1A1A1A] hover:bg-[#fafaf7] rounded-l-xl transition"
                   aria-label="Diminuer"
                 >
-                  <Minus size={14} />
+                  <Minus size={16} />
                 </button>
-                <div className="px-5 text-sm font-mono text-[#1A1A1A] border-x border-[#e0ddd4]">
+                <div className="px-6 text-[15px] font-semibold text-[#1A1A1A]">
                   {quantity}
                 </div>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-11 h-11 flex items-center justify-center text-[#9A9A9A] hover:text-[#1A1A1A]"
+                  className="w-12 h-14 flex items-center justify-center text-[#9A9A9A] hover:text-[#1A1A1A] hover:bg-[#fafaf7] rounded-r-xl transition"
                   aria-label="Augmenter"
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                 </button>
               </div>
 
               {product.inStock !== false ? (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
-                  className={`btn-blue flex-1 py-4 text-[11px] rounded-full flex items-center justify-center gap-2 transition-all ${
-                    isAdded ? '!bg-green-600 hover:!bg-green-700' : ''
+                  className={`btn-blue flex-1 w-full h-14 text-[13px] rounded-xl flex items-center justify-center gap-2 transition-all relative overflow-hidden ${
+                    isAdded ? '!bg-green-600 hover:!bg-green-700' : 'hover:shadow-lg hover:shadow-[#0ea5e9]/20'
                   }`}
                 >
                   {isAdded ? (
                     <>
-                      <Check size={16} /> Ajouté !
+                      <Check size={18} /> Ajouté avec succès !
                     </>
                   ) : (
-                    <>Ajouter — {formatMAD(currentPrice * quantity)}</>
+                    <>
+                      <ShoppingBag size={18} />
+                      Ajouter au panier — {formatMAD(currentPrice * quantity)}
+                    </>
                   )}
-                </button>
+                  {/* Subtle shine effect */}
+                  {!isAdded && <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent hover:animate-[shimmer_1.5s_infinite]" />}
+                </motion.button>
               ) : (
                 <button
                   disabled
-                  className="bg-[#eeece5] text-[#9A9A9A] flex-1 py-4 text-[11px] rounded-full flex items-center justify-center gap-2 uppercase tracking-widest font-semibold cursor-not-allowed"
+                  className="bg-[#eeece5] text-[#9A9A9A] flex-1 w-full h-14 text-[13px] rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest font-semibold cursor-not-allowed"
                 >
                   Rupture de stock
                 </button>
               )}
             </div>
 
-            {/* SHIPPING PERKS */}
-            <div className="mt-8 grid grid-cols-3 gap-3 pt-6 border-t border-[#e0ddd4]">
-              <PerkItem icon={<Truck size={18} />} label="Livraison partout au Maroc avec 35Dh" />
-              <PerkItem icon={<RotateCcw size={18} />} label="Retour sous 14 jours" />
-              <PerkItem icon={<ShieldCheck size={18} />} label="Paiement sécurisé" />
+            {/* TRUST BADGES / SHIPPING PERKS */}
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-[#e0ddd4]">
+              <PerkItem icon={<BadgeCheck size={20} className="text-[#0ea5e9]" />} label="100% Authentique" sublabel="Garanti" />
+              <PerkItem icon={<Truck size={20} className="text-[#0ea5e9]" />} label="Livraison Express" sublabel="Partout au Maroc" />
+              <PerkItem icon={<ShieldCheck size={20} className="text-[#0ea5e9]" />} label="Paiement Sécurisé" sublabel="À la livraison" />
+              <PerkItem icon={<RotateCcw size={20} className="text-[#0ea5e9]" />} label="Retour Simple" sublabel="Sous 14 jours" />
             </div>
 
-            <div className="mt-4 p-4 bg-[#f8fafc] rounded-lg border border-[#e0ddd4] flex gap-4 items-center">
-              <div className="text-[#0ea5e9]">
+            <div className="mt-6 p-5 bg-gradient-to-r from-[#f8fafc] to-white rounded-xl border border-[#0ea5e9]/20 flex gap-4 items-center hover:border-[#0ea5e9]/40 transition">
+              <div className="text-[#0ea5e9] bg-[#0ea5e9]/10 p-3 rounded-full">
                 <MessageCircle size={24} />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-[#1A1A1A] mb-0.5">Service client réactif</p>
-                <p className="text-[12px] text-[#6B6B6B]">Une équipe à votre écoute 7j/7 pour vous conseiller.</p>
+                <p className="text-[14px] font-bold text-[#1A1A1A] mb-0.5">Besoin de conseils ?</p>
+                <p className="text-[12px] text-[#6B6B6B]">Notre équipe de passionnés est à votre écoute 7j/7.</p>
               </div>
             </div>
           </div>
@@ -455,56 +518,70 @@ export default function ProductClient({
           {/* Pyramide Olfactive */}
           <div>
             <div className="text-center mb-12">
-              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block">
-                La Composition
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block flex items-center justify-center gap-2">
+                <Sparkles size={14} /> La Composition
               </span>
               <h2 className="heading-font text-3xl md:text-5xl text-[#1A1A1A] tracking-wide">
                 Pyramide Olfactive
               </h2>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 md:gap-4 text-center">
+            <div className="grid md:grid-cols-3 gap-8 md:gap-6 text-center">
               {[
-                { title: 'Notes de tête', desc: 'Une ouverture fraîche et captivante', items: product.notes.top },
-                { title: 'Notes de cœur', desc: 'Un cœur riche et profond', items: product.notes.heart },
-                { title: 'Notes de fond', desc: 'Un sillage mémorable', items: product.notes.base },
-              ].map((n) => (
-                <div key={n.title} className="bg-[#fafaf7] rounded-[32px] p-8 border border-[#e0ddd4] hover:shadow-xl hover:border-[#0ea5e9]/30 transition-all duration-500">
+                { title: 'Notes de Tête', desc: 'L\'envolée olfactive (0-15 min)', items: product.notes.top, icon: <Wind size={24} className="text-[#0ea5e9]" /> },
+                { title: 'Notes de Cœur', desc: 'La personnalité (15min-4h)', items: product.notes.heart, icon: <Heart size={24} className="text-[#0ea5e9]" /> },
+                { title: 'Notes de Fond', desc: 'Le sillage mémorable (4h+)', items: product.notes.base, icon: <Droplets size={24} className="text-[#0ea5e9]" /> },
+              ].map((n, i) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.2 }}
+                  key={n.title} 
+                  className="bg-white rounded-[32px] p-8 border border-[#e0ddd4] shadow-sm hover:shadow-xl hover:border-[#0ea5e9]/30 transition-all duration-500 relative group overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
+                    {n.icon}
+                  </div>
+                  <div className="w-14 h-14 mx-auto bg-[#f8fafc] rounded-2xl flex items-center justify-center mb-6 text-[#0ea5e9] shadow-inner">
+                    {n.icon}
+                  </div>
                   <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2">{n.title}</h3>
-                  <p className="text-[11px] font-semibold tracking-widest uppercase text-[#9A9A9A] mb-6">{n.desc}</p>
-                  <ul className="space-y-3">
+                  <p className="text-[11px] font-bold tracking-widest uppercase text-[#9A9A9A] mb-6">{n.desc}</p>
+                  <ul className="space-y-3 relative z-10">
                     {n.items.map((item) => (
-                      <li key={item} className="text-[15px] text-[#555] font-medium">
+                      <li key={item} className="text-[15px] text-[#555] font-medium bg-[#f8fafc] py-2 px-4 rounded-lg inline-block w-full">
                         {item}
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
           {/* Caractéristiques Clés */}
-          <div className="bg-[#1A1A1A] rounded-[40px] p-10 md:p-16 text-white text-center shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
-            <h2 className="heading-font text-3xl md:text-5xl tracking-wide mb-10">
-              Caractéristiques Clés
+          <div className="bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] rounded-[40px] p-10 md:p-16 text-white text-center shadow-[0_20px_40px_rgba(0,0,0,0.2)] relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+            <h2 className="heading-font text-3xl md:text-5xl tracking-wide mb-12 relative z-10">
+              L'Essence du Produit
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="flex flex-col items-center gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative z-10">
+              <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Concentration</span>
-                <span className="text-lg font-semibold tracking-wide">Eau de Parfum</span>
+                <span className="text-lg font-semibold tracking-wide text-[#0ea5e9]">Eau de Parfum</span>
               </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Genre</span>
-                <span className="text-lg font-semibold tracking-wide">{product.gender === 'women' ? 'Femme' : product.gender === 'men' ? 'Homme' : 'Unisexe'}</span>
+                <span className="text-lg font-semibold tracking-wide text-white">{product.gender === 'women' ? 'Femme' : product.gender === 'men' ? 'Homme' : 'Unisexe'}</span>
               </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Famille</span>
-                <span className="text-lg font-semibold tracking-wide">{product.subcategoryLabel}</span>
+                <span className="text-lg font-semibold tracking-wide text-white">{product.subcategoryLabel}</span>
               </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-4 bg-white/5 p-6 rounded-3xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">Saison Idéale</span>
-                <span className="text-lg font-semibold tracking-wide">{product.perfectSeason || 'Toutes Saisons'}</span>
+                <span className="text-lg font-semibold tracking-wide text-white">{product.perfectSeason || 'Toutes Saisons'}</span>
               </div>
             </div>
           </div>
@@ -793,15 +870,60 @@ export default function ProductClient({
 
       <Footer />
       <CartDrawer />
+
+      {/* ====== STICKY ADD TO CART BAR ====== */}
+      <AnimatePresence>
+        {showStickyBar && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#e0ddd4] shadow-[0_-10px_30px_rgba(0,0,0,0.05)] p-4 md:py-4 md:px-8 flex items-center justify-between gap-4"
+          >
+            <div className="hidden md:flex items-center gap-4">
+              <div className="w-12 h-12 relative rounded bg-[#f8fafc] overflow-hidden">
+                <Image src={product.images[0]} alt="" fill className="object-cover" />
+              </div>
+              <div>
+                <div className="text-[14px] font-bold text-[#1A1A1A] line-clamp-1">{product.name}</div>
+                <div className="text-[12px] text-[#6B6B6B]">{formatMAD(currentPrice)} - {currentSize.label}</div>
+              </div>
+            </div>
+            <div className="flex-1 md:flex-none flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+              <div className="md:hidden">
+                <div className="text-[16px] font-bold text-[#1A1A1A]">{formatMAD(currentPrice)}</div>
+                <div className="text-[11px] text-[#0ea5e9]">Plus que {stockLeft} en stock</div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  setTimeout(() => handleAddToCart(), 300);
+                }}
+                className={`btn-blue px-8 py-3.5 text-[12px] rounded-xl flex items-center justify-center gap-2 transition-all ${
+                  isAdded ? '!bg-green-600' : 'hover:shadow-lg'
+                }`}
+              >
+                {isAdded ? <><Check size={16} /> Ajouté</> : <><ShoppingBag size={16} /> Ajouter</>}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-function PerkItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function PerkItem({ icon, label, sublabel }: { icon: React.ReactNode; label: string; sublabel: string }) {
   return (
-    <div className="text-center">
-      <div className="inline-flex text-[#0ea5e9] mb-1.5">{icon}</div>
-      <div className="text-[10px] text-[#6B6B6B] leading-tight">{label}</div>
+    <div className="flex flex-col items-center text-center gap-2">
+      <div className="w-12 h-12 rounded-full bg-[#f8fafc] border border-[#0ea5e9]/10 flex items-center justify-center">
+        {icon}
+      </div>
+      <div>
+        <div className="text-[12px] font-bold text-[#1A1A1A]">{label}</div>
+        <div className="text-[11px] text-[#6B6B6B] leading-tight">{sublabel}</div>
+      </div>
     </div>
   );
 }
