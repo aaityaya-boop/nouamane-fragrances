@@ -62,6 +62,7 @@ export default function ProductClient({
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const { addToCart } = useCart();
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const pathname = usePathname();
   const locale = (pathname?.split('/')[1] || 'fr') as Locale;
   const t = translations[locale] || translations.fr;
@@ -76,6 +77,7 @@ export default function ProductClient({
     comment: '',
   });
   const { customer, setCustomer } = useAuth();
+  const isInWishlist = customer?.wishlist?.includes(product.slug) || false;
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewAuthStep, setReviewAuthStep] = useState<'login' | 'signup' | 'review'>('login');
   const [authData, setAuthData] = useState({ name: '', email: '', password: '' });
@@ -165,6 +167,36 @@ export default function ProductClient({
 
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!customer) {
+      alert("Connectez-vous pour ajouter aux favoris.");
+      return;
+    }
+    
+    setIsWishlistLoading(true);
+    try {
+      const action = isInWishlist ? 'remove' : 'add';
+      const res = await fetch('/api/account/wishlist', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productSlug: product.slug, action })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setCustomer(data.customer);
+        }
+      } else {
+        alert("Erreur lors de l'ajout aux favoris.");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsWishlistLoading(false);
+    }
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -269,10 +301,12 @@ export default function ProductClient({
 
               {/* Wishlist */}
               <button
-                className="absolute top-5 right-5 w-11 h-11 bg-white border border-[#e0ddd4]/85 hover:bg-white border border-[#e0ddd4] rounded-full flex items-center justify-center text-[#1A1A1A] shadow-sm"
+                disabled={isWishlistLoading}
+                onClick={handleWishlistToggle}
+                className={`absolute top-5 right-5 w-11 h-11 bg-white border border-[#e0ddd4]/85 hover:bg-white border border-[#e0ddd4] rounded-full flex items-center justify-center shadow-sm transition-colors ${isInWishlist ? 'text-red-500' : 'text-[#1A1A1A]'}`}
                 aria-label="Ajouter aux favoris"
               >
-                <Heart size={16} strokeWidth={1.6} />
+                <Heart size={16} strokeWidth={1.6} fill={isInWishlist ? "currentColor" : "none"} />
               </button>
 
               <span className="absolute top-5 left-5 text-[9px] font-bold tracking-[0.2em] uppercase bg-[#f8fafc] text-white px-3 py-1.5 rounded-full">
