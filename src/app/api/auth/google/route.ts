@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getAdminAuth } from '@/lib/firebase-admin';
+
 import { SignJWT } from 'jose';
 import bcrypt from 'bcryptjs';
 
@@ -16,11 +16,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Token manquant' }, { status: 400 });
     }
 
-    // 1. Verify the Firebase ID token using the Firebase Admin SDK
-    const adminAuth = getAdminAuth();
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    // 1. Verify the Firebase ID token using Google Identity Toolkit REST API
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Configuration Firebase manquante (API KEY)' }, { status: 500 });
+    }
+
+    const verifyRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken })
+    });
+
+    const verifyData = await verifyRes.json();
+
+    if (!verifyRes.ok || !verifyData.users || verifyData.users.length === 0) {
+      console.error('Firebase token verification failed:', verifyData);
+      return NextResponse.json({ error: 'Token Google invalide ou expiré' }, { status: 401 });
+    }
+
+    const decodedToken = verifyData.users[0];
+    const email = decodedToken.email;
+    const name = decodedToken.displayName;
+    const uid = decodedToken.localId;
     
-    if (!decodedToken.email) {
+    if (!email) {
       return NextResponse.json({ error: 'Email non fourni par Google' }, { status: 400 });
     }
 
