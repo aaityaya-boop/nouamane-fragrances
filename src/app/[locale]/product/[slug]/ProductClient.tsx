@@ -20,6 +20,7 @@ import {
   RotateCcw,
   Check,
   ChevronRight as Chev,
+  ChevronDown,
   Package,
   Gift,
   MessageCircle,
@@ -455,6 +456,20 @@ export default function ProductClient({
                   {t.info.outOfStock}
                 </button>
               )}
+            </div>
+
+            
+            {/* GIFT OPTION */}
+            <div className="mt-4">
+              <a 
+                href={`https://wa.me/212694186787?text=${encodeURIComponent("Bonjour, j'aimerais offrir " + product.name + " en cadeau et personnaliser mon emballage.")}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-3 bg-[#f8fafc] border border-[#e0ddd4] text-[#1A1A1A] py-4 rounded-xl hover:bg-white hover:border-[#0ea5e9] transition-all group"
+              >
+                <Gift className="text-[#0ea5e9] group-hover:scale-110 transition-transform" size={20} />
+                <span className="text-[13px] font-semibold tracking-wide">C'est pour offrir ? Personnalisez votre cadeau</span>
+              </a>
             </div>
 
             {/* TRUST BADGES / SHIPPING PERKS */}

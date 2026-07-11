@@ -18,6 +18,17 @@ export default function WhatsAppButton() {
       .catch(console.error);
   }, []);
 
+  const getSmartUrl = () => {
+    if (typeof window === 'undefined') return url;
+    const isProductPage = window.location.pathname.includes('/product/');
+    let text = "Bonjour, j'ai besoin de conseils.";
+    if (isProductPage) {
+      text = `Bonjour, je suis intéressé(e) par ce parfum : ${window.location.href}`;
+    }
+    const baseUrl = url.includes('?') ? url : `${url}?`;
+    return `${baseUrl}&text=${encodeURIComponent(text)}`;
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center justify-end">
       <AnimatePresence>
@@ -34,7 +45,7 @@ export default function WhatsAppButton() {
       </AnimatePresence>
 
       <motion.a
-        href={url}
+        href={getSmartUrl()}
         target="_blank"
         rel="noopener noreferrer"
         onMouseEnter={() => setIsHovered(true)}
