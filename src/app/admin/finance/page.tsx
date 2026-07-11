@@ -79,6 +79,18 @@ export default async function FinancePage() {
     }
   });
 
+  // Fetch Ad Spend
+  const adSpends = await prisma.adSpend.findMany({
+    orderBy: { date: 'desc' }
+  });
+
+  const serializedAdSpends = adSpends.map(ad => ({
+    id: ad.id,
+    date: ad.date.toISOString(),
+    platform: ad.platform,
+    amount: ad.amount,
+  }));
+
   return (
     <div className="max-w-[1600px] mx-auto p-4 md:p-8 lg:p-10">
       <div className="mb-8">
@@ -91,6 +103,7 @@ export default async function FinancePage() {
         visitors={serializedVisitors}
         viewsBySlug={viewsBySlug}
         products={products as any}
+        adSpends={serializedAdSpends}
       />
     </div>
   );
