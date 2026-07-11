@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Order {
-  id                 String   @id @default(cuid())
-  orderNumber        String   @unique
+  id                 String     @id @default(cuid())
+  orderNumber        String     @unique
   customerName       String
   customerEmail      String
   customerPhone      String
@@ -18,19 +18,19 @@ model Order {
   shippingCity       String
   shippingPostalCode String
   paymentMethod      String
-  items              String   // JSON string
+  items              String
   subtotal           Float
   shippingCost       Float
   total              Float
   promoCode          String?
   discount           Float?
-  status             String   @default("pending")
+  status             String     @default("pending")
   affiliateCode      String?
-  affiliate          Affiliate? @relation(fields: [affiliateCode], references: [code])
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
   customerId         String?
+  affiliate          Affiliate? @relation(fields: [affiliateCode], references: [code])
   customer           Customer?  @relation(fields: [customerId], references: [id])
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
 }
 
 model Customer {
@@ -39,22 +39,20 @@ model Customer {
   password   String
   name       String
   phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   address    String?
   city       String?
   postalCode String?
-  wishlist   String   @default("[]") // JSON string array of product slugs
+  wishlist   String   @default("[]")
   orders     Order[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 }
 
 model Product {
   id                  Int      @id @default(autoincrement())
   slug                String   @unique
-  sku                 String?  @unique
   name                String
   brandId             String   @default("valentino")
-  brand               Brand    @relation(fields: [brandId], references: [slug])
   brandLabel          String
   gender              String
   subcategory         String
@@ -62,13 +60,12 @@ model Product {
   tagline             String
   price               Float
   originalPrice       Float?
-  testerPrice         Float?
   description         String
   longDescription     String
-  images              String   // JSON string array
-  notes               String   // JSON object
+  images              String
+  notes               String
   ingredients         String
-  sizes               String   // JSON string array
+  sizes               String
   bottleColor         String
   bottleColorLabel    String
   bottleMaterial      String
@@ -76,13 +73,16 @@ model Product {
   rating              Float    @default(0)
   reviewCount         Int      @default(0)
   releaseDate         String
-  tags                String   // JSON string array
-  isTester            Boolean  @default(false)
+  tags                String
   inStock             Boolean  @default(true)
   stock               Int      @default(10)
   perfectSeason       String
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  testerPrice         Float?
+  isTester            Boolean  @default(false)
+  sku                 String?  @unique
+  brand               Brand    @relation(fields: [brandId], references: [slug])
   reviews             Review[]
 }
 
@@ -96,7 +96,6 @@ model Review {
   comment     String
   verified    Boolean  @default(false)
   createdAt   DateTime @default(now())
-  
   product     Product  @relation(fields: [productSlug], references: [slug])
 }
 
@@ -113,9 +112,9 @@ model SiteConfig {
   facebookUrl         String?
   tiktokUrl           String?
   whatsappUrl         String?
-  featuredBestsellers String   @default("[]") // JSON array of product slugs
-  featuredSeasonal    String   @default("[]") // JSON array of product slugs
   updatedAt           DateTime @updatedAt
+  featuredBestsellers String   @default("[]")
+  featuredSeasonal    String   @default("[]")
 }
 
 model NewsletterSubscriber {
@@ -125,17 +124,17 @@ model NewsletterSubscriber {
 }
 
 model LandingPage {
-  id           String   @id @default(cuid())
-  slug         String   @unique
+  id           String    @id @default(cuid())
+  slug         String    @unique
   title        String
   subtitle     String
   heroImage    String
   deadline     DateTime?
   badgeText    String
-  productSlugs String   // JSON string array of slugs
-  status       String   @default("active") // "active" or "draft"
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  productSlugs String
+  status       String    @default("active")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Visitor {
@@ -143,28 +142,28 @@ model Visitor {
   ipHash    String     @unique
   city      String?
   country   String?
-  visits    PageView[]
   createdAt DateTime   @default(now())
   lastSeen  DateTime   @default(now())
+  visits    PageView[]
 }
 
 model PageView {
   id        Int      @id @default(autoincrement())
   visitorId String
-  visitor   Visitor  @relation(fields: [visitorId], references: [id])
   pathname  String
   createdAt DateTime @default(now())
+  visitor   Visitor  @relation(fields: [visitorId], references: [id])
 }
 
 model Brand {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String    @id @default(cuid())
+  slug        String    @unique
   name        String
   label       String
   description String
   image       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   products    Product[]
 }
 
@@ -174,7 +173,7 @@ model ContactMessage {
   phone     String
   email     String
   message   String
-  status    String   @default("unread") // "unread", "read", "archived"
+  status    String   @default("unread")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -182,7 +181,7 @@ model ContactMessage {
 model PromoCode {
   id        String   @id @default(cuid())
   code      String   @unique
-  type      String   // "percentage" or "fixed"
+  type      String
   value     Float
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -197,24 +196,24 @@ model BlogPost {
   content             String
   coverImage          String
   author              String   @default("Nouamane")
-  status              String   @default("draft") // "published" or "draft"
+  status              String   @default("draft")
   metaTitle           String?
   metaDescription     String?
-  category            String   @default("Général")
-  tags                String   @default("[]") // JSON string array
-  ctaText             String?
-  ctaLink             String?
-  relatedProductSlugs String   @default("[]") // JSON string array of product slugs
+  relatedProductSlugs String   @default("[]")
   publishedAt         DateTime @default(now())
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  category            String   @default("Général")
+  ctaLink             String?
+  ctaText             String?
+  tags                String   @default("[]")
 }
 
 model Affiliate {
   id               String   @id @default(cuid())
   name             String
   code             String   @unique
-  commissionRate   Float    @default(10) // percentage
+  commissionRate   Float    @default(10)
   visits           Int      @default(0)
   sales            Int      @default(0)
   revenueGenerated Float    @default(0)
