@@ -110,6 +110,7 @@ export default function Header() {
               </button>
 
               <Link
+                id="header-cart-icon"
                 href={`/${locale}/cart`}
                 className={`transition-colors duration-300 relative ${
                   isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'

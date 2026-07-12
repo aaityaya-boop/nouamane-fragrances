@@ -178,7 +178,7 @@ export default function ProductClient({
   const currentSize = product.sizes.find((s) => s.label === selectedSize)!;
   const currentPrice = currentSize.price;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e?: React.MouseEvent) => {
     const finalSize = selectedSize;
     addToCart(
       {
@@ -200,6 +200,49 @@ export default function ProductClient({
         value: currentPrice * quantity,
         currency: 'MAD'
       });
+    }
+
+    // Cinematic Add-to-cart animation
+    if (e && typeof document !== 'undefined') {
+      const cartIcon = document.getElementById('header-cart-icon');
+      const productImage = document.getElementById('main-product-image');
+
+      if (cartIcon && productImage) {
+        const imgRect = productImage.getBoundingClientRect();
+        const cartRect = cartIcon.getBoundingClientRect();
+
+        const clone = productImage.cloneNode(true) as HTMLImageElement;
+        clone.classList.add('cinematic-cart-clone');
+        clone.style.top = `${imgRect.top}px`;
+        clone.style.left = `${imgRect.left}px`;
+        clone.style.width = `${imgRect.width}px`;
+        clone.style.height = `${imgRect.height}px`;
+        // Remove any next/image specific styling that could conflict
+        clone.removeAttribute('sizes');
+        clone.removeAttribute('srcset');
+        
+        document.body.appendChild(clone);
+
+        requestAnimationFrame(() => {
+          // Allow browser to register initial state
+          requestAnimationFrame(() => {
+            clone.style.top = `${cartRect.top + cartRect.height / 2 - 20}px`;
+            clone.style.left = `${cartRect.left + cartRect.width / 2 - 20}px`;
+            clone.style.width = '40px';
+            clone.style.height = '40px';
+            clone.style.opacity = '0';
+            clone.style.borderRadius = '50%';
+          });
+        });
+
+        setTimeout(() => {
+          clone.remove();
+          cartIcon.classList.add('animate-cart-bounce');
+          setTimeout(() => {
+            cartIcon.classList.remove('animate-cart-bounce');
+          }, 500);
+        }, 800);
+      }
     }
 
     setIsAdded(true);
@@ -305,6 +348,7 @@ export default function ProductClient({
           <div>
             <div className="relative aspect-[4/5] bg-transparent rounded-2xl overflow-hidden">
               <Image
+                id="main-product-image"
                 src={product.images[selectedImage]}
                 alt={product.name}
                 fill
