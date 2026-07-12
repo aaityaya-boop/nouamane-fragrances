@@ -396,3 +396,24 @@ input[type="email"]::placeholder {
   60% { transform: scale(0.9); }
   100% { transform: scale(1); filter: brightness(1); }
 }
+
+/* =============================================
+   ROMANTIC HEART ANIMATION
+   ============================================= */
+.romantic-heart {
+  position: fixed;
+  z-index: 999999;
+  pointer-events: none;
+  animation: heartFloat 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  font-size: 20px;
+  color: #9E1B1B;
+  text-shadow: 0 0 10px rgba(158, 27, 27, 0.8);
+}
+.romantic-heart::after {
+  content: "❤";
+}
+@keyframes heartFloat {
+  0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+  20% { transform: translate(calc(var(--tx) * 0.2), calc(var(--ty) * 0.2)) scale(1.5) rotate(calc(var(--r) * 0.5)); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0.5) rotate(var(--r)); opacity: 0; }
+}

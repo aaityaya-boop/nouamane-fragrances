@@ -214,13 +214,13 @@ export default function ProductClient({
       const colors = ['#D4AF37', '#FFDF73', '#C0C0C0', '#ffffff'];
       for (let i = 0; i < 40; i++) {
         const confetti = document.createElement('div');
-        confetti.className = 'luxury-confetti';
+        confetti.className = (product.subcategory === 'coffrets') ? 'romantic-heart' : 'luxury-confetti';
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         confetti.style.left = `${x}px`;
         confetti.style.top = `${y}px`;
         
         const angle = Math.random() * Math.PI * 2;
-        const velocity = 50 + Math.random() * 150;
+        const velocity = (product.subcategory === 'coffrets') ? 100 + Math.random() * 100 : 50 + Math.random() * 150;
         const tx = Math.cos(angle) * velocity;
         const ty = Math.sin(angle) * velocity - 80;
         
