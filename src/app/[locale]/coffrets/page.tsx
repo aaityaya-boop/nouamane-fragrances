@@ -10,7 +10,9 @@ export const metadata = {
   description: 'Découvrez nos coffrets cadeaux et éditions spéciales. Une expérience olfactive luxueuse conçue pour émerveiller.',
 };
 
-export default async function CoffretsPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function CoffretsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
   // Fetch all products marked as coffrets
   // Fetch all products marked as coffrets
   const coffrets = await prisma.product.findMany({
