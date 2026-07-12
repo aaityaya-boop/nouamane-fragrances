@@ -195,92 +195,68 @@ export default function ProductClient({
       });
     }
 
-    // Cinematic Add-to-cart animation
+    // Luxury Confetti & Shockwave Effect
     if (e && typeof document !== 'undefined') {
+      const button = e.currentTarget as HTMLElement;
+      const rect = button.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      // 1. Shockwave
+      const shockwave = document.createElement('div');
+      shockwave.className = 'btn-shockwave';
+      button.appendChild(shockwave);
+      setTimeout(() => shockwave.remove(), 600);
+
+      // 2. Confetti Explosion
+      const colors = ['#D4AF37', '#FFDF73', '#C0C0C0', '#ffffff'];
+      for (let i = 0; i < 40; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'luxury-confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${x}px`;
+        confetti.style.top = `${y}px`;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 50 + Math.random() * 150;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity - 80;
+        
+        confetti.style.setProperty('--tx', `${tx}px`);
+        confetti.style.setProperty('--ty', `${ty}px`);
+        confetti.style.setProperty('--r', `${Math.random() * 720}deg`);
+        
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 1000);
+      }
+      
       const cartIcon = document.getElementById('header-cart-icon');
-      const productImage = document.getElementById('main-product-image');
-
-      if (cartIcon && productImage) {
-        const imgRect = productImage.getBoundingClientRect();
-        const cartRect = cartIcon.getBoundingClientRect();
-
-        const clone = productImage.cloneNode(true) as HTMLImageElement;
-        clone.classList.add('cinematic-cart-clone');
-        
-        // Remove Next Image specifics
-        clone.removeAttribute('sizes');
-        clone.removeAttribute('srcset');
-        
-        // Set CSS variables for the animation
-        clone.style.setProperty('--start-x', `${imgRect.left}px`);
-        clone.style.setProperty('--start-y', `${imgRect.top}px`);
-        clone.style.setProperty('--start-width', `${imgRect.width}px`);
-        clone.style.setProperty('--start-height', `${imgRect.height}px`);
-        
-        const targetX = cartRect.left + cartRect.width / 2 - 15;
-        const targetY = cartRect.top + cartRect.height / 2 - 15;
-        
-        clone.style.setProperty('--end-x', `${targetX}px`);
-        clone.style.setProperty('--end-y', `${targetY}px`);
-        
-        document.body.appendChild(clone);
-
-        // Force reflow and start animation
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            clone.classList.add('is-flying');
-          });
-        });
-
-        setTimeout(() => {
-          clone.remove();
-          cartIcon.classList.add('animate-cart-bounce');
-          
-          // Add to context and open drawer!
-          addToCart(
-            {
-              id: product.id,
-              slug: product.slug,
-              name: product.name,
-              price: currentPrice,
-              images: product.images,
-            },
-            quantity,
-            finalSize
-          );
-          
-          setIsAdding(false);
-          setIsAdded(true);
-          
-          // Open the cart drawer automatically!
-          window.dispatchEvent(new Event('openCart'));
-          
-          setTimeout(() => {
-            cartIcon.classList.remove('animate-cart-bounce');
-            setIsAdded(false);
-          }, 2000);
-        }, 700); // Wait for the 0.7s CSS animation to finish
-        
-        return; // Early return to avoid duplicate actions below
+      if (cartIcon) {
+        cartIcon.classList.add('animate-cart-bounce');
+        setTimeout(() => cartIcon.classList.remove('animate-cart-bounce'), 500);
       }
     }
 
-    // Fallback if no animation context available
-    addToCart(
-      {
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: currentPrice,
-        images: product.images,
-      },
-      quantity,
-      finalSize
-    );
-    setIsAdding(false);
-    setIsAdded(true);
-    window.dispatchEvent(new Event('openCart'));
-    setTimeout(() => setIsAdded(false), 2000);
+    // Process logic after brief delay for visual effect
+    setTimeout(() => {
+      addToCart(
+        {
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          price: currentPrice,
+          images: product.images,
+        },
+        quantity,
+        finalSize
+      );
+      
+      setIsAdding(false);
+      setIsAdded(true);
+      window.dispatchEvent(new Event('openCart'));
+      
+      setTimeout(() => setIsAdded(false), 2000);
+    }, 400); // 400ms is perfect for feeling the button press before drawer opens
   };
 
   const handleWishlistToggle = async () => {

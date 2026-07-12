@@ -70,6 +70,22 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
+            <div className="px-8 pt-6 pb-2 border-b border-[#eeece5] bg-[#fafaf7]">
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-[12px] font-semibold text-[#1A1A1A]">
+                  {getSubtotal() >= 800 
+                    ? 'Félicitations ! Livraison gratuite débloquée 🎉' 
+                    : `Plus que ${formatMAD(800 - getSubtotal())} pour la livraison gratuite`}
+                </span>
+              </div>
+              <div className="w-full bg-[#eeece5] h-1.5 rounded-full overflow-hidden">
+                <div 
+                  className="bg-[#0ea5e9] h-full transition-all duration-700 ease-out rounded-full"
+                  style={{ width: `${Math.min((getSubtotal() / 800) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+            
             <div className="flex-1 overflow-auto px-8 py-6 space-y-6">
               {cart.map((item) => (
                 <div
