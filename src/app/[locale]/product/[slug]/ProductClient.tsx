@@ -61,6 +61,7 @@ export default function ProductClient({
   ); // Default to middle size if available, else first size
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const { addToCart } = useCart();
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const pathname = usePathname();
@@ -179,19 +180,11 @@ export default function ProductClient({
   const currentPrice = currentSize.price;
 
   const handleAddToCart = (e?: React.MouseEvent) => {
+    if (isAdding) return;
+    setIsAdding(true);
+
     const finalSize = selectedSize;
-    addToCart(
-      {
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        price: currentPrice,
-        images: product.images,
-      },
-      quantity,
-      finalSize
-    );
-    
+
     // Facebook Pixel Tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'AddToCart', {
@@ -213,39 +206,80 @@ export default function ProductClient({
 
         const clone = productImage.cloneNode(true) as HTMLImageElement;
         clone.classList.add('cinematic-cart-clone');
-        clone.style.top = `${imgRect.top}px`;
-        clone.style.left = `${imgRect.left}px`;
-        clone.style.width = `${imgRect.width}px`;
-        clone.style.height = `${imgRect.height}px`;
-        // Remove any next/image specific styling that could conflict
+        
+        // Remove Next Image specifics
         clone.removeAttribute('sizes');
         clone.removeAttribute('srcset');
         
+        // Set CSS variables for the animation
+        clone.style.setProperty('--start-x', `${imgRect.left}px`);
+        clone.style.setProperty('--start-y', `${imgRect.top}px`);
+        clone.style.setProperty('--start-width', `${imgRect.width}px`);
+        clone.style.setProperty('--start-height', `${imgRect.height}px`);
+        
+        const targetX = cartRect.left + cartRect.width / 2 - 15;
+        const targetY = cartRect.top + cartRect.height / 2 - 15;
+        
+        clone.style.setProperty('--end-x', `${targetX}px`);
+        clone.style.setProperty('--end-y', `${targetY}px`);
+        
         document.body.appendChild(clone);
 
+        // Force reflow and start animation
         requestAnimationFrame(() => {
-          // Allow browser to register initial state
           requestAnimationFrame(() => {
-            clone.style.top = `${cartRect.top + cartRect.height / 2 - 20}px`;
-            clone.style.left = `${cartRect.left + cartRect.width / 2 - 20}px`;
-            clone.style.width = '40px';
-            clone.style.height = '40px';
-            clone.style.opacity = '0';
-            clone.style.borderRadius = '50%';
+            clone.classList.add('is-flying');
           });
         });
 
         setTimeout(() => {
           clone.remove();
           cartIcon.classList.add('animate-cart-bounce');
+          
+          // Add to context and open drawer!
+          addToCart(
+            {
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: currentPrice,
+              images: product.images,
+            },
+            quantity,
+            finalSize
+          );
+          
+          setIsAdding(false);
+          setIsAdded(true);
+          
+          // Open the cart drawer automatically!
+          window.dispatchEvent(new Event('openCart'));
+          
           setTimeout(() => {
             cartIcon.classList.remove('animate-cart-bounce');
-          }, 500);
-        }, 800);
+            setIsAdded(false);
+          }, 2000);
+        }, 700); // Wait for the 0.7s CSS animation to finish
+        
+        return; // Early return to avoid duplicate actions below
       }
     }
 
+    // Fallback if no animation context available
+    addToCart(
+      {
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        price: currentPrice,
+        images: product.images,
+      },
+      quantity,
+      finalSize
+    );
+    setIsAdding(false);
     setIsAdded(true);
+    window.dispatchEvent(new Event('openCart'));
     setTimeout(() => setIsAdded(false), 2000);
   };
 
@@ -547,11 +581,14 @@ export default function ProductClient({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
+                  disabled={isAdding}
                   className={`btn-blue flex-1 w-full h-14 text-[13px] rounded-xl flex items-center justify-center gap-2 transition-all relative overflow-hidden ${
                     isAdded ? '!bg-green-600 hover:!bg-green-700' : 'hover:shadow-lg hover:shadow-[#0ea5e9]/20'
-                  }`}
+                  } ${isAdding ? 'opacity-80' : ''}`}
                 >
-                  {isAdded ? (
+                  {isAdding ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : isAdded ? (
                     <>
                       <Check size={18} /> {t.actions.addSuccess}
                     </>
@@ -562,7 +599,7 @@ export default function ProductClient({
                     </>
                   )}
                   {/* Subtle shine effect */}
-                  {!isAdded && <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent hover:animate-[shimmer_1.5s_infinite]" />}
+                  {!isAdded && !isAdding && <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent hover:animate-[shimmer_1.5s_infinite]" />}
                 </motion.button>
               ) : (
                 <button
