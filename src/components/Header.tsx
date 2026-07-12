@@ -16,7 +16,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | null>(null);
+  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | null>(null);
   const { getItemCount } = useCart();
   const pathname = usePathname();
   const dict = useDictionary();
