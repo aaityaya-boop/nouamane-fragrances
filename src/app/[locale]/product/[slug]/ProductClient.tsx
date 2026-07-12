@@ -178,8 +178,8 @@ export default function ProductClient({
     }
   };
 
-  const currentSize = product.sizes.find((s) => s.label === selectedSize)!;
-  const currentPrice = currentSize.price;
+  const currentSize = product.sizes?.find((s) => s.label === selectedSize);
+  const currentPrice = currentSize?.price || product.price;
 
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (isAdding) return;
