@@ -301,7 +301,7 @@ export default function Header() {
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Nos Éditions Spéciales</div>
                     <div className="grid grid-cols-2 gap-12">
                       {/* Pack Jour & Nuit */}
-                      <Link href={`/${locale}/shop`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
+                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
                         <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
                           <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
                           <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
@@ -320,7 +320,7 @@ export default function Header() {
                       </Link>
 
                       {/* Pack Découverte */}
-                      <Link href={`/${locale}/shop`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
+                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
                         <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
                           <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
                           <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
@@ -409,7 +409,7 @@ export default function Header() {
 
                   <div className="border-b border-[#e0ddd4] pb-6">
                     <Link 
-                      href={`/${locale}/shop`} 
+                      href={`/${locale}/coffrets`} 
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="heading-font text-2xl text-[#1A1A1A] flex items-center gap-3 mb-2"
                     >

@@ -20,7 +20,8 @@ import {
   BookOpen,
   UserCheck,
   TrendingUp,
-  Sparkles
+  Sparkles,
+  Gift
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -28,6 +29,7 @@ const MENU_ITEMS = [
   { href: '/admin/finance', label: 'Finance & Rapports', icon: <TrendingUp size={18} /> },
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} /> },
   { href: '/admin/products', label: 'Produits', icon: <PackageSearch size={18} /> },
+  { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} /> },
   { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} /> },
   { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} /> },
   { href: '/admin/customers', label: 'Clients', icon: <Users size={18} /> },
