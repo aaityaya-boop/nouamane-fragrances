@@ -189,7 +189,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getSubtotal,
         getItemCount,
-        shippingFee,
+        shippingFee: getSubtotal() >= 800 ? 0 : shippingFee,
         appliedPromo,
         applyPromo,
         removePromo,

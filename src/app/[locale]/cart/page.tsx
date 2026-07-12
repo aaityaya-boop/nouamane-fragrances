@@ -306,7 +306,7 @@ export default function CartPage() {
                   <div className="mt-6 space-y-3 pt-6 border-t border-[#e0ddd4]">
                     <TrustItem
                       icon={<Truck size={14} />}
-                      label={`Livraison partout au Maroc avec ${shippingFee}Dh`}
+                      label={shippingFee === 0 ? 'Livraison Gratuite ! 🎉' : `Livraison partout au Maroc avec ${shippingFee}Dh`}
                     />
                     <TrustItem
                       icon={<Gift size={14} />}

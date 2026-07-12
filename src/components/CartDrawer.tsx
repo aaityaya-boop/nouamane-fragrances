@@ -179,7 +179,7 @@ export default function CartDrawer() {
               </Link>
 
               <p className="text-center text-[10px] tracking-[0.2em] text-[#C5C5C5] mt-5 uppercase">
-                Livraison partout au Maroc avec {shippingFee}Dh
+                {shippingFee === 0 ? 'Livraison Gratuite ! 🎉' : `Livraison partout au Maroc avec ${shippingFee}Dh`}
               </p>
             </div>
           </>

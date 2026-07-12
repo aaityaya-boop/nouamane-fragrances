@@ -301,7 +301,7 @@ export default function CheckoutPage() {
               <FormSection
                 number="02"
                 title="Adresse de livraison"
-                subtitle={`Livraison partout au Maroc avec ${shippingFee}Dh en 1-3 jours.`}
+                subtitle={shippingFee === 0 ? 'Livraison Gratuite ! 🎉 (1-3 jours)' : `Livraison partout au Maroc avec ${shippingFee}Dh en 1-3 jours.`}
                 icon={<Truck size={18} />}
               >
                 <TextField
