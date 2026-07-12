@@ -38,6 +38,8 @@ export default async function ProductPage({
 }) {
   const resolvedParams = await params;
   
+  const standardProducts = await prisma.product.findMany({ where: { subcategory: { not: 'coffrets' } } });
+  
   const dbProduct = await prisma.product.findUnique({
     where: { slug: resolvedParams.slug },
   });
@@ -99,6 +101,18 @@ export default async function ProductPage({
   }));
 
   const transformedProduct = transformProduct(dbProduct);
+  
+  let includedProducts: Product[] = [];
+  if (dbProduct.subcategory === 'coffrets') {
+    const tags = typeof dbProduct.tags === 'string' ? JSON.parse(dbProduct.tags) : dbProduct.tags;
+    includedProducts = (tags || []).map((slug: string) => {
+      const p = standardProducts.find(sp => sp.slug === slug);
+      if (p) {
+        return transformProduct(p);
+      }
+      return null;
+    }).filter(Boolean);
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -132,6 +146,7 @@ export default async function ProductPage({
         product={transformedProduct} 
         relatedProducts={dbRelated.map(transformProduct)} 
         initialReviews={serializedReviews}
+        includedProducts={includedProducts}
       />
     </>
   );

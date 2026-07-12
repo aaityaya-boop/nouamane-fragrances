@@ -12,16 +12,39 @@ export const metadata = {
 
 export default async function CoffretsPage({ params: { locale } }: { params: { locale: string } }) {
   // Fetch all products marked as coffrets
+  // Fetch all products marked as coffrets
   const coffrets = await prisma.product.findMany({
     where: { subcategory: 'coffrets' },
     orderBy: { createdAt: 'desc' }
   });
 
-  // Parse images for each coffret
-  const parsedCoffrets = coffrets.map(c => ({
-    ...c,
-    images: typeof c.images === 'string' ? JSON.parse(c.images) : c.images
-  }));
+  // Fetch all standard products to display included items
+  const standardProducts = await prisma.product.findMany({
+    where: { subcategory: { not: 'coffrets' } }
+  });
+
+  // Parse images and tags for each coffret
+  const parsedCoffrets = coffrets.map(c => {
+    const tags = typeof c.tags === 'string' ? JSON.parse(c.tags) : c.tags;
+    
+    // Find the actual product objects that are included in this coffret
+    const includedProducts = (tags || []).map((slug: string) => {
+      const p = standardProducts.find(sp => sp.slug === slug);
+      if (p) {
+        return {
+          ...p,
+          images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    return {
+      ...c,
+      images: typeof c.images === 'string' ? JSON.parse(c.images) : c.images,
+      includedProducts
+    };
+  });
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white">
@@ -90,9 +113,30 @@ export default async function CoffretsPage({ params: { locale } }: { params: { l
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-10 max-w-lg">
+                  <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-lg">
                     {coffret.description}
                   </p>
+                  
+                  {coffret.includedProducts && coffret.includedProducts.length > 0 && (
+                    <div className="mb-10">
+                      <div className="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-bold border-b border-gray-800 pb-2">Ce coffret inclut :</div>
+                      <div className="flex flex-col gap-3">
+                        {coffret.includedProducts.map((p: any) => (
+                          <Link href={`/${locale}/product/${p.slug}`} key={p.id} className="flex items-center gap-4 group/item">
+                            <div className="w-12 h-12 relative rounded-md overflow-hidden bg-[#111] border border-gray-800 group-hover/item:border-[#D4AF37] transition-colors">
+                              {p.images && p.images[0] && (
+                                <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-white group-hover/item:text-[#D4AF37] transition-colors">{p.name}</div>
+                              <div className="text-xs text-gray-500">{p.brandLabel}</div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex items-center gap-6">
                     <Link 

@@ -50,10 +50,12 @@ export default function ProductClient({
   product,
   relatedProducts,
   initialReviews,
+  includedProducts,
 }: {
   product: Product;
   relatedProducts: Product[];
   initialReviews: any[];
+  includedProducts?: Product[];
 }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(

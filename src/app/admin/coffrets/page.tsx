@@ -7,6 +7,7 @@ import Image from 'next/image';
 
 export default function AdminCoffretsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [standardProducts, setStandardProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
     
@@ -45,6 +46,7 @@ export default function AdminCoffretsPage() {
       }));
       
       setProducts(parsedData.filter((p: any) => p.subcategory === 'coffrets'));
+      setStandardProducts(parsedData.filter((p: any) => p.subcategory !== 'coffrets'));
     } catch (error) {
       console.error(error);
     } finally {
