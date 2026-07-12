@@ -21,7 +21,8 @@ export type Subcategory =
   | 'aromatic'
   | 'discovery-sets'
   | 'gift-bundles'
-  | 'limited-editions';
+  | 'limited-editions'
+  | 'coffrets';
 
 export type Brand = 'valentino' | 'yves-saint-laurent' | 'armani' | 'dolce-gabbana' | 'burberry' | 'prada';
 
