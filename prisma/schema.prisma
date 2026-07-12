@@ -115,6 +115,7 @@ model SiteConfig {
   updatedAt           DateTime @updatedAt
   featuredBestsellers String   @default("[]")
   featuredSeasonal    String   @default("[]")
+  coffretsCoverImage  String   @default("/images/category/pack-decouverte-luxe.jpg")
 }
 
 model NewsletterSubscriber {

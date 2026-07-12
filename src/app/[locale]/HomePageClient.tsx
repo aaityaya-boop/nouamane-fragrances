@@ -258,29 +258,47 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
       </section>
 
       {/* ===============================
-          COFFRETS CADEAUX (CAROUSEL)
+          COFFRETS CADEAUX (FULL-BLEED CAROUSEL)
           =============================== */}
-      <section className="relative overflow-hidden py-20 lg:py-28">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-gradient-to-tr from-[#9E1B1B]/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
-        
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 mb-12 relative z-10 flex justify-between items-end">
-          <SectionHeader
-            icon={<Sparkles size={16} className="text-[#9E1B1B]" />}
-            eyebrow="Pour les couples"
-            title="Coffrets Cadeaux"
-            subtitle="Des éditions spéciales pour célébrer la passion et l'harmonie."
-            linkLabel="Voir tous les coffrets"
-            linkHref={`/${locale}/coffrets`}
+      <section className="relative w-full py-20 lg:py-32 overflow-hidden flex items-center my-20">
+        {/* Background Image / Cover */}
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src={config.coffretsCoverImage || "/images/category/pack-decouverte-luxe.jpg"} 
+            alt="L'Art d'Offrir" 
+            fill 
+            className="object-cover scale-105"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-black/20" />
         </div>
 
-        <div className="relative z-10 w-full pl-6 lg:pl-[max(2.5rem,calc((100vw-1400px)/2+2.5rem))]">
-          <div className="flex gap-6 lg:gap-8 overflow-x-auto snap-x snap-mandatory pb-12 pr-6 lg:pr-10 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {products.filter(p => p.subcategory === 'coffrets').map((p) => (
-              <div key={p.id} className="min-w-[300px] max-w-[350px] w-[80vw] snap-start flex-shrink-0">
-                <ProductCard product={p} />
-              </div>
-            ))}
+        <div className="relative z-10 w-full flex flex-col lg:flex-row items-center">
+          {/* Left Side: Text Content */}
+          <div className="w-full lg:w-[40%] px-6 lg:pl-[max(2.5rem,calc((100vw-1400px)/2+2.5rem))] mb-12 lg:mb-0">
+            <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#D4AF37] mb-6 flex items-center gap-2">
+              <Sparkles size={14} /> L'Art d'Offrir
+            </span>
+            <h2 className="heading-font text-5xl md:text-7xl text-white tracking-wide mb-6 leading-tight">Coffrets Cadeaux</h2>
+            <p className="text-white/80 text-[16px] leading-relaxed mb-10 max-w-md">
+              Découvrez nos éditions spéciales conçues pour laisser une empreinte inoubliable. L'assemblage parfait de nos fragrances signatures, présenté dans un écrin d'exception.
+            </p>
+            <Link href={`/${locale}/coffrets`} className="inline-flex items-center gap-3 bg-white text-black text-[13px] font-medium px-8 py-4 rounded-full hover:bg-[#D4AF37] hover:text-white transition-colors shadow-[0_10px_30px_rgba(0,0,0,0.3)] group">
+              Explorer la Collection
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {/* Right Side: Carousel */}
+          <div className="w-full lg:w-[60%] pl-6 lg:pl-12">
+            <div className="flex gap-6 lg:gap-8 overflow-x-auto snap-x snap-mandatory pb-12 pr-6 lg:pr-10 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {products.filter(p => p.subcategory === 'coffrets').map((p) => (
+                <div key={p.id} className="min-w-[280px] max-w-[320px] w-[75vw] snap-start flex-shrink-0">
+                  <div className="bg-white rounded-[32px] p-2 shadow-2xl h-full border border-white/20 transform hover:-translate-y-2 transition-transform duration-500">
+                    <ProductCard product={p} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

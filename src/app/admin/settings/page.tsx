@@ -202,6 +202,32 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Coffrets Cover */}
+        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
+          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
+            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
+              <LayoutTemplate size={24} />
+            </div>
+            <div>
+              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Cover Coffrets (Accueil)</h3>
+              <p className="text-[13px] text-[#6B6B6B]">L'image de couverture du grand carrousel</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">URL de l'image</label>
+              <input 
+                type="text" 
+                name="coffretsCoverImage"
+                value={config.coffretsCoverImage || ''}
+                onChange={handleChange}
+                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                placeholder="/images/category/pack-decouverte-luxe.jpg"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Réseaux Sociaux */}
         <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">

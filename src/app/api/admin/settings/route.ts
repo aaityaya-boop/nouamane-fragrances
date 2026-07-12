@@ -41,6 +41,7 @@ export async function PUT(request: Request) {
         whatsappUrl: body.whatsappUrl !== undefined ? body.whatsappUrl : undefined,
         featuredBestsellers: body.featuredBestsellers !== undefined ? body.featuredBestsellers : undefined,
         featuredSeasonal: body.featuredSeasonal !== undefined ? body.featuredSeasonal : undefined,
+        coffretsCoverImage: body.coffretsCoverImage !== undefined ? body.coffretsCoverImage : undefined,
       }
     });
 
