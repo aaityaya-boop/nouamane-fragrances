@@ -666,9 +666,9 @@ export default function ProductClient({
             
             <div className="grid md:grid-cols-3 gap-8 md:gap-6 text-center">
               {[
-                { title: t.description.topNotes, desc: t.description.topDesc, items: product.notes.top, icon: <Wind size={24} className="text-[#0ea5e9]" /> },
-                { title: t.description.heartNotes, desc: t.description.heartDesc, items: product.notes.heart, icon: <Heart size={24} className="text-[#0ea5e9]" /> },
-                { title: t.description.baseNotes, desc: t.description.baseDesc, items: product.notes.base, icon: <Droplets size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.topNotes, desc: t.description.topDesc, items: product.notes.top || [], icon: <Wind size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.heartNotes, desc: t.description.heartDesc, items: product.notes.heart || [], icon: <Heart size={24} className="text-[#0ea5e9]" /> },
+                { title: t.description.baseNotes, desc: t.description.baseDesc, items: product.notes.base || [], icon: <Droplets size={24} className="text-[#0ea5e9]" /> },
               ].map((n, i) => (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
