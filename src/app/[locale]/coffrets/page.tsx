@@ -66,12 +66,8 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
             <div className="h-[1px] w-12 bg-[#9E1B1B]"></div>
           </div>
           <h1 className="heading-font text-5xl md:text-7xl lg:text-8xl font-light mb-8 leading-tight opacity-0 animate-[fade-in-up_1s_ease-out_0.3s_forwards]">
-            Coffrets <span className="italic font-serif text-[#9E1B1B]">&</span> Duos
+            Coffrets Cadeaux
           </h1>
-          <p className="text-gray-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto opacity-0 animate-[fade-in-up_1s_ease-out_0.6s_forwards]">
-            Célébrez la complicité à travers nos assemblages prestigieux. Deux âmes, deux fragrances, une seule passion. 
-            Découvrez nos écrins pensés spécialement pour les couples.
-          </p>
         </div>
       </section>
 

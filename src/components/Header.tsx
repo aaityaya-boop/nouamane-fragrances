@@ -299,41 +299,24 @@ export default function Header() {
                 {activeMenu === 'bundles' && (
                   <div className="w-full flex-1">
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Nos Éditions Spéciales</div>
-                    <div className="grid grid-cols-2 gap-12">
-                      {/* Pack Jour & Nuit */}
-                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
-                        <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
-                          <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
-                          <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
-                            Pack Jour & Nuit
+                    <div className="grid grid-cols-1 gap-12">
+                      {/* Coffrets Cadeaux Card */}
+                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-10 items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#9E1B1B] hover:shadow-2xl transition-all">
+                        <div className="relative w-48 h-56 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
+                          <Image src="/images/category/pack-decouverte-luxe.jpg" alt="Coffrets Cadeaux" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+                          <div className="absolute bottom-4 left-0 right-0 text-center text-white font-serif italic z-20">
+                            Cadeaux d'Exception
                           </div>
                         </div>
-                        <div>
-                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#D4AF37] transition-colors">Pack Jour & Nuit</h3>
-                          <p className="text-[13px] text-[#9A9A9A] mb-5 leading-relaxed">
-                            La combinaison parfaite pour vous accompagner tout au long de votre journée et de vos soirées les plus prestigieuses.
+                        <div className="flex-1">
+                          <span className="text-[#9E1B1B] text-[10px] font-bold uppercase tracking-widest mb-3 block">Offrez l'Inoubliable</span>
+                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#9E1B1B] transition-colors">Découvrez Nos Coffrets Cadeaux</h3>
+                          <p className="text-[14px] text-[#6B6B6B] mb-8 leading-relaxed max-w-lg">
+                            Des assemblages uniques de nos fragrances les plus prestigieuses. Présentés dans des écrins luxueux, nos coffrets sont l'expression parfaite de l'élégance à offrir ou à s'offrir.
                           </p>
-                          <span className="btn-blue text-[11px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#D4AF37] group-hover:text-white">
-                            Découvrir
-                          </span>
-                        </div>
-                      </Link>
-
-                      {/* Pack Découverte */}
-                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
-                        <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
-                          <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
-                          <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
-                            Pack Découverte
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#D4AF37] transition-colors">Pack Découverte</h3>
-                          <p className="text-[13px] text-[#9A9A9A] mb-5 leading-relaxed">
-                            Explorez nos fragrances signatures à travers ce coffret découverte exclusif, idéal pour un cadeau inoubliable.
-                          </p>
-                          <span className="btn-blue text-[11px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#D4AF37] group-hover:text-white">
-                            Découvrir
+                          <span className="bg-[#111] text-white text-[13px] px-8 py-3 rounded-full inline-block group-hover:bg-[#9E1B1B] group-hover:text-white transition-all shadow-md group-hover:shadow-lg">
+                            Explorer la Collection
                           </span>
                         </div>
                       </Link>

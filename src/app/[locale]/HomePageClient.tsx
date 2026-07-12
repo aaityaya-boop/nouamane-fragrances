@@ -258,6 +258,35 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
       </section>
 
       {/* ===============================
+          COFFRETS CADEAUX (CAROUSEL)
+          =============================== */}
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-gradient-to-tr from-[#9E1B1B]/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 mb-12 relative z-10 flex justify-between items-end">
+          <SectionHeader
+            icon={<Sparkles size={16} className="text-[#9E1B1B]" />}
+            eyebrow="Pour les couples"
+            title="Coffrets Cadeaux"
+            subtitle="Des éditions spéciales pour célébrer la passion et l'harmonie."
+            linkLabel="Voir tous les coffrets"
+            linkHref={`/${locale}/coffrets`}
+          />
+        </div>
+
+        <div className="relative z-10 w-full pl-6 lg:pl-[max(2.5rem,calc((100vw-1400px)/2+2.5rem))]">
+          <div className="flex gap-6 lg:gap-8 overflow-x-auto snap-x snap-mandatory pb-12 pr-6 lg:pr-10 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {products.filter(p => p.subcategory === 'coffrets').map((p) => (
+              <div key={p.id} className="min-w-[300px] max-w-[350px] w-[80vw] snap-start flex-shrink-0">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* ===============================
           FEATURED — NEW ARRIVALS
           =============================== */}
       <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
