@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       reviewCount: parseInt(body.reviewCount || 0, 10),
       releaseDate: new Date().toISOString(),
       inStock: body.inStock !== undefined ? body.inStock : true,
+      stock: body.inStock === false ? 0 : 10,
       isTester: body.isTester !== undefined ? body.isTester : false,
     };
 

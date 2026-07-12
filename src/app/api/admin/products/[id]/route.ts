@@ -35,7 +35,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (body.rating !== undefined) data.rating = parseFloat(body.rating || 5);
     if (body.reviewCount !== undefined) data.reviewCount = parseInt(body.reviewCount || 0, 10);
     if (body.releaseDate !== undefined) data.releaseDate = body.releaseDate || new Date().toISOString();
-    if (body.inStock !== undefined) data.inStock = body.inStock;
+    if (body.inStock !== undefined) {
+      data.inStock = body.inStock;
+      if (body.inStock === false) {
+        data.stock = 0;
+      }
+    }
     if (body.isTester !== undefined) data.isTester = body.isTester;
 
 
