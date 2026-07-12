@@ -487,7 +487,7 @@ export default function ProductClient({
                 )}
               </div>
               <span className="text-[13px] text-[#9A9A9A]">
-                {currentSize.label} {t.info.tester}
+                {currentSize?.label || ""} {t.info.tester}
               </span>
             </div>
 
@@ -1036,7 +1036,7 @@ export default function ProductClient({
               </div>
               <div>
                 <div className="text-[14px] font-bold text-[#1A1A1A] line-clamp-1">{product.name}</div>
-                <div className="text-[12px] text-[#6B6B6B]">{formatMAD(currentPrice)} - {currentSize.label}</div>
+                <div className="text-[12px] text-[#6B6B6B]">{formatMAD(currentPrice)} {currentSize ? `- ${currentSize.label}` : ""}</div>
               </div>
             </div>
             <div className="flex-1 md:flex-none flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">

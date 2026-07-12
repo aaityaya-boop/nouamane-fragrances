@@ -60,9 +60,9 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
            <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070')] bg-cover bg-center" />
         </div>
         <div className="relative z-20 text-center px-6 max-w-4xl mx-auto">
-          <span className="text-[#D4AF37] text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase mb-6 block">L'Art d'Offrir</span>
+          <span className="text-[#9E1B1B] text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase mb-6 block">L'Art d'Offrir</span>
           <h1 className="heading-font text-5xl md:text-7xl font-light mb-8 leading-tight">
-            Éditions Spéciales <br/> <span className="italic font-serif text-[#D4AF37]">& Coffrets</span>
+            Éditions Spéciales <br/> <span className="italic font-serif text-[#9E1B1B]">& Coffrets</span>
           </h1>
           <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
             Une sélection prestigieuse de nos fragrances les plus convoitées, réunies dans des écrins luxueux. Offrez l'inoubliable.
@@ -87,7 +87,7 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
                 {/* BIG Cover Image */}
                 <div className="w-full lg:w-1/2 group relative">
                   <div className="relative aspect-[4/5] md:aspect-[4/4] overflow-hidden rounded-2xl bg-[#111]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#9E1B1B]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10 mix-blend-overlay" />
                     <Image
                       src={coffret.images[0] || '/images/placeholder.jpg'}
                       alt={coffret.name}
@@ -96,12 +96,12 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
                     />
                   </div>
                   {/* Decorative Elements */}
-                  <div className="absolute -inset-4 border border-[#D4AF37]/20 rounded-2xl -z-10 transform group-hover:scale-[1.02] transition-transform duration-700" />
+                  <div className="absolute -inset-4 border border-[#9E1B1B]/20 rounded-2xl -z-10 transform group-hover:scale-[1.02] transition-transform duration-700" />
                 </div>
 
                 {/* Content */}
                 <div className="w-full lg:w-1/2 flex flex-col justify-center">
-                  <span className="text-[#D4AF37] text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
+                  <span className="text-[#9E1B1B] text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
                     {coffret.brandLabel || 'Nouamane Édition'}
                   </span>
                   <h2 className="heading-font text-4xl md:text-5xl lg:text-6xl text-white mb-6">
@@ -125,13 +125,13 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
                       <div className="flex flex-col gap-3">
                         {coffret.includedProducts.map((p: any) => (
                           <Link href={`/${locale}/product/${p.slug}`} key={p.id} className="flex items-center gap-4 group/item">
-                            <div className="w-12 h-12 relative rounded-md overflow-hidden bg-[#111] border border-gray-800 group-hover/item:border-[#D4AF37] transition-colors">
+                            <div className="w-12 h-12 relative rounded-md overflow-hidden bg-[#111] border border-gray-800 group-hover/item:border-[#9E1B1B] transition-colors">
                               {p.images && p.images[0] && (
                                 <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
                               )}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-white group-hover/item:text-[#D4AF37] transition-colors">{p.name}</div>
+                              <div className="text-sm font-medium text-white group-hover/item:text-[#9E1B1B] transition-colors">{p.name}</div>
                               <div className="text-xs text-gray-500">{p.brandLabel}</div>
                             </div>
                           </Link>
@@ -143,7 +143,7 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
                   <div className="flex items-center gap-6">
                     <Link 
                       href={`/${locale}/product/${coffret.slug}`}
-                      className="bg-white text-black px-10 py-4 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
+                      className="bg-white text-black px-10 py-4 rounded-full text-[11px] font-bold tracking-[0.15em] uppercase hover:bg-[#9E1B1B] hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
                     >
                       Découvrir le coffret
                     </Link>
