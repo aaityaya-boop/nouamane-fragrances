@@ -3,7 +3,7 @@ import HomePageClient from './HomePageClient';
 import prisma from '@/lib/prisma';
 import { Product } from '@/lib/products';
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 export default async function HomePage() {
   const dbProducts = await prisma.product.findMany();

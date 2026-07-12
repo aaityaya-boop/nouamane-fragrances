@@ -522,7 +522,14 @@ export default function AdminProductsPage() {
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Prix de Vente (MAD)</label>
                       <input required type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-semibold"
-                        value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
+                        value={formData.price} onChange={e => {
+    const newPrice = Number(e.target.value);
+    const newSizes = formData.sizes ? [...formData.sizes] : [];
+    if (newSizes.length > 0) {
+      newSizes[0].price = newPrice;
+    }
+    setFormData({...formData, price: newPrice, sizes: newSizes});
+  }} />
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Ancien Prix (Optionnel)</label>
