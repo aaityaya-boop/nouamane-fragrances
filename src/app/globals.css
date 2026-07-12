@@ -371,6 +371,19 @@ input[type="email"]::placeholder {
   100% { transform: translate(-50%, -50%) scale(25); opacity: 0; }
 }
 
+/* =============================================
+   MEGA MENU LUXURY BADGE
+   ============================================= */
+.luxury-pulse {
+  animation: luxuryPulse 2s infinite;
+}
+
+@keyframes luxuryPulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
 @layer utilities {
   .animate-cart-bounce {
     animation: cartBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;

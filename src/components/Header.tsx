@@ -57,8 +57,8 @@ export default function Header() {
           <div className="flex items-center justify-between h-[60px] lg:h-[75px]">
             {/* LEFT NAV (Desktop) */}
             <nav className="hidden lg:flex items-center gap-8 w-1/3">
-              {['women', 'men', 'brands'].map((menuKey) => {
-                const labels: any = { women: 'Femme', men: 'Homme', brands: 'Marques' };
+              {['women', 'men', 'brands', 'bundles'].map((menuKey) => {
+                const labels: any = { women: 'Femme', men: 'Homme', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
                 return (
                   <div 
                     key={menuKey} 
@@ -71,6 +71,11 @@ export default function Header() {
                       }`}
                     >
                       {labels[menuKey]}
+                      {menuKey === 'bundles' && (
+                        <span className="bg-[#D4AF37] text-white text-[8px] px-1.5 py-0.5 rounded-sm tracking-wider luxury-pulse flex-shrink-0">
+                          Nouveau
+                        </span>
+                      )}
                     </button>
                   </div>
                 );
@@ -290,6 +295,52 @@ export default function Header() {
                   </div>
                 )}
                 
+                {/* --- BUNDLES MEGA MENU --- */}
+                {activeMenu === 'bundles' && (
+                  <div className="w-full flex-1">
+                    <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Nos Éditions Spéciales</div>
+                    <div className="grid grid-cols-2 gap-12">
+                      {/* Pack Jour & Nuit */}
+                      <Link href={`/${locale}/shop`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
+                        <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
+                          <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
+                          <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
+                            Pack Jour & Nuit
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#D4AF37] transition-colors">Pack Jour & Nuit</h3>
+                          <p className="text-[13px] text-[#9A9A9A] mb-5 leading-relaxed">
+                            La combinaison parfaite pour vous accompagner tout au long de votre journée et de vos soirées les plus prestigieuses.
+                          </p>
+                          <span className="btn-blue text-[11px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#D4AF37] group-hover:text-white">
+                            Découvrir
+                          </span>
+                        </div>
+                      </Link>
+
+                      {/* Pack Découverte */}
+                      <Link href={`/${locale}/shop`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-8 items-center bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl hover:border-[#D4AF37] hover:shadow-lg transition-all">
+                        <div className="relative w-32 h-40 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
+                          <div className="absolute inset-0 bg-[#f9f9f9] group-hover:bg-transparent transition-colors z-10" />
+                          <div className="absolute inset-0 flex items-center justify-center text-[#d4d4d4] p-4 text-center text-xs font-serif italic">
+                            Pack Découverte
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-2 group-hover:text-[#D4AF37] transition-colors">Pack Découverte</h3>
+                          <p className="text-[13px] text-[#9A9A9A] mb-5 leading-relaxed">
+                            Explorez nos fragrances signatures à travers ce coffret découverte exclusif, idéal pour un cadeau inoubliable.
+                          </p>
+                          <span className="btn-blue text-[11px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#D4AF37] group-hover:text-white">
+                            Découvrir
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                
               </div>
             </motion.div>
           )}
@@ -354,6 +405,20 @@ export default function Header() {
                         </Link>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="border-b border-[#e0ddd4] pb-6">
+                    <Link 
+                      href={`/${locale}/shop`} 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="heading-font text-2xl text-[#1A1A1A] flex items-center gap-3 mb-2"
+                    >
+                      Coffrets Cadeaux
+                      <span className="bg-[#D4AF37] text-white text-[9px] px-2 py-0.5 rounded tracking-wider luxury-pulse font-sans">
+                        Nouveau
+                      </span>
+                    </Link>
+                    <p className="text-[13px] text-[#9A9A9A]">Découvrez nos packs exclusifs (Jour & Nuit, Découverte...)</p>
                   </div>
                 </div>
 
