@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export const metadata = {
-  title: 'Coffrets Duo & Cadeaux | Nouamane Parfums',
+  title: 'Coffrets Duo & Cadeaux | NAY Parfums',
   description: 'Découvrez nos coffrets cadeaux et duos. Célébrez l\'amour avec nos fragrances couplées.',
 };
 

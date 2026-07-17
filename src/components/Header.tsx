@@ -15,6 +15,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAllMobileBrands, setShowAllMobileBrands] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | null>(null);
   const { getItemCount } = useCart();
@@ -71,11 +72,6 @@ export default function Header() {
                       }`}
                     >
                       {labels[menuKey]}
-                      {menuKey === 'bundles' && (
-                        <span className="bg-[#D4AF37] text-white text-[8px] px-1.5 py-0.5 rounded-sm tracking-wider luxury-pulse flex-shrink-0">
-                          Nouveau
-                        </span>
-                      )}
                     </button>
                   </div>
                 );
@@ -85,20 +81,21 @@ export default function Header() {
             {/* LOGO */}
             <div className="w-1/3 flex justify-center">
               <Link href={`/${locale}`} className="group flex flex-col items-center">
-                <span
-                  className={`heading-font text-[24px] lg:text-[28px] font-light tracking-[0.25em] transition-colors duration-300 group-hover:text-[#0ea5e9] ${
-                    isSolid ? 'text-[#1A1A1A]' : 'text-white'
+                <div
+                  className={`w-16 h-16 lg:w-20 lg:h-20 transition-colors duration-300 group-hover:bg-[#0ea5e9] ${
+                    isSolid ? 'bg-[#1A1A1A]' : 'bg-white'
                   }`}
-                >
-                  NOUAMANE
-                </span>
-                <span
-                  className={`text-[8px] font-semibold tracking-[0.35em] uppercase mt-[-2px] ${
-                    isSolid ? 'text-[#0ea5e9]' : 'text-white/80'
-                  }`}
-                >
-                  Parfums
-                </span>
+                  style={{
+                    maskImage: 'url("/images/nay/Artboard%202.png")',
+                    WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskPosition: 'center',
+                  }}
+                />
               </Link>
             </div>
 
@@ -301,14 +298,7 @@ export default function Header() {
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Nos Éditions Spéciales</div>
                     <div className="grid grid-cols-1 gap-12">
                       {/* Coffrets Cadeaux Card */}
-                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex gap-10 items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#9E1B1B] hover:shadow-2xl transition-all">
-                        <div className="relative w-48 h-56 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-[#e0ddd4]">
-                          <Image src="/images/category/pack-decouverte-luxe.jpg" alt="Coffrets Cadeaux" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                          <div className="absolute bottom-4 left-0 right-0 text-center text-white font-serif italic z-20">
-                            Cadeaux d'Exception
-                          </div>
-                        </div>
+                      <Link href={`/${locale}/coffrets`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#9E1B1B] hover:shadow-2xl transition-all">
                         <div className="flex-1">
                           <span className="text-[#9E1B1B] text-[10px] font-bold uppercase tracking-widest mb-3 block">Offrez l'Inoubliable</span>
                           <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#9E1B1B] transition-colors">Découvrez Nos Coffrets Cadeaux</h3>
@@ -366,9 +356,19 @@ export default function Header() {
                     </div>
                   ))}
                   <div className="border-b border-[#e0ddd4] pb-6">
-                    <div className="heading-font text-2xl text-[#1A1A1A] block mb-4">Marques</div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="heading-font text-2xl text-[#1A1A1A]">Marques</div>
+                      {brands.length > 4 && (
+                        <button
+                          onClick={() => setShowAllMobileBrands(!showAllMobileBrands)}
+                          className="text-[#9E1B1B] text-sm font-semibold px-2 py-1 flex items-center gap-1"
+                        >
+                          {showAllMobileBrands ? '(-) Voir moins' : '(+) Voir plus'}
+                        </button>
+                      )}
+                    </div>
                     <div className="grid grid-cols-2 gap-3 pl-2">
-                      {brands.map(brand => (
+                      {(showAllMobileBrands ? brands : brands.slice(0, 4)).map(brand => (
                         <Link 
                           key={brand.slug}
                           href={`/${locale}/brands/${brand.slug}`}
@@ -397,9 +397,6 @@ export default function Header() {
                       className="heading-font text-2xl text-[#1A1A1A] flex items-center gap-3 mb-2"
                     >
                       Coffrets Cadeaux
-                      <span className="bg-[#D4AF37] text-white text-[9px] px-2 py-0.5 rounded tracking-wider luxury-pulse font-sans">
-                        Nouveau
-                      </span>
                     </Link>
                     <p className="text-[13px] text-[#9A9A9A]">Découvrez nos packs exclusifs (Jour & Nuit, Découverte...)</p>
                   </div>

@@ -19,7 +19,7 @@ export default function BlogForm({ initialData, dbProducts = [] }: { initialData
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
     coverImage: initialData?.coverImage || '',
-    author: initialData?.author || 'Nouamane',
+    author: initialData?.author || 'NAY',
     status: initialData?.status || 'draft',
     metaTitle: initialData?.metaTitle || '',
     metaDescription: initialData?.metaDescription || '',
@@ -188,7 +188,7 @@ export default function BlogForm({ initialData, dbProducts = [] }: { initialData
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold">N</div>
                   <div className="flex flex-col">
-                    <span className="text-[14px] text-[#202124]">Nouamane Parfums</span>
+                    <span className="text-[14px] text-[#202124]">NAY Parfums</span>
                     <span className="text-[12px] text-[#4d5156]">https://nouamane.ma › fr › blog › {formData.slug || 'slug'}</span>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ export default function BlogForm({ initialData, dbProducts = [] }: { initialData
                     }`}
                   >
                     <div className="font-medium text-gray-900">{p.name}</div>
-                    <div className="text-xs text-gray-500 uppercase tracking-wider">{p.brandId || p.brandLabel || 'Nouamane'}</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">{p.brandId || p.brandLabel || 'NAY'}</div>
                   </button>
                 );
               })}

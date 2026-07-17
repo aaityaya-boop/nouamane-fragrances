@@ -55,27 +55,59 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           animation: liquid-glace 8s linear infinite;
           filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
         }
+        .liquid-glace-mask {
+          background: linear-gradient(
+            110deg,
+            #111111 10%,
+            #0ea5e9 30%,
+            #ffffff 45%,
+            #e0f2fe 50%,
+            #0ea5e9 55%,
+            #111111 75%
+          );
+          background-size: 200% auto;
+          animation: liquid-glace 8s linear infinite;
+          filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
+        }
       `}} />
 
       {/* 1. PROFESSIONAL MINIMALIST BACKGROUND */}
+      <div className="absolute inset-0 bg-[#FCFCFC] z-0" />
+      
+      {/* Refined gradient sphere - softer, more luxurious */}
       <motion.div 
-        className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
-        style={{ y: yAura }}
-      >
-        {/* Luxury subtle gradient meshes instead of bright cyan blurs */}
-        <motion.div
-          className="absolute w-[90vw] h-[90vw] md:w-[70vw] md:h-[70vw] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#f3f4f6] via-[#f9fafb] to-transparent rounded-full blur-[80px] md:blur-[120px]"
-          animate={{
-            scale: [1, 1.1, 0.95, 1],
-            opacity: [0.6, 0.8, 0.5, 0.6],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] rounded-full blur-[120px] sm:blur-[160px] opacity-40 pointer-events-none mix-blend-multiply"
+        style={{
+          background: "radial-gradient(circle, rgba(14,165,233,0.15) 0%, rgba(255,255,255,0) 70%)"
+        }}
+        animate={{ 
+          scale: [1, 1.05, 1],
+          opacity: [0.3, 0.4, 0.3],
+        }}
+        transition={{ 
+          duration: 8, 
+          repeat: Infinity,
+          ease: "easeInOut" 
+        }}
+      />
+
+      {/* Very subtle secondary sphere for depth */}
+      <motion.div 
+        className="absolute top-[40%] left-[60%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none mix-blend-multiply"
+        style={{
+          background: "radial-gradient(circle, rgba(17,17,17,0.05) 0%, rgba(255,255,255,0) 70%)"
+        }}
+        animate={{ 
+          x: [0, 20, 0],
+          y: [0, -20, 0],
+          opacity: [0.6, 0.8, 0.5, 0.6],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
 
       {/* Ultra-subtle luxury noise texture */}
       <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
@@ -90,14 +122,28 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-14 flex flex-col items-center justify-center"
+          className="mb-8 flex flex-col items-center justify-center relative"
         >
-          <h2 className="heading-font text-2xl md:text-4xl tracking-[0.4em] font-light text-[#111]">
-            NOUAMANE
-          </h2>
-          <span className="text-[8px] md:text-[10px] font-semibold tracking-[0.6em] uppercase text-[#666] mt-3">
-            Parfums
-          </span>
+          {/* Invisible image to set exact dimensions */}
+          <img
+            src="/images/nay/nay-logo-new.png"
+            alt="NAY Parfums"
+            className="w-32 sm:w-40 md:w-48 lg:w-56 h-auto object-contain invisible"
+          />
+          {/* Animated gradient mask overlaid exactly on top */}
+          <div
+            className="absolute inset-0 w-full h-full liquid-glace-mask opacity-90"
+            style={{
+              WebkitMaskImage: 'url("/images/nay/nay-logo-new.png")',
+              WebkitMaskSize: 'contain',
+              WebkitMaskPosition: 'center',
+              WebkitMaskRepeat: 'no-repeat',
+              maskImage: 'url("/images/nay/nay-logo-new.png")',
+              maskSize: 'contain',
+              maskPosition: 'center',
+              maskRepeat: 'no-repeat',
+            }}
+          />
         </motion.div>
 
         {/* Eyebrow */}
@@ -113,13 +159,12 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           </span>
         </motion.div>
 
-        {/* Main Headline with Liquid Glace Effect - KEPT EFFECT, ADDED PARALLAX SCROLL */}
+        {/* Main Headline with Liquid Glace Effect - NO PARALLAX SCROLL */}
         <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[110px] leading-[1.1] tracking-tight mb-10 flex flex-col items-center justify-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
-            style={{ x: xLeft }}
             className="font-light liquid-glace-text py-2"
           >
             L'Authenticité
@@ -128,7 +173,6 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-            style={{ x: xRight }}
             className="flex items-center justify-center gap-4 sm:gap-8 mt-2"
           >
             <span className="font-serif italic font-light text-[#111]/40 text-4xl sm:text-7xl lg:text-[100px] liquid-glace-text">&</span>

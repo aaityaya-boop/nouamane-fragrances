@@ -36,7 +36,7 @@ export default function AdminLogin() {
         <div className="text-center mb-10">
           <Link href="/" className="inline-block group">
             <span className="heading-font text-3xl font-light tracking-[0.28em] text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors duration-500">
-              NOUAMANE
+              NAY
             </span>
             <div className="text-[10px] font-semibold tracking-[0.35em] uppercase text-[#0ea5e9]">
               Admin Panel

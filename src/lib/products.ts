@@ -1,5 +1,5 @@
 /**
- * NOUAMANE Parfums — Catalog Data
+ * NAY Parfums — Catalog Data
  * Authorized retailer of designer fragrances in Morocco.
  * Brands: Valentino · Yves Saint Laurent · Giorgio Armani
  * Prices in MAD (Moroccan Dirham).

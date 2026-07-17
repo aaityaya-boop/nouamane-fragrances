@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 
   if (!product) {
-    return { title: 'Produit introuvable - Nouamane Parfums' };
+    return { title: 'Produit introuvable - NAY Parfums' };
   }
 
   const images = JSON.parse(product.images);
@@ -127,7 +127,7 @@ export default async function ProductPage({
     },
     offers: {
       '@type': 'Offer',
-      url: `https://nouamane-fr.vercel.app/product/${transformedProduct.slug}`,
+      url: `https://nayparfum.ma/product/${transformedProduct.slug}`,
       priceCurrency: 'MAD',
       price: transformedProduct.price,
       itemCondition: 'https://schema.org/NewCondition',

@@ -89,10 +89,22 @@ export default function AdminSidebar() {
       <div className="p-6 pb-4">
         <Link href="/admin" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-500/20">
-            N
+            <div
+              className="w-5 h-5 bg-white"
+              style={{
+                maskImage: 'url("/images/nay/Artboard%202.png")',
+                WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+              }}
+            />
           </div>
           <div>
-            <div className="text-[15px] font-bold text-white tracking-wide">Nouamane</div>
+            <div className="text-[15px] font-bold text-white tracking-wide">NAY</div>
             <div className="text-[10px] uppercase tracking-widest text-[#666] font-semibold">Workspace</div>
           </div>
         </Link>

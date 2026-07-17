@@ -26,7 +26,7 @@ export default function InvoiceClient({ order }: { order: any }) {
       <div className="border border-gray-200 p-10 rounded-xl shadow-sm print:border-none print:shadow-none print:p-0">
         <div className="flex justify-between items-start border-b border-gray-200 pb-8 mb-8">
           <div>
-            <h1 className="text-4xl font-light tracking-widest uppercase mb-2">NOUAMANE</h1>
+            <h1 className="text-4xl font-light tracking-widest uppercase mb-2">NAY</h1>
             <p className="text-gray-500 text-sm tracking-widest uppercase">Parfums de Luxe</p>
           </div>
           <div className="text-right">
@@ -40,7 +40,7 @@ export default function InvoiceClient({ order }: { order: any }) {
           <div>
             <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-3">Émetteur</h3>
             <div className="text-sm space-y-1">
-              <p className="font-semibold">Nouamane Parfums</p>
+              <p className="font-semibold">NAY Parfums</p>
               <p>Fès, Maroc</p>
               <p>Contact : +212 5 35 63 42 18</p>
               <p>Email : contact@nouamane.ma</p>

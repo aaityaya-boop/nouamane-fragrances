@@ -584,7 +584,7 @@ export default function AccountClient() {
                     </button>
                   </form>
                   <div className="mt-10 text-[13px] text-[#6B6B6B]">
-                    Nouveau chez Nouamane ? <button onClick={() => { setAuthStep('signup'); setAuthError(''); }} className="text-[#0ea5e9] font-bold underline decoration-2 underline-offset-4 ml-1 hover:text-[#0284c7]">Créer un compte</button>
+                    Nouveau chez NAY ? <button onClick={() => { setAuthStep('signup'); setAuthError(''); }} className="text-[#0ea5e9] font-bold underline decoration-2 underline-offset-4 ml-1 hover:text-[#0284c7]">Créer un compte</button>
                   </div>
                 </div>
               )}

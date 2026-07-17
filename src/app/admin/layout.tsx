@@ -6,7 +6,7 @@ import AdminNotifier from "@/components/AdminNotifier";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "Admin | Nouamane Parfums",
+  title: "Admin | NAY Parfums",
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {

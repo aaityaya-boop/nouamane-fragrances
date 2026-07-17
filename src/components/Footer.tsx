@@ -35,12 +35,19 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
             <Link href={`/${locale}/`} className="inline-block group">
-              <span className="heading-font text-3xl font-light tracking-[0.28em] text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors duration-500">
-                NOUAMANE
-              </span>
-              <div className="text-[9px] font-semibold tracking-[0.35em] uppercase text-[#0ea5e9]">
-                Parfums
-              </div>
+              <div
+                  className="w-16 h-16 lg:w-20 lg:h-20 transition-colors duration-500 bg-[#1A1A1A] group-hover:bg-[#0ea5e9]"
+                  style={{
+                    maskImage: 'url("/images/nay/Artboard%202.png")',
+                    WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskPosition: 'center',
+                  }}
+                />
             </Link>
 
             <p className="mt-6 max-w-xs text-[#1A1A1A]/60 text-[14px] leading-[1.7]">
@@ -205,7 +212,7 @@ export default function Footer() {
             </div>
 
             <div className="mt-4 text-[10px] text-[#1A1A1A]/40">
-              © {new Date().getFullYear()} Nouamane Parfums. Revendeur autorisé au Maroc.
+              © {new Date().getFullYear()} NAY Parfums. Revendeur autorisé au Maroc.
             </div>
           </div>
         </div>

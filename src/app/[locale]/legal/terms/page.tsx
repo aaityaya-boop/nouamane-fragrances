@@ -12,7 +12,7 @@ export default function TermsPage() {
         <div className="space-y-8 text-[15px] leading-relaxed text-[#6B6B6B]">
           <section>
             <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">1. Objet</h2>
-            <p>Les présentes Conditions Générales de Vente (CGV) régissent les ventes de parfums sur le site Nouamane Parfums. En validant votre commande, vous acceptez sans réserve ces conditions.</p>
+            <p>Les présentes Conditions Générales de Vente (CGV) régissent les ventes de parfums sur le site NAY Parfums. En validant votre commande, vous acceptez sans réserve ces conditions.</p>
           </section>
 
           <section>
@@ -22,7 +22,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">3. Prix</h2>
-            <p>Les prix de nos produits sont indiqués en Dirham Marocain (MAD), toutes taxes comprises. Nouamane Parfums se réserve le droit de modifier ses prix à tout moment.</p>
+            <p>Les prix de nos produits sont indiqués en Dirham Marocain (MAD), toutes taxes comprises. NAY Parfums se réserve le droit de modifier ses prix à tout moment.</p>
           </section>
 
           <section>

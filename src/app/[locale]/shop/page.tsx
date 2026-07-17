@@ -10,9 +10,16 @@ import { Product, MAIN_CATEGORIES } from '@/lib/products';
 import { ShieldCheck, Truck, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Boutique | Nouamane Parfums',
-  description:
-    'Découvrez toute la collection de parfums Valentino, YSL et Armani. Filtrage par marque, genre, prix, taille, couleur et note.',
+  title: 'Boutique | NAY Parfums',
+  description: 'Découvrez toute la collection de parfums de grandes marques. Filtrage par marque, genre, prix, et notes olfactives. 100% authentiques.',
+  openGraph: {
+    title: 'Boutique | NAY Parfums',
+    description: 'Découvrez toute la collection de parfums de grandes marques. Filtrage par marque, genre, prix, et notes olfactives. 100% authentiques.',
+    url: 'https://nayparfum.ma/shop',
+  },
+  alternates: {
+    canonical: 'https://nayparfum.ma/shop',
+  },
 };
 
 export const revalidate = 3600;

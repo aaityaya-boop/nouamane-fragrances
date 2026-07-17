@@ -20,7 +20,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 1, productSlug: 'valentino-born-in-roma-donna', author: 'Salma B.', city: 'Casablanca',
     rating: 5, title: 'Mon parfum signature',
-    comment: 'Un floral moderne et audacieux. Je reçois constamment des compliments — le sillage est incroyable et le flacon Rockstud est magnifique sur ma coiffeuse. Merci Nouamane pour l\'authenticité garantie et la livraison en 24h à Casa.',
+    comment: 'Un floral moderne et audacieux. Je reçois constamment des compliments — le sillage est incroyable et le flacon Rockstud est magnifique sur ma coiffeuse. Merci NAY pour l\'authenticité garantie et la livraison en 24h à Casa.',
     createdAt: '2025-01-20', verified: true,
   },
   {
@@ -32,7 +32,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 3, productSlug: 'valentino-born-in-roma-donna', author: 'Nadia H.', city: 'Marrakech',
     rating: 5, title: 'Coup de cœur absolu',
-    comment: 'Un parfum qui a du caractère sans être vulgaire. Parfait pour le bureau et pour les soirées. Le rapport qualité-prix est excellent chez Nouamane.',
+    comment: 'Un parfum qui a du caractère sans être vulgaire. Parfait pour le bureau et pour les soirées. Le rapport qualité-prix est excellent chez NAY.',
     createdAt: '2024-12-15', verified: true,
   },
 
@@ -80,7 +80,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 10, productSlug: 'valentino-uomo-intense', author: 'Rachid K.', city: 'Oujda',
     rating: 5, title: 'Puissant et raffiné',
-    comment: 'Un parfum d\'exception. La qualité est là, on sent immédiatement qu\'il s\'agit d\'un grand parfum. Livraison au top depuis Nouamane.',
+    comment: 'Un parfum d\'exception. La qualité est là, on sent immédiatement qu\'il s\'agit d\'un grand parfum. Livraison au top depuis NAY.',
     createdAt: '2024-12-20', verified: true,
   },
 
@@ -104,7 +104,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 13, productSlug: 'ysl-libre-edp', author: 'Amina S.', city: 'Casablanca',
     rating: 5, title: 'La fleur d\'oranger marocaine !',
-    comment: 'Fierté nationale : YSL utilise la fleur d\'oranger de Meknès. Le résultat est somptueux, féminin et libre. Mon parfum préféré depuis 2 ans, je le rachète chez Nouamane à chaque fois.',
+    comment: 'Fierté nationale : YSL utilise la fleur d\'oranger de Meknès. Le résultat est somptueux, féminin et libre. Mon parfum préféré depuis 2 ans, je le rachète chez NAY à chaque fois.',
     createdAt: '2025-01-25', verified: true,
   },
   {
@@ -116,7 +116,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 15, productSlug: 'ysl-libre-edp', author: 'Leïla M.', city: 'Rabat',
     rating: 5, title: 'Élégance intemporelle',
-    comment: 'Parfait pour le travail et les soirées. Le flacon doré est magnifique. J\'ai eu peur des contrefaçons ailleurs, mais chez Nouamane c\'est 100% authentique.',
+    comment: 'Parfait pour le travail et les soirées. Le flacon doré est magnifique. J\'ai eu peur des contrefaçons ailleurs, mais chez NAY c\'est 100% authentique.',
     createdAt: '2024-12-15', verified: true,
   },
 
@@ -182,7 +182,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 24, productSlug: 'armani-stronger-with-you', author: 'Hassan L.', city: 'Casablanca',
     rating: 5, title: 'Le parfum qui m\'a fait sortir avec ma femme',
-    comment: 'Cardamome + vanille = magique. Compliments garantis. Sillage sensuel et longévité de 8-10h. Rapport qualité-prix imbattable, surtout avec la promo actuelle chez Nouamane !',
+    comment: 'Cardamome + vanille = magique. Compliments garantis. Sillage sensuel et longévité de 8-10h. Rapport qualité-prix imbattable, surtout avec la promo actuelle chez NAY !',
     createdAt: '2025-02-01', verified: true,
   },
   {
@@ -258,7 +258,7 @@ export const REVIEWS: StaticReview[] = [
   {
     id: 35, productSlug: 'armani-my-way-edp', author: 'Imane B.', city: 'Rabat',
     rating: 5, title: 'Ma nouvelle signature 2025',
-    comment: 'Je l\'ai découvert grâce aux produits authentiques par Nouamane, et j\'ai craqué. La tubéreuse est divine.',
+    comment: 'Je l\'ai découvert grâce aux produits authentiques par NAY, et j\'ai craqué. La tubéreuse est divine.',
     createdAt: '2025-02-14', verified: true,
   },
 ];

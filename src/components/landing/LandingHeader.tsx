@@ -9,12 +9,19 @@ export default function LandingHeader() {
       <div className="max-w-[1200px] mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link href="/" className="flex flex-col items-center">
-          <span className="heading-font text-xl lg:text-2xl font-light tracking-[0.25em] text-[#1A1A1A]">
-            NOUAMANE
-          </span>
-          <span className="text-[7px] lg:text-[8px] font-semibold tracking-[0.3em] uppercase mt-[-2px] text-[#0ea5e9]">
-            Parfums
-          </span>
+          <div
+            className="w-10 h-10 lg:w-12 lg:h-12 bg-[#1A1A1A] transition-colors duration-300 hover:bg-[#0ea5e9]"
+            style={{
+              maskImage: 'url("/images/nay/Artboard%202.png")',
+              WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+              maskSize: 'contain',
+              WebkitMaskSize: 'contain',
+              maskRepeat: 'no-repeat',
+              WebkitMaskRepeat: 'no-repeat',
+              maskPosition: 'center',
+              WebkitMaskPosition: 'center',
+            }}
+          />
         </Link>
 
         {/* SECURITY BADGES (Helps conversion) */}

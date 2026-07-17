@@ -27,7 +27,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">3. Protection de vos données</h2>
-            <p>Nouamane Parfums met en œuvre toutes les mesures de sécurité nécessaires pour protéger vos données contre tout accès non autorisé. Vos données ne sont jamais vendues ou cédées à des tiers, à l'exception de nos prestataires de livraison.</p>
+            <p>NAY Parfums met en œuvre toutes les mesures de sécurité nécessaires pour protéger vos données contre tout accès non autorisé. Vos données ne sont jamais vendues ou cédées à des tiers, à l'exception de nos prestataires de livraison.</p>
           </section>
 
           <section>

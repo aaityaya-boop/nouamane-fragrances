@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * HOMEPAGE — NOUAMANE Parfums
+ * HOMEPAGE — NAY Parfums
  * Featured products logic: Bestsellers · New Arrivals · Seasonal Trends
  * Positioning: Authorized designer perfume retailer in Morocco
  */
@@ -151,74 +151,47 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
             viewport={{ once: true, margin: "-80px" }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
           >
-            {MAIN_CATEGORIES.map((cat, index) => {
-              // Add marketing hooks based on category
-              const hooks = [
-                { label: 'Sélection Exclusive', badge: 'bg-[#0ea5e9] text-white' },
-                { label: 'Meilleures Ventes', badge: 'bg-black text-white' },
-                { label: 'Nouveau', badge: 'bg-white text-black border border-black/10' }
-              ];
-              const hook = hooks[index % hooks.length];
-
-              return (
+            {MAIN_CATEGORIES.map((cat, index) => (
               <motion.div
                 variants={staggerItem}
                 key={cat.slug}
-                className="group cursor-pointer relative h-[500px] lg:h-[600px] rounded-[40px] overflow-hidden"
+                className="group cursor-pointer relative h-auto min-h-[340px] rounded-[30px] overflow-hidden bg-gradient-to-br from-[#f8fafc] to-white border border-[#e0ddd4] hover:border-[#0ea5e9]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.04)] transition-all duration-700"
               >
-                <Link href={`/${locale}/shop/${cat.slug}`} className="block w-full h-full relative">
-                  {/* Background Immersive Image */}
-                  <div className="absolute inset-0 w-full h-full">
-                    <Image
-                      src={cat.heroImage}
-                      alt={cat.label}
-                      fill
-                      className="object-cover transition-transform duration-[2s] ease-out group-hover:scale-110"
-                      priority={index === 0}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-700" />
-                  </div>
+                <Link href={`/${locale}/shop/${cat.slug}`} className="flex flex-col h-full w-full p-8 lg:p-10 relative z-10">
+                  {/* Subtle Background Accent */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-[#0ea5e9]/5 rounded-full blur-[40px] translate-x-1/3 -translate-y-1/3 group-hover:scale-150 transition-transform duration-1000 pointer-events-none" />
 
-                  {/* Marketing Badge */}
-                  <div className="absolute top-8 left-8 z-20">
-                    <span className={`text-[9px] font-bold tracking-[0.2em] uppercase px-4 py-2 rounded-full shadow-lg ${hook.badge}`}>
-                      {hook.label}
-                    </span>
-                  </div>
-
-                  {/* Floating Glassmorphism Content Panel */}
-                  <div className="absolute bottom-6 left-6 right-6 lg:bottom-8 lg:left-8 lg:right-8 z-20">
-                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 lg:p-8 rounded-[30px] transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 shadow-[0_20px_40px_rgba(0,0,0,0.2)] group-hover:bg-white/20">
-                      
-                      <div className="flex items-end justify-between mb-4">
-                        <div>
-                          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/80 mb-2 block">
-                            Collection 0{index + 1}
-                          </span>
-                          <h3 className="heading-font text-3xl lg:text-5xl text-white tracking-wide">
-                            {cat.labelShort}
-                          </h3>
-                        </div>
-                        {/* Elegant CTA Arrow */}
-                        <div className="w-12 h-12 rounded-full border border-white/30 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors duration-500">
-                          <ArrowRight size={18} />
-                        </div>
+                  <div className="mt-auto z-20">
+                    <div className="flex items-end justify-between mb-4">
+                      <div>
+                        <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-3 block">
+                          Collection 0{index + 1}
+                        </span>
+                        <h3 className="heading-font text-3xl lg:text-4xl text-[#1A1A1A] tracking-wide group-hover:text-[#0ea5e9] transition-colors duration-500">
+                          {cat.labelShort}
+                        </h3>
                       </div>
-
-                      <p className="text-white/80 text-[13px] font-light leading-[1.6] tracking-wide line-clamp-2 pr-12">
-                        {cat.description}
-                      </p>
-                      
-                      {/* Secondary Action / Trust Signal */}
-                      <div className="mt-6 pt-5 border-t border-white/20 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                        <span className="text-[10px] uppercase tracking-widest text-white/90 font-semibold">Découvrir la gamme</span>
-                        <span className="text-[10px] uppercase tracking-widest text-[#0ea5e9] font-bold bg-white px-3 py-1 rounded-full">Testeurs 100% Originaux</span>
+                      {/* Elegant CTA Arrow */}
+                      <div className="w-12 h-12 rounded-full border border-[#e0ddd4] bg-white flex items-center justify-center text-[#1A1A1A] group-hover:bg-[#1A1A1A] group-hover:text-white group-hover:border-[#1A1A1A] transition-all duration-500 flex-shrink-0 shadow-sm">
+                        <ArrowRight size={18} />
                       </div>
+                    </div>
+
+                    <p className="text-[#6B6B6B] text-[13px] font-light leading-[1.7] tracking-wide line-clamp-2 lg:pr-12">
+                      {cat.description}
+                    </p>
+                    
+                    {/* Secondary Action / Trust Signal */}
+                    <div className="mt-8 pt-6 border-t border-[#e0ddd4]/60 flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-widest text-[#1A1A1A] font-semibold group-hover:text-[#0ea5e9] transition-colors">Explorer</span>
+                      <span className="text-[9px] uppercase tracking-widest text-[#0ea5e9] font-bold bg-[#0ea5e9]/10 px-3 py-1.5 rounded-full border border-[#0ea5e9]/20">
+                        Qualité Premium
+                      </span>
                     </div>
                   </div>
                 </Link>
               </motion.div>
-            )})}
+            ))}
           </motion.div>
         </div>
       </section>
@@ -310,7 +283,7 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
       <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
         <SectionHeader
           icon={<Sparkles size={16} className="text-[#0ea5e9]" />}
-          eyebrow="Nouveautés"
+          eyebrow=""
           title="Les dernières sorties"
           subtitle="Découvrez les nouvelles créations qui viennent d'arriver dans nos rayons."
           linkLabel="Voir toutes les nouveautés"
@@ -522,7 +495,7 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
               { comment: "C'est la 3ème fois kanakhd mn 3andkom. Service top w la livraison sur Casablanca kant f 24h. Le parfum Amouage rah 100% original w chadda fih ri7a mzyan!", author: "Yassir B.", city: "Casablanca", product: { name: "Amouage Interlude Man" }, rating: 5 },
               { comment: "Franchement j'avais des doutes, mais sda9 site sadi9. Khdit Baccarat Rouge tester, c'est l'original. Tbarkallah 3likom, bonne continuation.", author: "Mounia T.", city: "Marrakech", product: { name: "Baccarat Rouge 540" }, rating: 5 },
               { comment: "Service client f lmostawa. 3awnoni n3zal parfum li bghit. La livraison l Tanger kant rapide w l'emballage n9i. Recommandé à 100%!", author: "Ayoub R.", city: "Tanger", product: { name: "Armani Stronger With You" }, rating: 5 },
-              { comment: "J'étais fatigué d'acheter des parfums chez des revendeurs douteux. La garantie d'authenticité et la livraison rapide de Nouamane font toute la différence. Stronger With You est parfait!", author: "Hassan L.", city: "Casablanca", product: { name: "Armani Stronger With You" }, rating: 5 },
+              { comment: "J'étais fatigué d'acheter des parfums chez des revendeurs douteux. La garantie d'authenticité et la livraison rapide de NAY font toute la différence. Stronger With You est parfait!", author: "Hassan L.", city: "Casablanca", product: { name: "Armani Stronger With You" }, rating: 5 },
               { comment: "Expérience incroyable. Le parfum est arrivé dans un emballage soigné en moins de 48h. L'odeur est 100% authentique. Je recommande à tous mes proches.", author: "Salma B.", city: "Rabat", product: { name: "YSL Libre Eau de Parfum" }, rating: 5 },
               { comment: "Un service client exceptionnel et un choix incroyable des plus grandes maisons de luxe. C'est de loin ma meilleure expérience d'achat de parfum au Maroc.", author: "Youssef E.", city: "Tanger", product: { name: "Valentino Uomo Intense" }, rating: 5 },
             ]).map((review: any, i: number) => (

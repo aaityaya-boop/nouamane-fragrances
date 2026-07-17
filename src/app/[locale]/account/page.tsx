@@ -2,8 +2,8 @@ import React from 'react';
 import AccountClient from './AccountClient';
 
 export const metadata = {
-  title: 'Mon Compte | Nouamane Parfums',
-  description: 'Gérez votre compte Nouamane Parfums',
+  title: 'Mon Compte | NAY Parfums',
+  description: 'Gérez votre compte NAY Parfums',
 };
 
 export default function AccountPage() {

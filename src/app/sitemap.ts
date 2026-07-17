@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://nouamane-fr.vercel.app';
+  const baseUrl = 'https://nayparfum.ma';
 
   const products = await prisma.product.findMany();
   const brands = await prisma.brand.findMany();

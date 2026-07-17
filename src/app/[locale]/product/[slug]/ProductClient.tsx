@@ -71,6 +71,7 @@ export default function ProductClient({
   const t = translations[locale] || translations.fr;
 
   const [reviews, setReviews] = useState(initialReviews);
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState(5);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewFormData, setReviewFormData] = useState({
     author: '',
@@ -807,7 +808,7 @@ export default function ProductClient({
               </div>
             ) : (
               <div className="space-y-10">
-                {reviews.map((review) => (
+                {reviews.slice(0, visibleReviewsCount).map((review) => (
                   <article
                     key={review.id}
                     className="pb-10 border-b border-[#e0ddd4] last:border-0"
@@ -859,6 +860,16 @@ export default function ProductClient({
                     </p>
                   </article>
                 ))}
+              </div>
+            )}
+            {reviews.length > visibleReviewsCount && (
+              <div className="flex justify-center mt-8">
+                <button 
+                  onClick={() => setVisibleReviewsCount(prev => prev + 5)}
+                  className="px-6 py-2.5 rounded-full border border-[#0ea5e9] text-[#0ea5e9] text-[12px] font-bold tracking-wide hover:bg-[#0ea5e9] hover:text-white transition-colors"
+                >
+                  Voir plus d'avis ({reviews.length - visibleReviewsCount} restants)
+                </button>
               </div>
             )}
           </div>

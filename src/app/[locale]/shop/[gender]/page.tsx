@@ -23,6 +23,24 @@ type Params = { locale: string; gender: string };
 
 export const dynamic = 'force-dynamic';
 
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { gender } = await params;
+  const category = getCategoryBySlug(gender);
+
+  if (!category) return { title: 'Catégorie introuvable | NAY Parfums' };
+
+  return {
+    title: `Parfums ${category.label} | Acheter au Maroc`,
+    description: `Découvrez notre collection de parfums ${category.label}. ${category.description} 100% authentique. Livraison rapide.`,
+    openGraph: {
+      title: `Parfums ${category.label} | Acheter au Maroc`,
+      description: `Découvrez notre collection de parfums ${category.label}. ${category.description} 100% authentique. Livraison rapide.`,
+      images: [{ url: category.heroImage }]
+    }
+  };
+}
 export default async function CategoryPage({
   params,
 }: {
@@ -58,31 +76,26 @@ export default async function CategoryPage({
       <Header />
 
       {/* HERO */}
-      <section className="relative h-[50vh] min-h-[380px] flex items-center overflow-hidden">
-        <Image
-          src={category.heroImage}
-          alt={category.label}
-          fill
-          priority
-          className="object-cover brightness-[0.55]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70" />
-        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-6 lg:px-10 pt-16">
-          <nav className="flex items-center gap-2 text-[11px] text-white/70 mb-6">
+      <section className="relative pt-32 pb-16 min-h-[300px] flex items-center overflow-hidden bg-[#fafaf7]">
+        {/* Background Aura */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#0ea5e9]/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+        
+        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-6 lg:px-10">
+          <nav className="flex items-center gap-2 text-[11px] text-[#6B6B6B] mb-6">
             <Link href={`/${locale}`} className="hover:text-[#0ea5e9]">Accueil</Link>
             <ChevronRight size={12} />
             <Link href={`/${locale}/shop`} className="hover:text-[#0ea5e9]">Boutique</Link>
             <ChevronRight size={12} />
-            <span className="text-white">{category.label}</span>
+            <span className="text-[#1A1A1A] font-medium">{category.label}</span>
           </nav>
 
-          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#38bdf8]">
+          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9]">
             Collection
           </span>
-          <h1 className="heading-font text-white text-5xl lg:text-7xl mt-3 tracking-wide">
+          <h1 className="heading-font text-[#1A1A1A] text-5xl lg:text-7xl mt-3 tracking-wide">
             {category.label}
           </h1>
-          <p className="mt-4 text-white/70 text-[14px] max-w-md">
+          <p className="mt-4 text-[#6B6B6B] text-[14px] max-w-md">
             {products.length} fragrances · Valentino · YSL · Armani
           </p>
         </div>
@@ -127,11 +140,3 @@ export default async function CategoryPage({
 }
 
 
-export async function generateMetadata({ params }: { params: Promise<Params> }) {
-  const { gender } = await params;
-  const cat = getCategoryBySlug(gender);
-  return {
-    title: cat ? `${cat.label} | Nouamane Parfums` : 'Nouamane Parfums',
-    description: cat?.description || '',
-  };
-}

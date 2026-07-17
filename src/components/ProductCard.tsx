@@ -20,7 +20,7 @@ export default function ProductCard({ product, showRating = true, onQuickView }:
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
   const isBestseller = product.tags.includes('bestseller');
-  const isNew = product.tags.includes('new-arrival');
+  const isNew = product.tags.includes('new-arrival') && product.subcategory !== 'coffrets';
   const isDiscounted = !!product.originalPrice && product.originalPrice > product.price;
 
   const handleAddToCart = (e: React.MouseEvent) => {

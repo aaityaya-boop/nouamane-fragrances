@@ -14,10 +14,43 @@ import CookieConsent from "@/components/CookieConsent";
 import { PreferencesProvider } from "@/context/PreferencesContext";
 
 export const metadata: Metadata = {
-  title: "Nouamane Parfums | Valentino · YSL · Armani",
-  description:
-    "Revendeur officiel des parfums Valentino, Yves Saint Laurent et Emporio Armani au Maroc. 100% authentiques. Livraison avec 35Dh en 24-48h. Paiement à la livraison.",
-  icons: { icon: "/favicon.ico" },
+  metadataBase: new URL('https://nayparfum.ma'),
+  title: {
+    template: "%s | NAY Parfums",
+    default: "NAY Parfums - L'Authenticité & L'Élégance de la Parfumerie Orientale",
+  },
+  description: "Découvrez notre collection exclusive de parfums orientaux. L'authenticité et l'élégance à travers des fragrances uniques.",
+  keywords: ["parfum", "parfum oriental", "fragrance", "luxe", "maroc", "oud", "musc"],
+  authors: [{ name: "NAY Parfums" }],
+  creator: "NAY Parfums",
+  publisher: "NAY Parfums",
+  alternates: {
+    canonical: "https://nayparfum.ma",
+  },
+  openGraph: {
+    type: "website",
+    locale: "fr_MA",
+    url: "https://nayparfum.ma",
+    title: "NAY Parfums | Parfumerie de Luxe au Maroc",
+    description: "Découvrez notre collection de parfums de luxe. Revendeur officiel des grandes marques au Maroc. 100% authentiques.",
+    siteName: "NAY Parfums"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NAY Parfums | Parfumerie de Luxe au Maroc",
+    description: "Découvrez notre collection de parfums de luxe. Revendeur officiel au Maroc."
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default async function LocaleLayout({
@@ -45,9 +78,9 @@ export default async function LocaleLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "Nouamane Parfums",
-              url: "https://nouamane-fr.vercel.app",
-              logo: "https://nouamane-fr.vercel.app/favicon.ico",
+              name: "NAY Parfums",
+              url: "https://nayparfum.ma",
+              logo: "https://nayparfum.ma/icon.png",
               contactPoint: {
                 "@type": "ContactPoint",
                 telephone: "+212 5 35 63 42 18",

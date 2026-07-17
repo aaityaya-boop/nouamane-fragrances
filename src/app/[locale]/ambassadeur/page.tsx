@@ -13,7 +13,7 @@ export default function AmbassadeurPage() {
           <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] mb-4 block">
             Programme Affiliation
           </span>
-          <h1 className="heading-font text-4xl lg:text-6xl mb-6">Devenez Ambassadeur Nouamane</h1>
+          <h1 className="heading-font text-4xl lg:text-6xl mb-6">Devenez Ambassadeur NAY</h1>
           <p className="text-[#6B6B6B] mb-12 text-lg">
             Rejoignez notre réseau exclusif, partagez votre passion pour la haute parfumerie avec votre communauté, et soyez récompensé pour chaque vente générée.
           </p>

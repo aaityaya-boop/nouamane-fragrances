@@ -18,11 +18,12 @@ export default function VitrinePage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [bestsellersSlug, setBestsellersSlug] = useState<string[]>([]);
   const [seasonalSlug, setSeasonalSlug] = useState<string[]>([]);
+  const [latestSlug, setLatestSlug] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
-  const [activeTab, setActiveTab] = useState<'bestsellers' | 'seasonal'>('bestsellers');
+  const [activeTab, setActiveTab] = useState<'bestsellers' | 'seasonal' | 'latest'>('bestsellers');
 
   useEffect(() => {
     Promise.all([
@@ -33,16 +34,18 @@ export default function VitrinePage() {
       try {
         setBestsellersSlug(JSON.parse(config.featuredBestsellers || '[]'));
         setSeasonalSlug(JSON.parse(config.featuredSeasonal || '[]'));
+        setLatestSlug(JSON.parse(config.featuredLatest || '[]'));
       } catch {
         setBestsellersSlug([]);
         setSeasonalSlug([]);
+        setLatestSlug([]);
       }
       setIsLoading(false);
     }).catch(() => setIsLoading(false));
   }, []);
 
-  const currentSlugs = activeTab === 'bestsellers' ? bestsellersSlug : seasonalSlug;
-  const setCurrentSlugs = activeTab === 'bestsellers' ? setBestsellersSlug : setSeasonalSlug;
+  const currentSlugs = activeTab === 'bestsellers' ? bestsellersSlug : activeTab === 'seasonal' ? seasonalSlug : latestSlug;
+  const setCurrentSlugs = activeTab === 'bestsellers' ? setBestsellersSlug : activeTab === 'seasonal' ? setSeasonalSlug : setLatestSlug;
 
   const toggleProduct = (slug: string) => {
     setCurrentSlugs(prev =>
@@ -72,6 +75,7 @@ export default function VitrinePage() {
         body: JSON.stringify({
           featuredBestsellers: JSON.stringify(bestsellersSlug),
           featuredSeasonal: JSON.stringify(seasonalSlug),
+          featuredLatest: JSON.stringify(latestSlug),
         }),
       });
       if (res.ok) {
@@ -181,6 +185,18 @@ export default function VitrinePage() {
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles size={16} className={activeTab === 'seasonal' ? 'text-[#0ea5e9]' : ''} />
                   Tendances
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab('latest')}
+                className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13px] font-bold transition-colors ${activeTab === 'latest' ? 'text-[#1A1A1A]' : 'text-[#9A9A9A] hover:text-[#1A1A1A]'}`}
+              >
+                {activeTab === 'latest' && (
+                  <motion.div layoutId="activeTab" className="absolute inset-0 bg-white shadow-sm rounded-xl border border-black/5" />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles size={16} className={activeTab === 'latest' ? 'text-[#10b981]' : ''} />
+                  Dernières Sorties
                 </span>
               </button>
             </div>

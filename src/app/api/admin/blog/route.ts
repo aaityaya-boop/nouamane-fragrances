@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         excerpt: data.excerpt,
         content: data.content,
         coverImage: data.coverImage,
-        author: data.author || 'Nouamane',
+        author: data.author || 'NAY',
         status: data.status || 'draft',
         metaTitle: data.metaTitle || null,
         metaDescription: data.metaDescription || null,

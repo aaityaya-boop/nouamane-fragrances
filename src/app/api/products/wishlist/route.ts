@@ -24,8 +24,18 @@ export async function GET(request: Request) {
       }
     });
 
-    // Sort products based on the order of slugArray
-    const sortedProducts = slugArray.map(slug => products.find(p => p.slug === slug)).filter(Boolean);
+    // Sort products based on the order of slugArray and parse JSON fields
+    const sortedProducts = slugArray.map(slug => {
+      const p = products.find(p => p.slug === slug);
+      if (!p) return null;
+      return {
+        ...p,
+        images: JSON.parse(p.images),
+        notes: JSON.parse(p.notes),
+        sizes: JSON.parse(p.sizes),
+        tags: JSON.parse(p.tags)
+      };
+    }).filter(Boolean);
 
     return NextResponse.json({ products: sortedProducts });
   } catch (error) {
