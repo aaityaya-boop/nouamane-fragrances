@@ -1,7 +1,8 @@
 import React from 'react';
-import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight, LineChart, Link as LinkIcon, Smartphone, Monitor } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
+import TrafficChart from './components/TrafficChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,8 +57,46 @@ export default async function AdminDashboard() {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
   };
 
+  // 7-Day Chart Data
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const pageViews7Days = await prisma.pageView.findMany({
+    where: { createdAt: { gte: sevenDaysAgo } },
+    select: { createdAt: true, visitorId: true }
+  });
+
+  const chartDataMap = new Map();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+    const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' });
+    chartDataMap.set(dateStr, { name: dateStr, views: 0, visitors: new Set() });
+  }
+
+  pageViews7Days.forEach((pv: any) => {
+    const dateStr = pv.createdAt.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' });
+    if (chartDataMap.has(dateStr)) {
+      const data = chartDataMap.get(dateStr);
+      data.views += 1;
+      data.visitors.add(pv.visitorId);
+    }
+  });
+
+  const chartData = Array.from(chartDataMap.values()).map(d => ({
+    name: d.name,
+    Vues: d.views,
+    Visiteurs: d.visitors.size
+  }));
+
+  // Top Referrers
+  const topReferrers = await prisma.pageView.groupBy({
+    by: ['referrer'],
+    _count: { id: true },
+    where: { createdAt: { gte: sevenDaysAgo }, referrer: { not: null } },
+    orderBy: { _count: { id: 'desc' } },
+    take: 5
+  });
+
   return (
-    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
+    <div className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto">
       
       {/* Header */}
       <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -189,13 +228,21 @@ export default async function AdminDashboard() {
               {recentPageViews.length === 0 ? (
                 <p className="px-6 py-8 text-[#666] text-center text-[13px]">Aucune activité récente.</p>
               ) : (
-                recentPageViews.map(view => (
-                  <div key={view.id} className="p-4 hover:bg-[#fafafa] flex items-center justify-between transition-colors">
+                recentPageViews.map((view: any) => (
+                  <div key={view.id} className="p-4 hover:bg-[#fafafa] flex items-center justify-between transition-colors group">
                     <div className="flex-1 min-w-0 pr-4">
-                      <p className="text-[13px] font-medium text-[#111] truncate">{view.pathname}</p>
-                      <p className="text-[11px] text-[#666] mt-0.5 truncate">{view.visitor.city || 'Inconnu'}, {view.visitor.country || 'Inconnu'}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        {view.device === 'Mobile' ? <Smartphone size={12} className="text-emerald-500" /> : <Monitor size={12} className="text-blue-500" />}
+                        <p className="text-[13px] font-semibold text-[#111] truncate">{view.pathname}</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-[#666]">
+                        <span className="flex items-center gap-1 bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
+                          <LinkIcon size={10} /> {view.referrer || 'Direct'}
+                        </span>
+                        <span className="truncate">{view.visitor.city || 'Inconnu'}, {view.visitor.country || 'Inconnu'}</span>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-[#888] font-medium whitespace-nowrap bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                    <div className="text-[11px] text-[#888] font-medium whitespace-nowrap bg-gray-50 px-2 py-1 rounded-md border border-gray-100 group-hover:bg-white group-hover:border-gray-200 transition-colors">
                       {new Date(view.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
@@ -236,6 +283,49 @@ export default async function AdminDashboard() {
             </div>
           </div>
 
+          {/* Top Sources (Referrers) */}
+          <div className="bg-white border border-[#eaeaea] rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-[#eaeaea] bg-white">
+              <h2 className="text-[15px] font-bold text-[#111] flex items-center gap-2 tracking-tight">
+                <LinkIcon size={16} className="text-emerald-500" /> 
+                Sources de Trafic
+              </h2>
+            </div>
+            <div className="divide-y divide-[#eaeaea] px-4 py-2">
+              {topReferrers.length === 0 ? (
+                <p className="p-4 text-center text-[#666] text-[13px]">Pas encore de sources trackées.</p>
+              ) : (
+                topReferrers.map((r, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 px-2 group">
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 text-[11px] font-bold text-[#999] group-hover:text-emerald-500 transition-colors">
+                        {i + 1}.
+                      </span>
+                      <p className="text-[13px] font-medium text-[#111]">
+                        {r.referrer}
+                      </p>
+                    </div>
+                    <span className="bg-emerald-50 text-emerald-600 py-1 px-2.5 rounded-md text-[11px] font-bold tracking-wide">
+                      {r._count.id} vues
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* 7 Days Chart Section */}
+      <div className="mt-8">
+        <div className="bg-white border border-[#eaeaea] rounded-2xl shadow-sm overflow-hidden p-6">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-[15px] font-bold text-[#111] flex items-center gap-2 tracking-tight">
+              <LineChart size={16} className="text-[#0ea5e9]" />
+              Trafic (7 Derniers Jours)
+            </h2>
+          </div>
+          <TrafficChart data={chartData} />
         </div>
       </div>
     </div>

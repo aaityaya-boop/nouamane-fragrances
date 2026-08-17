@@ -16,7 +16,7 @@ import {
   type Gender,
 } from '@/lib/products';
 import { useSearchParams } from 'next/navigation';
-import { SlidersHorizontal, X, Star, ChevronDown, Check } from 'lucide-react';
+import { SlidersHorizontal, X, Star, ChevronDown, Check, Search } from 'lucide-react';
 
 type SortKey = 'featured' | 'price-low' | 'price-high' | 'rating' | 'newest' | 'name';
 
@@ -69,11 +69,13 @@ function ShopCatalogInner({
   const initialSub = searchParams?.get('sub') || 'all';
   const initialSort = searchParams?.get('sort') as SortKey || 'featured';
   const initialSpecial = searchParams?.get('special') || 'all';
+  const initialSeasonsStr = searchParams?.get('seasons');
+  const initialSeasons = initialSeasonsStr ? initialSeasonsStr.split(',') : [];
 
   const [brand, setBrand] = useState<string>('all');
   const [gender, setGender] = useState<string>(lockedGender || 'all');
   const [subcategory, setSubcategory] = useState<string>(lockedSubcategory || initialSub);
-  const [selectedSeasons, setSelectedSeasons] = useState<string[]>([]);
+  const [selectedSeasons, setSelectedSeasons] = useState<string[]>(initialSeasons);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -84,6 +86,7 @@ function ShopCatalogInner({
   const [filtersOpenMobile, setFiltersOpenMobile] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Sync state if URL changes (useful for navigation within the same page)
   useEffect(() => {
@@ -91,9 +94,17 @@ function ShopCatalogInner({
       const sub = searchParams.get('sub');
       const sort = searchParams.get('sort');
       const special = searchParams.get('special');
+      const seasonsStr = searchParams.get('seasons');
+      
       if (sub && sub !== subcategory && !lockedSubcategory) setSubcategory(sub);
       if (sort && sort !== sortBy) setSortBy(sort as SortKey);
       if (special && special !== specialFilter) setSpecialFilter(special);
+      if (seasonsStr) {
+        const seasons = seasonsStr.split(',');
+        if (seasons.join(',') !== selectedSeasons.join(',')) {
+          setSelectedSeasons(seasons);
+        }
+      }
       setCurrentPage(1); // Reset page on navigation
     }
   }, [searchParams]);
@@ -101,7 +112,7 @@ function ShopCatalogInner({
   // Reset page when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, specialFilter]);
+  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, specialFilter, searchQuery]);
 
   const toggleFrom = (list: string[], value: string): string[] =>
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -117,7 +128,14 @@ function ShopCatalogInner({
 
     if (subcategory !== 'all') list = list.filter((p) => p.subcategory === subcategory);
 
-
+    if (searchQuery.trim().length > 0) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((p) => 
+        p.name.toLowerCase().includes(q) || 
+        p.brand?.toLowerCase().includes(q) || 
+        p.brandLabel?.toLowerCase().includes(q)
+      );
+    }
 
     list = list.filter(
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
@@ -161,7 +179,7 @@ function ShopCatalogInner({
         });
     }
     return list;
-  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons, specialFilter]);
+  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons, specialFilter, searchQuery]);
 
   const clearFilters = () => {
     if (!lockedBrand) setBrand('all');
@@ -193,8 +211,8 @@ function ShopCatalogInner({
       <div className="w-full">
         {/* --- Products --- */}
         <div>
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#e0ddd4]">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-[#e0ddd4] gap-4">
+            <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
               <button
                 onClick={() => setFiltersOpenMobile(true)}
                 className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors"
@@ -206,7 +224,21 @@ function ShopCatalogInner({
                   </span>
                 )}
               </button>
-              <div className="text-[11px] font-medium tracking-widest uppercase text-[#9A9A9A] hidden sm:block">
+              
+              <div className="hidden sm:block w-px h-6 bg-[#e0ddd4]"></div>
+              
+              <div className="relative flex-1 min-w-[200px] max-w-md">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A9A]" />
+                <input 
+                  type="text"
+                  placeholder="Rechercher dans la boutique..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-full py-2 pl-10 pr-4 text-[13px] text-[#1A1A1A] focus:outline-none focus:border-[#0ea5e9] transition-colors placeholder:text-[#9A9A9A]"
+                />
+              </div>
+
+              <div className="text-[11px] font-medium tracking-widest uppercase text-[#9A9A9A] hidden lg:block">
                 {filtered.length} produit{filtered.length > 1 ? 's' : ''}
               </div>
             </div>

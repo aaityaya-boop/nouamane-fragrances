@@ -8,14 +8,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const brands = await prisma.brand.findMany();
 
   const productUrls = products.map((product) => ({
-    url: `${baseUrl}/product/${product.slug}`,
+    url: `${baseUrl}/fr/product/${product.slug}`,
     lastModified: product.updatedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
   const brandUrls = brands.map((brand) => ({
-    url: `${baseUrl}/brands/${brand.slug}`,
+    url: `${baseUrl}/fr/brands/${brand.slug}`,
     lastModified: brand.updatedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
@@ -23,16 +23,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: baseUrl,
+      url: `${baseUrl}/fr`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: `${baseUrl}/shop`,
+      url: `${baseUrl}/fr/shop`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/fr/master-copier`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/fr/coffrets`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     ...productUrls,
     ...brandUrls,

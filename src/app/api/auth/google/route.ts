@@ -76,9 +76,16 @@ export async function POST(request: Request) {
       .setExpirationTime('30d')
       .sign(JWT_SECRET);
 
+    let wishlist = [];
+    try {
+      if (customer.wishlist) {
+        wishlist = JSON.parse(customer.wishlist);
+      }
+    } catch (e) {}
+
     const response = NextResponse.json({ 
       success: true, 
-      customer: { id: customer.id, name: customer.name, email: customer.email }
+      customer: { id: customer.id, name: customer.name, email: customer.email, wishlist }
     });
     
     // Set cookie

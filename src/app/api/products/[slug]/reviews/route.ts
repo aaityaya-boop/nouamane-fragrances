@@ -7,6 +7,7 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
+    const decodedSlug = decodeURIComponent(slug);
     const body = await request.json();
 
     const { author, city, rating, title, comment } = body;
@@ -17,7 +18,7 @@ export async function POST(
 
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { slug }
+      where: { slug: decodedSlug }
     });
 
     if (!product) {
@@ -27,7 +28,7 @@ export async function POST(
     // Create review
     await prisma.review.create({
       data: {
-        productSlug: slug,
+        productSlug: decodedSlug,
         author,
         city: city || 'Maroc',
         rating: parseInt(rating, 10),
@@ -38,7 +39,7 @@ export async function POST(
 
     // Update product rating and review count
     const allReviews = await prisma.review.findMany({
-      where: { productSlug: slug }
+      where: { productSlug: decodedSlug }
     });
 
     const newReviewCount = allReviews.length;
@@ -47,7 +48,7 @@ export async function POST(
       : 0;
 
     await prisma.product.update({
-      where: { slug },
+      where: { slug: decodedSlug },
       data: {
         rating: Math.round(newRating * 10) / 10, // Round to 1 decimal place
         reviewCount: newReviewCount

@@ -55,7 +55,6 @@ export default function Footer() {
             </p>
 
             <div className="mt-8 space-y-2 text-[13px] text-[#1A1A1A]/70">
-              <div>📍 {dict.footer.address}</div>
               <div>✆ {config.contactPhone || '+212 5 22 45 67 89'}</div>
               <div>✉ {config.contactEmail || 'contact@nouamane-parfums.ma'}</div>
             </div>

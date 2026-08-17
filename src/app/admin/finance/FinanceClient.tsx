@@ -451,7 +451,7 @@ export default function FinanceClient({ orders, visitors, viewsBySlug, products 
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5">
-              {winningProducts.slice(0, 20).map((product, idx) => (
+              {winningProducts.map((product, idx) => (
                 <tr key={product.id} className="hover:bg-[#fafaf7] transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">

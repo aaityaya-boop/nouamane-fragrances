@@ -39,8 +39,8 @@ import {
 } from '@/lib/products';
 
 const fadeUpProps: any = {
-  initial: { opacity: 0, y: 30, filter: 'blur(5px)' },
-  whileInView: { opacity: 1, y: 0, filter: 'blur(0px)' },
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-100px' },
   transition: { duration: 0.8, ease: 'easeOut' }
 };
@@ -54,15 +54,15 @@ const staggerContainer: any = {
 };
 
 const staggerItem: any = {
-  hidden: { opacity: 0, y: 30, filter: 'blur(5px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } }
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
 };
 
 export default function HomePageClient({ products, config, latestReviews = [] }: { products: Product[], config?: any, latestReviews?: any[] }) {
   const { scrollY } = useScroll();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
-  const newArrivals = [...products].sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()).slice(0, 4);
+  const newArrivalsDefault = [...products].sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()).slice(0, 4);
 
 
 
@@ -100,7 +100,15 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
   const bestsellersDisplay = (() => {
     try {
       const slugs: string[] = JSON.parse(homepageConfig?.featuredBestsellers || '[]');
-      if (slugs.length >= 1) return slugs.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+      if (slugs.length >= 1) {
+        const configured = slugs.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+        if (configured.length < 4) {
+          const fallback = products.filter(p => p.tags.includes('bestseller') && !configured.find(c => c.id === p.id));
+          const padding = fallback.length >= (4 - configured.length) ? fallback : products.filter(p => !configured.find(c => c.id === p.id));
+          return [...configured, ...padding.slice(0, 4 - configured.length)];
+        }
+        return configured;
+      }
     } catch {}
     const tagged = products.filter(p => p.tags.includes('bestseller'));
     return tagged.length >= 4 ? tagged.slice(0, 8) : products.slice(0, 8);
@@ -109,10 +117,33 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
   const seasonalTrends = (() => {
     try {
       const slugs: string[] = JSON.parse(homepageConfig?.featuredSeasonal || '[]');
-      if (slugs.length >= 1) return slugs.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+      if (slugs.length >= 1) {
+        const configured = slugs.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+        if (configured.length < 4) {
+          const fallback = products.filter(p => (p.tags.includes('seasonal-fall') || p.tags.includes('seasonal-spring')) && !configured.find(c => c.id === p.id));
+          const padding = fallback.length >= (4 - configured.length) ? fallback : products.filter(p => p.gender === 'women' && !configured.find(c => c.id === p.id));
+          return [...configured, ...padding.slice(0, 4 - configured.length)];
+        }
+        return configured;
+      }
     } catch {}
     const tagged = products.filter(p => p.tags.includes('seasonal-fall') || p.tags.includes('seasonal-spring'));
     return tagged.length >= 4 ? tagged.slice(0, 8) : products.filter(p => p.gender === 'women').slice(0, 8);
+  })();
+
+  const newArrivals = (() => {
+    try {
+      const slugs: string[] = JSON.parse(homepageConfig?.featuredLatest || '[]');
+      if (slugs.length >= 1) {
+        const configured = slugs.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+        if (configured.length < 4) {
+          const padding = newArrivalsDefault.filter(p => !configured.find(c => c.id === p.id));
+          return [...configured, ...padding.slice(0, 4 - configured.length)];
+        }
+        return configured;
+      }
+    } catch {}
+    return newArrivalsDefault;
   })();
 
   return (
@@ -335,7 +366,7 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
             </div>
             <div className="flex flex-col items-start lg:items-end gap-4">
               <p className="text-[#1A1A1A]/70 text-[14px] max-w-xs text-left lg:text-right font-medium">{seasonalSubtitle}</p>
-              <Link href={`/${locale}/shop`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
+              <Link href={`/${locale}/shop?seasons=${isFallWinter ? 'Automne,Hiver' : 'Printemps,Été'}`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
                 Explorer la sélection <ArrowRight size={14} />
               </Link>
             </div>
@@ -574,8 +605,8 @@ function SectionHeader({
 }) {
   return (
     <motion.div 
-      initial={{ opacity: 0, x: -20, filter: 'blur(3px)' }}
-      whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12"

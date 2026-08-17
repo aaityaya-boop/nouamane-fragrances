@@ -94,7 +94,7 @@ export default function OrdersPage() {
   );
 
   return (
-    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto relative">
+    <div className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto relative">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>

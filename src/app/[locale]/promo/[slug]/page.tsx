@@ -9,9 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function PromoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   
   const landingPage = await prisma.landingPage.findUnique({
-    where: { slug }
+    where: { slug: decodedSlug }
   });
 
   const cookieStore = await cookies();

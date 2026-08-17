@@ -69,7 +69,12 @@ export async function PUT(request: Request) {
       }
     });
 
-    return NextResponse.json({ success: true, customer: updatedCustomer });
+    const responseCustomer = {
+      ...updatedCustomer,
+      wishlist: wishlist
+    };
+
+    return NextResponse.json({ success: true, customer: responseCustomer });
   } catch (error) {
     console.error('Wishlist update error:', error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });

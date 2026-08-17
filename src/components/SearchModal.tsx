@@ -105,37 +105,44 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-14"
+                  className="flex flex-col gap-3 max-w-2xl"
                 >
                   {results.map((product) => (
                     <Link
                       key={product.id}
                       href={`/${locale}/product/${product.slug}`}
                       onClick={onClose}
-                      className="group flex flex-col gap-4"
+                      className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-[#f8fafc] border border-transparent hover:border-[#e0ddd4] transition-all duration-300"
                     >
-                      <div className="relative w-full aspect-[4/5] bg-[#f8fafc] rounded-2xl overflow-hidden border border-[#e0ddd4] shadow-sm">
+                      {/* Mini Thumbnail */}
+                      <div className="relative w-16 h-20 sm:w-20 sm:h-24 bg-white rounded-lg overflow-hidden border border-[#e0ddd4] shadow-sm flex-shrink-0">
                         {product.images[0] && (
                           <Image
                             src={product.images[0]}
                             alt={product.name}
                             fill
-                            sizes="(max-width: 768px) 50vw, 25vw"
+                            sizes="80px"
                             className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                           />
                         )}
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
                       </div>
-                      <div>
-                        <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] mb-2">
+                      
+                      {/* Mini Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase text-[#0ea5e9] mb-1 truncate">
                           {product.brandLabel || product.brand}
                         </div>
-                        <h3 className="heading-font text-2xl lg:text-3xl text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors line-clamp-2 leading-tight">
+                        <h3 className="heading-font text-lg sm:text-xl text-[#1A1A1A] group-hover:text-[#0ea5e9] transition-colors truncate">
                           {product.name}
                         </h3>
-                        <div className="text-[14px] font-semibold text-[#6B6B6B] mt-2">
+                        <div className="text-[13px] font-medium text-[#6B6B6B] mt-1">
                           {product.price} MAD
                         </div>
+                      </div>
+
+                      {/* Arrow indicator */}
+                      <div className="hidden sm:flex w-8 h-8 rounded-full border border-[#e0ddd4] items-center justify-center text-[#9A9A9A] group-hover:bg-[#0ea5e9] group-hover:text-white group-hover:border-[#0ea5e9] transition-all flex-shrink-0">
+                        <ArrowRight size={14} />
                       </div>
                     </Link>
                   ))}

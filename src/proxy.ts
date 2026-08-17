@@ -12,6 +12,32 @@ const JWT_SECRET = new TextEncoder().encode(
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // --- 0. WAF (Web Application Firewall) ---
+  const userAgent = request.headers.get('user-agent') || '';
+  const badBots = ['curl', 'wget', 'python-requests', 'scrapy', 'postmanruntime', 'go-http-client', 'java'];
+  if (badBots.some(bot => userAgent.toLowerCase().includes(bot))) {
+    return new NextResponse(
+      JSON.stringify({ success: false, message: 'Access denied: Security Firewall Blocked Request' }),
+      { status: 403, headers: { 'content-type': 'application/json' } }
+    );
+  }
+
+  const fullUrl = request.url.toLowerCase();
+  const sqlKeywords = ['select%20', 'union%20', 'insert%20', 'delete%20', 'update%20', 'drop%20', '1=1', '%27', 'script%3e'];
+  if (sqlKeywords.some(keyword => fullUrl.includes(keyword))) {
+    return new NextResponse(
+      JSON.stringify({ success: false, message: 'Access denied: Malicious Payload' }),
+      { status: 403, headers: { 'content-type': 'application/json' } }
+    );
+  }
+
+  if (pathname.includes('.env') || pathname.includes('.git')) {
+    return new NextResponse(
+      JSON.stringify({ success: false, message: 'Access denied' }),
+      { status: 403, headers: { 'content-type': 'application/json' } }
+    );
+  }
+
   // --- 1. ADMIN SECURITY ---
   const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin/login';
   const isAdminApiRoute = pathname.startsWith('/api/admin') && pathname !== '/api/admin/login';

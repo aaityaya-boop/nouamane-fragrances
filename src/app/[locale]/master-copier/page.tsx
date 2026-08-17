@@ -1,34 +1,22 @@
 import React, { Suspense } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import ShopCatalog from '@/components/ShopCatalog';
 import prisma from '@/lib/prisma';
-import { Product, MAIN_CATEGORIES } from '@/lib/products';
+import { Product } from '@/lib/products';
 import { ShieldCheck, Truck, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Boutique Parfums & Testeurs Originaux Maroc | NAY Parfums',
-  description: 'Découvrez toute la collection de parfums de grandes marques et testeurs 100% originaux au Maroc. Filtrage par marque et prix. عطور أصلية',
-  openGraph: {
-    title: 'Boutique Parfums & Testeurs Originaux Maroc | NAY Parfums',
-    description: 'Découvrez toute la collection de parfums de grandes marques et testeurs 100% originaux au Maroc. Filtrage par marque et prix. عطور أصلية',
-    url: 'https://nayparfum.ma/shop',
-  },
-  alternates: {
-    canonical: 'https://nayparfum.ma/shop',
-  },
+  title: 'Parfums Master Copier | NAY Parfums',
+  description: 'Découvrez notre collection exclusive de parfums d\'inspiration Master Copier. L\'excellence olfactive accessible à tous.',
 };
 
 export const revalidate = 3600;
 
-export default async function ShopPage() {
+export default async function MasterCopierPage() {
   const dbProducts = await prisma.product.findMany({
-    where: {
-      subcategory: { notIn: ['master-copier', 'coffrets'] }
-    }
+    where: { subcategory: 'master-copier' }
   });
   const dbBrands = await prisma.brand.findMany();
   
@@ -81,22 +69,22 @@ export default async function ShopPage() {
       <section className="relative pt-32 pb-12 lg:pt-48 lg:pb-16">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 text-center relative z-10 flex flex-col items-center">
           <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-4">
-            La Boutique
+            Boutique Exclusive
           </span>
           <h1 className="heading-font text-5xl sm:text-6xl lg:text-[90px] leading-none tracking-tight mb-6">
-            <span className="liquid-glace-text">L'EXCELLENCE</span>
+            <span className="liquid-glace-text">PARFUMS</span>
             <br />
-            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Olfactive</span>
+            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Master Copier</span>
           </h1>
           <p className="mt-2 text-[13px] md:text-[15px] text-[#555] font-light max-w-xl leading-[2] tracking-widest uppercase mb-10">
-            Découvrez notre collection exclusive de <span className="font-semibold text-[#111]">testeurs 100% authentiques</span>. Le luxe des grandes maisons, désormais accessible.
+            Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums d'inspiration</span>. L'excellence olfactive et la longue tenue, rendues accessibles.
           </p>
 
           {/* Minimalist Trust Signals */}
           <div className="flex flex-wrap justify-center gap-6 lg:gap-12 mt-4">
             <div className="flex items-center gap-2">
               <ShieldCheck size={18} className="text-[#0ea5e9]" />
-              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#111]">100% Authentique</span>
+              <span className="text-[11px] font-semibold tracking-widest uppercase text-[#111]">Qualité Premium</span>
             </div>
             <div className="flex items-center gap-2">
               <Truck size={18} className="text-[#0ea5e9]" />
@@ -113,7 +101,7 @@ export default async function ShopPage() {
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} />
+          <ShopCatalog products={products} brands={dbBrands} lockedSubcategory="master-copier" />
         </Suspense>
       </section>
 

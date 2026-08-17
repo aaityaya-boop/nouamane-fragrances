@@ -51,7 +51,10 @@ export default async function CategoryPage({
   if (!category) notFound();
 
   const dbProducts = await prisma.product.findMany({
-    where: { gender: category.key }
+    where: { 
+      gender: category.key,
+      subcategory: { notIn: ['master-copier', 'coffrets'] }
+    }
   });
   
   const dbBrands = await prisma.brand.findMany();

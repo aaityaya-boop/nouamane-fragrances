@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -21,7 +21,10 @@ import {
   UserCheck,
   TrendingUp,
   Sparkles,
-  Gift
+  Gift,
+  Menu,
+  X,
+  Moon
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -30,6 +33,8 @@ const MENU_ITEMS = [
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} /> },
   { href: '/admin/products', label: 'Produits', icon: <PackageSearch size={18} /> },
   { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} /> },
+  { href: '/admin/parfums-arabes', label: 'Parfums Arabes', icon: <Moon size={18} /> },
+  { href: '/admin/master-copier', label: 'Master Copier', icon: <Sparkles size={18} /> },
   { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} /> },
   { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} /> },
   { href: '/admin/customers', label: 'Clients', icon: <Users size={18} /> },
@@ -39,6 +44,7 @@ const MARKETING_ITEMS = [
   { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} /> },
   { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} /> },
   { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} /> },
+  { href: '/admin/analytics', label: 'Audience', icon: <TrendingUp size={18} /> },
   { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={18} /> },
   { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} /> },
 ];
@@ -51,6 +57,7 @@ const SYSTEM_ITEMS = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   // Hide sidebar on login page
   if (pathname === '/admin/login') return null;
@@ -63,6 +70,7 @@ export default function AdminSidebar() {
         <Link
           key={item.href}
           href={item.href}
+          onClick={() => setIsOpen(false)}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative overflow-hidden ${
             isActive 
               ? 'bg-[#1e1e1e] text-white shadow-sm ring-1 ring-white/10' 
@@ -83,11 +91,46 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-[260px] bg-[#0A0A0A] border-r border-[#1e1e1e] h-screen hidden lg:flex flex-col fixed left-0 top-0 z-40 text-gray-300">
-      
-      {/* Brand Header */}
-      <div className="p-6 pb-4">
+    <>
+      {/* Mobile Top Bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0A0A0A] text-white flex items-center justify-between px-4 z-40 border-b border-[#1e1e1e]">
         <Link href="/admin" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-500/20">
+            <div
+              className="w-5 h-5 bg-white"
+              style={{
+                maskImage: 'url("/images/nay/Artboard%202.png")',
+                WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+              }}
+            />
+          </div>
+          <div className="text-[15px] font-bold text-white tracking-wide">NAY Admin</div>
+        </Link>
+        <button onClick={() => setIsOpen(true)} className="p-2 -mr-2">
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`w-[260px] bg-[#0A0A0A] border-r border-[#1e1e1e] h-screen flex flex-col fixed left-0 top-0 z-50 text-gray-300 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        
+        {/* Brand Header */}
+        <div className="p-6 pb-4 flex justify-between items-center">
+          <Link href="/admin" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-500/20">
             <div
               className="w-5 h-5 bg-white"
@@ -157,6 +200,7 @@ export default function AdminSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }
 

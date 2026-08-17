@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function WhatsAppButton() {
-  const [url, setUrl] = useState('https://wa.me/212694186787');
+  const [url, setUrl] = useState('https://api.whatsapp.com/send?phone=212663380011');
   const [isHovered, setIsHovered] = useState(false);
+  const pathname = usePathname();
+  const isProductPage = pathname?.includes('/product/');
 
   useEffect(() => {
     fetch('/api/settings')
@@ -20,7 +23,6 @@ export default function WhatsAppButton() {
 
   const getSmartUrl = () => {
     if (typeof window === 'undefined') return url;
-    const isProductPage = window.location.pathname.includes('/product/');
     let text = "Bonjour, j'ai besoin de conseils.";
     if (isProductPage) {
       text = `Bonjour, je suis intéressé(e) par ce parfum : ${window.location.href}`;
@@ -28,6 +30,8 @@ export default function WhatsAppButton() {
     const baseUrl = url.includes('?') ? url : `${url}?`;
     return `${baseUrl}&text=${encodeURIComponent(text)}`;
   };
+
+  if (isProductPage) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center justify-end">

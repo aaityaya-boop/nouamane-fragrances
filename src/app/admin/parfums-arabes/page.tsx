@@ -1,12 +1,13 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 
-export default function AdminProductsPage() {
+export default function AdminArabicPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [standardProducts, setStandardProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
     
@@ -43,7 +44,9 @@ export default function AdminProductsPage() {
         notes: typeof p.notes === 'string' ? JSON.parse(p.notes) : p.notes,
         tags: typeof p.tags === 'string' ? JSON.parse(p.tags) : p.tags,
       }));
-      setProducts(parsedData.filter((p: any) => p.subcategory !== 'coffrets' && p.subcategory !== 'master-copier' && p.subcategory !== 'arabic'));
+      
+      setProducts(parsedData.filter((p: any) => p.subcategory === 'arabic'));
+      setStandardProducts(parsedData.filter((p: any) => p.subcategory !== 'arabic'));
     } catch (error) {
       console.error(error);
     } finally {
@@ -57,7 +60,7 @@ export default function AdminProductsPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
+    if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer ce produit ?')) return;
     
     try {
       await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
@@ -82,19 +85,19 @@ export default function AdminProductsPage() {
   };
 
   const handleGenerateSKUs = async () => {
-    if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les produits qui n\'en ont pas ?')) return;
+    if (!confirm('Voulez-vous gÃ©nÃ©rer des numÃ©ros de sÃ©rie (SKU) pour tous les produits qui n\'en ont pas ?')) return;
     
     setIsLoading(true);
     try {
       const res = await fetch('/api/admin/products/generate-skus', { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        alert(`${data.updatedCount} SKU(s) générés avec succès.`);
+        alert(`${data.updatedCount} SKU(s) gÃ©nÃ©rÃ©s avec succÃ¨s.`);
         fetchProducts();
       }
     } catch (error) {
       console.error(error);
-      alert('Erreur lors de la génération des SKUs');
+      alert('Erreur lors de la gÃ©nÃ©ration des SKUs');
     } finally {
       setIsLoading(false);
     }
@@ -109,8 +112,8 @@ export default function AdminProductsPage() {
       brand: 'valentino',
       brandLabel: 'Valentino',
       gender: 'women',
-      subcategory: 'floral',
-      subcategoryLabel: 'Floral',
+      subcategory: 'arabic',
+      subcategoryLabel: 'Parfums Arabes',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -165,7 +168,7 @@ export default function AdminProductsPage() {
       }
     } catch (error: any) {
       console.error('Failed to upload image', error);
-      alert(`Erreur lors du téléchargement de l'image: ${error.message}`);
+      alert(`Erreur lors du tÃ©lÃ©chargement de l'image: ${error.message}`);
     } finally {
       setIsUploading(false);
       e.target.value = ''; // Reset input to allow re-uploading the same file
@@ -227,25 +230,23 @@ export default function AdminProductsPage() {
 
 
   return (
-    <div className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto">
+    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Produits</h1>
-          <p className="text-[14px] text-[#666]">Gérez votre catalogue de parfums ({products.length} au total).</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Arabes</h1>
+          <p className="text-[14px] text-[#666]">CrÃ©ez et gÃ©rez vos packs spÃ©ciaux.</p>
         </div>
         
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3">
           <button 
-            onClick={handleGenerateSKUs}
-            className="flex items-center gap-2 bg-white border border-[#eaeaea] text-[#111] px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-50 transition-all shadow-sm"
-          >
-            Générer SKUs
-          </button>
-          <button 
-            onClick={openAddModal}
+            onClick={() => {
+              setEditingProduct(null);
+              setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Arabes', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
+              setIsModalOpen(true);
+            }}
             className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
           >
-            <Plus size={16} /> Ajouter un produit
+            <Plus size={16} /> Nouveau Parfum Arabe
           </button>
         </div>
       </div>
@@ -281,7 +282,7 @@ export default function AdminProductsPage() {
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvé.</td>
+                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvÃ©.</td>
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
@@ -294,7 +295,7 @@ export default function AdminProductsPage() {
                         <div className="font-semibold text-[13px] text-[#111]">{p.name}</div>
                         <input 
                           type="text" 
-                          placeholder="SKU / Réf"
+                          placeholder="SKU / RÃ©f"
                           className="text-[11px] font-mono text-[#666] bg-transparent border-b border-transparent hover:border-[#eaeaea] focus:border-[#0ea5e9] focus:outline-none transition-colors w-24 px-1 py-0.5 mt-0.5 block"
                           defaultValue={p.sku || ''}
                           onBlur={(e) => {
@@ -371,18 +372,18 @@ export default function AdminProductsPage() {
             <div className="bg-white border-b border-[#e0ddd4] px-8 py-5 flex items-center justify-between sticky top-0 z-20">
               <div>
                 <h2 className="heading-font text-2xl text-[#1A1A1A]">
-                  {editingProduct ? 'Modifier le produit' : 'Nouveau parfum'}
-                </h2>
+    {editingProduct ? 'Modifier le Parfum Arabe' : 'Nouveau Parfum Arabe'}
+  </h2>
                 <p className="text-[#9A9A9A] text-[13px] mt-1">
-                  {editingProduct ? 'Mettez à jour les fiches produits et les pyramides olfactives.' : 'Ajoutez un nouveau parfum au catalogue.'}
-                </p>
+    GÃ©rez la grande image de couverture et les dÃ©tails de votre coffret cadeau.
+  </p>
               </div>
               <div className="flex items-center gap-3">
                 <button onClick={() => setIsModalOpen(false)} className="px-5 py-2 text-[13px] font-medium text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors">
                   Annuler
                 </button>
                 <button onClick={handleSave} className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#0ea5e9] transition-all shadow-md">
-                  {editingProduct ? 'Enregistrer' : 'Créer le produit'}
+                  {editingProduct ? 'Enregistrer' : 'CrÃ©er le produit'}
                 </button>
               </div>
             </div>
@@ -391,9 +392,9 @@ export default function AdminProductsPage() {
             <div className="flex-1 overflow-y-auto p-8">
               <form onSubmit={handleSave} className="max-w-3xl mx-auto space-y-8">
                 
-                {/* SECTION 1: Informations Générales */}
+                {/* SECTION 1: Informations GÃ©nÃ©rales */}
                 <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Informations Générales</h3>
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Informations GÃ©nÃ©rales</h3>
                   
                   <div className="grid grid-cols-2 gap-6">
                     <div>
@@ -407,7 +408,7 @@ export default function AdminProductsPage() {
                         value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">SKU / Numéro de Série</label>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">SKU / NumÃ©ro de SÃ©rie</label>
                       <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-mono"
                         value={formData.sku || ''} onChange={e => setFormData({...formData, sku: e.target.value})} 
                         placeholder="Ex: REF-VAL-001" />
@@ -417,7 +418,7 @@ export default function AdminProductsPage() {
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Tagline (L'Accroche / Slogan)</label>
                       <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.tagline} onChange={e => setFormData({...formData, tagline: e.target.value})} 
-                        placeholder="Ex: Le sillage des légendes." />
+                        placeholder="Ex: Le sillage des lÃ©gendes." />
                     </div>
                     
                     <div>
@@ -431,7 +432,7 @@ export default function AdminProductsPage() {
                             brandLabel: selectedBrand ? selectedBrand.label : ''
                           });
                         }}>
-                        <option value="">Sélectionnez une marque</option>
+                        <option value="">SÃ©lectionnez une marque</option>
                         {brands.map(b => (
                           <option key={b.id} value={b.slug}>{b.name}</option>
                         ))}
@@ -456,27 +457,12 @@ export default function AdminProductsPage() {
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
-                      <select className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
-                        value={formData.subcategory} 
-                        onChange={e => {
-                          const labelMap: any = {
-                            floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
-                            aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
-                            'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées',
-                            'master-copier': 'Master Copier Parfum'
-                          };
-                          setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
-                        }}>
-                        <option value="floral">Floral</option>
-                        <option value="oriental">Oriental</option>
-                        <option value="fresh">Frais</option>
-                        <option value="woody">Boisé</option>
-                        <option value="aromatic">Aromatique</option>
-                        <option value="master-copier">Master Copier Parfum</option>
-                      </select>
+                      <div className="w-full bg-[#eaeaea] border border-[#e0ddd4] rounded-xl p-3 text-[14px] text-[#666] cursor-not-allowed">
+                        Parfums Arabes
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison IdÃ©ale</label>
                       <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.perfectSeason || ''} onChange={e => setFormData({...formData, perfectSeason: e.target.value})} 
                         placeholder="Ex: Automne, Hiver" />
@@ -484,23 +470,23 @@ export default function AdminProductsPage() {
 
                     <div className="col-span-2 grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
                       <div>
-                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Tête</label>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de TÃªte</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="Séparées par des virgules..."
+                          placeholder="SÃ©parÃ©es par des virgules..."
                           value={(formData.notes?.top || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, top: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Cœur</label>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de CÅ“ur</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="Séparées par des virgules..."
+                          placeholder="SÃ©parÃ©es par des virgules..."
                           value={(formData.notes?.heart || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, heart: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Fond</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="Séparées par des virgules..."
+                          placeholder="SÃ©parÃ©es par des virgules..."
                           value={(formData.notes?.base || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, base: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
@@ -510,7 +496,7 @@ export default function AdminProductsPage() {
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">L'Histoire du Parfum (Longue Description)</label>
                       <textarea className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-4 text-[14px] leading-relaxed min-h-[200px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.longDescription} onChange={e => setFormData({...formData, longDescription: e.target.value})} 
-                        placeholder="Rédigez l'histoire et les émotions de ce parfum..." />
+                        placeholder="RÃ©digez l'histoire et les Ã©motions de ce parfum..." />
                     </div>
                   </div>
                 </div>
@@ -523,26 +509,19 @@ export default function AdminProductsPage() {
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Prix de Vente (MAD)</label>
                       <input required type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-semibold"
-                        value={formData.price} onChange={e => {
-    const newPrice = Number(e.target.value);
-    const newSizes = formData.sizes ? [...formData.sizes] : [];
-    if (newSizes.length > 0) {
-      newSizes[0].price = newPrice;
-    }
-    setFormData({...formData, price: newPrice, sizes: newSizes});
-  }} />
+                        value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} />
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Ancien Prix (Optionnel)</label>
                       <input type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-red-500 transition-all text-red-500 font-semibold"
                         value={formData.originalPrice || ''} onChange={e => setFormData({...formData, originalPrice: e.target.value ? Number(e.target.value) : null})} 
-                        placeholder="Prix barré..." />
+                        placeholder="Prix barrÃ©..." />
                     </div>
                     
                     <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
                       <div>
-                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">État du Stock</h4>
-                        <p className="text-[11px] text-[#9A9A9A] mt-1">Désactivez pour afficher "Rupture de stock" sur la boutique.</p>
+                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">Ã‰tat du Stock</h4>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">DÃ©sactivez pour afficher "Rupture de stock" sur la boutique.</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" className="sr-only peer" checked={formData.inStock} onChange={e => setFormData({...formData, inStock: e.target.checked})} />
@@ -553,7 +532,7 @@ export default function AdminProductsPage() {
                     <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
                       <div>
                         <h4 className="text-[13px] font-bold text-[#1A1A1A]">Format Testeur</h4>
-                        <p className="text-[11px] text-[#9A9A9A] mt-1">Cochez si ce produit est vendu sans la boîte d'origine scellée.</p>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">Cochez si ce produit est vendu sans la boÃ®te d'origine scellÃ©e.</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" className="sr-only peer" checked={formData.isTester} onChange={e => setFormData({...formData, isTester: e.target.checked})} />
@@ -563,7 +542,7 @@ export default function AdminProductsPage() {
 
                     <div className="col-span-2 border-t border-[#e0ddd4] pt-6">
                       <div className="flex items-center justify-between mb-4">
-                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et Déclinaisons</label>
+                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et DÃ©clinaisons</label>
                         <button type="button" onClick={handleAddSize} className="text-[#0ea5e9] text-[12px] font-medium hover:underline flex items-center gap-1">
                           <Plus size={14} /> Nouvelle taille
                         </button>
@@ -585,9 +564,9 @@ export default function AdminProductsPage() {
                   </div>
                 </div>
 
-                {/* SECTION 4: Médias */}
+                {/* SECTION 4: MÃ©dias */}
                 <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Médias & Images</h3>
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">MÃ©dias & Images</h3>
                   
                   <div className="flex gap-4 flex-wrap">
                     {formData.images?.map((img: string, idx: number) => (
@@ -620,3 +599,4 @@ export default function AdminProductsPage() {
     </div>
   );
 }
+

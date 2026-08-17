@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ 
       success: true, 
-      customer: { id: customer.id, name: customer.name, email: customer.email }
+      customer: { id: customer.id, name: customer.name, email: customer.email, wishlist: [] }
     });
     
     // Set cookie

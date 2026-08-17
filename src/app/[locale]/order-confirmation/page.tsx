@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { formatMAD } from '@/lib/products';
@@ -294,7 +295,7 @@ function OrderConfirmationInner() {
 
                 <div className="flex flex-wrap justify-center gap-3">
                   <a
-                    href="https://wa.me/212694186787"
+                    href="https://api.whatsapp.com/send?phone=212663380011"
                     className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-[11px] font-semibold tracking-[0.15em] uppercase rounded-full transition-colors"
                   >
                     <Phone size={14} /> WhatsApp
@@ -321,6 +322,33 @@ function OrderConfirmationInner() {
           </div>
         </div>
       </main>
+
+      {/* ========== GOOGLE CUSTOMER REVIEWS ========== */}
+      {order && (
+        <>
+          <Script src="https://apis.google.com/js/platform.js?onload=renderOptIn" strategy="afterInteractive" />
+          <Script
+            id="gcr-optin"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.renderOptIn = function() {
+                  window.gapi.load('surveyoptin', function() {
+                    window.gapi.surveyoptin.render({
+                      "merchant_id": 5828480552,
+                      "order_id": "${order.orderNumber}",
+                      "email": "${order.customerEmail}",
+                      "delivery_country": "MA",
+                      "estimated_delivery_date": "${estimatedDelivery.toISOString().split('T')[0]}",
+                      "products": [${order.items.map(item => `{"gtin":"${item.id}"}`).join(',')}]
+                    });
+                  });
+                }
+              `
+            }}
+          />
+        </>
+      )}
 
       <Footer />
     </div>

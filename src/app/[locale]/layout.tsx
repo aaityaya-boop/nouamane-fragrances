@@ -12,15 +12,22 @@ import { AuthProvider } from "@/context/AuthContext";
 import FacebookPixel from "@/components/FacebookPixel";
 import CookieConsent from "@/components/CookieConsent";
 import { PreferencesProvider } from "@/context/PreferencesContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nayparfum.ma'),
   title: {
     template: "%s | NAY Parfums",
-    default: "NAY Parfums - L'Authenticité & L'Élégance de la Parfumerie Orientale",
+    default: "NAY Parfums - Testeurs & Parfums Originaux au Maroc",
   },
-  description: "Découvrez notre collection exclusive de parfums orientaux. L'authenticité et l'élégance à travers des fragrances uniques.",
-  keywords: ["parfum", "parfum oriental", "fragrance", "luxe", "maroc", "oud", "musc"],
+  description: "Découvrez NAY Parfums, achetez vos parfums de luxe et testeurs 100% originaux. Livraison rapide partout au Maroc (Casablanca, Rabat...) et paiement à la livraison. عطور أصلية في المغرب",
+  keywords: [
+    "parfum original Maroc", "acheter parfum luxe Maroc", "testeur parfum authentique", "site vente parfum Maroc", 
+    "parfumerie en ligne Maroc", "عطور أصلية في المغرب", "تستر عطور ماركات", "nay parfum", 
+    "parfum marrakech", "agadir", "casablanca", "rabat", "tanger", "parfum oriental", "oud"
+  ],
   authors: [{ name: "NAY Parfums" }],
   creator: "NAY Parfums",
   publisher: "NAY Parfums",
@@ -31,14 +38,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_MA",
     url: "https://nayparfum.ma",
-    title: "NAY Parfums | Parfumerie de Luxe au Maroc",
-    description: "Découvrez notre collection de parfums de luxe. Revendeur officiel des grandes marques au Maroc. 100% authentiques.",
+    title: "NAY Parfums | Testeurs & Parfums Originaux au Maroc",
+    description: "Achetez vos parfums et testeurs 100% originaux au Maroc. Livraison rapide et paiement à la livraison (Casablanca, Rabat, Marrakech, etc.).",
     siteName: "NAY Parfums"
   },
   twitter: {
     card: "summary_large_image",
-    title: "NAY Parfums | Parfumerie de Luxe au Maroc",
-    description: "Découvrez notre collection de parfums de luxe. Revendeur officiel au Maroc."
+    title: "NAY Parfums | Parfums Originaux au Maroc",
+    description: "Achetez vos parfums et testeurs originaux au Maroc. Livraison rapide et paiement à la livraison."
   },
   robots: {
     index: true,
@@ -51,6 +58,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    other: {
+      "msvalidate.01": "B1F888E794820820E31C64BB43593BE1"
+    }
+  }
 };
 
 export default async function LocaleLayout({
@@ -87,7 +99,11 @@ export default async function LocaleLayout({
                 contactType: "customer service",
                 areaServed: "MA",
                 availableLanguage: ["fr", "en", "ar"]
-              }
+              },
+              sameAs: [
+                "https://www.instagram.com/nayparfum",
+                "https://www.facebook.com/nayparfum"
+              ]
             })
           }}
         />
@@ -106,6 +122,28 @@ export default async function LocaleLayout({
             <CookieConsent />
           </PreferencesProvider>
         </DictionaryProvider>
+        <SpeedInsights />
+        <Analytics />
+
+        {/* ========== GOOGLE CUSTOMER REVIEWS BADGE ========== */}
+        <Script id="merchantWidgetScript" src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" strategy="afterInteractive" />
+        <Script
+          id="gcr-badge"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var gcrInterval = setInterval(function() {
+                if (typeof merchantwidget !== 'undefined') {
+                  clearInterval(gcrInterval);
+                  merchantwidget.start({
+                    merchant_id: 5828480552,
+                    position: 'BOTTOM_LEFT'
+                  });
+                }
+              }, 500);
+            `
+          }}
+        />
       </body>
     </html>
   );

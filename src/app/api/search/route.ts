@@ -15,7 +15,11 @@ export async function GET(request: Request) {
     // SQLite doesn't support case-insensitive contains in Prisma easily,
     // so for a small catalog, we can fetch all or do a raw query.
     // For now, since the catalog is small, we'll fetch all and filter in memory.
-    const allProducts = await prisma.product.findMany();
+    const allProducts = await prisma.product.findMany({
+      where: {
+        subcategory: { notIn: ['master-copier', 'coffrets'] }
+      }
+    });
     const lowerQ = (q || '').toLowerCase();
     
     const products = allProducts.filter(p => 

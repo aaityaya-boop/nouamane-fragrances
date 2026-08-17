@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package, ChevronRight, ShieldCheck, Truck } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { MAIN_CATEGORIES } from '@/lib/products';
 import SearchModal from './SearchModal';
@@ -17,7 +17,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAllMobileBrands, setShowAllMobileBrands] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | null>(null);
+  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | 'arabes' | null>(null);
   const { getItemCount } = useCart();
   const pathname = usePathname();
   const dict = useDictionary();
@@ -34,11 +34,12 @@ export default function Header() {
       .catch(console.error);
   }, []);
 
+  const { scrollY } = useScroll();
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return scrollY.on('change', (latest) => {
+      setIsScrolled(latest > 30);
+    });
+  }, [scrollY]);
 
   // Determine if header should be solid white
   const isSolid = !isHome || isScrolled || activeMenu !== null || isMobileMenuOpen;
@@ -58,8 +59,8 @@ export default function Header() {
           <div className="flex items-center justify-between h-[60px] lg:h-[75px]">
             {/* LEFT NAV (Desktop) */}
             <nav className="hidden lg:flex items-center gap-8 w-1/3">
-              {['women', 'men', 'brands', 'bundles'].map((menuKey) => {
-                const labels: any = { women: 'Femme', men: 'Homme', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
+              {['women', 'men', 'arabes', 'brands', 'bundles'].map((menuKey) => {
+                const labels: any = { women: 'Femme', men: 'Homme', arabes: 'Parfums Arabes', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
                 return (
                   <div 
                     key={menuKey} 
@@ -187,6 +188,7 @@ export default function Header() {
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
                         <ul className="space-y-4">
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copier</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
                         </ul>
@@ -221,6 +223,7 @@ export default function Header() {
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
                         <ul className="space-y-4">
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copier</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
                         </ul>
@@ -235,6 +238,27 @@ export default function Header() {
                       </div>
                     </div>
                   </>
+                )}
+
+                {/* --- ARABES MEGA MENU --- */}
+                {activeMenu === 'arabes' && (
+                  <div className="w-full flex-1">
+                    <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">La Magie de l'Orient</div>
+                    <div className="grid grid-cols-1 gap-12">
+                      <Link href={`/${locale}/parfums-arabes`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#0ea5e9] hover:shadow-2xl transition-all">
+                        <div className="flex-1">
+                          <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-3 block">Essence Orientale</span>
+                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Arabes</h3>
+                          <p className="text-[14px] text-[#6B6B6B] mb-8 leading-relaxed max-w-lg">
+                            Des sillages intenses, mystérieux et envoûtants. Une sélection de fragrances rares aux effluves d'Oud, de Musc et d'Ambre.
+                          </p>
+                          <span className="bg-[#111] text-white text-[13px] px-8 py-3 rounded-full inline-block group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-md group-hover:shadow-lg">
+                            Explorer la Collection
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
                 )}
 
                 {/* --- UNISEX & COFFRETS MEGA MENU --- */}
@@ -330,8 +354,58 @@ export default function Header() {
               style={{ maxHeight: 'calc(100vh - 60px)' }}
             >
               <div className="px-6 py-8 space-y-8">
+                {/* Mobile Search Bar */}
+                <div 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsSearchOpen(true);
+                  }}
+                  className="flex items-center gap-3 bg-[#f8fafc] border border-[#e0ddd4] rounded-xl px-4 py-3 cursor-text"
+                >
+                  <Search className="w-5 h-5 text-[#9A9A9A]" />
+                  <span className="text-[14px] text-[#9A9A9A]">Rechercher un parfum, une marque...</span>
+                </div>
+
                 {/* Mobile Categories */}
                 <div className="space-y-6">
+                  {/* EXPLORER SECTION (Added for Mobile) */}
+                  <div className="border-b border-[#e0ddd4] pb-6 bg-[#f8fafc] -mx-6 px-6 pt-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="w-2 h-2 rounded-full bg-[#0ea5e9]"></span>
+                      <div className="heading-font text-2xl text-[#1A1A1A]">Explorer</div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 pl-4 border-l-2 border-[#e0ddd4]/50">
+                      <Link 
+                        href={`/${locale}/decouverte`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[15px] font-medium text-[#0ea5e9] flex items-center justify-between"
+                      >
+                        L'Expérience Découverte <ChevronRight size={16} />
+                      </Link>
+                      <Link 
+                        href={`/${locale}/master-copier`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] text-[#444]"
+                      >
+                        Parfums Master Copier
+                      </Link>
+                      <Link 
+                        href={`/${locale}/parfums-arabes`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] text-[#444]"
+                      >
+                        Parfums Arabes
+                      </Link>
+                      <Link 
+                        href={`/${locale}/shop/women`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] text-[#444]"
+                      >
+                        Testeurs Originaux
+                      </Link>
+                    </div>
+                  </div>
+
                   {MAIN_CATEGORIES.map((cat) => (
                     <div key={cat.slug} className="border-b border-[#e0ddd4] pb-6 last:border-0 last:pb-0">
                       <Link 

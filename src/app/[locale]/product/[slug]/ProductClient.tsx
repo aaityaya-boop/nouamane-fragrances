@@ -59,8 +59,10 @@ export default function ProductClient({
 }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(
-    product.sizes.length > 1 ? product.sizes[1].label : product.sizes[0].label
-  ); // Default to middle size if available, else first size
+    product.sizes && product.sizes.length > 0 
+      ? (product.sizes.length > 1 ? product.sizes[1].label : product.sizes[0].label)
+      : ''
+  ); // Default to middle size if available, else first size, or empty if no sizes
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -191,7 +193,8 @@ export default function ProductClient({
     // Facebook Pixel Tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'AddToCart', {
-        content_ids: [product.id],
+        content_ids: [product.sku || product.id.toString()],
+        content_type: 'product',
         content_name: product.name,
         value: currentPrice * quantity,
         currency: 'MAD'
@@ -434,7 +437,7 @@ export default function ProductClient({
               href={`/${locale}/brands/${product.brand}`}
               className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#0ea5e9] hover:text-[#7e22ce]"
             >
-              {product.brandLabel} · {t.info.authentic}
+              {product.brandLabel}{product.isTester ? ` · ${t.info.authentic}` : ''}
             </Link>
 
             <h1 className="heading-font text-4xl lg:text-5xl xl:text-6xl mt-3 tracking-wide leading-none">
@@ -488,7 +491,7 @@ export default function ProductClient({
                 )}
               </div>
               <span className="text-[13px] text-[#9A9A9A]">
-                {currentSize?.label || ""} {t.info.tester}
+                {currentSize?.label || ""} {product.isTester ? t.info.tester : ""}
               </span>
             </div>
 
@@ -498,10 +501,17 @@ export default function ProductClient({
                 <ShieldCheck size={18} className="text-[#0ea5e9]" />
                 <span>{t.trust.cod}</span>
               </div>
-              <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
-                <BadgeCheck size={18} className="text-[#0ea5e9]" />
-                <span>{t.trust.original}</span>
-              </div>
+              {product.isTester ? (
+                <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
+                  <BadgeCheck size={18} className="text-[#0ea5e9]" />
+                  <span>{t.trust.original}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 text-[13px] text-[#1A1A1A] font-medium bg-[#fafaf7] w-fit px-4 py-2.5 rounded-xl border border-[#e0ddd4]">
+                  <Sparkles size={18} className="text-[#0ea5e9]" />
+                  <span>Qualité Premium Supérieure</span>
+                </div>
+              )}
             </div>
 
             {/* SIZE SELECTOR */}
@@ -594,7 +604,7 @@ export default function ProductClient({
             {/* GIFT OPTION */}
             <div className="mt-4">
               <a 
-                href={`https://wa.me/212694186787?text=${encodeURIComponent("Bonjour, j'aimerais offrir " + product.name + " en cadeau et personnaliser mon emballage.")}`} 
+                href={`https://api.whatsapp.com/send?phone=212663380011&text=${encodeURIComponent("Bonjour, j'aimerais offrir " + product.name + " en cadeau et personnaliser mon emballage.")}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-3 bg-[#f8fafc] border border-[#e0ddd4] text-[#1A1A1A] py-4 rounded-xl hover:bg-white hover:border-[#0ea5e9] transition-all group"
@@ -735,7 +745,7 @@ export default function ProductClient({
                 </li>
                 <li className="flex items-start gap-3">
                   <Check size={18} className="text-[#0ea5e9] mt-1 shrink-0" />
-                  <span className="text-[#1A1A1A] font-medium text-[14px]">{t.whyChoose.bullet2} {product.brandLabel}</span>
+                  <span className="text-[#1A1A1A] font-medium text-[14px]">{product.isTester ? t.whyChoose.bullet2 : 'Qualité Premium Supérieure'} {product.brandLabel}</span>
                 </li>
               </ul>
             </div>

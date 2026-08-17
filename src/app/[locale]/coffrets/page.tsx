@@ -10,6 +10,8 @@ export const metadata = {
   description: 'Découvrez nos coffrets cadeaux et duos. Célébrez l\'amour avec nos fragrances couplées.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function CoffretsPage({ params }: { params: Promise<{ locale: string }> }) {
   const resolvedParams = await params;
   const locale = resolvedParams.locale;

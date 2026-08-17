@@ -18,8 +18,9 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { brand: brandSlug } = await params;
+  const decodedBrandSlug = decodeURIComponent(brandSlug);
   const brand = await prisma.brand.findUnique({
-    where: { slug: brandSlug }
+    where: { slug: decodedBrandSlug }
   });
 
   if (!brand) return { title: 'Marque introuvable | NAY Parfums' };
@@ -40,9 +41,10 @@ export default async function BrandPage({
   params: Promise<Params>;
 }) {
   const { locale, brand: brandSlug } = await params;
+  const decodedBrandSlug = decodeURIComponent(brandSlug);
   
   const brand = await prisma.brand.findUnique({
-    where: { slug: brandSlug }
+    where: { slug: decodedBrandSlug }
   });
   
   if (!brand) notFound();

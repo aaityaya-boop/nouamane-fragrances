@@ -75,16 +75,6 @@ export default function ContactPage() {
                   <p className="text-[14px] text-[#6B6B6B]">contact@nouamane-parfums.ma</p>
                 </div>
               </div>
-
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border border-[#e0ddd4]">
-                  <MapPin size={18} className="text-[#1A1A1A]" />
-                </div>
-                <div>
-                  <h3 className="text-[14px] font-bold text-[#1A1A1A] mb-1">Boutique</h3>
-                  <p className="text-[14px] text-[#6B6B6B]">Boulevard Mohammed V<br/>Casablanca, Maroc</p>
-                </div>
-              </div>
             </div>
           </div>
 

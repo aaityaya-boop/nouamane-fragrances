@@ -23,12 +23,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const images = JSON.parse(product.images);
 
   return {
-    title: `${product.name} - ${product.brandLabel} | Acheter au Maroc (Casablanca, Rabat)`,
-    description: `Achetez ${product.name} de ${product.brandLabel} au meilleur prix au Maroc. ${product.description || product.tagline} Livraison rapide partout au Maroc.`,
-    keywords: [product.name, product.brandLabel, 'parfum', 'maroc', 'casablanca', 'acheter parfum', 'luxe', product.subcategoryLabel || ''],
+    title: `${product.brandLabel} ${product.name} | Testeur Original Prix Maroc | NAY Parfums`,
+    description: `Achetez ${product.name} de ${product.brandLabel} au meilleur prix au Maroc. Testeur 100% authentique garanti. Commandez maintenant, payez à la livraison !`,
+    keywords: [product.name, product.brandLabel, 'testeur parfum original maroc', 'acheter parfum maroc', 'عطور أصلية', 'تستر عطور', product.subcategoryLabel || ''],
     openGraph: {
-      title: `${product.name} - ${product.brandLabel} | NAY Parfums Maroc`,
-      description: `Découvrez ${product.name}. Livraison rapide partout au Maroc. ${product.tagline}`,
+      title: `${product.brandLabel} ${product.name} | Testeur Original Prix Maroc | NAY Parfums`,
+      description: `Achetez ${product.name} de ${product.brandLabel} au meilleur prix au Maroc. Testeur 100% authentique garanti. Commandez maintenant, payez à la livraison !`,
       images: images.length > 0 ? [{ url: images[0] }] : [],
     }
   };
@@ -124,7 +124,7 @@ export default async function ProductPage({
     '@type': 'Product',
     name: transformedProduct.name,
     image: transformedProduct.images[0],
-    description: transformedProduct.description,
+    description: `Testeur original de ${transformedProduct.name}. Authentique à 100%. Livraison rapide partout au Maroc et paiement à la livraison.`,
     brand: {
       '@type': 'Brand',
       name: transformedProduct.brandLabel,
@@ -136,6 +136,10 @@ export default async function ProductPage({
       price: transformedProduct.price,
       itemCondition: 'https://schema.org/NewCondition',
       availability: transformedProduct.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'NAY Parfums'
+      },
       hasMerchantReturnPolicy: {
         '@type': 'MerchantReturnPolicy',
         applicableCountry: 'MA',

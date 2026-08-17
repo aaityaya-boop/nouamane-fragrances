@@ -5,7 +5,7 @@ import { Product } from '@/lib/products';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 
-export default function AdminProductsPage() {
+export default function AdminMasterCopierPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -43,7 +43,8 @@ export default function AdminProductsPage() {
         notes: typeof p.notes === 'string' ? JSON.parse(p.notes) : p.notes,
         tags: typeof p.tags === 'string' ? JSON.parse(p.tags) : p.tags,
       }));
-      setProducts(parsedData.filter((p: any) => p.subcategory !== 'coffrets' && p.subcategory !== 'master-copier' && p.subcategory !== 'arabic'));
+      
+      setProducts(parsedData.filter((p: any) => p.subcategory === 'master-copier'));
     } catch (error) {
       console.error(error);
     } finally {
@@ -109,8 +110,8 @@ export default function AdminProductsPage() {
       brand: 'valentino',
       brandLabel: 'Valentino',
       gender: 'women',
-      subcategory: 'floral',
-      subcategoryLabel: 'Floral',
+      subcategory: 'master-copier',
+      subcategoryLabel: 'Master Copier Parfum',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -227,14 +228,14 @@ export default function AdminProductsPage() {
 
 
   return (
-    <div className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto">
+    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Produits</h1>
-          <p className="text-[14px] text-[#666]">Gérez votre catalogue de parfums ({products.length} au total).</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Master Copier</h1>
+          <p className="text-[#666] text-sm font-medium">Gérez vos parfums d'inspiration, dupes, etc.</p>
         </div>
         
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3">
           <button 
             onClick={handleGenerateSKUs}
             className="flex items-center gap-2 bg-white border border-[#eaeaea] text-[#111] px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-50 transition-all shadow-sm"

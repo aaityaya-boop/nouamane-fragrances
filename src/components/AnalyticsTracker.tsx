@@ -15,7 +15,11 @@ export default function AnalyticsTracker() {
         await fetch('/api/track', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pathname })
+          body: JSON.stringify({ 
+            pathname,
+            referrer: document.referrer,
+            userAgent: window.navigator.userAgent
+          })
         });
       } catch (error) {
         // Silently fail if tracking fails

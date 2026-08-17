@@ -52,7 +52,7 @@ export default function ProductCard({ product, showRating = true, onQuickView }:
         <div className="relative h-[340px] lg:h-[380px] overflow-hidden bg-[#f8fafc]">
         <Image
           src={product.images[0]}
-          alt={product.name}
+          alt={`Parfum ${product.name} au Maroc - NAY Parfums`}
           fill
           loading="lazy"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

@@ -57,6 +57,7 @@ export type Product = {
   tags: Array<'bestseller' | 'new-arrival' | 'seasonal-fall' | 'seasonal-spring' | 'staff-pick' | 'limited'>;
   inStock: boolean;
   perfectSeason: Season;
+  isTester?: boolean;
 };
 
 /* ============================================================

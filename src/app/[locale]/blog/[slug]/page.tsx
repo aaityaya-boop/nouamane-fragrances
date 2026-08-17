@@ -12,7 +12,8 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } });
+  const decodedSlug = decodeURIComponent(slug);
+  const post = await prisma.blogPost.findUnique({ where: { slug: decodedSlug } });
   
   if (!post) return { title: 'Article non trouvé' };
 
@@ -29,9 +30,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   
   const post = await prisma.blogPost.findUnique({
-    where: { slug }
+    where: { slug: decodedSlug }
   });
 
   if (!post || post.status !== 'published') {
@@ -50,8 +52,35 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     return { __html: post.content };
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.metaTitle || post.title,
+    description: post.metaDescription || post.excerpt,
+    image: post.coverImage ? `https://nayparfum.ma${post.coverImage}` : undefined,
+    author: {
+      '@type': 'Organization',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NAY Parfums',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://nayparfum.ma/icon.png'
+      }
+    },
+    datePublished: new Date(post.publishedAt).toISOString(),
+    dateModified: new Date(post.updatedAt).toISOString(),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://nayparfum.ma/fr/blog/${post.slug}`
+    }
+  };
+
   return (
     <div className="bg-[#fafaf7] text-[#1A1A1A] min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Header />
       
       <main className="pt-28 lg:pt-36 pb-24">
@@ -61,30 +90,21 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <ArrowLeft size={14} /> Retour au Mag
           </Link>
 
-          <div className="text-center mb-12">
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0ea5e9] mb-4 block">
+          <div className="text-center mb-16" dir="rtl">
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0ea5e9] mb-6 block" dir="ltr">
               Par {post.author} · {new Date(post.publishedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
             </span>
-            <h1 className="heading-font text-4xl lg:text-6xl leading-[1.1] mb-6">
+            <h1 className="font-arabic font-bold text-4xl lg:text-5xl leading-[1.6] mb-8 text-[#1A1A1A] text-right">
               {post.title}
             </h1>
-            <p className="text-[18px] lg:text-[20px] text-[#6B6B6B] leading-relaxed">
+            <p className="font-arabic text-[18px] lg:text-[22px] text-[#555] leading-[2] max-w-4xl mx-auto text-right">
               {post.excerpt}
             </p>
           </div>
 
-          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-16 shadow-lg">
-            <Image 
-              src={post.coverImage} 
-              alt={post.title} 
-              fill 
-              className="object-cover"
-              priority
-            />
-          </div>
-
           <article 
-            className="prose prose-lg lg:prose-xl max-w-none prose-headings:font-serif prose-headings:font-normal prose-a:text-[#0ea5e9] prose-img:rounded-xl mb-12"
+            dir="rtl"
+            className="prose-arabic prose prose-lg lg:prose-xl max-w-none text-right prose-a:text-[#0ea5e9] prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl mb-16 text-[#333]"
             dangerouslySetInnerHTML={createMarkup()}
           />
           

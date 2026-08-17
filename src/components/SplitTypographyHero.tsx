@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,139 +10,133 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
   
+  // Mouse position for interactive parallax
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const springConfig = { damping: 25, stiffness: 50 };
+  const mouseX = useSpring(0, springConfig);
+  const mouseY = useSpring(0, springConfig);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      const x = (clientX / innerWidth - 0.5) * 100;
+      const y = (clientY / innerHeight - 0.5) * 100;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+  
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Pro Scroll Effects (Minimalist & Luxury)
-  const opacityContent = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const scaleContent = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const yContent = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const filterBlur = useTransform(scrollYProgress, [0, 0.8], ['blur(0px)', 'blur(12px)']);
+  // Sophisticated Parallax Scrolling Effects
+  const opacityContent = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const scaleContent = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
   
-  // Parallax Split Effect on Scroll
-  const xLeft = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
-  const xRight = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
+  // Text Splitting Parallax
+  const leftTextX = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
+  const rightTextX = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   
-  const yAura = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  // Background Elements Parallax
+  const bgY1 = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  const bgY2 = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
+  
+  // Watermark Parallax
+  const watermarkY = useTransform(scrollYProgress, [0, 1], ['20%', '-80%']);
 
   return (
     <section 
       ref={containerRef} 
-      className="relative h-screen w-full bg-[#FCFCFC] overflow-hidden flex items-center justify-center selection:bg-[#111] selection:text-white"
+      className="relative h-[100dvh] min-h-[650px] w-full bg-[#FCFCFC] overflow-hidden flex items-center justify-center selection:bg-[#111] selection:text-white"
     >
-      {/* CSS for Liquid Glass Effect - KEPT EXACTLY AS REQUESTED */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes liquid-glace {
-          0% { background-position: 200% center; }
-          100% { background-position: -200% center; }
-        }
-        .liquid-glace-text {
-          background: linear-gradient(
-            110deg,
-            #111111 10%,
-            #0ea5e9 30%,
-            #ffffff 45%,
-            #e0f2fe 50%,
-            #0ea5e9 55%,
-            #111111 75%
-          );
-          background-size: 200% auto;
-          color: transparent;
-          -webkit-background-clip: text;
-          background-clip: text;
-          animation: liquid-glace 8s linear infinite;
-          filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
-        }
-        .liquid-glace-mask {
-          background: linear-gradient(
-            110deg,
-            #111111 10%,
-            #0ea5e9 30%,
-            #ffffff 45%,
-            #e0f2fe 50%,
-            #0ea5e9 55%,
-            #111111 75%
-          );
-          background-size: 200% auto;
-          animation: liquid-glace 8s linear infinite;
-          filter: drop-shadow(0px 2px 4px rgba(14,165,233,0.15));
-        }
-      `}} />
-
-      {/* 1. PROFESSIONAL MINIMALIST BACKGROUND */}
+      {/* 1. LUXURY BACKGROUND: Animated Glass Shapes & Mouse Parallax */}
       <div className="absolute inset-0 bg-[#FCFCFC] z-0" />
       
-      {/* Refined gradient sphere - softer, more luxurious */}
+      {/* Huge Background Watermark */}
       <motion.div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] rounded-full blur-[120px] sm:blur-[160px] opacity-40 pointer-events-none mix-blend-multiply"
-        style={{
-          background: "radial-gradient(circle, rgba(14,165,233,0.15) 0%, rgba(255,255,255,0) 70%)"
-        }}
-        animate={{ 
-          scale: [1, 1.05, 1],
-          opacity: [0.3, 0.4, 0.3],
-        }}
-        transition={{ 
-          duration: 8, 
-          repeat: Infinity,
-          ease: "easeInOut" 
-        }}
-      />
+        style={{ y: watermarkY, opacity: opacityContent }}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden"
+      >
+        <span className="font-serif italic text-[15vw] leading-none text-[#111]/[0.02] whitespace-nowrap rotate-[-5deg] scale-150">
+          NAY PARFUMS
+        </span>
+      </motion.div>
+      
+      {/* Interactive Shape 1 */}
+      <motion.div 
+        style={{ y: bgY1, x: mouseX }}
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full blur-[100px] opacity-30 mix-blend-multiply pointer-events-none"
+      >
+        <motion.div 
+          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="w-full h-full bg-gradient-to-br from-[#0ea5e9] to-transparent rounded-full"
+        />
+      </motion.div>
 
-      {/* Very subtle secondary sphere for depth */}
+      {/* Interactive Shape 2 */}
       <motion.div 
-        className="absolute top-[40%] left-[60%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none mix-blend-multiply"
-        style={{
-          background: "radial-gradient(circle, rgba(17,17,17,0.05) 0%, rgba(255,255,255,0) 70%)"
-        }}
-        animate={{ 
-          x: [0, 20, 0],
-          y: [0, -20, 0],
-          opacity: [0.6, 0.8, 0.5, 0.6],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+        style={{ y: bgY2, x: useTransform(mouseX, (v) => -v) }}
+        className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] max-w-[1000px] max-h-[1000px] rounded-full blur-[120px] opacity-20 mix-blend-multiply pointer-events-none"
+      >
+        <motion.div 
+          animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="w-full h-full bg-gradient-to-tl from-[#111] via-[#333] to-transparent rounded-full"
+        />
+      </motion.div>
+
+      {/* Floating Sparkles/Dust */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: Math.random() * 100 }}
+            animate={{ 
+              opacity: [0, 0.5, 0],
+              y: [Math.random() * 100, Math.random() * -100 - 50],
+              x: Math.random() * 50 - 25
+            }}
+            transition={{
+              duration: 10 + Math.random() * 10,
+              repeat: Infinity,
+              delay: Math.random() * 10,
+              ease: "linear"
+            }}
+            className="absolute rounded-full bg-[#111]/10"
+            style={{
+              width: Math.random() * 4 + 1 + 'px',
+              height: Math.random() * 4 + 1 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+            }}
+          />
+        ))}
+      </div>
 
       {/* Ultra-subtle luxury noise texture */}
-      <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
 
-      {/* 2. CENTRAL TYPOGRAPHY & LOGO */}
       <motion.div 
-        className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center justify-center"
-        style={{ opacity: opacityContent, scale: scaleContent, y: yContent, filter: filterBlur }}
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 text-center flex flex-col items-center justify-center"
+        style={{ opacity: opacityContent, scale: scaleContent }}
       >
         {/* Typo Logo */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-8 flex flex-col items-center justify-center relative"
+          className="mb-12 flex flex-col items-center justify-center relative group"
         >
-          {/* Invisible image to set exact dimensions */}
           <img
             src="/images/nay/nay-logo-new.png"
             alt="NAY Parfums"
-            className="w-32 sm:w-40 md:w-48 lg:w-56 h-auto object-contain invisible"
-          />
-          {/* Animated gradient mask overlaid exactly on top */}
-          <div
-            className="absolute inset-0 w-full h-full liquid-glace-mask opacity-90"
-            style={{
-              WebkitMaskImage: 'url("/images/nay/nay-logo-new.png")',
-              WebkitMaskSize: 'contain',
-              WebkitMaskPosition: 'center',
-              WebkitMaskRepeat: 'no-repeat',
-              maskImage: 'url("/images/nay/nay-logo-new.png")',
-              maskSize: 'contain',
-              maskPosition: 'center',
-              maskRepeat: 'no-repeat',
-            }}
+            className="w-32 sm:w-40 md:w-48 lg:w-56 h-auto object-contain transition-transform duration-1000 group-hover:scale-105"
           />
         </motion.div>
 
@@ -151,32 +145,34 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-          className="flex flex-col items-center gap-5 mb-10"
+          className="flex flex-col items-center gap-5 mb-8"
         >
-          <span className="w-[1px] h-14 bg-gradient-to-b from-transparent via-[#111]/20 to-transparent" />
-          <span className="text-[9px] sm:text-[10px] font-medium tracking-[0.5em] uppercase text-[#333]">
-            La Collection Testeurs
+          <span className="text-[9px] sm:text-[10px] font-semibold tracking-[0.6em] uppercase text-[#111]/50">
+            L'Art de la Parfumerie
           </span>
+          <span className="w-[1px] h-10 bg-gradient-to-b from-[#111]/20 to-transparent" />
         </motion.div>
 
-        {/* Main Headline with Liquid Glace Effect - NO PARALLAX SCROLL */}
-        <h1 className="heading-font text-5xl sm:text-7xl md:text-8xl lg:text-[110px] leading-[1.1] tracking-tight mb-10 flex flex-col items-center justify-center">
+        {/* Main Headline with Split Parallax Effect */}
+        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[120px] xl:text-[140px] leading-[1] tracking-[-0.02em] mb-10 flex flex-col items-center justify-center w-full">
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
-            className="font-light liquid-glace-text py-2"
+            style={{ x: leftTextX }}
+            className="font-light text-[#111] pr-4 sm:pr-12 md:pr-24 self-center md:self-end text-center md:text-right mix-blend-darken relative"
           >
-            L'Authenticité
+            L'Empreinte
           </motion.div>
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-            className="flex items-center justify-center gap-4 sm:gap-8 mt-2"
+            style={{ x: rightTextX }}
+            className="flex items-center gap-4 sm:gap-6 pl-4 sm:pl-12 md:pl-24 self-center md:self-start mt-2 sm:mt-0 mix-blend-darken relative"
           >
-            <span className="font-serif italic font-light text-[#111]/40 text-4xl sm:text-7xl lg:text-[100px] liquid-glace-text">&</span>
-            <span className="font-light liquid-glace-text">l'Élégance</span>
+            <span className="font-serif italic font-light text-[#0ea5e9] text-5xl sm:text-7xl md:text-8xl lg:text-[130px] xl:text-[150px] drop-shadow-sm">&</span>
+            <span className="font-serif italic font-light text-[#111]">l'Inoubliable</span>
           </motion.div>
         </h1>
 
@@ -185,9 +181,9 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
-          className="text-[12px] md:text-[14px] text-[#666] font-light max-w-lg mx-auto leading-[2.2] tracking-[0.2em] uppercase mb-14"
+          className="text-[11px] sm:text-[13px] md:text-[14px] text-[#555] font-light max-w-2xl mx-auto leading-[2.2] tracking-[0.2em] uppercase mb-16"
         >
-          Découvrez notre sélection de <span className="font-medium text-[#111]">parfums testeurs</span> 100% originaux. Le luxe olfactif des plus grandes maisons, sublimé.
+          Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums prestigieux</span>. L'essence du luxe, de la magie orientale et de l'exception.
         </motion.p>
         
         {/* Découvrir Button - Luxury Minimalist Version */}
@@ -197,13 +193,13 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
         >
           <Link
-            href={`/${locale}/shop`}
-            className="group relative inline-flex items-center justify-center overflow-hidden border border-[#111]/20 bg-white/80 backdrop-blur-xl px-16 py-5 transition-all duration-700 hover:bg-[#111] hover:border-[#111] hover:shadow-2xl rounded-none"
+            href={`/${locale}/decouverte`}
+            className="group relative inline-flex items-center justify-center overflow-hidden border border-[#111]/20 bg-white/50 backdrop-blur-md px-16 py-5 transition-all duration-700 hover:border-[#111] hover:shadow-2xl rounded-full"
           >
+            <div className="absolute inset-0 bg-[#111] transform scale-y-0 origin-bottom transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-y-100" />
             <span className="relative z-10 text-[10px] font-semibold tracking-[0.4em] uppercase text-[#111] transition-colors duration-500 group-hover:text-white">
               Découvrir
             </span>
-            <div className="absolute inset-0 bg-[#111] transform scale-x-0 origin-left transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-x-100" />
           </Link>
         </motion.div>
       </motion.div>
@@ -214,16 +210,17 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, delay: 1.2 }}
         style={{ opacity: opacityContent }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-5"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4 cursor-pointer hover:opacity-70 transition-opacity"
+        onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })}
       >
         <span className="text-[8px] font-semibold tracking-[0.5em] uppercase text-[#111]/40">
           Scroll
         </span>
-        <div className="w-[1px] h-12 bg-[#111]/10 overflow-hidden relative">
+        <div className="w-[1px] h-16 bg-gradient-to-b from-[#111]/20 to-transparent overflow-hidden relative">
           <motion.div
-            animate={{ y: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-            className="absolute top-0 bottom-0 left-0 right-0 bg-[#111]/60"
+            animate={{ y: ['-100%', '200%'] }}
+            transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+            className="absolute top-0 bottom-0 left-0 right-0 h-1/2 bg-[#111]/60"
           />
         </div>
       </motion.div>
