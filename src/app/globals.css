@@ -37,6 +37,7 @@
 .prose-arabic h1, .prose-arabic h2, .prose-arabic h3 {
   font-family: var(--font-arabic) !important;
   font-weight: 700 !important;
+  font-size: 1.75rem !important;
   margin-top: 2.5rem !important;
   margin-bottom: 1.5rem !important;
 }

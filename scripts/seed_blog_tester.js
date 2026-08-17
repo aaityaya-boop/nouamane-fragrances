@@ -18,6 +18,16 @@ async function main() {
 <li><em>العطر الأصلي (Scellé):</em> يأتي في علبته الفاخرة الملونة، مغلفاً بالبلاستيك الشفاف (السيلوفان).</li>
 <li><em>التستر الأصلي:</em> يأتي غالباً في علبة كرتونية بيضاء أو بنية بسيطة، ومكتوب عليها بوضوح كلمة "Tester" أو "Not for Sale".</li>
 </ul>
+<div class="flex gap-4 my-8">
+  <div class="flex-1">
+    <img src="/images/blog/creed-original.jpg" alt="العطر الأصلي" class="w-full rounded-xl shadow-sm border border-gray-100" />
+    <p class="text-center text-sm mt-3 text-gray-500 font-bold">العطر الأصلي (Scellé)</p>
+  </div>
+  <div class="flex-1">
+    <img src="/images/blog/creed-tester.png" alt="التستر الأصلي" class="w-full rounded-xl shadow-sm border border-gray-100" />
+    <p class="text-center text-sm mt-3 text-gray-500 font-bold">التستر الأصلي (Testeur)</p>
+  </div>
+</div>
 </li>
 <li><strong>غطاء الزجاجة:</strong>
 <p>بعض التسترات تأتي بدون الغطاء الأصلي (البوشون)، بينما يأتي البعض الآخر بالغطاء العادي. لكن الزجاجة نفسها تكون متطابقة تماماً.</p>
