@@ -463,7 +463,7 @@ export default function AdminProductsPage() {
                             floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
                             aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
                             'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées',
-                            'master-copier': 'Master Copier Parfum'
+                            'master-copier': 'Master Copy Parfum'
                           };
                           setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
                         }}>
@@ -472,7 +472,7 @@ export default function AdminProductsPage() {
                         <option value="fresh">Frais</option>
                         <option value="woody">Boisé</option>
                         <option value="aromatic">Aromatique</option>
-                        <option value="master-copier">Master Copier Parfum</option>
+                        <option value="master-copier">Master Copy Parfum</option>
                       </select>
                     </div>
                     <div>

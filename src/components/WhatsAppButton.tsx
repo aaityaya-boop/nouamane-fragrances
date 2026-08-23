@@ -7,10 +7,12 @@ import { usePathname } from 'next/navigation';
 export default function WhatsAppButton() {
   const [url, setUrl] = useState('https://api.whatsapp.com/send?phone=212663380011');
   const [isHovered, setIsHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isProductPage = pathname?.includes('/product/');
 
   useEffect(() => {
+    setMounted(true);
     fetch('/api/settings')
       .then(res => res.json())
       .then(data => {
@@ -22,7 +24,7 @@ export default function WhatsAppButton() {
   }, []);
 
   const getSmartUrl = () => {
-    if (typeof window === 'undefined') return url;
+    if (!mounted) return url;
     let text = "Bonjour, j'ai besoin de conseils.";
     if (isProductPage) {
       text = `Bonjour, je suis intéressé(e) par ce parfum : ${window.location.href}`;
@@ -32,6 +34,7 @@ export default function WhatsAppButton() {
   };
 
   if (isProductPage) return null;
+  if (!mounted) return null; // Avoid rendering until mounted to prevent hydration mismatches on styles/href
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center justify-end">

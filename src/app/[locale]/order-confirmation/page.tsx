@@ -326,27 +326,29 @@ function OrderConfirmationInner() {
       {/* ========== GOOGLE CUSTOMER REVIEWS ========== */}
       {order && (
         <>
-          <Script src="https://apis.google.com/js/platform.js?onload=renderOptIn" strategy="afterInteractive" />
           <Script
-            id="gcr-optin"
-            strategy="afterInteractive"
+            id="gcr-optin-code"
+            strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 window.renderOptIn = function() {
-                  window.gapi.load('surveyoptin', function() {
-                    window.gapi.surveyoptin.render({
-                      "merchant_id": 5828480552,
-                      "order_id": "${order.orderNumber}",
-                      "email": "${order.customerEmail}",
-                      "delivery_country": "MA",
-                      "estimated_delivery_date": "${estimatedDelivery.toISOString().split('T')[0]}",
-                      "products": [${order.items.map(item => `{"gtin":"${item.id}"}`).join(',')}]
+                  if (window.gapi && window.gapi.load) {
+                    window.gapi.load('surveyoptin', function() {
+                      window.gapi.surveyoptin.render({
+                        "merchant_id": 5828480552,
+                        "order_id": "${order.orderNumber}",
+                        "email": "${order.customerEmail}",
+                        "delivery_country": "MA",
+                        "estimated_delivery_date": "${estimatedDelivery.toISOString().split('T')[0]}",
+                        "products": [${order.items.map(item => `{"gtin":"${item.id}"}`).join(',')}]
+                      });
                     });
-                  });
+                  }
                 }
               `
             }}
           />
+          <Script src="https://apis.google.com/js/platform.js?onload=renderOptIn" strategy="afterInteractive" />
         </>
       )}
 

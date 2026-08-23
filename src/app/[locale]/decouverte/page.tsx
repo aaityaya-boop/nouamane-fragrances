@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 
 export const metadata = {
   title: 'Découverte | NAY Parfums',
-  description: 'Choisissez votre univers olfactif : Parfums Arabes, Master Copier, ou Testeurs Originaux.',
+  description: 'Choisissez votre univers olfactif : Parfums Arabes, Master Copy, ou Testeurs Originaux.',
 };
 
 export default async function DecouvertePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -28,7 +28,7 @@ export default async function DecouvertePage({ params }: { params: Promise<{ loc
     },
     {
       id: 'master',
-      title: "Master Copier",
+      title: "Master Copy",
       subtitle: "L'Art de la Perfection",
       description: "Les plus grandes fragrances mondiales recréées avec une précision chirurgicale, à un prix irrésistible. Sentez le luxe sans compromis.",
       buttonText: "Découvrir la Perfection",

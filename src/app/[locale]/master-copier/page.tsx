@@ -8,8 +8,8 @@ import { Product } from '@/lib/products';
 import { ShieldCheck, Truck, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Parfums Master Copier | NAY Parfums',
-  description: 'Découvrez notre collection exclusive de parfums d\'inspiration Master Copier. L\'excellence olfactive accessible à tous.',
+  title: 'Parfums Master Copy | NAY Parfums',
+  description: 'Découvrez notre collection exclusive de parfums d\'inspiration Master Copy. L\'excellence olfactive accessible à tous.',
 };
 
 export const revalidate = 3600;
@@ -74,7 +74,7 @@ export default async function MasterCopierPage() {
           <h1 className="heading-font text-5xl sm:text-6xl lg:text-[90px] leading-none tracking-tight mb-6">
             <span className="liquid-glace-text">PARFUMS</span>
             <br />
-            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Master Copier</span>
+            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Master Copy</span>
           </h1>
           <p className="mt-2 text-[13px] md:text-[15px] text-[#555] font-light max-w-xl leading-[2] tracking-widest uppercase mb-10">
             Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums d'inspiration</span>. L'excellence olfactive et la longue tenue, rendues accessibles.

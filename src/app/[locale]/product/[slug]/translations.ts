@@ -4,7 +4,7 @@ export const translations = {
     info: { authentic: 'TESTEUR 100% AUTHENTIQUE', verifiedReviews: 'avis vérifiés', save: 'Économisez', tester: '(Testeur)', outOfStock: 'Rupture de stock' },
     trust: { cod: 'Paiement à la livraison sécurisé', original: 'Testeur 100% Original Authentique' },
     selector: { selectSize: 'Sélectionnez la Contenance' },
-    actions: { addSuccess: 'Ajouté avec succès !', addToCart: 'Ajouter au panier', added: 'Ajouté', add: 'Ajouter' },
+    actions: { addSuccess: 'Ajouté avec succès !', addToCart: 'Commander maintenant', added: 'Ajouté', add: 'Commander' },
     perks: { authLabel: '100% Authentique', authSub: 'Garanti', expressLabel: 'Livraison Express', expressSub: 'Partout au Maroc', secureLabel: 'Paiement Sécurisé', secureSub: 'À la livraison', returnLabel: 'Retour Simple', returnSub: 'Sous 14 jours' },
     support: { title: 'Besoin de conseils ?', desc: 'Notre équipe de passionnés est à votre écoute 7j/7.' },
     description: { history: "L'Histoire du Parfum", compositionTitle: 'La Composition', pyramid: 'Pyramide Olfactive', topNotes: 'Notes de Tête', topDesc: "L'envolée olfactive (0-15 min)", heartNotes: 'Notes de Cœur', heartDesc: 'La personnalité (15min-4h)', baseNotes: 'Notes de Fond', baseDesc: 'Le sillage mémorable (4h+)' },

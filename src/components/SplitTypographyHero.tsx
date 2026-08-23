@@ -9,14 +9,14 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
-  
-  // Mouse position for interactive parallax
+  const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const springConfig = { damping: 25, stiffness: 50 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
   useEffect(() => {
+    setMounted(true);
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
@@ -93,7 +93,7 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
 
       {/* Floating Sparkles/Dust */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
+        {mounted && [...Array(15)].map((_, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: Math.random() * 100 }}

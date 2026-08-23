@@ -137,7 +137,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                     className="flex-1 bg-[#1A1A1A] text-white h-14 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-[#0ea5e9] transition-colors flex items-center justify-center gap-2"
                   >
                     <ShoppingBag size={16} />
-                    Ajouter au panier
+                    Commander maintenant
                   </button>
                   <Link
                     href={`/${locale}/product/${product.slug}`}

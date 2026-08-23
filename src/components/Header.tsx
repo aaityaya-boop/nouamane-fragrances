@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package, ChevronRight, ShieldCheck, Truck } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package, ChevronRight, ShieldCheck, Truck, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { MAIN_CATEGORIES } from '@/lib/products';
@@ -77,6 +77,17 @@ export default function Header() {
                   </div>
                 );
               })}
+              <div className="h-full flex items-center">
+                <Link
+                  href={`/${locale}/quiz`}
+                  onMouseEnter={() => setActiveMenu(null)}
+                  className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 flex items-center gap-1.5 h-[75px] border-b-2 border-transparent ${
+                    isSolid ? 'text-[#0ea5e9] hover:text-[#0284c7]' : 'text-white hover:text-white/80'
+                  }`}
+                >
+                  <Sparkles size={14} className={isSolid ? "text-[#0ea5e9]" : ""} /> Quiz
+                </Link>
+              </div>
             </nav>
 
             {/* LOGO */}
@@ -188,7 +199,7 @@ export default function Header() {
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
                         <ul className="space-y-4">
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copier</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copy</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
                         </ul>
@@ -223,7 +234,7 @@ export default function Header() {
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
                         <ul className="space-y-4">
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copier</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copy</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
                         </ul>
@@ -387,7 +398,7 @@ export default function Header() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="text-[14px] text-[#444]"
                       >
-                        Parfums Master Copier
+                        Parfums Master Copy
                       </Link>
                       <Link 
                         href={`/${locale}/parfums-arabes`} 

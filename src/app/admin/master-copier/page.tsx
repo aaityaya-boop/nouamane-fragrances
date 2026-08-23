@@ -111,7 +111,7 @@ export default function AdminMasterCopierPage() {
       brandLabel: 'Valentino',
       gender: 'women',
       subcategory: 'master-copier',
-      subcategoryLabel: 'Master Copier Parfum',
+      subcategoryLabel: 'Master Copy Parfum',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -231,7 +231,7 @@ export default function AdminMasterCopierPage() {
     <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Master Copier</h1>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Master Copy</h1>
           <p className="text-[#666] text-sm font-medium">Gérez vos parfums d'inspiration, dupes, etc.</p>
         </div>
         
@@ -464,7 +464,7 @@ export default function AdminMasterCopierPage() {
                             floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
                             aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
                             'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées',
-                            'master-copier': 'Master Copier Parfum'
+                            'master-copier': 'Master Copy Parfum'
                           };
                           setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
                         }}>
@@ -473,7 +473,7 @@ export default function AdminMasterCopierPage() {
                         <option value="fresh">Frais</option>
                         <option value="woody">Boisé</option>
                         <option value="aromatic">Aromatique</option>
-                        <option value="master-copier">Master Copier Parfum</option>
+                        <option value="master-copier">Master Copy Parfum</option>
                       </select>
                     </div>
                     <div>
