@@ -118,8 +118,7 @@ export default function PerfumeQuiz({ products }: { products: Product[] }) {
           else if (finalAnswers.gift_gender === 'unisex' && product.gender === 'unisex') score += 40;
           else if (finalAnswers.gift_gender === 'unisex') score += 10;
           else score -= 100; // Wrong gender for the gift
-          
-          if (safeTags.includes('bestseller') || safeTags.includes('cadeau')) score += 20;
+          if (safeTags.includes('bestseller') || safeTags.includes('cadeau' as any)) score += 20;
         } else {
           if (product.gender === finalAnswers.target) score += 40;
           else if (product.gender === 'unisex') score += 20;
@@ -147,10 +146,10 @@ export default function PerfumeQuiz({ products }: { products: Product[] }) {
 
         // 4. Intensity Match (+15 pts)
         if (finalAnswers.intensity === 'subtle' && (notesStr.includes('musc') || notesStr.includes('fleur') || notesStr.includes('thé'))) score += 15;
-        if (finalAnswers.intensity === 'intense' && (notesStr.includes('oud') || notesStr.includes('cuir') || notesStr.includes('parfum') || notesStr.includes('extrait') || safeTags.includes('intense'))) score += 15;
+        if (finalAnswers.intensity === 'intense' && (notesStr.includes('oud') || notesStr.includes('cuir') || notesStr.includes('parfum') || notesStr.includes('extrait') || safeTags.includes('intense' as any))) score += 15;
 
         // Bestsellers tie-breaker
-        if (safeTags.includes('bestseller') || safeTags.includes('bestsellers')) score += 5;
+        if (safeTags.includes('bestseller') || safeTags.includes('bestsellers' as any)) score += 5;
 
         // Introduce a slight random factor (0 to 15 points) so that ties or close matches are shuffled.
         // This ensures the user gets different perfumes if they run the quiz again with the same answers!
