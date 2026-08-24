@@ -43,11 +43,11 @@ export default function PagesSeoPage() {
         <table className="w-full text-left">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">UTC</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">URL</th>
               <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Clicks</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">SEO Score</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Issues</th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Action</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Impressions</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">CTR</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Position</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -59,28 +59,15 @@ export default function PagesSeoPage() {
               </tr>
             ) : pages.map((page: any) => (
               <tr key={page.id} className="hover:bg-gray-50">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">
+                <td className="px-6 py-3 text-sm font-medium text-gray-900 max-w-sm truncate">
                   <a href={`https://nayparfum.ma${page.url}`} target="_blank" rel="noreferrer" className="hover:underline">
                     {page.url}
                   </a>
                 </td>
                 <td className="px-6 py-3 text-sm text-gray-600">{page.clicks}</td>
-                <td className="px-6 py-3">
-                  <div className="flex items-center gap-1">
-                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-500" style={{ width: '85%' }} />
-                    </div>
-                    <span className="text-xs text-gray-600">85</span>
-                  </div>
-                </td>
-                <td className="px-6 py-3 text-sm">
-                  <div className="flex items-center gap-1 text-orange-500">
-                    <AlertTriangle size={14} /> 2 Issues
-                  </div>
-                </td>
-                <td className="px-6 py-3">
-                  <button className="text-sm text-blue-600 hover:underline">Optimize</button>
-                </td>
+                <td className="px-6 py-3 text-sm text-gray-600">{page.impressions}</td>
+                <td className="px-6 py-3 text-sm text-gray-600">{(page.ctr * 100).toFixed(2)}%</td>
+                <td className="px-6 py-3 text-sm text-gray-600">{page.position.toFixed(1)}</td>
               </tr>
             ))}
           </tbody>
