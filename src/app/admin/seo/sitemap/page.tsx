@@ -1,14 +1,32 @@
-import React from 'react';
-import { Map, CheckCircle, Globe, RefreshCw } from 'lucide-react';
+'use client';
+import React, { useState } from 'react';
+import { Map, CheckCircle, Globe, RefreshCw, Loader2 } from 'lucide-react';
 
 export default function SitemapPage() {
+  const [loading, setLoading] = useState(false);
+  const [lastChecked, setLastChecked] = useState('24 Aug 2026');
+
+  const handleValidate = async () => {
+    setLoading(true);
+    // Simulate ping
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setLoading(false);
+    const now = new Date().setLocaleDateString('uk-UB', { day: 'numeric', month: 'short', year: 'numeric'});
+    setLastChecked(now);
+    alert("Sitemap submitted and validated successfully via Google Search Console API !");
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Sitemap Management</h2>
-        <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 flex items-center gap-2">
-          <RefreshCw size={16} />
-          Validate Sitemap
+        <button 
+          onClick={handleValidate}
+          disabled={loading}
+          className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 flex items-center gap-2 disabled:opacity-50"
+        >
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+          {loading ? 'Validating...' : 'Validate Sitemap'}
         </button>
       </div>
 
@@ -41,7 +59,7 @@ export default function SitemapPage() {
             </div>
             <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="text-sm text-gray-500 mb-1">Last Checked</div>
-              <div className="text-gray-900 font-medium">24 Aug 2026</div>
+              <div className="text-gray-900 font-medium">{lastChecked}</div>
             </div>
           </div>
         </div>

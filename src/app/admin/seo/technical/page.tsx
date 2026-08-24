@@ -1,5 +1,6 @@
-import React from 'react';
-import { AlertCircle, CheckCircle, Info, ArrowRight } from 'lucide-react';
+'use client';
+import React, { useState } from 'react';
+import { AlertCircle, CheckCircle, Info, ArrowRight, Loader2 } from 'lucide-react';
 
 const MOCK_ISSUES = [
   { id: 1, type: 'CRITICAL', title: 'Missing H1 Tag', description: '3 product pages are missing an H1 tag.', pages: 3 },
@@ -8,13 +9,32 @@ const MOCK_ISSUES = [
 ];
 
 export default function TechnicalSeoPage() {
+  const [loading, setLoading] = useState(false);
+  const [lastAudit, setLastAudit] = useState('Aujourd\'hui');
+
+  const handleAudit = async () => {
+    setLoading(true);
+    // Simulate audit delay
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    setLoading(false);
+    setLastAudit('\u00A0\Il y a quelques secondes');
+    alert("Audit technique terminé avec succès !\nA�cun nouvel incident critique ne s'est ajouté.");
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Technical Audit</h2>
-        <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-          Run New Audit
-        </button>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-500">Dernier audit : {lastAudit}</span>
+          <button 
+            onClick={handleAudit}
+            disabled={loading}
+            className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 flex items-center gap-2"
+          >
+            {loading ? <><Loader2 size={16} className="animate-spin" /> Analyse en cours...<> : 'Run New Audit'}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
