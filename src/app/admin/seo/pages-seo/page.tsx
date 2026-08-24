@@ -30,4 +30,62 @@ export default function PagesSeoPage() {
             <input
               type="text"
               placeholder="Search URLs..."
-              className="pl-9 pr"�B��"&�&FW"&�&FW"�w&��#&�V�FVB��rFW�B�6�f�7W3��WFƖ�R����Rf�7W3�&��r�"f�7W3�&��r�&�6� �����F�c��'WGF��6�74��S�'�"&�&FW"&�&FW"�w&��#&�V�FVB��rFW�B�w&��c��fW#�&r�w&��S#��f��FW"6��S׳������'WGF�����F�c���F�cࠢ�F�b6�74��S�&&�&FW"&�&FW"�w&��#&�V�FVB׆��fW&f��rֆ�FFV�#��F&�R6�74��S�'r�gV��FW�B��VgB#��F�VB6�74��S�&&r�w&��S&�&FW"�"&�&FW"�w&��##��G#��F�6�74��S�'��b��2FW�BՇ2f��B��VF�V�FW�B�w&��SWW&66R#�U$���F���F�6�74��S�'��b��2FW�BՇ2f��B��VF�V�FW�B�w&��SWW&66R#�6Ɩ6�3��F���F�6�74��S�'��b��2FW�BՇ2f��B��VF�V�FW�B�w&��SWW&66R#�4T�66�&S��F���F�6�74��S�'��b��2FW�BՇ2f��B��VF�V�FW�B�w&��SWW&66R#�77VW3��F���F�6�74��S�'��b��2FW�BՇ2f��B��VF�V�FW�B�w&��SWW&66R#�7F�����F����G#���F�VC��F&�G�6�74��S�&F�f�FRגF�f�FR�w&��#��vW2��V�wF��������G#��FB6��7�׳W�6�74��S�'��b�ӂFW�B�6V�FW"FW�B�w&��S#���vW2f�V�B��V6R7��26V&6�6��6��R���FC���G#���vW2����vS�璒�����G"�W�׷vR�G�6�74��S�&��fW#�&r�w&��S#��FB6�74��S�'��b��2FW�B�6�f��B��VF�V�FW�B�w&�ӓ#���&Vc׶�'F�G��vR�W&���F&vWC�%�&��"&V��&��&VfW'&W""6�74��S�&��fW#�V�FW&Ɩ�R#��vR�W&�Т�����FC��FB6�74��S�'��b��2FW�B�6�FW�B�w&��c#�vR�6Ɩ6�7���FC��FB6�74��S�'��b��2#��F�b6�74��S�&f�W��FV�2�6V�FW"v�#��F�b6�74��S�'r�b��"&r�w&��#&�V�FVB�gV���fW&f��rֆ�FFV�#��F�b6�74��S�&��gV��&r�w&VV��S"7G��S׷�v�GF��s�RRr������F�c��7�6�74��S�'FW�Bׇ2FW�B�w&��c#�S��7����F�c���FC��FB6�74��S�'��b��2FW�B�6�#��F�b6�74��S�&f�W��FV�2�6V�FW"v�FW�B��&�vR�S#���W'EG&��v�R6��S׳G���"�77VW0���F�c���FC��FB6�74��S�'��b��2#��'WGF��6�74��S�'FW�B�6�FW�B�&�VR�c��fW#�V�FW&Ɩ�R#��F�֗�S��'WGF�����FC���G#���Т��F&�G����F&�S���F�c���F�c����Р
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+          <button className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
+            <Filter size={18} />
+          </button>
+        </div>
+      </div>
+
+      <div className="border border-gray-200 rounded-xl overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">UTC</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Clicks</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">SEO Score</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Issues</th>
+              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {pages.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  No pages found. Please sync Search Console.
+                </td>
+              </tr>
+            ) : pages.map((page: any) => (
+              <tr key={page.id} className="hover:bg-gray-50">
+                <td className="px-6 py-3 text-sm font-medium text-gray-900">
+                  <a href={`https://nayparfum.ma${page.url}`} target="_blank" rel="noreferrer" className="hover:underline">
+                    {page.url}
+                  </a>
+                </td>
+                <td className="px-6 py-3 text-sm text-gray-600">{page.clicks}</td>
+                <td className="px-6 py-3">
+                  <div className="flex items-center gap-1">
+                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500" style={{ width: '85%' }} />
+                    </div>
+                    <span className="text-xs text-gray-600">85</span>
+                  </div>
+                </td>
+                <td className="px-6 py-3 text-sm">
+                  <div className="flex items-center gap-1 text-orange-500">
+                    <AlertTriangle size={14} /> 2 Issues
+                  </div>
+                </td>
+                <td className="px-6 py-3">
+                  <button className="text-sm text-blue-600 hover:underline">Optimize</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Microcomputer, Eye, MousePointerClick, TrendingUp, Settings, RefreshCw, AlertCircle } from 'lucide-react';
+import { MousePointer2, Eye, MousePointerClick, TrendingUp, Settings, RefreshCw, AlertCircle } from 'lucide-react';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 

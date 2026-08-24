@@ -57,7 +57,7 @@ export default function SeoKeywordsPage() {
           <tbody className="divide-y divide-gray-100">
             {keywords.length === 0 ? (
               <tr>
-                <td colSpan'{6}' className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                   No keywords found. Please sync Search Console in the Overview tab.
                 </td>
               </tr>
