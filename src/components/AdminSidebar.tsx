@@ -37,7 +37,7 @@ const MENU_ITEMS = [
   { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={18} /> },
   { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} /> },
   { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} /> },
-  { href: '/admin/customers', label: 'Clients', icon: <Users size={18} /> },
+  { href: '/admin/customers', label: 'CRM Clients', icon: <Users size={18} /> },
 ];
 
 const MARKETING_ITEMS = [

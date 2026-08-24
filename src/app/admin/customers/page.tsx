@@ -16,8 +16,8 @@ export default async function CustomersPage() {
     <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Clients</h1>
-          <p className="text-[14px] text-[#666]">Consultez et gérez votre base de clients inscrits ({customers.length} au total).</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">CRM Clients</h1>
+          <p className="text-[14px] text-[#666]">Consultez et gérez votre base de données CRM ({customers.length} clients au total).</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 bg-white border border-[#eaeaea] hover:bg-gray-50 rounded-lg text-[13px] font-medium text-[#111] transition-colors shadow-sm">
           <Download size={16} className="text-[#666]" /> Exporter CSV
