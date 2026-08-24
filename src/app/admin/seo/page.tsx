@@ -36,7 +36,15 @@ export default function SeoOverviewPage() {
 
   const handleSync = async () => {
     setSyncing(true);
-    await fetch('/api/admin/seo/search-console/sync', { method: 'POST' });
+    try {
+      const res = await fetch('/api/admin/seo/search-console/sync', { method: 'POST' });
+      const data = await res.json();
+      if (!data.success) {
+        alert("Erreur de synchronisation Google Search Console :\n\n" + data.error + "\n\nAssurez-vous d'avoir invité l'email du compte de service dans les paramètres de votre Search Console.");
+      }
+    } catch(err) {
+      alert("Erreur réseau lors de la synchronisation.");
+    }
     await fetchData();
     setSyncing(false);
   };
