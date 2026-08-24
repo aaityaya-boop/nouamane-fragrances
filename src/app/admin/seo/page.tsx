@@ -6,15 +6,16 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 export default function SeoOverviewPage() {
   const [loading, setLoading] = useState(true);
+  const [days, setDays] = useState(28);
   const [stats, setStats] = useState<any>(null);
   const [chartData, setChartData] = useState([]);
   const [hasConnection, setHasConnection] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = async (currentDays = days) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/seo/overview');
+      const res = await fetch(`/api/admin/seo/overview?days=${currentDays}`);
       const data = await res.json();
       if (data.success && data.data.stats.impressions > 0) {
         setStats(data.data.stats);
@@ -31,8 +32,8 @@ export default function SeoOverviewPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(days);
+  }, [days]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -45,7 +46,7 @@ export default function SeoOverviewPage() {
     } catch(err) {
       alert("Erreur réseau lors de la synchronisation.");
     }
-    await fetchData();
+    await fetchData(days);
     setSyncing(false);
   };
 
@@ -73,11 +74,11 @@ export default function SeoOverviewPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-lg font-semibold text-gray-900">Overview (Last 28 Days)</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Overview (Last {days} Days)</h2>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">7 Days</button>
-          <button className="px-3 py-1.5 text-sm bg-black text-white rounded-md">28 Days</button>
-          <button className="px-3 py-1.5 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">90 Days</button>
+          <button onClick={() => setDays(7)} className={`px-3 py-1.5 text-sm rounded-md ${days === 7 ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>7 Days</button>
+          <button onClick={() => setDays(28)} className={`px-3 py-1.5 text-sm rounded-md ${days === 28 ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>28 Days</button>
+          <button onClick={() => setDays(90)} className={`px-3 py-1.5 text-sm rounded-md ${days === 90 ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>90 Days</button>
           <button onClick={handleSync} className="px-3 py-1.5 text-sm bg-blue-50 text-blue-600 border border-blue-200 rounded-md hover:bg-blue-100 flex items-center gap-1">
             <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
             Sync Now

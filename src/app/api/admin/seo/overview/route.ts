@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(message: any) {
+export async function GET(req: Request) {
   try {
-    const days = 28;
+    const { searchParams } = new URL(req.url);
+    const days = parseInt(searchParams.get('days') || '28', 10);
     const dateCutoff = new Date();
     dateCutoff.setDate(dateCutoff.getDate() - days);
 

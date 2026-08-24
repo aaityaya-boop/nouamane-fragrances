@@ -115,7 +115,7 @@ export default function TechnicalSeoPage() {
                 onClick={() => setExpandedId(expandedId === issue.id ? null : issue.id)}
                 className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black bg-gray-100 px-4 py-2 rounded-lg">
                 View {issue.pages} pages
-                {expandedId === issue.id ? <ChevronDown size={16} className="transform rotate-180"/> : <ChevronDown size={16} />
+                {expandedId === issue.id ? <ChevronDown size={16} className="transform rotate-180"/> : <ChevronDown size={16} />}
               </button>
             </div>
             
