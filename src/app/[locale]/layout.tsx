@@ -82,7 +82,7 @@ export default async function LocaleLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <!-- Google tag (gtag.js) -->
+        {/* Google tag (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-CZWG6R7DSX"></script>
         <script
           dangerouslySetInnerHTML={{
@@ -95,7 +95,7 @@ export default async function LocaleLayout({
             `
           }}
         />
-        <!-- Google Tag Manager -->
+        {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
