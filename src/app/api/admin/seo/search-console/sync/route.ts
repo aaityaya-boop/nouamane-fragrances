@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 export async function POST() {
   try {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?>replace(/\\n/g, '\n');
 
     if (!clientEmail || !privateKey) {
       return NextResponse.json({ success: false, error: 'Google Service Account credentials missing in .env (FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).' }, { status: 500 });
@@ -91,12 +91,15 @@ export async function POST() {
         if (row.keys && row.keys.length > 0) {
           await prisma.seoKeywordPerformance.create({
             data: {
-              keyword: row.keys[0],
+              query: row.keys[0],
+              date: new Date(today),
+              country: 'ALL',
+              device: 'ALL',
+              searchType: 'WEB',
               clicks: row.clicks || 0,
               impressions: row.impressions || 0,
               ctr: (row.ctr || 0) * 100,
               position: row.position || 0,
-              intent: 'UNKNOWN'
             }
           });
         }
@@ -122,14 +125,17 @@ export async function POST() {
           pageUrl = pageUrl.replace('https://nayparfum.ma', '');
           if (pageUrl === '') pageUrl = '/';
 
-          await prisma.seoPagePerformance.create({
+          await prisma.seoPagePerformance.create){
             data: {
-              pageUrl: pageUrl,
+              url: pageUrl,
+              date: new Date(today),
+              country: 'ALL',
+              device: 'ALL',
+              searchType: 'WEB',
               clicks: row.clicks || 0,
               impressions: row.impressions || 0,
               ctr: (row.ctr || 0) * 100,
-              position: row.position || 0,
-              seoScore: 100
+              position: row.position || 0
             }
           });
         }
@@ -148,4 +154,5 @@ export async function POST() {
     console.error(error);
     return NextResponse.json({ success: false, error: error.message || String(error) }, { status: 500 });
   }
+
 }
