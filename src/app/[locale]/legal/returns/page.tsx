@@ -49,8 +49,13 @@ export default function ReturnsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">4. Anomalie ou erreur de livraison</h2>
-            <p>L'excellence est notre norme, mais si vous recevez un produit défectueux ou s'il y a eu une erreur de préparation de notre côté, contactez-nous immédiatement (dans les 48 heures suivant la réception). Dans ce cas exceptionnel, Nayparfum prendra intégralement à sa charge les frais de retour et de remplacement de votre commande dans les plus brefs délais.</p>
+            <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">4. Anomalie ou produit défectueux (Garantie Qualité)</h2>
+            <p>L'excellence est notre norme. Si vous constatez le moindre problème avec votre parfum (produit endommagé pendant le transport, défaut de fabrication, ou erreur de préparation), contactez-nous immédiatement (dans les 48 heures suivant la réception).</p>
+            <p className="mt-2 font-medium">Dans ce cas exceptionnel, Nayparfum prendra intégralement à sa charge les frais de retour et vous proposera deux options au choix :</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li><strong>Le remboursement intégral</strong> de votre commande.</li>
+              <li><strong>L'échange immédiat</strong> contre le même produit, ou contre <strong>un autre parfum de votre choix</strong> (avec ajustement de la différence de prix le cas échéant).</li>
+            </ul>
           </section>
         </div>
       </main>
