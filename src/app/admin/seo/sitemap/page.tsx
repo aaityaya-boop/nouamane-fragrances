@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, CheckCircle, G|obe, RefreshCw } from 'lucide-react';
+import { Map, CheckCircle, Globe, RefreshCw } from 'lucide-react';
 
 export default function SitemapPage() {
   return (

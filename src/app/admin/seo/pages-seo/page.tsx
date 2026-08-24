@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Filter, ExternalLink, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function PagesSeoPage() {
-  const [pages, setPages] = useState<any[=>[]);
+  const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

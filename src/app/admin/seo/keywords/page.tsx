@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Filter, Download, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function SeoKeywordsPage() {
-  const [keywords, setKeywords] = useState<any[=>[]);
+  const [keywords, setKeywords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
