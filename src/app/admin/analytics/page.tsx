@@ -1,7 +1,9 @@
 import React from 'react';
 import prisma from '@/lib/prisma';
 import TrafficChart from '../components/TrafficChart';
-import { MapPin, Users, Globe, Clock, Smartphone, Monitor, LayoutDashboard } from 'lucide-react';
+import WorldMap from '../components/WorldMap';
+import FunnelView from '../components/FunnelView';
+import { MapPin, Users, Globe, Clock, Smartphone, Monitor, LayoutDashboard, Filter } from 'lucide-react';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -53,9 +55,37 @@ export default async function AnalyticsPage() {
     include: { visitor: true }
   });
 
+  // 4. Funnel Analytics
+  const totalVis = await prisma.visitor.count();
+  
+  const productViewsList = await prisma.pageView.findMany({
+    where: { pathname: { contains: '/product/' } },
+    select: { visitorId: true },
+    distinct: ['visitorId']
+  });
+  const cartViewsList = await prisma.pageView.findMany({
+    where: { pathname: { contains: '/cart' } },
+    select: { visitorId: true },
+    distinct: ['visitorId']
+  });
+  const checkoutViewsList = await prisma.pageView.findMany({
+    where: { pathname: { contains: '/checkout' } },
+    select: { visitorId: true },
+    distinct: ['visitorId']
+  });
+  const ordersCount = await prisma.order.count();
+
+  const funnelData = [
+    { name: 'Visiteurs', value: totalVis },
+    { name: 'Vues Produit', value: productViewsList.length },
+    { name: 'Ajouts Panier', value: cartViewsList.length },
+    { name: 'Checkouts', value: checkoutViewsList.length },
+    { name: 'Achats', value: ordersCount }
+  ];
+
   const formatRelativeTime = (date: Date) => {
     const diffInMinutes = Math.floor((new Date().getTime() - date.getTime()) / 60000);
-    if (diffInMinutes < 1) return "À l'instant";
+    if (diffInMinutes < 1) return "� l'instant";
     if (diffInMinutes < 60) return `Il y a ${diffInMinutes} min`;
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `Il y a ${diffInHours}h`;
@@ -67,7 +97,7 @@ export default async function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#1A1A1A]">Audience & Analytics</h1>
-          <p className="text-[#6B6B6B] mt-1">Analyse détaillée du trafic et de la localisation des clients</p>
+          <p className="text-[#6B6B6B] mt-1">Analyse d�taill�e du trafic et de la localisation des clients</p>
         </div>
         <Link href="/admin" className="flex items-center gap-2 px-4 py-2 bg-white border border-[#e0ddd4] rounded-xl hover:bg-[#fafaf7] transition-colors text-[14px] font-medium">
           <LayoutDashboard size={18} />
@@ -82,6 +112,36 @@ export default async function AnalyticsPage() {
         <TrafficChart data={chartData} />
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* World Map */}
+        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+              <Globe size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Carte Mondiale des Visiteurs</h2>
+              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Origine géographique de votre trafic</p>
+            </div>
+          </div>
+          <WorldMap data={visitorsByCity} />
+        </div>
+
+        {/* Funnel */}
+        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-pink-50 text-pink-600 rounded-xl flex items-center justify-center">
+              <Filter size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Entonnoir de Conversion (Funnel)</h2>
+              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Parcours d'achat des visiteurs depuis l'arrivée jusqu'à la commande</p>
+            </div>
+          </div>
+          <FunnelView data={funnelData} />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cities Table */}
         <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm lg:col-span-1">
@@ -94,7 +154,7 @@ export default async function AnalyticsPage() {
           
           <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
             {visitorsByCity.length === 0 && (
-              <p className="text-[#6B6B6B] text-[14px]">Aucune donnée de localisation disponible.</p>
+              <p className="text-[#6B6B6B] text-[14px]">Aucune donn�e de localisation disponible.</p>
             )}
             {visitorsByCity.map((cityData, index) => (
               <div key={index} className="flex items-center justify-between p-4 rounded-xl border border-[#e0ddd4]/50 hover:bg-[#fafaf7] transition-colors">
@@ -127,8 +187,8 @@ export default async function AnalyticsPage() {
               <Users size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1A1A1A]">Activité en direct</h2>
-              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Les 100 dernières actions sur le site</p>
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Activit� en direct</h2>
+              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Les 100 derni�res actions sur le site</p>
             </div>
           </div>
 
@@ -137,7 +197,7 @@ export default async function AnalyticsPage() {
               <thead>
                 <tr className="border-b border-[#e0ddd4]">
                   <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Visiteur (Ville)</th>
-                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Page visitée</th>
+                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Page visit�e</th>
                   <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Source</th>
                   <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Temps</th>
                 </tr>
