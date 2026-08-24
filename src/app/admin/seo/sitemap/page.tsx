@@ -11,7 +11,7 @@ export default function SitemapPage() {
     // Simulate ping
     await new Promise(resolve => setTimeout(resolve, 2000));
     setLoading(false);
-    const now = new Date().setLocaleDateString('uk-UB', { day: 'numeric', month: 'short', year: 'numeric'});
+    const now = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     setLastChecked(now);
     alert("Sitemap submitted and validated successfully via Google Search Console API !");
   };
