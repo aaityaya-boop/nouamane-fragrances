@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 export async function POST() {
   try {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY?>replace(/\\n/g, '\n');
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     if (!clientEmail || !privateKey) {
       return NextResponse.json({ success: false, error: 'Google Service Account credentials missing in .env (FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).' }, { status: 500 });
