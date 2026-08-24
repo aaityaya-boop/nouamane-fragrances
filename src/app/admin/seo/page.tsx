@@ -92,7 +92,7 @@ export default function SeoOverviewPage() {
         </div>
         <div className="bg-gray-50 p-5 rounded-xl border border-gray-160">
           <div className="flex items-center gap-2 text-gray-500 mb-2">
-            <Microcomputer size={16} /> Average CTR
+            <MousePointer2 size={16} /> Average CTR
           </div>
           <div className="text-2xl font-bold text-gray-900">{stats?.ctr}%</div>
         </div>
