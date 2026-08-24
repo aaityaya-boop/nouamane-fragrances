@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Check,  ArrowRight, lucideReactIgnore } from 'lucide-react';
+import { Sparkles, Check, ArrowRight } from 'lucide-react';
 
 export default function AiAssistantPage() {
   return (
