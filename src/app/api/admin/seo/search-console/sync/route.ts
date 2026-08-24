@@ -125,7 +125,7 @@ export async function POST() {
           pageUrl = pageUrl.replace('https://nayparfum.ma', '');
           if (pageUrl === '') pageUrl = '/';
 
-          await prisma.seoPagePerformance.create){
+          await prisma.seoPagePerformance.create({
             data: {
               url: pageUrl,
               date: new Date(today),
