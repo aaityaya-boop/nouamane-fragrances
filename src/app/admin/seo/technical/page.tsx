@@ -99,7 +99,7 @@ export default function TechnicalSeoPage() {
           <div key={issue.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between p-5 hover:bg-gray-50 transition-colors">
               <div className="flex gap-4">
-                <div className={amt-1 ${
+                <div className={`mt-1 ${
                   issue.type === 'CRITICAL' ? 'text-red-500' 
                   : issue.type === 'WARNING' ? 'text-orange-500'
                   : 'text-blue-500'
