@@ -49,10 +49,10 @@ model Customer {
 }
 
 model Product {
-  id                  Int      @id @default(autoincrement())
-  slug                String   @unique
+  id                  Int         @id @default(autoincrement())
+  slug                String      @unique
   name                String
-  brandId             String   @default("valentino")
+  brandId             String      @default("valentino")
   brandLabel          String
   gender              String
   subcategory         String
@@ -70,20 +70,21 @@ model Product {
   bottleColorLabel    String
   bottleMaterial      String
   bottleMaterialLabel String
-  rating              Float    @default(0)
-  reviewCount         Int      @default(0)
+  rating              Float       @default(0)
+  reviewCount         Int         @default(0)
   releaseDate         String
   tags                String
-  inStock             Boolean  @default(true)
-  stock               Int      @default(10)
+  inStock             Boolean     @default(true)
+  stock               Int         @default(10)
   perfectSeason       String
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
   testerPrice         Float?
-  isTester            Boolean  @default(false)
-  sku                 String?  @unique
-  brand               Brand    @relation(fields: [brandId], references: [slug])
+  isTester            Boolean     @default(false)
+  sku                 String?     @unique
+  brand               Brand       @relation(fields: [brandId], references: [slug])
   reviews             Review[]
+  seo                 ProductSeo?
 }
 
 model Review {
@@ -225,4 +226,250 @@ model Affiliate {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   orders           Order[]
+}
+
+// ==========================================
+// SEO MANAGER MODELS
+// ==========================================
+
+model SeoSettings {
+  id                           String   @id @default(cuid())
+  siteName                     String   @default("NAY Parfum")
+  siteUrl                      String   @default("https://nayparfum.ma")
+  defaultTitle                 String?
+  defaultDescription           String?
+  defaultOgImage               String?
+  defaultKeywords              String?
+  robotsEnabled                Boolean  @default(true)
+  sitemapUrl                   String?  @default("https://nayparfum.ma/sitemap.xml")
+  googleSearchConsoleConnected Boolean  @default(false)
+  googlePropertyUrl            String?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+}
+
+model GoogleSearchConsoleConnection {
+  id                    String    @id @default(cuid())
+  propertyUrl           String
+  accessTokenEncrypted  String
+  refreshTokenEncrypted String
+  tokenExpiresAt        DateTime
+  scopes                String
+  connectedBy           String
+  lastSyncAt            DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model SeoSearchConsoleDaily {
+  id          String   @id @default(cuid())
+  date        DateTime
+  clicks      Int
+  impressions Int
+  ctr         Float
+  position    Float
+  device      String
+  country     String
+  searchType  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([date, device, country, searchType])
+  @@index([date])
+  @@index([device])
+  @@index([country])
+  @@index([searchType])
+}
+
+model SeoKeywordPerformance {
+  id          String   @id @default(cuid())
+  date        DateTime
+  query       String
+  clicks      Int
+  impressions Int
+  ctr         Float
+  position    Float
+  country     String
+  device      String
+  searchType  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([query])
+  @@index([date])
+  @@index([impressions])
+  @@index([clicks])
+  @@index([position])
+}
+
+model SeoPagePerformance {
+  id          String   @id @default(cuid())
+  date        DateTime
+  url         String
+  clicks      Int
+  impressions Int
+  ctr         Float
+  position    Float
+  country     String
+  device      String
+  searchType  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([url])
+  @@index([date])
+  @@index([impressions])
+  @@index([clicks])
+  @@index([position])
+}
+
+model SeoAudit {
+  id                 String   @id @default(cuid())
+  url                String   @unique
+  statusCode         Int
+  title              String?
+  metaDescription    String?
+  canonicalUrl       String?
+  robots             String?
+  h1Count            Int      @default(0)
+  h2Count            Int      @default(0)
+  wordCount          Int      @default(0)
+  imageCount         Int      @default(0)
+  imagesWithoutAlt   Int      @default(0)
+  internalLinks      Int      @default(0)
+  externalLinks      Int      @default(0)
+  hasSchema          Boolean  @default(false)
+  schemaTypes        String?
+  hasOpenGraph       Boolean  @default(false)
+  hasTwitterCard     Boolean  @default(false)
+  isIndexable        Boolean  @default(true)
+  isMobileFriendly   Boolean  @default(true)
+  performanceScore   Int      @default(0)
+  seoScore           Int      @default(0)
+  accessibilityScore Int      @default(0)
+  lastCheckedAt      DateTime
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model SeoIssue {
+  id              String    @id @default(cuid())
+  url             String
+  type            String
+  severity        String
+  title           String
+  description     String?
+  recommendation  String?
+  status          String    @default("OPEN")
+  metadata        String?
+  firstDetectedAt DateTime  @default(now())
+  lastDetectedAt  DateTime  @default(now())
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([url])
+  @@index([severity])
+  @@index([status])
+}
+
+model SeoOpportunity {
+  id              String   @id @default(cuid())
+  type            String
+  keyword         String?
+  url             String?
+  title           String
+  description     String?
+  currentPosition Float?
+  impressions     Int?
+  clicks          Int?
+  ctr             Float?
+  priority        String
+  recommendation  String?
+  status          String   @default("NEW")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+}
+
+model ProductSeo {
+  id                String    @id @default(cuid())
+  productId         Int       @unique
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  seoTitle          String?
+  metaDescription   String?
+  focusKeyword      String?
+  secondaryKeywords String?
+  canonicalUrl      String?
+  ogTitle           String?
+  ogDescription     String?
+  ogImage           String?
+  schemaEnabled     Boolean   @default(true)
+  seoScore          Int       @default(0)
+  aiGenerated       Boolean   @default(false)
+  lastOptimizedAt   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model CategorySeo {
+  id                String   @id @default(cuid())
+  categoryId        String   @unique
+  seoTitle          String?
+  metaDescription   String?
+  focusKeyword      String?
+  secondaryKeywords String?
+  canonicalUrl      String?
+  ogTitle           String?
+  ogDescription     String?
+  ogImage           String?
+  seoScore          Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model SeoAiGeneration {
+  id                   String   @id @default(cuid())
+  entityType           String
+  entityId             String
+  inputData            String
+  generatedTitle       String?
+  generatedDescription String?
+  generatedContent     String?
+  generatedKeywords    String?
+  generatedFaq         String?
+  generatedSchema      String?
+  model                String
+  status               String   @default("GENERATED")
+  createdBy            String
+  createdAt            DateTime @default(now())
+}
+
+model SeoSyncJob {
+  id               String    @id @default(cuid())
+  type             String
+  status           String    @default("PENDING")
+  startedAt        DateTime?
+  completedAt      DateTime?
+  recordsProcessed Int       @default(0)
+  errorMessage     String?
+  metadata         String?
+  createdBy        String
+  createdAt        DateTime  @default(now())
+}
+
+model SeoSitemapStatus {
+  id             String    @id @default(cuid())
+  sitemapUrl     String    @unique
+  httpStatus     Int?
+  isValid        Boolean   @default(false)
+  urlCount       Int       @default(0)
+  lastCheckedAt  DateTime?
+  lastModifiedAt DateTime?
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

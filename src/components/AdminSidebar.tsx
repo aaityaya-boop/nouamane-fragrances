@@ -24,6 +24,7 @@ import {
   Gift,
   Menu,
   X,
+  Search,
   Moon
 } from 'lucide-react';
 
@@ -49,10 +50,14 @@ const MARKETING_ITEMS = [
   { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} /> },
 ];
 
+const SEO_ITEMS = [
+  { href: '/admin/seo', label: 'SEO Manager', icon: <Search size={18} /> },
+];
+
 const SYSTEM_ITEMS = [
   { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
   { href: '/admin/vitrine', label: 'Vitrine', icon: <Sparkles size={18} /> },
-  { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} /> },
+  { href: '/admin/settings', label: 'Paramtres', icon: <Settings size={18} /> },
 ];
 
 export default function AdminSidebar() {
@@ -156,7 +161,7 @@ export default function AdminSidebar() {
       <nav className="flex-1 px-4 space-y-6 overflow-y-auto mt-2 custom-scrollbar">
         
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Général</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">G�n�ral</div>
           <div className="space-y-0.5">
             {renderLinks(MENU_ITEMS)}
           </div>
@@ -170,7 +175,14 @@ export default function AdminSidebar() {
         </div>
 
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Système</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">SEO TOOL</div>
+          <div className="space-y-0.5">
+            {renderLinks(SEO_ITEMS)}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Syst�me</div>
           <div className="space-y-0.5">
             {renderLinks(SYSTEM_ITEMS)}
           </div>
@@ -196,7 +208,7 @@ export default function AdminSidebar() {
           className="w-full flex items-center gap-3 px-3 py-2.5 mt-1 rounded-lg text-[13px] font-medium text-red-500/80 hover:bg-red-500/10 hover:text-red-500 transition-colors"
         >
           <LogOut size={16} />
-          <span>Déconnexion</span>
+          <span>D�connexion</span>
         </button>
       </div>
     </aside>
