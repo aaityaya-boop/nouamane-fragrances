@@ -26,7 +26,7 @@ export const revalidate = 3600;
 
 export default async function ShopPage() {
   const dbProducts = await prisma.product.findMany({
-    where: {
+    where: { published: true, 
       subcategory: { notIn: ['master-copier', 'coffrets'] }
     }
   });

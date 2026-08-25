@@ -32,6 +32,7 @@ export type Product = {
   id: number;
   slug: string;
   sku?: string | null;
+  published?: boolean;
   name: string;
   brand: Brand;
   brandLabel: string;

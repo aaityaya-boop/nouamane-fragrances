@@ -103,6 +103,24 @@ export default function AdminArabicPage() {
     }
   };
 
+  const handleGenerateSKUs = async () => {
+    if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les parfums arabes qui n\'en ont pas ?')) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/admin/products/generate-skus', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(`${data.updatedCount} SKU(s) générés avec succès.`);
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erreur lors de la génération des SKUs');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const openAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -132,6 +150,7 @@ export default function AdminArabicPage() {
       releaseDate: new Date().toISOString(),
       inStock: true,
       isTester: true,
+      published: true,
     });
     setIsModalOpen(true);
   };
@@ -237,18 +256,24 @@ export default function AdminArabicPage() {
           <p className="text-[14px] text-[#666]">Cr�ez et g�rez votre collection de parfums arabes.</p>
         </div>
         
-        <div className="flex gap-3">
-          <button 
-            onClick={() => {
-              setEditingProduct(null);
-              setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Arabes', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
-              setIsModalOpen(true);
-            }}
-            className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
-          >
-            <Plus size={16} /> Nouveau Parfum Arabe
-          </button>
-        </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleGenerateSKUs}
+              className="flex items-center gap-2 bg-white border border-[#eaeaea] text-[#111] px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-50 transition-all shadow-sm"
+            >
+              Générer SKUs
+            </button>
+            <button 
+              onClick={() => {
+                setEditingProduct(null);
+                setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Arabes', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
+            >
+              <Plus size={16} /> Nouveau Parfum Arabe
+            </button>
+          </div>
       </div>
 
 
@@ -328,6 +353,11 @@ export default function AdminArabicPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 items-center flex-wrap">
+                        {p.published !== false ? (
+                          <button onClick={() => handleQuickUpdate(p.id, 'published', false)} className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-500/20 hover:bg-blue-100 transition-colors cursor-pointer">PUBLIÉ</button>
+                        ) : (
+                          <button onClick={() => handleQuickUpdate(p.id, 'published', true)} className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-500/20 hover:bg-gray-200 transition-colors cursor-pointer">BROUILLON</button>
+                        )}
                         {p.inStock ? (
                           <button onClick={() => handleQuickUpdate(p.id, 'inStock', false)} className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-500/20 hover:bg-emerald-100 transition-colors cursor-pointer">EN STOCK</button>
                         ) : (
@@ -540,9 +570,20 @@ export default function AdminArabicPage() {
                       </label>
                     </div>
 
+                    <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
+                        <div>
+                          <h4 className="text-[13px] font-bold text-[#1A1A1A]">Publié (Boutique en ligne)</h4>
+                          <p className="text-[11px] text-[#9A9A9A] mt-1">Si décoché, le produit sera en brouillon et n'apparaîtra pas sur le site public.</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" checked={formData.published !== false} onChange={e => setFormData({...formData, published: e.target.checked})} />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                      </div>
+
                     <div className="col-span-2 border-t border-[#e0ddd4] pt-6">
                       <div className="flex items-center justify-between mb-4">
-                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et D�clinaisons</label>
+                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et Dclinaisons</label>
                         <button type="button" onClick={handleAddSize} className="text-[#0ea5e9] text-[12px] font-medium hover:underline flex items-center gap-1">
                           <Plus size={14} /> Nouvelle taille
                         </button>

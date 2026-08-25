@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
   const product = await prisma.product.findUnique({
-    where: { slug: decodedSlug },
+    where: { published: true,  slug: decodedSlug },
   });
 
   if (!product) {
@@ -42,10 +42,10 @@ export default async function ProductPage({
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
   
-  const standardProducts = await prisma.product.findMany({ where: { subcategory: { not: 'coffrets' } } });
+  const standardProducts = await prisma.product.findMany({ where: { published: true,  subcategory: { not: 'coffrets' } } });
   
   const dbProduct = await prisma.product.findUnique({
-    where: { slug: decodedSlug },
+    where: { published: true,  slug: decodedSlug },
   });
 
   if (!dbProduct) {
@@ -54,7 +54,7 @@ export default async function ProductPage({
 
   // Get related products (same brand, excluding self)
   const dbRelated = await prisma.product.findMany({
-    where: { 
+    where: { published: true,  
       brandId: dbProduct.brandId,
       id: { not: dbProduct.id }
     },
@@ -63,7 +63,7 @@ export default async function ProductPage({
 
   // Get reviews
   const dbReviews = await prisma.review.findMany({
-    where: { productSlug: decodedSlug },
+    where: { published: true,  productSlug: decodedSlug },
     orderBy: { createdAt: 'desc' }
   });
 

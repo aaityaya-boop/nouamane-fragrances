@@ -18,7 +18,7 @@ export default async function ArabicPerfumesPage({ params }: { params: Promise<{
   
   // Fetch all products marked as arabic
   const arabicPerfumes = await prisma.product.findMany({
-    where: { subcategory: 'arabic' },
+    where: { subcategory: 'arabic', published: true },
     orderBy: { createdAt: 'desc' }
   });
 

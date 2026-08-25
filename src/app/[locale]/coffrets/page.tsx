@@ -18,13 +18,13 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
   
   // Fetch all products marked as coffrets
   const coffrets = await prisma.product.findMany({
-    where: { subcategory: 'coffrets' },
+    where: { published: true,  subcategory: 'coffrets' },
     orderBy: { createdAt: 'desc' }
   });
 
   // Fetch all standard products to display included items
   const standardProducts = await prisma.product.findMany({
-    where: { subcategory: { not: 'coffrets' } }
+    where: { published: true,  subcategory: { not: 'coffrets' } }
   });
 
   // Parse images and tags for each coffret
