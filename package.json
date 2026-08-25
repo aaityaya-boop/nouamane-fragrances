@@ -10,12 +10,11 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.51",
-    "@ai-sdk/react": "^4.0.82",
     "@prisma/client": "^5.22.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.6.1",
     "@vercel/speed-insights": "^2.0.0",
-    "ai": "^7.0.79",
+    "ai": "^3.4.33",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "0.45.2",
     "firebase": "^12.16.0",

@@ -48,14 +48,14 @@ Instructions importantes :
 4. Invite subtilement le client à utiliser la barre de recherche ou à naviguer dans les catégories du site pour trouver le produit s'il est intéressé.
 5. Si on te pose une question hors du domaine de la parfumerie ou du service client NAY Parfums, recadre poliment la conversation sur les parfums.`;
 
-    const result = streamText({
-      model: google('gemini-1.5-flash'),
+    const result = await streamText({
+      model: google('gemini-1.5-flash') as any,
       system: systemPrompt,
       messages,
       temperature: 0.7,
     });
 
-    return result.toTextStreamResponse();
+    return result.toDataStreamResponse();
   } catch (error) {
     console.error('Erreur API Chat:', error);
     return NextResponse.json({ error: 'Une erreur est survenue.' }, { status: 500 });

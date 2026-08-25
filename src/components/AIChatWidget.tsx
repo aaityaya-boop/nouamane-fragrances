@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { MessageSquare, X, Send, Sparkles, User, Bot, MinusCircle } from 'lucide-react';
+import { useChat } from 'ai/react';
+import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AIChatWidget() {
