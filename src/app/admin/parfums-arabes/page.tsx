@@ -109,9 +109,9 @@ export default function AdminArabicPage() {
       id: `p-${Date.now()}`,
       slug: '',
       name: '',
-      brand: 'valentino',
-      brandLabel: 'Valentino',
-      gender: 'women',
+      brand: 'lattafa',
+      brandLabel: 'Lattafa',
+      gender: 'unisex',
       subcategory: 'arabic',
       subcategoryLabel: 'Parfums Arabes',
       price: 0,
@@ -123,7 +123,7 @@ export default function AdminArabicPage() {
       longDescription: '',
       notes: { top: [], heart: [], base: [] },
       ingredients: '',
-      sizes: [{ label: '50ml', price: 0 }],
+      sizes: [{ label: '100ml', price: 0 }],
       tags: [],
       bottleColor: 'transparent',
       bottleMaterial: 'glass',
@@ -131,7 +131,7 @@ export default function AdminArabicPage() {
       tagline: '',
       releaseDate: new Date().toISOString(),
       inStock: true,
-      isTester: true,
+      isTester: false,
       published: true,
     });
     setIsModalOpen(true);
@@ -169,7 +169,7 @@ export default function AdminArabicPage() {
       }
     } catch (error: any) {
       console.error('Failed to upload image', error);
-      alert(`Erreur lors du t�l�chargement de l'image: ${error.message}`);
+      alert(`Erreur lors du téléchargement de l'image: ${error.message}`);
     } finally {
       setIsUploading(false);
       e.target.value = ''; // Reset input to allow re-uploading the same file
@@ -235,7 +235,7 @@ export default function AdminArabicPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
           <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Arabes</h1>
-          <p className="text-[14px] text-[#666]">Cr�ez et g�rez votre collection de parfums arabes.</p>
+          <p className="text-[14px] text-[#666]">Créez et gérez votre collection de parfums arabes.</p>
         </div>
         
           <div className="flex gap-3">
@@ -289,7 +289,7 @@ export default function AdminArabicPage() {
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouv�.</td>
+                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvé�.</td>
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
@@ -302,7 +302,7 @@ export default function AdminArabicPage() {
                         <div className="font-semibold text-[13px] text-[#111]">{p.name}</div>
                         <input 
                           type="text" 
-                          placeholder="SKU / R�f"
+                          placeholder="SKU / Réf"
                           className="text-[11px] font-mono text-[#666] bg-transparent border-b border-transparent hover:border-[#eaeaea] focus:border-[#0ea5e9] focus:outline-none transition-colors w-24 px-1 py-0.5 mt-0.5 block"
                           defaultValue={p.sku || ''}
                           onBlur={(e) => {
@@ -387,7 +387,7 @@ export default function AdminArabicPage() {
     {editingProduct ? 'Modifier le Parfum Arabe' : 'Nouveau Parfum Arabe'}
   </h2>
                 <p className="text-[#9A9A9A] text-[13px] mt-1">
-    G�rez la grande image de couverture et les d�tails de votre coffret cadeau.
+    Gérez les détails, le prix, et les images de votre parfum oriental.
   </p>
               </div>
               <div className="flex items-center gap-3">
@@ -395,7 +395,7 @@ export default function AdminArabicPage() {
                   Annuler
                 </button>
                 <button onClick={handleSave} className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#0ea5e9] transition-all shadow-md">
-                  {editingProduct ? 'Enregistrer' : 'Cr�er le produit'}
+                  {editingProduct ? 'Enregistrer' : 'Créer le produit'}
                 </button>
               </div>
             </div>
@@ -404,9 +404,9 @@ export default function AdminArabicPage() {
             <div className="flex-1 overflow-y-auto p-8">
               <form onSubmit={handleSave} className="max-w-3xl mx-auto space-y-8">
                 
-                {/* SECTION 1: Informations G�n�rales */}
+                {/* SECTION 1: Informations Générales */}
                 <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Informations G�n�rales</h3>
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Informations Générales</h3>
                   
                   <div className="grid grid-cols-2 gap-6">
                     <div>
@@ -420,7 +420,7 @@ export default function AdminArabicPage() {
                         value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">SKU / Num�ro de S�rie</label>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">SKU / Numéro de Série</label>
                       <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-mono"
                         value={formData.sku || ''} onChange={e => setFormData({...formData, sku: e.target.value})} 
                         placeholder="Ex: REF-VAL-001" />
@@ -444,7 +444,7 @@ export default function AdminArabicPage() {
                             brandLabel: selectedBrand ? selectedBrand.label : ''
                           });
                         }}>
-                        <option value="">S�lectionnez une marque</option>
+                        <option value="">Sélectionnez une marque</option>
                         {brands.map(b => (
                           <option key={b.id} value={b.slug}>{b.name}</option>
                         ))}
@@ -474,7 +474,7 @@ export default function AdminArabicPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Id�ale</label>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
                       <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.perfectSeason || ''} onChange={e => setFormData({...formData, perfectSeason: e.target.value})} 
                         placeholder="Ex: Automne, Hiver" />
@@ -482,23 +482,23 @@ export default function AdminArabicPage() {
 
                     <div className="col-span-2 grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
                       <div>
-                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de T�te</label>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Tête</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="S�par�es par des virgules..."
+                          placeholder="Séparées par des virgules..."
                           value={(formData.notes?.top || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, top: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de C�ur</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="S�par�es par des virgules..."
+                          placeholder="Séparées par des virgules..."
                           value={(formData.notes?.heart || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, heart: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Fond</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
-                          placeholder="S�par�es par des virgules..."
+                          placeholder="Séparées par des virgules..."
                           value={(formData.notes?.base || []).join(', ')} 
                           onChange={e => setFormData({...formData, notes: {...formData.notes, base: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
@@ -527,13 +527,13 @@ export default function AdminArabicPage() {
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Ancien Prix (Optionnel)</label>
                       <input type="number" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-red-500 transition-all text-red-500 font-semibold"
                         value={formData.originalPrice || ''} onChange={e => setFormData({...formData, originalPrice: e.target.value ? Number(e.target.value) : null})} 
-                        placeholder="Prix barr�..." />
+                        placeholder="Prix barré..." />
                     </div>
                     
                     <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
                       <div>
-                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">�0tat du Stock</h4>
-                        <p className="text-[11px] text-[#9A9A9A] mt-1">D�sactivez pour afficher "Rupture de stock" sur la boutique.</p>
+                        <h4 className="text-[13px] font-bold text-[#1A1A1A]">�État du Stock</h4>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">Désactivez pour afficher "Rupture de stock" sur la boutique.</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" className="sr-only peer" checked={formData.inStock} onChange={e => setFormData({...formData, inStock: e.target.checked})} />
@@ -544,7 +544,7 @@ export default function AdminArabicPage() {
                     <div className="col-span-2 flex items-center justify-between bg-[#f8fafc] p-4 rounded-xl border border-[#e0ddd4]">
                       <div>
                         <h4 className="text-[13px] font-bold text-[#1A1A1A]">Format Testeur</h4>
-                        <p className="text-[11px] text-[#9A9A9A] mt-1">Cochez si ce produit est vendu sans la bo�te d'origine scell�e.</p>
+                        <p className="text-[11px] text-[#9A9A9A] mt-1">Cochez si ce produit est vendu sans la boîte d'origine scellée.</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" className="sr-only peer" checked={formData.isTester} onChange={e => setFormData({...formData, isTester: e.target.checked})} />
@@ -565,7 +565,7 @@ export default function AdminArabicPage() {
 
                     <div className="col-span-2 border-t border-[#e0ddd4] pt-6">
                       <div className="flex items-center justify-between mb-4">
-                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et Dclinaisons</label>
+                        <label className="block text-[12px] font-bold text-[#1A1A1A]">Tailles et Déclinaisons</label>
                         <button type="button" onClick={handleAddSize} className="text-[#0ea5e9] text-[12px] font-medium hover:underline flex items-center gap-1">
                           <Plus size={14} /> Nouvelle taille
                         </button>
@@ -587,9 +587,9 @@ export default function AdminArabicPage() {
                   </div>
                 </div>
 
-                {/* SECTION 4: M�dias */}
+                {/* SECTION 4: Médias */}
                 <div className="bg-white p-8 rounded-2xl border border-[#e0ddd4] shadow-sm space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">M�dias & Images</h3>
+                  <h3 className="text-[14px] font-bold text-[#1A1A1A] border-b border-[#e0ddd4] pb-3 mb-6">Médias & Images</h3>
                   
                   <div className="flex gap-4 flex-wrap">
                     {formData.images?.map((img: string, idx: number) => (
