@@ -1,7 +1,11 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+});
 
 export async function POST(req: Request) {
   try {
@@ -49,7 +53,7 @@ Instructions importantes :
 5. Si on te pose une question hors du domaine de la parfumerie ou du service client NAY Parfums, recadre poliment la conversation sur les parfums.`;
 
     const result = await streamText({
-      model: google('gemini-1.5-flash') as any,
+      model: google('gemini-3.6-flash') as any,
       system: systemPrompt,
       messages,
       temperature: 0.7,
