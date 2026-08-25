@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from 'ai/react';
-import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
+import { MessageSquare, X, Send, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import ReactMarkdown from 'react-markdown';
@@ -55,7 +55,19 @@ export default function AIChatWidget() {
             {/* Header */}
             <div className="bg-[#1A1A1A] text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-[#0ea5e9]" />
+                <div
+                  className="w-7 h-7 bg-white"
+                  style={{
+                    maskImage: 'url("/images/nay/Artboard%202.png")',
+                    WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskPosition: 'center',
+                  }}
+                />
                 <div className="font-semibold text-[14px]">Conseiller NAY</div>
               </div>
               <button onClick={toggleChat} className="text-gray-400 hover:text-white transition-colors">
@@ -69,7 +81,7 @@ export default function AIChatWidget() {
                 <div key={m.id} className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {m.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full bg-[#1A1A1A] flex items-center justify-center flex-shrink-0 mt-1">
-                      <Sparkles size={14} className="text-white" />
+                      <Bot size={16} className="text-white" />
                     </div>
                   )}
                   <div
@@ -112,7 +124,7 @@ export default function AIChatWidget() {
               {isLoading && (
                 <div className="flex gap-3 justify-start">
                   <div className="w-8 h-8 rounded-full bg-[#1A1A1A] flex items-center justify-center flex-shrink-0">
-                    <Sparkles size={14} className="text-white" />
+                    <Bot size={16} className="text-white" />
                   </div>
                   <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100 rounded-tl-sm flex items-center gap-1">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
