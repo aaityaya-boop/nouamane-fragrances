@@ -1,158 +1,143 @@
 import { NextResponse } from 'next/server';
+import { getGscClient } from '@/lib/gsc';
 import prisma from '@/lib/prisma';
-import { google } from 'googleapis';
+import { cookies } from 'next/headers';
+import { verifyAuth } from '@/lib/auth';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-
-    if (!clientEmail || !privateKey) {
-      return NextResponse.json({ success: false, error: 'Google Service Account credentials missing in .env (FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).' }, { status: 500 });
-    }
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: clientEmail,
-        private_key: privateKey,
-      },
-      scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-    });
-
-    const webmasters = google.webmasters({ version: 'v3', auth });
-
-    let siteUrl = 'https://nayparfum.ma/';
+    const cookieStore = await cookies();
+    const token = cookieStore.get('admin_token')?.value;
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     
-    try {
-      await webmasters.sites.get({ siteUrl });
-    } catch(err) {
-      siteUrl = 'sc-domain:nayparfum.ma';
-      await webmasters.sites.get({ siteUrl }).catch(e => {
-        throw new Error(`Service account not authorized. Please invite ${clientEmail} to your Google Search Console property (${siteUrl}) with \"Restricted\" or \"Full\" permission.`);
-      });
+    const admin = await verifyAuth(token);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const settings = await prisma.seoSettings.findFirst();
+    if (!settings || !settings.googleSearchConsoleConnected || !settings.googlePropertyUrl) {
+      return NextResponse.json({ error: 'Google Search Console not connected' }, { status: 400 });
     }
 
-    const today = new Date();
-    const endDate = new Date(today);
-    endDate.setDate(endDate.getDate() - 2);
-    const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 28);
+    const gsc = await getGscClient();
+    
+    // We fetch data for the last 3 days to get stable numbers
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() - 2); 
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 5);
+    
+    const dateStr = (d: Date) => d.toISOString().split('T')[0];
 
-    const start = startDate.toISOString().split('T')[0];
-    const end = endDate.toISOString().split('T')[0];
-
-    const response = await webmasters.searchanalytics.query({
-      siteUrl,
+    // 1. Fetch Daily Performance (Filtered for Morocco as requested)
+    const dailyRes = await gsc.searchanalytics.query({
+      siteUrl: settings.googlePropertyUrl,
       requestBody: {
-        startDate: start,
-        endDate: end,
-        dimensions: ['date'],
+        startDate: dateStr(startDate),
+        endDate: dateStr(endDate),
+        dimensions: ['date', 'country', 'device'],
+        dimensionFilterGroups: [{
+            filters: [{ dimension: 'country', expression: 'mar' }]
+        }]
       }
     });
 
-    if (response.data.rows) {
-      await prisma.seoSearchConsoleDaily.deleteMany({});
-      
-      for (const row of response.data.rows) {
-        if (row.keys && row.keys.length > 0) {
-          const dateStr = row.keys[0];
-          const date = new Date(dateStr);
-          
-          await prisma.seoSearchConsoleDaily.create({
-            data: {
-              date,
-              device: 'ALL',
-              country: 'ALL',
-              searchType: 'WEB',
-              clicks: row.clicks || 0,
-              impressions: row.impressions || 0,
-              ctr: (row.ctr || 0) * 100,
-              position: row.position || 0,
+    if (dailyRes.data.rows) {
+      for (const row of dailyRes.data.rows) {
+        const date = new Date(row.keys![0]);
+        const country = row.keys![1].toUpperCase();
+        const device = row.keys![2].toUpperCase();
+        
+        await prisma.seoSearchConsoleDaily.upsert({
+          where: {
+            date_device_country_searchType: {
+              date: date,
+              device: device,
+              country: country,
+              searchType: 'WEB'
             }
-          });
-        }
+          },
+          update: {
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: row.ctr || 0,
+            position: row.position || 0,
+          },
+          create: {
+            date: date,
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: row.ctr || 0,
+            position: row.position || 0,
+            country: country,
+            device: device,
+            searchType: 'WEB'
+          }
+        });
       }
     }
 
-    const kwResponse = await webmasters.searchanalytics.query({
-      siteUrl,
+    // 2. Fetch Keyword Performance (Filtered for Morocco)
+    const keywordRes = await gsc.searchanalytics.query({
+      siteUrl: settings.googlePropertyUrl,
       requestBody: {
-        startDate: start,
-        endDate: end,
-        dimensions: ['query'],
-        rowLimit: 100,
+        startDate: dateStr(startDate),
+        endDate: dateStr(endDate),
+        dimensions: ['query', 'country', 'device'],
+        dimensionFilterGroups: [{
+            filters: [{ dimension: 'country', expression: 'mar' }]
+        }],
+        rowLimit: 1000
       }
     });
 
-    if (kwResponse.data.rows) {
-      await prisma.seoKeywordPerformance.deleteMany({});
-      
-      for (const row of kwResponse.data.rows) {
-        if (row.keys && row.keys.length > 0) {
-          await prisma.seoKeywordPerformance.create({
-            data: {
-              query: row.keys[0],
-              date: new Date(today),
-              country: 'ALL',
-              device: 'ALL',
-              searchType: 'WEB',
-              clicks: row.clicks || 0,
-              impressions: row.impressions || 0,
-              ctr: (row.ctr || 0) * 100,
-              position: row.position || 0,
-            }
-          });
-        }
-      }
+    if (keywordRes.data.rows) {
+       for (const row of keywordRes.data.rows) {
+           const query = row.keys![0];
+           const country = row.keys![1].toUpperCase();
+           const device = row.keys![2].toUpperCase();
+
+           // Basic keyword storage
+           await prisma.seoKeywordPerformance.create({
+               data: {
+                   date: new Date(endDate),
+                   query: query,
+                   clicks: row.clicks || 0,
+                   impressions: row.impressions || 0,
+                   ctr: row.ctr || 0,
+                   position: row.position || 0,
+                   country: country,
+                   device: device,
+                   searchType: 'WEB'
+               }
+           });
+
+           // Update actual SeoKeyword object
+           await prisma.seoKeyword.upsert({
+               where: { keyword: query },
+               update: {
+                   impressions: { increment: row.impressions || 0 },
+                   clicks: { increment: row.clicks || 0 },
+                   currentPosition: row.position || 0,
+               },
+               create: {
+                   keyword: query,
+                   impressions: row.impressions || 0,
+                   clicks: row.clicks || 0,
+                   currentPosition: row.position || 0,
+                   country: 'MA'
+               }
+           });
+       }
     }
 
-    const pagesResponse = await webmasters.searchanalytics.query({
-      siteUrl,
-      requestBody: {
-        startDate: start,
-        endDate: end,
-        dimensions: ['page'],
-        rowLimit: 100,
-      }
+    await prisma.googleSearchConsoleConnection.updateMany({
+        data: { lastSyncAt: new Date() }
     });
 
-    if (pagesResponse.data.rows) {
-      await prisma.seoPagePerformance.deleteMany({});
-      
-      for (const row of pagesResponse.data.rows) {
-        if (row.keys && row.keys.length > 0) {
-          let pageUrl = row.keys[0];
-          pageUrl = pageUrl.replace('https://nayparfum.ma', '');
-          if (pageUrl === '') pageUrl = '/';
-
-          await prisma.seoPagePerformance.create({
-            data: {
-              url: pageUrl,
-              date: new Date(today),
-              country: 'ALL',
-              device: 'ALL',
-              searchType: 'WEB',
-              clicks: row.clicks || 0,
-              impressions: row.impressions || 0,
-              ctr: (row.ctr || 0) * 100,
-              position: row.position || 0
-            }
-          });
-        }
-      }
-    }
-
-    await prisma.seoSettings.upsert({
-      where: { id: 'default' },
-      update: { googleSearchConsoleConnected: true },
-      create: { id: 'default', googleSearchConsoleConnected: true }
-    });
-
-    return NextResponse.json({ success: true, message: 'Sync complete using real Google Search Console data' });
-
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ success: false, error: error.message || String(error) }, { status: 500 });
+    return NextResponse.json({ success: true, message: 'Sync completed' });
+  } catch (error) {
+    console.error('Error syncing GSC:', error);
+    return NextResponse.json({ error: 'Failed to sync with Google Search Console' }, { status: 500 });
   }
-
 }
+

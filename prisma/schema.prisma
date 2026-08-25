@@ -78,7 +78,7 @@ model Product {
   stock               Int         @default(10)
   perfectSeason       String
   published           Boolean     @default(true)
-    createdAt           DateTime    @default(now())
+  createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   testerPrice         Float?
   isTester            Boolean     @default(false)
@@ -473,4 +473,148 @@ model SeoSitemapStatus {
   errorMessage   String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+// ==========================================
+// MOROCCO SEO GROWTH ENGINE MODELS
+// ==========================================
+
+model SeoKeyword {
+  id               String   @id @default(cuid())
+  keyword          String   @unique
+  language         String   @default("FR") // FR, AR, DARIJA, MIXED, EN
+  country          String   @default("MA")
+  searchIntent     String   @default("TRANSACTIONAL") // TRANSACTIONAL, COMMERCIAL, INFORMATIONAL, NAVIGATIONAL, LOCAL
+  searchVolume     Int      @default(0)
+  competition      Float    @default(0)
+  difficulty       Int      @default(0)
+  currentPosition  Float?
+  impressions      Int      @default(0)
+  clicks           Int      @default(0)
+  ctr              Float    @default(0)
+  url              String?
+  opportunityScore Int      @default(0)
+  businessValue    String   @default("MEDIUM") // HIGH, MEDIUM, LOW
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([language])
+  @@index([country])
+  @@index([searchIntent])
+  @@index([opportunityScore])
+}
+
+model SeoKeywordOpportunity {
+  id             String   @id @default(cuid())
+  keyword        String
+  country        String   @default("MA")
+  position       Float
+  impressions    Int
+  ctr            Float
+  recommendation String
+  status         String   @default("NEW") // NEW, IN_PROGRESS, RESOLVED, IGNORED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SeoTopic {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  parentTopic String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SeoTopicKeyword {
+  id        String   @id @default(cuid())
+  topicId   String
+  keyword   String
+  createdAt DateTime @default(now())
+
+  @@unique([topicId, keyword])
+}
+
+model SeoTopicPage {
+  id        String   @id @default(cuid())
+  topicId   String
+  url       String
+  createdAt DateTime @default(now())
+
+  @@unique([topicId, url])
+}
+
+model SeoContentUpdate {
+  id             String   @id @default(cuid())
+  url            String
+  reason         String // "High Moroccan impressions + Low CTR"
+  recommendation String // "Title improvement, Meta improvement..."
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SeoInternalLink {
+  id              String   @id @default(cuid())
+  sourceUrl       String
+  targetUrl       String
+  anchorText      String
+  relevanceScore  Int      @default(0)
+  topicSimilarity Int      @default(0)
+  intentMatch     Boolean  @default(false)
+  businessValue   String   @default("MEDIUM")
+  status          String   @default("SUGGESTED") // SUGGESTED, APPROVED, IMPLEMENTED, DISMISSED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SeoReferringDomain {
+  id             String   @id @default(cuid())
+  domain         String   @unique
+  authorityScore Int      @default(0)
+  spamScore      Int      @default(0)
+  isMoroccan     Boolean  @default(false)
+  category       String? // "Moroccan beauty websites", etc.
+  status         String   @default("OPPORTUNITY") // OPPORTUNITY, OUTREACH, ACQUIRED, REJECTED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SeoBacklink {
+  id           String   @id @default(cuid())
+  sourceDomain String
+  sourceUrl    String
+  targetUrl    String
+  anchorText   String?
+  isFollow     Boolean  @default(true)
+  status       String   @default("ACTIVE") // ACTIVE, LOST, BROKEN
+  firstSeenAt  DateTime @default(now())
+  lastSeenAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([sourceUrl, targetUrl])
+}
+
+model SeoGoal {
+  id           String   @id @default(cuid())
+  name         String
+  targetValue  Float
+  currentValue Float    @default(0)
+  metric       String // "Impressions", "Internal Links", "Top 10 Keywords"
+  period       String // "MONTHLY", "QUARTERLY", "YEARLY"
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SeoAuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entityId  String?
+  details   String?
+  createdBy String   @default("SYSTEM")
+  createdAt DateTime @default(now())
 }
