@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { brand: brandSlug } = await params;
   const decodedBrandSlug = decodeURIComponent(brandSlug);
   const brand = await prisma.brand.findUnique({
-    where: { published: true,  slug: decodedBrandSlug }
+    where: { slug: decodedBrandSlug }
   });
 
   if (!brand) return { title: 'Marque introuvable | NAY Parfums' };
@@ -44,13 +44,13 @@ export default async function BrandPage({
   const decodedBrandSlug = decodeURIComponent(brandSlug);
   
   const brand = await prisma.brand.findUnique({
-    where: { published: true,  slug: decodedBrandSlug }
+    where: { slug: decodedBrandSlug }
   });
   
   if (!brand) notFound();
 
   const dbProducts = await prisma.product.findMany({
-    where: { published: true,  brandId: brand.slug }
+    where: { brandId: brand.slug }
   });
 
   const products = dbProducts.map((p) => ({
@@ -71,7 +71,7 @@ export default async function BrandPage({
   const dbBrands = await prisma.brand.findMany();
 
   const otherBrands = await prisma.brand.findMany({
-    where: { published: true,  slug: { not: brand.slug } },
+    where: { slug: { not: brand.slug } },
     take: 4
   });
 

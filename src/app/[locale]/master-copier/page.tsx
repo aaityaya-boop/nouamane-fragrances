@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 export default async function MasterCopierPage() {
   const dbProducts = await prisma.product.findMany({
-    where: { published: true,  subcategory: 'master-copier' }
+    where: { subcategory: 'master-copier' }
   });
   const dbBrands = await prisma.brand.findMany();
   
