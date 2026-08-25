@@ -11,6 +11,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { AuthProvider } from "@/context/AuthContext";
 import FacebookPixel from "@/components/FacebookPixel";
 import CookieConsent from "@/components/CookieConsent";
+import AIChatWidget from "@/components/AIChatWidget";
 import { PreferencesProvider } from "@/context/PreferencesContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -152,6 +153,7 @@ export default async function LocaleLayout({
               </AuthProvider>
             {/* </SmoothScrollProvider> */}
             <WhatsAppButton />
+            <AIChatWidget />
             <CookieConsent />
           </PreferencesProvider>
         </DictionaryProvider>

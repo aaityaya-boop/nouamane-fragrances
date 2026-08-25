@@ -77,17 +77,7 @@ export default function Header() {
                   </div>
                 );
               })}
-              <div className="h-full flex items-center">
-                <Link
-                  href={`/${locale}/quiz`}
-                  onMouseEnter={() => setActiveMenu(null)}
-                  className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 flex items-center gap-1.5 h-[75px] border-b-2 border-transparent ${
-                    isSolid ? 'text-[#0ea5e9] hover:text-[#0284c7]' : 'text-white hover:text-white/80'
-                  }`}
-                >
-                  <Sparkles size={14} className={isSolid ? "text-[#0ea5e9]" : ""} /> Conseiller
-                </Link>
-              </div>
+
             </nav>
 
             {/* LOGO */}
