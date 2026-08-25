@@ -84,24 +84,6 @@ export default function AdminArabicPage() {
     }
   };
 
-  const handleGenerateSKUs = async () => {
-    if (!confirm('Voulez-vous g�n�rer des num�ros de s�rie (SKU) pour tous les produits qui n\'en ont pas ?')) return;
-    
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/admin/products/generate-skus', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        alert(`${data.updatedCount} SKU(s) g�n�r�s avec succ�s.`);
-        fetchProducts();
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Erreur lors de la g�n�ration des SKUs');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleGenerateSKUs = async () => {
     if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les parfums arabes qui n\'en ont pas ?')) return;
