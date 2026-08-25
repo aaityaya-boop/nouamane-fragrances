@@ -194,17 +194,6 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
         >
-          {/* Quiz Button */}
-          <Link
-            href={`/${locale}/quiz`}
-            className="group relative inline-flex items-center justify-center overflow-hidden border border-[#0ea5e9]/50 bg-[#0ea5e9]/10 backdrop-blur-md px-16 py-5 transition-all duration-700 hover:border-[#0ea5e9] hover:shadow-[0_0_40px_rgba(14,165,233,0.3)] rounded-full"
-          >
-            <div className="absolute inset-0 bg-[#0ea5e9] transform scale-y-0 origin-bottom transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-y-100" />
-            <span className="relative z-10 text-[10px] font-semibold tracking-[0.4em] uppercase text-[#0ea5e9] transition-colors duration-500 group-hover:text-white flex items-center gap-2">
-              <Sparkles size={14} className="group-hover:text-white text-[#0ea5e9] transition-colors duration-500" /> Le Quiz Olfactif
-            </span>
-          </Link>
-
           {/* Découvrir Button - Luxury Minimalist Version */}
           <Link
             href={`/${locale}/decouverte`}

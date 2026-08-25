@@ -17,7 +17,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAllMobileBrands, setShowAllMobileBrands] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | 'arabes' | null>(null);
+  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | 'originaux' | null>(null);
   const { getItemCount } = useCart();
   const pathname = usePathname();
   const dict = useDictionary();
@@ -59,8 +59,8 @@ export default function Header() {
           <div className="flex items-center justify-between h-[60px] lg:h-[75px]">
             {/* LEFT NAV (Desktop) */}
             <nav className="hidden lg:flex items-center gap-8 w-1/3">
-              {['women', 'men', 'arabes', 'brands', 'bundles'].map((menuKey) => {
-                const labels: any = { women: 'Femme', men: 'Homme', arabes: 'Parfums Arabes', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
+              {['women', 'men', 'originaux', 'brands', 'bundles'].map((menuKey) => {
+                const labels: any = { women: 'Femme', men: 'Homme', originaux: 'Parfums Originaux', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
                 return (
                   <div 
                     key={menuKey} 
@@ -85,7 +85,7 @@ export default function Header() {
                     isSolid ? 'text-[#0ea5e9] hover:text-[#0284c7]' : 'text-white hover:text-white/80'
                   }`}
                 >
-                  <Sparkles size={14} className={isSolid ? "text-[#0ea5e9]" : ""} /> Quiz
+                  <Sparkles size={14} className={isSolid ? "text-[#0ea5e9]" : ""} /> Conseiller
                 </Link>
               </div>
             </nav>
@@ -252,14 +252,14 @@ export default function Header() {
                 )}
 
                 {/* --- ARABES MEGA MENU --- */}
-                {activeMenu === 'arabes' && (
+                {activeMenu === 'originaux' && (
                   <div className="w-full flex-1">
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">La Magie de l'Orient</div>
                     <div className="grid grid-cols-1 gap-12">
-                      <Link href={`/${locale}/parfums-arabes`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#0ea5e9] hover:shadow-2xl transition-all">
+                      <Link href={`/${locale}/parfums-originaux`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#0ea5e9] hover:shadow-2xl transition-all">
                         <div className="flex-1">
                           <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-3 block">Essence Orientale</span>
-                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Arabes</h3>
+                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Originaux</h3>
                           <p className="text-[14px] text-[#6B6B6B] mb-8 leading-relaxed max-w-lg">
                             Des sillages intenses, mystérieux et envoûtants. Une sélection de fragrances rares aux effluves d'Oud, de Musc et d'Ambre.
                           </p>
@@ -401,11 +401,11 @@ export default function Header() {
                         Parfums Master Copy
                       </Link>
                       <Link 
-                        href={`/${locale}/parfums-arabes`} 
+                        href={`/${locale}/parfums-originaux`} 
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="text-[14px] text-[#444]"
                       >
-                        Parfums Arabes
+                        Parfums Originaux
                       </Link>
                       <Link 
                         href={`/${locale}/shop/women`} 

@@ -86,7 +86,7 @@ export default function AdminArabicPage() {
 
 
   const handleGenerateSKUs = async () => {
-    if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les parfums arabes qui n\'en ont pas ?')) return;
+    if (!confirm('Voulez-vous générer des numéros de série (SKU) pour tous les parfums originaux qui n\'en ont pas ?')) return;
     setIsLoading(true);
     try {
       const res = await fetch('/api/admin/products/generate-skus', { method: 'POST' });
@@ -113,7 +113,7 @@ export default function AdminArabicPage() {
       brandLabel: 'Lattafa',
       gender: 'unisex',
       subcategory: 'arabic',
-      subcategoryLabel: 'Parfums Arabes',
+      subcategoryLabel: 'Parfums Originaux',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -234,8 +234,8 @@ export default function AdminArabicPage() {
     <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Arabes</h1>
-          <p className="text-[14px] text-[#666]">Créez et gérez votre collection de parfums arabes.</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Parfums Originaux</h1>
+          <p className="text-[14px] text-[#666]">Créez et gérez votre collection de parfums originaux.</p>
         </div>
         
           <div className="flex gap-3">
@@ -248,12 +248,12 @@ export default function AdminArabicPage() {
             <button 
               onClick={() => {
                 setEditingProduct(null);
-                setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Arabes', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
+                setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Originaux', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
                 setIsModalOpen(true);
               }}
               className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
             >
-              <Plus size={16} /> Nouveau Parfum Arabe
+              <Plus size={16} /> Nouveau parfum original
             </button>
           </div>
       </div>
@@ -384,7 +384,7 @@ export default function AdminArabicPage() {
             <div className="bg-white border-b border-[#e0ddd4] px-8 py-5 flex items-center justify-between sticky top-0 z-20">
               <div>
                 <h2 className="heading-font text-2xl text-[#1A1A1A]">
-    {editingProduct ? 'Modifier le Parfum Arabe' : 'Nouveau Parfum Arabe'}
+    {editingProduct ? 'Modifier le parfum original' : 'Nouveau parfum original'}
   </h2>
                 <p className="text-[#9A9A9A] text-[13px] mt-1">
     Gérez les détails, le prix, et les images de votre parfum oriental.
@@ -470,7 +470,7 @@ export default function AdminArabicPage() {
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
                       <div className="w-full bg-[#eaeaea] border border-[#e0ddd4] rounded-xl p-3 text-[14px] text-[#666] cursor-not-allowed">
-                        Parfums Arabes
+                        Parfums Originaux
                       </div>
                     </div>
                     <div>
