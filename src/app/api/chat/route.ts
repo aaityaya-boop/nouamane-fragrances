@@ -3,12 +3,14 @@ import { streamText } from 'ai';
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
+    const google = createGoogleGenerativeAI({
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+    
+    console.log("API KEY AVAILABLE:", !!process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+    
     const { messages } = await req.json();
 
     // Fetch the product catalog to feed into the AI's context
