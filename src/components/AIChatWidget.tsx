@@ -48,7 +48,7 @@ export default function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-4 sm:right-6 w-[350px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-[100] overflow-hidden"
+            className="fixed bottom-[165px] right-4 sm:right-6 w-[350px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col z-[100] overflow-hidden"
           >
             {/* Header */}
             <div className="bg-[#1A1A1A] text-white p-4 flex items-center justify-between">
@@ -122,7 +122,7 @@ export default function AIChatWidget() {
       {/* Floating Button */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-4 sm:right-6 w-14 h-14 bg-[#1A1A1A] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 hover:bg-[#0ea5e9] active:scale-95 transition-all z-50 border-2 border-white/10"
+        className="fixed bottom-[100px] right-4 sm:right-6 w-14 h-14 bg-[#1A1A1A] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 hover:bg-[#0ea5e9] active:scale-95 transition-all z-50 border-2 border-white/10"
       >
         {isOpen ? (
           <X size={24} />
