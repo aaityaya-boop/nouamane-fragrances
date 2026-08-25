@@ -121,12 +121,8 @@ export default async function BrandPage({
           </div>
         </section>
 
-        <Suspense fallback={<div>Loading...</div>}>
-          <ShopCatalog 
-            initialProducts={products} 
-            locale={locale} 
-            brands={dbBrands.map(b => ({ id: b.slug, label: b.label }))}
-          />
+        <Suspense fallback={<div className="text-center text-[#9A9A9A]">Chargement…</div>}>
+          <ShopCatalog products={products} brands={dbBrands} lockedBrand={brand.slug as Brand} />
         </Suspense>
 
         {/* Other Brands Section */}
