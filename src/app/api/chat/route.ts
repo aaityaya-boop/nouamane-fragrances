@@ -5,11 +5,15 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const google = createGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-    });
+    const rawKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    console.log("API KEY AVAILABLE:", !!rawKey);
+    console.log("API KEY TYPE:", typeof rawKey);
+    console.log("API KEY LENGTH:", rawKey ? rawKey.length : 0);
+    console.log("API KEY START:", rawKey ? rawKey.substring(0, 5) : 'none');
     
-    console.log("API KEY AVAILABLE:", !!process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+    const google = createGoogleGenerativeAI({
+      apiKey: rawKey ? rawKey.replace(/['"]/g, '').trim() : undefined,
+    });
     
     const { messages } = await req.json();
 
