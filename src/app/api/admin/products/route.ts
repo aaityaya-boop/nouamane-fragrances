@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       inStock: body.inStock !== undefined ? body.inStock : true,
       stock: body.inStock === false ? 0 : 10,
       isTester: body.isTester !== undefined ? body.isTester : false,
+      published: body.published !== undefined ? body.published : true,
     };
 
     const newProduct = await prisma.product.create({

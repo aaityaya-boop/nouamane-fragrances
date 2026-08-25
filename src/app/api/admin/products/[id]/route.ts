@@ -42,6 +42,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       }
     }
     if (body.isTester !== undefined) data.isTester = body.isTester;
+    if (body.published !== undefined) data.published = body.published;
 
 
     const updatedProduct = await prisma.product.update({
