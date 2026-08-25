@@ -6,7 +6,7 @@ import { Product } from '@/lib/products';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const dbProducts = await prisma.product.findMany({  });
+  const dbProducts = await prisma.product.findMany({ where: { published: true } });
   let siteConfig = await prisma.siteConfig.findFirst();
 
   if (!siteConfig) {

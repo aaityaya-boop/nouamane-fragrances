@@ -12,8 +12,8 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
-  const product = await prisma.product.findUnique({
-    where: { slug: decodedSlug },
+  const product = await prisma.product.findFirst({
+    where: { slug: decodedSlug, published: true },
   });
 
   if (!product) {
@@ -42,10 +42,10 @@ export default async function ProductPage({
   const resolvedParams = await params;
   const decodedSlug = decodeURIComponent(resolvedParams.slug);
   
-  const standardProducts = await prisma.product.findMany({ where: { subcategory: { not: 'coffrets' } } });
+  const standardProducts = await prisma.product.findMany({ where: { published: true, subcategory: { not: 'coffrets' } } });
   
-  const dbProduct = await prisma.product.findUnique({
-    where: { slug: decodedSlug },
+  const dbProduct = await prisma.product.findFirst({
+    where: { slug: decodedSlug, published: true },
   });
 
   if (!dbProduct) {
@@ -55,7 +55,7 @@ export default async function ProductPage({
   // Get related products (same brand, excluding self)
   const dbRelated = await prisma.product.findMany({
     where: { 
-      brandId: dbProduct.brandId,
+      brandId: dbProduct.brandId, published: true,
       id: { not: dbProduct.id }
     },
     take: 4
