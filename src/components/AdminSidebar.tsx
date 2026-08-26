@@ -49,9 +49,8 @@ const MENU_ITEMS = [
 const MARKETING_ITEMS = [
   { href: '/admin/marketing', label: 'Retention & Marketing', icon: <TrendingUp size={18} /> },
   { href: '/admin/marketing/campaigns', label: 'Campagnes', icon: <Mail size={18} /> },
-  { href: '/admin/marketing/abandoned-carts', label: 'Paniers Abandonns', icon: <ShoppingCart size={18} /> },
+  { href: '/admin/marketing/abandoned-carts', label: 'Paniers Abandonnés', icon: <ShoppingCart size={18} /> },
   { href: '/admin/marketing/analytics', label: 'Marketing Analytics', icon: <BarChart3 size={18} /> },
-  { href: '/admin/marketing/settings', label: 'Paramtres Marketing', icon: <Settings size={18} /> },
   { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} /> },
   { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} /> },
   { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} /> },
@@ -59,24 +58,17 @@ const MARKETING_ITEMS = [
   { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} /> },
 ];
 
-const SEO_ITEMS = [
-  { href: '/admin/seo', label: 'SEO Manager', icon: <Search size={18} /> },
-  { href: '/admin/seo/ai', label: 'AI SEO Engine', icon: <Bot size={18} /> },
-];
+
 
 const SYSTEM_ITEMS = [
   { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
   { href: '/admin/vitrine', label: 'Vitrine', icon: <Sparkles size={18} /> },
-  { href: '/admin/system/health', label: 'System Health', icon: <AlertTriangle size={18} /> },
-  { href: '/admin/system/deployment', label: 'Deployment', icon: <CheckCircle2 size={18} /> },
-  { href: '/admin/settings', label: 'Paramtres', icon: <Settings size={18} /> },
+  { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} /> },
 ];
 
 const CRM_ITEMS = [
   { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={18} /> },
-  { href: '/admin/customers/segments', label: 'Segments (RFM)', icon: <TrendingUp size={18} /> },
   { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={18} /> },
-  { href: '/admin/customers/at-risk', label: 'Risque de Perte', icon: <AlertTriangle size={18} /> },
 ];
 
 export default function AdminSidebar() {
@@ -200,12 +192,7 @@ export default function AdminSidebar() {
           </div>
         </div>
 
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">SEO TOOL</div>
-          <div className="space-y-0.5">
-            {renderLinks(SEO_ITEMS)}
-          </div>
-        </div>
+
 
         <div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Syst�me</div>
