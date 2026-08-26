@@ -87,7 +87,7 @@ export default async function DeploymentPage() {
                 <td className="px-6 py-4 text-sm font-medium text-gray-500">{item.group}</td>
                 <td className="px-6 py-4 text-sm text-gray-800 font-bold">{item.name}</td>
                 <td className="px-6 py-4 text-right">
-                  <span className={inline-flex px-3 py-1 rounded-full text-xs font-bold border  + ''}>
+                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(statuses[item.key])}`}>
                     {statuses[item.key]}
                   </span>
                 </td>
