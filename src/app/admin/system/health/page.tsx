@@ -8,7 +8,7 @@ export default async function SystemHealthPage() {
   // Check Database
   let dbStatus = 'NOT_CONFIGURED';
   try {
-    await prisma.$queryRaw\SELECT 1\;
+    await prisma.$queryRaw`SELECT 1`;
     dbStatus = 'CONNECTED';
   } catch (error) {
     dbStatus = 'ERROR';
