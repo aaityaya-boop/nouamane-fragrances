@@ -94,30 +94,40 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
 
       {/* Floating Sparkles/Dust */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {mounted && [...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: Math.random() * 100 }}
-            animate={{ 
-              opacity: [0, 0.5, 0],
-              y: [Math.random() * 100, Math.random() * -100 - 50],
-              x: Math.random() * 50 - 25
-            }}
-            transition={{
-              duration: 10 + Math.random() * 10,
-              repeat: Infinity,
-              delay: Math.random() * 10,
-              ease: "linear"
-            }}
-            className="absolute rounded-full bg-[#111]/10"
-            style={{
-              width: Math.random() * 4 + 1 + 'px',
-              height: Math.random() * 4 + 1 + 'px',
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-            }}
-          />
-        ))}
+        {mounted && [...Array(15)].map((_, i) => {
+            const r1 = (i * 13) % 100;
+            const r2 = (i * 17) % 100;
+            const r4 = (i * 29) % 50 - 25;
+            const r5 = (i * 31) % 10;
+            const r6 = (i * 37) % 10;
+            const r7 = (i * 41) % 4 + 1;
+            const r8 = (i * 43) % 4 + 1;
+            const r9 = (i * 47) % 100;
+            const r10 = (i * 53) % 100;
+            return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: r1 }}
+              animate={{ 
+                opacity: [0, 0.5, 0],
+                y: [r1, r2 * -1 - 50],
+                x: r4
+              }}
+              transition={{
+                duration: 10 + r5,
+                repeat: Infinity,
+                delay: r6,
+                ease: "linear"
+              }}
+              className="absolute rounded-full bg-[#111]/10"
+              style={{
+                width: r7 + "px",
+                height: r8 + "px",
+                left: r9 + "%",
+                top: r10 + "%",
+              }}
+            />
+          )})}
       </div>
 
       {/* Ultra-subtle luxury noise texture */}

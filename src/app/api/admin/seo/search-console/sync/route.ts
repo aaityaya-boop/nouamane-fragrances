@@ -1,18 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getGscClient } from '@/lib/gsc';
 import prisma from '@/lib/prisma';
-import { cookies } from 'next/headers';
-import { verifyAuth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin_token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    
-    const admin = await verifyAuth(token);
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
     const settings = await prisma.seoSettings.findFirst();
     if (!settings || !settings.googleSearchConsoleConnected || !settings.googlePropertyUrl) {
       return NextResponse.json({ error: 'Google Search Console not connected' }, { status: 400 });

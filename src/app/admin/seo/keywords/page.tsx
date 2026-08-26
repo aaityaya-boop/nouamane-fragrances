@@ -1,89 +1,90 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { Search, Filter, Download, TrendingUp, TrendingDown } from 'lucide-react';
+import React from 'react';
+import prisma from '@/lib/prisma';
+import { AlertCircle, Search } from 'lucide-react';
 
-export default function SeoKeywordsPage() {
-  const [keywords, setKeywords] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    fetch('/api/admin/seo/keywords')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setKeywords(data.data);
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  if (loading) return <div className="p-10 text-center text-gray-500">Loading keywords...</div>;
+export default async function KeywordsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  
+  const keywords = await prisma.seoKeyword.findMany({
+    where: {
+      country: { in: ['MA', 'MAR'] },
+      ...(q ? { keyword: { contains: q, mode: 'insensitive' } } : {})
+    },
+    orderBy: { impressions: 'desc' },
+    take: 50
+  });
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Keyword Performance</h2>
-        <div className="flex gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
-              placeholder="Search keywords..."
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-          <button className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
-            <Filter size={18} />
-          </button>
-          <button className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
-            <Download size={18} />
-          </button>
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Morocco Keywords</h2>
+          <p className="text-sm text-gray-500">Keyword performance in Google Morocco (Top 50).</p>
         </div>
+        
+        <form className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <input 
+            type="text" 
+            name="q"
+            defaultValue={q || ''}
+            placeholder="Search keywords..." 
+            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </form>
       </div>
 
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
-        <table className="wrfull text-left">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">Keyword</th>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">Clicks</th>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">Impressions</th>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">CTR</th>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">Position</th>
-              <th className="px-6 py-3 text-Xs font-medium text-gray-500 uppercase">Trend</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {keywords.length === 0 ? (
+      {keywords.length === 0 ? (
+        <div className="bg-gray-50 rounded-lg p-12 flex flex-col items-center justify-center text-center border border-gray-100">
+          <AlertCircle className="text-gray-400 mb-3" size={32} />
+          <h3 className="text-gray-900 font-medium mb-1">No keywords found</h3>
+          <p className="text-gray-500 text-sm">Synchronize with Google Search Console or adjust your search.</p>
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-gray-50 border-b border-gray-200 text-gray-500">
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                  No keywords found. Please sync Search Console in the Overview tab.
-                </td>
+                <th className="px-6 py-4 font-medium">Keyword</th>
+                <th className="px-6 py-4 font-medium">Language</th>
+                <th className="px-6 py-4 font-medium">Intent</th>
+                <th className="px-6 py-4 font-medium text-right">Impressions</th>
+                <th className="px-6 py-4 font-medium text-right">Clicks</th>
+                <th className="px-6 py-4 font-medium text-right">Position</th>
               </tr>
-            ) : keywords.map((kw: any) => (
-              <tr key={kw.id} className="hover:bg-gray-50">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">{kw.query}</td>
-                <td className="px-6 py-3 text-sm text-gray-600">{kw.clicks.toLocaleString()}</td>
-                <td className="px-6 py-3 text-sm text-gray-600"> {kw.impressions.toLocaleString()}</td>
-                <td className="px-6 py-3 text-sm text-gray-600">{kw.ctr.toFixed(2)}%</td>
-                <td className="px-6 py-3 text-sm text-gray-600">{kw.position.toFixed(1)}</td>
-                <td className="px-6 py-3">
-                  {kw.position < 10 ? (
-                    <div className="flex items-center gap-1 text-green-600 text-sm">
-                      <TrendingUp size={14} /> Good
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-orange-500 text-sm">
-                      <TrendingDown size={14} /> Drop
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {keywords.map((kw) => (
+                <tr key={kw.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium text-gray-900">{kw.keyword}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded text-[10px] font-medium bg-gray-100 text-gray-800">
+                      {kw.language}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2 py-1 rounded text-[10px] font-medium ${
+                      kw.searchIntent === 'TRANSACTIONAL' ? 'bg-emerald-100 text-emerald-800' :
+                      kw.searchIntent === 'COMMERCIAL' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {kw.searchIntent}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-900">{kw.impressions.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-right text-gray-900">{kw.clicks.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-right text-gray-900">{kw.currentPosition?.toFixed(1) || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

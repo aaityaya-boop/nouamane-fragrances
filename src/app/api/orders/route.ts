@@ -42,6 +42,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // Moroccan Phone Validation
+    const rawPhone = customerPhone.replace(/\s+/g, '');
+    const phoneRegex = /^(?:(?:\+|00)212|0)[5-7]\d{8}$/;
+    if (!phoneRegex.test(rawPhone)) {
+      return NextResponse.json(
+        { error: 'Numéro de téléphone invalide. Veuillez entrer un numéro marocain valide (ex: 06XXXXXXXX ou +2126XXXXXXXX).' },
+        { status: 400 }
+      );
+    }
+    // Normalize to 06XXXXXXXX format for consistency if it starts with +212 or 00212
+    let normalizedPhone = rawPhone;
+    if (normalizedPhone.startsWith('+212')) {
+      normalizedPhone = '0' + normalizedPhone.slice(4);
+    } else if (normalizedPhone.startsWith('00212')) {
+      normalizedPhone = '0' + normalizedPhone.slice(5);
+    }
+
     // Generate order number: NF-<timestamp base36>-<random>
     const orderNumber = `NF-${Date.now().toString(36).toUpperCase()}-${Math.floor(
       Math.random() * 900 + 100
@@ -85,7 +102,7 @@ export async function POST(request: Request) {
         orderNumber,
         customerName,
         customerEmail,
-        customerPhone,
+        customerPhone: normalizedPhone,
         shippingAddress,
         shippingCity,
         shippingPostalCode: shippingPostalCode || '',

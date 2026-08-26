@@ -34,18 +34,23 @@ model Order {
 }
 
 model Customer {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  password   String
-  name       String
-  phone      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  address    String?
-  city       String?
-  postalCode String?
-  wishlist   String   @default("[]")
-  orders     Order[]
+  id               String            @id @default(cuid())
+  email            String            @unique
+  password         String
+  name             String
+  phone            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  address          String?
+  city             String?
+  postalCode       String?
+  wishlist         String            @default("[]")
+  orders           Order[]
+  notes            CustomerNote[]
+  tags             CustomerTag[]
+  marketingConsent MarketingConsent?
+  abandonedCarts   AbandonedCart[]
+  campaigns        MarketingRecipient[]
 }
 
 model Product {
@@ -77,15 +82,15 @@ model Product {
   inStock             Boolean     @default(true)
   stock               Int         @default(10)
   perfectSeason       String
-  published           Boolean     @default(true)
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   testerPrice         Float?
   isTester            Boolean     @default(false)
   sku                 String?     @unique
+  published           Boolean     @default(true)
   brand               Brand       @relation(fields: [brandId], references: [slug])
-  reviews             Review[]
   seo                 ProductSeo?
+  reviews             Review[]
 }
 
 model Review {
@@ -117,8 +122,8 @@ model SiteConfig {
   updatedAt           DateTime @updatedAt
   featuredBestsellers String   @default("[]")
   featuredSeasonal    String   @default("[]")
-  featuredLatest      String   @default("[]")
   coffretsCoverImage  String   @default("/images/category/pack-decouverte-luxe.jpg")
+  featuredLatest      String   @default("[]")
 }
 
 model NewsletterSubscriber {
@@ -155,9 +160,9 @@ model PageView {
   id        Int      @id @default(autoincrement())
   visitorId String
   pathname  String
-  referrer  String?
-  device    String?
   createdAt DateTime @default(now())
+  device    String?
+  referrer  String?
   visitor   Visitor  @relation(fields: [visitorId], references: [id])
 }
 
@@ -229,10 +234,6 @@ model Affiliate {
   orders           Order[]
 }
 
-// ==========================================
-// SEO MANAGER MODELS
-// ==========================================
-
 model SeoSettings {
   id                           String   @id @default(cuid())
   siteName                     String   @default("NAY Parfum")
@@ -247,6 +248,9 @@ model SeoSettings {
   googlePropertyUrl            String?
   createdAt                    DateTime @default(now())
   updatedAt                    DateTime @updatedAt
+  aiAutoApply                  Boolean  @default(false)
+  aiModel                      String   @default("gemini-1.5-pro")
+  aiProvider                   String   @default("GEMINI")
 }
 
 model GoogleSearchConsoleConnection {
@@ -375,21 +379,25 @@ model SeoIssue {
 }
 
 model SeoOpportunity {
-  id              String   @id @default(cuid())
-  type            String
-  keyword         String?
-  url             String?
-  title           String
-  description     String?
-  currentPosition Float?
-  impressions     Int?
-  clicks          Int?
-  ctr             Float?
-  priority        String
-  recommendation  String?
-  status          String   @default("NEW")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  type           String   @default("KEYWORD")
+  keyword        String?
+  title          String?
+  description    String?
+  impressions    Int?
+  clicks         Int?
+  ctr            Float?
+  recommendation String?
+  status         String   @default("NEW")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  businessValue  Int      @default(50)
+  country        String   @default("MA")
+  effort         String   @default("MEDIUM")
+  impact         String   @default("MEDIUM")
+  position       Float?
+  targetUrl      String?
+  priority       Int      @default(0)
 
   @@index([type])
   @@index([status])
@@ -399,7 +407,6 @@ model SeoOpportunity {
 model ProductSeo {
   id                String    @id @default(cuid())
   productId         Int       @unique
-  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   seoTitle          String?
   metaDescription   String?
   focusKeyword      String?
@@ -414,6 +421,7 @@ model ProductSeo {
   lastOptimizedAt   DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model CategorySeo {
@@ -475,16 +483,12 @@ model SeoSitemapStatus {
   updatedAt      DateTime  @updatedAt
 }
 
-// ==========================================
-// MOROCCO SEO GROWTH ENGINE MODELS
-// ==========================================
-
 model SeoKeyword {
   id               String   @id @default(cuid())
   keyword          String   @unique
-  language         String   @default("FR") // FR, AR, DARIJA, MIXED, EN
+  language         String   @default("FR")
   country          String   @default("MA")
-  searchIntent     String   @default("TRANSACTIONAL") // TRANSACTIONAL, COMMERCIAL, INFORMATIONAL, NAVIGATIONAL, LOCAL
+  searchIntent     String   @default("TRANSACTIONAL")
   searchVolume     Int      @default(0)
   competition      Float    @default(0)
   difficulty       Int      @default(0)
@@ -494,7 +498,7 @@ model SeoKeyword {
   ctr              Float    @default(0)
   url              String?
   opportunityScore Int      @default(0)
-  businessValue    String   @default("MEDIUM") // HIGH, MEDIUM, LOW
+  businessValue    String   @default("MEDIUM")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -502,19 +506,6 @@ model SeoKeyword {
   @@index([country])
   @@index([searchIntent])
   @@index([opportunityScore])
-}
-
-model SeoKeywordOpportunity {
-  id             String   @id @default(cuid())
-  keyword        String
-  country        String   @default("MA")
-  position       Float
-  impressions    Int
-  ctr            Float
-  recommendation String
-  status         String   @default("NEW") // NEW, IN_PROGRESS, RESOLVED, IGNORED
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
 }
 
 model SeoTopic {
@@ -548,8 +539,8 @@ model SeoTopicPage {
 model SeoContentUpdate {
   id             String   @id @default(cuid())
   url            String
-  reason         String // "High Moroccan impressions + Low CTR"
-  recommendation String // "Title improvement, Meta improvement..."
+  reason         String
+  recommendation String
   status         String   @default("PENDING")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -564,7 +555,7 @@ model SeoInternalLink {
   topicSimilarity Int      @default(0)
   intentMatch     Boolean  @default(false)
   businessValue   String   @default("MEDIUM")
-  status          String   @default("SUGGESTED") // SUGGESTED, APPROVED, IMPLEMENTED, DISMISSED
+  status          String   @default("SUGGESTED")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -575,8 +566,8 @@ model SeoReferringDomain {
   authorityScore Int      @default(0)
   spamScore      Int      @default(0)
   isMoroccan     Boolean  @default(false)
-  category       String? // "Moroccan beauty websites", etc.
-  status         String   @default("OPPORTUNITY") // OPPORTUNITY, OUTREACH, ACQUIRED, REJECTED
+  category       String?
+  status         String   @default("OPPORTUNITY")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -588,7 +579,7 @@ model SeoBacklink {
   targetUrl    String
   anchorText   String?
   isFollow     Boolean  @default(true)
-  status       String   @default("ACTIVE") // ACTIVE, LOST, BROKEN
+  status       String   @default("ACTIVE")
   firstSeenAt  DateTime @default(now())
   lastSeenAt   DateTime @default(now())
   createdAt    DateTime @default(now())
@@ -602,8 +593,8 @@ model SeoGoal {
   name         String
   targetValue  Float
   currentValue Float    @default(0)
-  metric       String // "Impressions", "Internal Links", "Top 10 Keywords"
-  period       String // "MONTHLY", "QUARTERLY", "YEARLY"
+  metric       String
+  period       String
   startDate    DateTime
   endDate      DateTime
   createdAt    DateTime @default(now())
@@ -617,4 +608,145 @@ model SeoAuditLog {
   details   String?
   createdBy String   @default("SYSTEM")
   createdAt DateTime @default(now())
+}
+
+model SeoAnalyticsDaily {
+  id              String   @id
+  date            DateTime @unique
+  organicUsers    Int      @default(0)
+  organicSessions Int      @default(0)
+  productViews    Int      @default(0)
+  addToCart       Int      @default(0)
+  checkouts       Int      @default(0)
+  orders          Int      @default(0)
+  revenue         Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+}
+
+model SeoConversionEvent {
+  id            String   @id
+  eventType     String
+  url           String
+  transactionId String?  @unique
+  revenue       Float?
+  currency      String?  @default("MAD")
+  sessionId     String?
+  createdAt     DateTime @default(now())
+}
+
+model SeoLandingPagePerformance {
+  id              String   @id
+  url             String   @unique
+  date            DateTime @default(now())
+  organicSessions Int      @default(0)
+  productViews    Int      @default(0)
+  addToCart       Int      @default(0)
+  orders          Int      @default(0)
+  revenue         Float    @default(0)
+  conversionRate  Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+}
+
+model SeoExperiment {
+  id                String    @id @default(cuid())
+  name              String
+  url               String
+  keyword           String?
+  startDate         DateTime
+  baselinePeriod    Int       @default(28)
+  measurementPeriod Int       @default(28)
+  status            String    @default("PLANNED")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+
+// ==========================================
+// CRM MODELS
+// ==========================================
+
+model CustomerNote {
+  id         String   @id @default(cuid())
+  customerId String
+  note       String
+  createdBy  String   @default("SYSTEM")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model CustomerTag {
+  id         String   @id @default(cuid())
+  customerId String
+  tag        String
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, tag])
+}
+
+// ==========================================
+// MARKETING & RETENTION MODELS
+// ==========================================
+
+model MarketingConsent {
+  id                     String   @id @default(cuid())
+  customerId             String   @unique
+  emailMarketingConsent  Boolean  @default(false)
+  whatsappMarketingConsent Boolean @default(false)
+  consentSource          String   @default("UNKNOWN")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  customer               Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model AbandonedCart {
+  id          String   @id @default(cuid())
+  customerId  String
+  cartItems   String   // JSON stringified array of products
+  cartValue   Float
+  status      String   @default("ACTIVE") // ACTIVE, ABANDONED, RECOVERED, EXPIRED
+  lastActivity DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model MarketingCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  channel     String   // EMAIL, WHATSAPP
+  type        String   // WELCOME, ABANDONED_CART, POST_PURCHASE, REACTIVATION, VIP, PROMOTION
+  audience    String   // JSON representing segmentation criteria
+  subject     String?
+  message     String
+  status      String   @default("DRAFT") // DRAFT, REVIEW, APPROVED, SCHEDULED, SENT, CANCELLED
+  scheduledAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  recipients  MarketingRecipient[]
+}
+
+model MarketingRecipient {
+  id          String   @id @default(cuid())
+  campaignId  String
+  customerId  String
+  status      String   @default("PENDING") // PENDING, SENT, FAILED, DELIVERED, OPENED, CLICKED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customer    Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  @@unique([campaignId, customerId])
+}
+
+model MarketingSettings {
+  id                  String   @id @default(cuid())
+  emailConfigured     Boolean  @default(false)
+  whatsappConfigured  Boolean  @default(false)
+  automationEnabled   Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }

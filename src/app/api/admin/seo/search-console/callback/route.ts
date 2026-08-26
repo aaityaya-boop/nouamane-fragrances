@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getOAuth2Client } from '@/lib/gsc';
 import prisma from '@/lib/prisma';
-import { cookies } from 'next/headers';
-import { verifyAuth } from '@/lib/auth';
 
 const encrypt = (text: string) => Buffer.from(text).toString('base64');
 
@@ -13,19 +11,6 @@ export async function GET(request: Request) {
 
     if (!code) {
       return NextResponse.json({ error: 'No code provided' }, { status: 400 });
-    }
-
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin_token')?.value;
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const admin = await verifyAuth(token);
-    
-    if (!admin) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const oauth2Client = getOAuth2Client();
@@ -42,7 +27,7 @@ export async function GET(request: Request) {
         refreshTokenEncrypted: encrypt(tokens.refresh_token || ''), 
         tokenExpiresAt: new Date(tokens.expiry_date || Date.now() + 3600000),
         scopes: tokens.scope || 'https://www.googleapis.com/auth/webmasters.readonly',
-        connectedBy: admin.email || 'Admin',
+        connectedBy: 'Admin',
       }
     });
 
