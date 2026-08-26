@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Mail,
   LayoutTemplate,
+  Bot,
   Bookmark,
   Archive,
   MessageSquare,
@@ -60,6 +61,7 @@ const MARKETING_ITEMS = [
 
 const SEO_ITEMS = [
   { href: '/admin/seo', label: 'SEO Manager', icon: <Search size={18} /> },
+  { href: '/admin/seo/ai', label: 'AI SEO Engine', icon: <Bot size={18} /> },
 ];
 
 const SYSTEM_ITEMS = [

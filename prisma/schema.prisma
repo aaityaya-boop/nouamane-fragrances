@@ -34,17 +34,17 @@ model Order {
 }
 
 model Customer {
-  id               String            @id @default(cuid())
-  email            String            @unique
+  id               String               @id @default(cuid())
+  email            String               @unique
   password         String
   name             String
   phone            String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   address          String?
   city             String?
   postalCode       String?
-  wishlist         String            @default("[]")
+  wishlist         String               @default("[]")
   orders           Order[]
   notes            CustomerNote[]
   tags             CustomerTag[]
@@ -650,18 +650,17 @@ model SeoLandingPagePerformance {
 }
 
 model SeoExperiment {
-  id                String    @id @default(cuid())
+  id                String   @id @default(cuid())
   name              String
   url               String
   keyword           String?
   startDate         DateTime
-  baselinePeriod    Int       @default(28)
-  measurementPeriod Int       @default(28)
-  status            String    @default("PLANNED")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  baselinePeriod    Int      @default(28)
+  measurementPeriod Int      @default(28)
+  status            String   @default("PLANNED")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
-
 
 // ==========================================
 // CRM MODELS
@@ -692,61 +691,108 @@ model CustomerTag {
 // ==========================================
 
 model MarketingConsent {
-  id                     String   @id @default(cuid())
-  customerId             String   @unique
-  emailMarketingConsent  Boolean  @default(false)
-  whatsappMarketingConsent Boolean @default(false)
-  consentSource          String   @default("UNKNOWN")
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
-  customer               Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  id                       String   @id @default(cuid())
+  customerId               String   @unique
+  emailMarketingConsent    Boolean  @default(false)
+  whatsappMarketingConsent Boolean  @default(false)
+  consentSource            String   @default("UNKNOWN")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  customer                 Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model AbandonedCart {
-  id          String   @id @default(cuid())
-  customerId  String
-  cartItems   String   // JSON stringified array of products
-  cartValue   Float
-  status      String   @default("ACTIVE") // ACTIVE, ABANDONED, RECOVERED, EXPIRED
+  id           String   @id @default(cuid())
+  customerId   String
+  cartItems    String // JSON stringified array of products
+  cartValue    Float
+  status       String   @default("ACTIVE") // ACTIVE, ABANDONED, RECOVERED, EXPIRED
   lastActivity DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model MarketingCampaign {
-  id          String   @id @default(cuid())
+  id          String               @id @default(cuid())
   name        String
-  channel     String   // EMAIL, WHATSAPP
-  type        String   // WELCOME, ABANDONED_CART, POST_PURCHASE, REACTIVATION, VIP, PROMOTION
-  audience    String   // JSON representing segmentation criteria
+  channel     String // EMAIL, WHATSAPP
+  type        String // WELCOME, ABANDONED_CART, POST_PURCHASE, REACTIVATION, VIP, PROMOTION
+  audience    String // JSON representing segmentation criteria
   subject     String?
   message     String
-  status      String   @default("DRAFT") // DRAFT, REVIEW, APPROVED, SCHEDULED, SENT, CANCELLED
+  status      String               @default("DRAFT") // DRAFT, REVIEW, APPROVED, SCHEDULED, SENT, CANCELLED
   scheduledAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
   recipients  MarketingRecipient[]
 }
 
 model MarketingRecipient {
-  id          String   @id @default(cuid())
-  campaignId  String
-  customerId  String
-  status      String   @default("PENDING") // PENDING, SENT, FAILED, DELIVERED, OPENED, CLICKED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  campaign    MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  customer    Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
+  id         String            @id @default(cuid())
+  campaignId String
+  customerId String
+  status     String            @default("PENDING") // PENDING, SENT, FAILED, DELIVERED, OPENED, CLICKED
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  campaign   MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customer   Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
   @@unique([campaignId, customerId])
 }
 
 model MarketingSettings {
-  id                  String   @id @default(cuid())
-  emailConfigured     Boolean  @default(false)
-  whatsappConfigured  Boolean  @default(false)
-  automationEnabled   Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  emailConfigured    Boolean  @default(false)
+  whatsappConfigured Boolean  @default(false)
+  automationEnabled  Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// ==========================================
+// AI VISIBILITY MODELS (PHASE 14)
+// ==========================================
+
+model SeoAiQuery {
+  id           String   @id @default(cuid())
+  prompt       String
+  language     String   @default("FR")
+  country      String   @default("MA")
+  category     String?
+  targetEntity String   @default("NAY Parfum")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SeoAiMention {
+  id          String   @id @default(cuid())
+  platform    String
+  prompt      String
+  brand       String   @default("NAY Parfum")
+  mentioned   Boolean  @default(false)
+  cited       Boolean  @default(false)
+  citationUrl String?
+  targetUrl   String?
+  position    Int?
+  checkedAt   DateTime @default(now())
+  sourceType  String   @default("MANUAL")
+  status      String   @default("UNKNOWN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SeoAiVisibilityAudit {
+  id                     String   @id @default(cuid())
+  aiVisibilityScore      Int      @default(0)
+  entityStrength         Int      @default(0)
+  citationReadiness      Int      @default(0)
+  contentCoverage        Int      @default(0)
+  productCoverage        Int      @default(0)
+  questionCoverage       Int      @default(0)
+  moroccoCoverage        Int      @default(0)
+  technicalAccessibility Int      @default(0)
+  status                 String   @default("PASS")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
