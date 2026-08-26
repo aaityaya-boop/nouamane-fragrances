@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Activity, Database, Link, Search, Mail, MessageCircle, Bot, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
@@ -8,7 +8,7 @@ export default async function SystemHealthPage() {
   // Check Database
   let dbStatus = 'NOT_CONFIGURED';
   try {
-    await prisma.$queryRaw\SELECT 1\;
+    await prisma.$queryRaw`SELECT 1`;
     dbStatus = 'CONNECTED';
   } catch (error) {
     dbStatus = 'ERROR';

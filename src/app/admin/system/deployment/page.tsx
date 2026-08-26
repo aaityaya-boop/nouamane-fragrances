@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ClipboardCheck } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
@@ -30,7 +30,7 @@ export default async function DeploymentPage() {
 
   let dbStatus = 'NOT_CONFIGURED';
   try {
-    await prisma.$queryRaw\SELECT 1\;
+    await prisma.$queryRaw`SELECT 1`;
     dbStatus = 'PASS';
   } catch (err) {
     dbStatus = 'ERROR';
