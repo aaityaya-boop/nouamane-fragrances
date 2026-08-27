@@ -54,6 +54,7 @@ const MARKETING_ITEMS = [
   { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} /> },
   { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} /> },
   { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} /> },
+  { href: '/admin/analytics', label: 'Audience', icon: <TrendingUp size={18} /> },
   { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={18} /> },
   { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} /> },
 ];
