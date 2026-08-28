@@ -112,7 +112,18 @@ export default function ProductClient({
   useEffect(() => {
     // Track browsing activity via cookies (recently viewed memory)
     addRecentlyViewed(product.id);
-  }, [product.id, addRecentlyViewed]);
+
+    // Facebook Pixel ViewContent Tracking
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'ViewContent', {
+        content_ids: [product.sku || product.id.toString(), product.id.toString()],
+        content_type: 'product',
+        content_name: product.name,
+        value: product.price,
+        currency: 'MAD'
+      });
+    }
+  }, [product.id, product.sku, product.name, product.price, addRecentlyViewed]);
 
   useEffect(() => {
     if (customer) {
@@ -193,7 +204,7 @@ export default function ProductClient({
     // Facebook Pixel Tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'AddToCart', {
-        content_ids: [product.sku || product.id.toString()],
+        content_ids: [product.sku || product.id.toString(), product.id.toString()],
         content_type: 'product',
         content_name: product.name,
         value: currentPrice * quantity,

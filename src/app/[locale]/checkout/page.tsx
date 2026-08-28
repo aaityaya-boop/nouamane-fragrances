@@ -180,17 +180,20 @@ export default function CheckoutPage() {
       };
       localStorage.setItem('nouamaneLastOrder', JSON.stringify(confirmationData));
 
+      const trackingCart = [...cart];
+      const trackingTotal = total;
+
       clearCart();
       removePromo();
       
       // Facebook Pixel Tracking for Purchase
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'Purchase', {
-          content_ids: cart.map(item => item.id.toString()),
+          content_ids: trackingCart.map(item => item.id.toString()),
           content_type: 'product',
-          value: total,
+          value: trackingTotal,
           currency: 'MAD',
-          contents: cart.map(item => ({
+          contents: trackingCart.map(item => ({
             id: item.id.toString(),
             quantity: item.quantity,
             item_price: item.price
