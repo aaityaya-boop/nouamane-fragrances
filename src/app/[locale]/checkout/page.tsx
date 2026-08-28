@@ -76,7 +76,7 @@ export default function CheckoutPage() {
       window.fbq('track', 'InitiateCheckout', {
         content_ids: cart.map(item => item.id.toString()),
         content_type: 'product',
-        value: subtotal,
+        value: Math.max(Number(subtotal.toFixed(2)), 0.01),
         currency: 'MAD',
         num_items: cart.length
       });
@@ -191,12 +191,12 @@ export default function CheckoutPage() {
         window.fbq('track', 'Purchase', {
           content_ids: trackingCart.map(item => item.id.toString()),
           content_type: 'product',
-          value: trackingTotal,
+          value: Math.max(Number(trackingTotal.toFixed(2)), 0.01),
           currency: 'MAD',
           contents: trackingCart.map(item => ({
             id: item.id.toString(),
             quantity: item.quantity,
-            item_price: item.price
+            item_price: Number(item.price.toFixed(2))
           }))
         });
       }

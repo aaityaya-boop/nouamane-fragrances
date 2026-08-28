@@ -119,7 +119,7 @@ export default function ProductClient({
         content_ids: [product.sku || product.id.toString(), product.id.toString()],
         content_type: 'product',
         content_name: product.name,
-        value: product.price,
+        value: Math.max(Number((product.price).toFixed(2)), 0.01),
         currency: 'MAD'
       });
     }
@@ -207,7 +207,7 @@ export default function ProductClient({
         content_ids: [product.sku || product.id.toString(), product.id.toString()],
         content_type: 'product',
         content_name: product.name,
-        value: currentPrice * quantity,
+        value: Math.max(Number((currentPrice * quantity).toFixed(2)), 0.01),
         currency: 'MAD'
       });
     }
