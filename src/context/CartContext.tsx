@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 
 export type CartItem = {
   id: number;
-  sku?: string;
+  sku?: string | null;
   slug: string;
   name: string;
   price: number;
@@ -28,7 +28,7 @@ export type AppliedPromo = {
 
 type AddInput = {
   id: number;
-  sku?: string;
+  sku?: string | null;
   slug: string;
   name: string;
   price: number | string;
