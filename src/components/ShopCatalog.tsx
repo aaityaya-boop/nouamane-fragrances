@@ -142,7 +142,19 @@ function ShopCatalogInner({
     );
 
     if (selectedSeasons.length > 0)
-      list = list.filter((p) => selectedSeasons.includes(p.perfectSeason));
+      list = list.filter((p) => {
+        if (!p.perfectSeason) return false;
+        const pSeason = p.perfectSeason.toLowerCase();
+        // Check if the product's season string contains ANY of the selected seasons
+        return selectedSeasons.some((s) => {
+          const sLower = s.toLowerCase();
+          // Normalize accents for 'été' vs 'ete'
+          if (sLower === 'été' || sLower === 'ete') {
+            return pSeason.includes('été') || pSeason.includes('ete');
+          }
+          return pSeason.includes(sLower);
+        });
+      });
 
     if (selectedSizes.length > 0) {
       list = list.filter((p) =>
