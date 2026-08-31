@@ -7,6 +7,9 @@ export const revalidate = 0;
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
+      where: {
+        published: true
+      },
       include: {
         brand: true
       }
@@ -46,8 +49,8 @@ export async function GET() {
       <g:id>${id}</g:id>
       <g:title><![CDATA[${product.name}]]></g:title>
       <g:description><![CDATA[${description}]]></g:description>
-      <g:link>${siteUrl}/fr/product/${product.slug}</g:link>
-      <g:image_link>${mainImage}</g:image_link>
+      <g:link><![CDATA[${siteUrl}/fr/product/${product.slug}]]></g:link>
+      <g:image_link><![CDATA[${mainImage}]]></g:image_link>
       <g:brand><![CDATA[${product.brandLabel}]]></g:brand>
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>
