@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 
 export const metadata = {
   title: 'Découverte | NAY Parfums',
-  description: 'Choisissez votre univers olfactif : Parfums Originaux, Master Copy, ou Testeurs Originaux.',
+  description: 'Choisissez votre univers olfactif : Parfums Orientaux, Master Copy, ou Testeurs Originaux.',
 };
 
 export default async function DecouvertePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -40,9 +40,9 @@ export default async function DecouvertePage({ params }: { params: Promise<{ loc
     },
     {
       id: 'originaux',
-      title: "Parfums Originaux",
+      title: "Parfums Orientaux",
       subtitle: "L'Élégance de l'Orient",
-      description: "Des sillages mystérieux et intenses. Découvrez une sélection de fragrances rares aux effluves d'Oud, de Musc et d'Ambre.",
+      description: "Découvrez une sélection de parfums orientaux intenses, élégants et longue tenue.",
       buttonText: "La Magie de l'Orient",
       link: `/${locale}/parfums-originaux`,
       color: "hover:border-[#0ea5e9]",

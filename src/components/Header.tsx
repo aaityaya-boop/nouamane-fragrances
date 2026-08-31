@@ -60,7 +60,7 @@ export default function Header() {
             {/* LEFT NAV (Desktop) */}
             <nav className="hidden lg:flex items-center gap-8 w-1/3">
               {['women', 'men', 'originaux', 'brands', 'bundles'].map((menuKey) => {
-                const labels: any = { women: 'Femme', men: 'Homme', originaux: 'Parfums Originaux', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
+                const labels: any = { women: 'Femme', men: 'Homme', originaux: 'Parfums Orientaux', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
                 return (
                   <div 
                     key={menuKey} 
@@ -249,9 +249,9 @@ export default function Header() {
                       <Link href={`/${locale}/parfums-originaux`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#0ea5e9] hover:shadow-2xl transition-all">
                         <div className="flex-1">
                           <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-3 block">Essence Orientale</span>
-                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Originaux</h3>
+                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Orientaux</h3>
                           <p className="text-[14px] text-[#6B6B6B] mb-8 leading-relaxed max-w-lg">
-                            Des sillages intenses, mystérieux et envoûtants. Une sélection de fragrances rares aux effluves d'Oud, de Musc et d'Ambre.
+                            Découvrez une sélection de parfums orientaux intenses, élégants et longue tenue.
                           </p>
                           <span className="bg-[#111] text-white text-[13px] px-8 py-3 rounded-full inline-block group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-md group-hover:shadow-lg">
                             Explorer la Collection
