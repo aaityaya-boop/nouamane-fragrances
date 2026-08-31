@@ -297,14 +297,19 @@ export default function VitrinePage() {
               <div className="mb-8 space-y-4 bg-white p-5 rounded-2xl border border-black/5">
                 <h4 className="text-[13px] font-bold text-[#1A1A1A]">Textes de la section (Page d'accueil)</h4>
                 <div>
-                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Titre</label>
-                  <input 
-                    type="text" 
+                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Saison(s) affichée(s)</label>
+                  <select 
                     value={seasonalTrendTitle}
                     onChange={(e) => setSeasonalTrendTitle(e.target.value)}
-                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9]"
-                    placeholder="Ex: Tendances Printemps-Été"
-                  />
+                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9] appearance-none"
+                  >
+                    <option value="Tendances Automne-Hiver">Automne-Hiver</option>
+                    <option value="Tendances Printemps-Été">Printemps-Été</option>
+                    <option value="Tendances Printemps">Printemps</option>
+                    <option value="Tendances Été">Été</option>
+                    <option value="Tendances Automne">Automne</option>
+                    <option value="Tendances Hiver">Hiver</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Sous-titre</label>
