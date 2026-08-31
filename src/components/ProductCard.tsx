@@ -29,6 +29,7 @@ export default function ProductCard({ product, showRating = true, onQuickView }:
     addToCart(
       {
         id: product.id,
+        sku: product.sku,
         slug: product.slug,
         name: product.name,
         price: product.price,

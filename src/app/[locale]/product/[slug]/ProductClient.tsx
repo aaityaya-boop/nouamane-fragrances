@@ -116,7 +116,7 @@ export default function ProductClient({
     // Facebook Pixel ViewContent Tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'ViewContent', {
-        content_ids: [product.sku || product.id.toString(), product.id.toString()],
+        content_ids: [product.sku || product.id.toString()],
         content_type: 'product',
         content_name: product.name,
         value: Math.max(Number((product.price).toFixed(2)), 0.01),
@@ -204,7 +204,7 @@ export default function ProductClient({
     // Facebook Pixel Tracking
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'AddToCart', {
-        content_ids: [product.sku || product.id.toString(), product.id.toString()],
+        content_ids: [product.sku || product.id.toString()],
         content_type: 'product',
         content_name: product.name,
         value: Math.max(Number((currentPrice * quantity).toFixed(2)), 0.01),
@@ -249,8 +249,8 @@ export default function ProductClient({
       
       const cartIcon = document.getElementById('header-cart-icon');
       if (cartIcon) {
-        cartIcon.classList.add('animate-cart-bounce');
-        setTimeout(() => cartIcon.classList.remove('animate-cart-bounce'), 500);
+        cartIcon.classList.add('scale-125');
+        setTimeout(() => cartIcon.classList.remove('scale-125'), 300);
       }
     }
 
@@ -259,6 +259,7 @@ export default function ProductClient({
       addToCart(
         {
           id: product.id,
+          sku: product.sku,
           slug: product.slug,
           name: product.name,
           price: currentPrice,

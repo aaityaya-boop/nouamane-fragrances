@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     // Initiate Checkout Event
     if (typeof window !== 'undefined' && window.fbq && cart.length > 0) {
       window.fbq('track', 'InitiateCheckout', {
-        content_ids: cart.map(item => item.id.toString()),
+        content_ids: cart.map(item => item.sku || item.id.toString()),
         content_type: 'product',
         value: Math.max(Number(subtotal.toFixed(2)), 0.01),
         currency: 'MAD',
@@ -189,12 +189,12 @@ export default function CheckoutPage() {
       // Facebook Pixel Tracking for Purchase
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'Purchase', {
-          content_ids: trackingCart.map(item => item.id.toString()),
+          content_ids: trackingCart.map(item => item.sku || item.id.toString()),
           content_type: 'product',
           value: Math.max(Number(trackingTotal.toFixed(2)), 0.01),
           currency: 'MAD',
           contents: trackingCart.map(item => ({
-            id: item.id.toString(),
+            id: item.sku || item.id.toString(),
             quantity: item.quantity,
             item_price: Number(item.price.toFixed(2))
           }))

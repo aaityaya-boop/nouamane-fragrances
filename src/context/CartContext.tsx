@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 
 export type CartItem = {
   id: number;
+  sku?: string;
   slug: string;
   name: string;
   price: number;
@@ -27,6 +28,7 @@ export type AppliedPromo = {
 
 type AddInput = {
   id: number;
+  sku?: string;
   slug: string;
   name: string;
   price: number | string;
@@ -156,6 +158,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ...prev,
         {
           id: product.id,
+          sku: product.sku || undefined,
           slug: product.slug,
           name: product.name,
           price: priceNum,

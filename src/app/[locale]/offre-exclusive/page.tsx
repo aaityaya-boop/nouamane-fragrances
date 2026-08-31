@@ -23,11 +23,12 @@ export default function LandingPage() {
     // Add default size to cart
     addToCart({
       id: product.id,
+      sku: product.sku,
       slug: product.slug,
       name: product.name,
       price: product.price, // Promotional price
       image: product.images[0],
-      size: product.sizes[0].label,
+      size: product.sizes[0]?.label || '50ml',
     });
     router.push('/checkout'); // Redirect straight to checkout for higher conversion
   };

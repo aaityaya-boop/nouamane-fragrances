@@ -128,7 +128,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   <button
                     onClick={() => {
                       addToCart(
-                        { id: product.id, slug: product.slug, name: product.name, price: product.price, images: product.images },
+                        { id: product.id, sku: product.sku, slug: product.slug, name: product.name, price: product.price, images: product.images },
                         1,
                         product.sizes[0]?.label || '50ml'
                       );

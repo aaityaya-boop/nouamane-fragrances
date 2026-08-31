@@ -16,11 +16,12 @@ export default function PromoClient({ landingPage, products }: { landingPage: an
   const handleQuickBuy = (product: Product) => {
     addToCart({
       id: product.id,
+      sku: product.sku,
       slug: product.slug,
       name: product.name,
       price: product.price,
       image: product.images[0],
-      size: product.sizes[0].label,
+      size: product.sizes[0]?.label || '50ml',
     });
     router.push('/checkout');
   };
