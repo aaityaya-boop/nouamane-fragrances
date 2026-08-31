@@ -124,6 +124,8 @@ model SiteConfig {
   featuredSeasonal    String   @default("[]")
   coffretsCoverImage  String   @default("/images/category/pack-decouverte-luxe.jpg")
   featuredLatest      String   @default("[]")
+  seasonalTrendTitle  String   @default("Tendances Printemps-Été")
+  seasonalTrendSubtitle String @default("Nos fragrances fraîches, solaires et florales pour la belle saison.")
 }
 
 model NewsletterSubscriber {

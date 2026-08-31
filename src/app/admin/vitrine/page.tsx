@@ -19,6 +19,8 @@ export default function VitrinePage() {
   const [bestsellersSlug, setBestsellersSlug] = useState<string[]>([]);
   const [seasonalSlug, setSeasonalSlug] = useState<string[]>([]);
   const [latestSlug, setLatestSlug] = useState<string[]>([]);
+  const [seasonalTrendTitle, setSeasonalTrendTitle] = useState('Tendances Printemps-Été');
+  const [seasonalTrendSubtitle, setSeasonalTrendSubtitle] = useState('Nos fragrances fraîches, solaires et florales pour la belle saison.');
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -35,6 +37,8 @@ export default function VitrinePage() {
         setBestsellersSlug(JSON.parse(config.featuredBestsellers || '[]'));
         setSeasonalSlug(JSON.parse(config.featuredSeasonal || '[]'));
         setLatestSlug(JSON.parse(config.featuredLatest || '[]'));
+        if (config.seasonalTrendTitle) setSeasonalTrendTitle(config.seasonalTrendTitle);
+        if (config.seasonalTrendSubtitle) setSeasonalTrendSubtitle(config.seasonalTrendSubtitle);
       } catch {
         setBestsellersSlug([]);
         setSeasonalSlug([]);
@@ -76,6 +80,8 @@ export default function VitrinePage() {
           featuredBestsellers: JSON.stringify(bestsellersSlug),
           featuredSeasonal: JSON.stringify(seasonalSlug),
           featuredLatest: JSON.stringify(latestSlug),
+          seasonalTrendTitle,
+          seasonalTrendSubtitle,
         }),
       });
       if (res.ok) {
@@ -286,6 +292,31 @@ export default function VitrinePage() {
                 {currentSlugs.length}
               </div>
             </div>
+
+            {activeTab === 'seasonal' && (
+              <div className="mb-8 space-y-4 bg-white p-5 rounded-2xl border border-black/5">
+                <h4 className="text-[13px] font-bold text-[#1A1A1A]">Textes de la section (Page d'accueil)</h4>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Titre</label>
+                  <input 
+                    type="text" 
+                    value={seasonalTrendTitle}
+                    onChange={(e) => setSeasonalTrendTitle(e.target.value)}
+                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9]"
+                    placeholder="Ex: Tendances Printemps-Été"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Sous-titre</label>
+                  <textarea 
+                    value={seasonalTrendSubtitle}
+                    onChange={(e) => setSeasonalTrendSubtitle(e.target.value)}
+                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9] resize-none h-20"
+                    placeholder="Ex: Nos fragrances fraîches..."
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="space-y-3">
               <AnimatePresence mode="popLayout">

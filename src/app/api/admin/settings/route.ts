@@ -43,6 +43,8 @@ export async function PUT(request: Request) {
         featuredSeasonal: body.featuredSeasonal !== undefined ? body.featuredSeasonal : undefined,
         featuredLatest: body.featuredLatest !== undefined ? body.featuredLatest : undefined,
         coffretsCoverImage: body.coffretsCoverImage !== undefined ? body.coffretsCoverImage : undefined,
+        seasonalTrendTitle: body.seasonalTrendTitle !== undefined ? body.seasonalTrendTitle : undefined,
+        seasonalTrendSubtitle: body.seasonalTrendSubtitle !== undefined ? body.seasonalTrendSubtitle : undefined,
       }
     });
 

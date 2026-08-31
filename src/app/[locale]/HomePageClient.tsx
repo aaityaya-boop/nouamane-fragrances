@@ -68,14 +68,19 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
 
   const currentMonth = new Date().getMonth();
   const isFallWinter = currentMonth >= 8 || currentMonth <= 1;
-  const seasonalLabel = isFallWinter ? 'Tendances Automne-Hiver' : 'Tendances Printemps-Été';
-  const seasonalSubtitle = isFallWinter
-    ? 'Nos parfums chauds, épicés et enveloppants pour la saison froide.'
-    : 'Nos fragrances fraîches, solaires et florales pour la belle saison.';
 
   const [brands, setBrands] = useState<any[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [homepageConfig, setHomepageConfig] = useState<any>(null);
+
+  const seasonalTitleFull = homepageConfig?.seasonalTrendTitle || (isFallWinter ? 'Tendances Automne-Hiver' : 'Tendances Printemps-Été');
+  const seasonalTitleParts = seasonalTitleFull.split(' ');
+  const titleFirstPart = seasonalTitleParts[0] || 'Tendances';
+  const titleSecondPart = seasonalTitleParts.slice(1).join(' ') || (isFallWinter ? 'Automne-Hiver' : 'Printemps-Été');
+  
+  const displaySeasonalSubtitle = homepageConfig?.seasonalTrendSubtitle || (isFallWinter
+    ? 'Nos parfums chauds, épicés et enveloppants pour la saison froide.'
+    : 'Nos fragrances fraîches, solaires et florales pour la belle saison.');
 
   useEffect(() => {
     fetch('/api/brands')
@@ -360,12 +365,12 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
                 <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9]">Édition saisonnière</span>
               </div>
               <h2 className="heading-font text-5xl lg:text-7xl text-[#1A1A1A] tracking-wide">
-                {isFallWinter ? 'Tendances' : 'Tendances'}<br />
-                <span className="text-[#0ea5e9] italic">{isFallWinter ? 'Automne-Hiver' : 'Printemps-Été'}</span>
+                {titleFirstPart}<br />
+                <span className="text-[#0ea5e9] italic">{titleSecondPart}</span>
               </h2>
             </div>
             <div className="flex flex-col items-start lg:items-end gap-4">
-              <p className="text-[#1A1A1A]/70 text-[14px] max-w-xs text-left lg:text-right font-medium">{seasonalSubtitle}</p>
+              <p className="text-[#1A1A1A]/70 text-[14px] max-w-xs text-left lg:text-right font-medium">{displaySeasonalSubtitle}</p>
               <Link href={`/${locale}/shop?seasons=${isFallWinter ? 'Automne,Hiver' : 'Printemps,Été'}`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
                 Explorer la sélection <ArrowRight size={14} />
               </Link>
