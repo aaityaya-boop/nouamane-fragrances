@@ -69,12 +69,32 @@ export default function AdminProductsPage() {
 
   const handleQuickUpdate = async (id: number, field: string, value: any) => {
     try {
+      let body: any = { [field]: value };
+      
+      // If we are quick-updating the base price, also sync the sizes array if it exists and has only 1 size
+      let updatedSizes = null;
+      if (field === 'price') {
+        const p = products.find(x => x.id === id);
+        if (p && p.sizes && p.sizes.length === 1) {
+          updatedSizes = [...p.sizes];
+          updatedSizes[0].price = value;
+          body.sizes = updatedSizes;
+        }
+      }
+
       await fetch(`/api/admin/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: value }),
+        body: JSON.stringify(body),
       });
-      setProducts(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+      setProducts(prev => prev.map(p => {
+        if (p.id === id) {
+          const updatedProduct = { ...p, [field]: value };
+          if (updatedSizes) updatedProduct.sizes = updatedSizes;
+          return updatedProduct;
+        }
+        return p;
+      }));
     } catch (error) {
       console.error(error);
       alert('Erreur lors de la modification rapide');
