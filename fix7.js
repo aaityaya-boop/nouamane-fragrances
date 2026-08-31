@@ -1,0 +1,1 @@
+const fs = require("fs"); let content = fs.readFileSync("src/app/[locale]/HomePageClient.tsx", "utf8"); content = content.replace("shop?seasons=", "shop?seasons=${seasonQueryParam}"); fs.writeFileSync("src/app/[locale]/HomePageClient.tsx", content); console.log("Fixed");

@@ -78,6 +78,18 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
   const titleFirstPart = seasonalTitleParts[0] || 'Tendances';
   const titleSecondPart = seasonalTitleParts.slice(1).join(' ') || (isFallWinter ? 'Automne-Hiver' : 'Printemps-Été');
   
+  // Extract seasons based on keywords in the title so the button links correctly
+  let extractedSeasons: string[] = [];
+  const lowerTitle = seasonalTitleFull.toLowerCase();
+  if (lowerTitle.includes('automne')) extractedSeasons.push('Automne');
+  if (lowerTitle.includes('hiver')) extractedSeasons.push('Hiver');
+  if (lowerTitle.includes('printemps')) extractedSeasons.push('Printemps');
+  if (lowerTitle.includes('été') || lowerTitle.includes('ete') || lowerTitle.includes('étè')) extractedSeasons.push('Été');
+  
+  const seasonQueryParam = extractedSeasons.length > 0 
+    ? extractedSeasons.join(',') 
+    : (isFallWinter ? 'Automne,Hiver' : 'Printemps,Été');
+
   const displaySeasonalSubtitle = homepageConfig?.seasonalTrendSubtitle || (isFallWinter
     ? 'Nos parfums chauds, épicés et enveloppants pour la saison froide.'
     : 'Nos fragrances fraîches, solaires et florales pour la belle saison.');
@@ -371,7 +383,7 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
             </div>
             <div className="flex flex-col items-start lg:items-end gap-4">
               <p className="text-[#1A1A1A]/70 text-[14px] max-w-xs text-left lg:text-right font-medium">{displaySeasonalSubtitle}</p>
-              <Link href={`/${locale}/shop?seasons=${isFallWinter ? 'Automne,Hiver' : 'Printemps,Été'}`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
+              <Link href={`/${locale}/shop?seasons=${seasonQueryParam}`} className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase text-[#1A1A1A] border border-[#1A1A1A]/30 hover:bg-[#0ea5e9] hover:border-[#0ea5e9] hover:text-white transition-all px-6 py-3 rounded-full">
                 Explorer la sélection <ArrowRight size={14} />
               </Link>
             </div>
@@ -636,3 +648,6 @@ function SectionHeader({
     </motion.div>
   );
 }
+
+
+

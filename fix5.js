@@ -1,0 +1,1 @@
+const fs = require('fs'); let content = fs.readFileSync('src/app/[locale]/HomePageClient.tsx', 'utf8'); const str = 'seasons=\\$\\{seasonQueryParam\\}'; const start = content.indexOf('shop?seasons='); content = content.substring(0, start+5) + str + content.substring(start+13); fs.writeFileSync('src/app/[locale]/HomePageClient.tsx', content); console.log('Fixed');
