@@ -305,6 +305,7 @@ export default function VitrinePage() {
                   >
                     <option value="Tendances Automne-Hiver">Automne-Hiver</option>
                     <option value="Tendances Printemps-Été">Printemps-Été</option>
+                    <option value="Tendances Été-Automne">Été-Automne</option>
                     <option value="Tendances Printemps">Printemps</option>
                     <option value="Tendances Été">Été</option>
                     <option value="Tendances Automne">Automne</option>
