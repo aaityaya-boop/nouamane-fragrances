@@ -1,6 +1,6 @@
 import React from 'react';
-import { prisma } from '@/db/prisma';
-import { formatMAD } from '@/lib/utils';
+import prisma from '@/lib/prisma';
+import { formatMAD } from '@/lib/products';
 import { ShoppingCart, Clock, User, Package, TrendingUp } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
