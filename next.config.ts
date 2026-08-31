@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ['firebase-admin'],
+  async redirects() {
+    return [
+      {
+        source: '/:locale/parfums-originaux',
+        destination: '/:locale/parfums-orientaux',
+        permanent: true,
+      },
+      {
+        source: '/parfums-originaux',
+        destination: '/fr/parfums-orientaux',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

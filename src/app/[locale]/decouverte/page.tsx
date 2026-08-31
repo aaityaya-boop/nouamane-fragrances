@@ -44,7 +44,7 @@ export default async function DecouvertePage({ params }: { params: Promise<{ loc
       subtitle: "L'Élégance de l'Orient",
       description: "Découvrez une sélection de parfums orientaux intenses, élégants et longue tenue.",
       buttonText: "La Magie de l'Orient",
-      link: `/${locale}/parfums-originaux`,
+      link: `/${locale}/parfums-orientaux`,
       color: "hover:border-[#0ea5e9]",
       themeText: "text-[#0ea5e9]",
       themeBg: "bg-[#0ea5e9]",

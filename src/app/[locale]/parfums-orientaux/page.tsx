@@ -15,10 +15,10 @@ export const metadata = {
   openGraph: {
     title: 'Parfums Orientaux | NAY Parfums',
     description: 'Découvrez une sélection de parfums orientaux intenses, élégants et longue tenue.',
-    url: 'https://nayparfum.ma/parfums-originaux',
+    url: 'https://nayparfum.ma/parfums-orientaux',
   },
   alternates: {
-    canonical: 'https://nayparfum.ma/parfums-originaux',
+    canonical: 'https://nayparfum.ma/parfums-orientaux',
   },
 };
 
