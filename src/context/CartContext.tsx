@@ -113,6 +113,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } else {
         Cookies.remove('nouamanePromo', { path: '/' });
       }
+
+      // Live Carts Analytics - Sync cart to DB
+      let sessionId = Cookies.get('nouamaneSession');
+      if (!sessionId) {
+        sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        Cookies.set('nouamaneSession', sessionId, { expires: 365, path: '/' });
+      }
+
+      fetch('/api/cart/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          items: cart,
+          totalValue: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        })
+      }).catch(() => {}); // silent fail if network error
     }
   }, [cart, appliedPromo, isLoaded]);
 
