@@ -17,7 +17,7 @@ import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import { GoogleTagManager, GoogleTagManagerNoScript } from "@/components/analytics/GoogleTagManager";
 
-const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'), { ssr: false });
+const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'));
 
 const montserrat = Montserrat({
   subsets: ['latin'],
