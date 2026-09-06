@@ -84,7 +84,7 @@ export default function Header() {
 
             {/* LOGO */}
             <div className="w-1/3 flex justify-center">
-              <Link href={`/${locale}`} className="group flex flex-col items-center">
+              <Link href={`/${locale}`} aria-label="NAY Parfums - Accueil" className="group flex flex-col items-center">
                 <div
                   className={`w-16 h-16 lg:w-20 lg:h-20 transition-colors duration-300 group-hover:bg-[#0ea5e9] ${
                     isSolid ? 'bg-[#1A1A1A]' : 'bg-white'
@@ -121,7 +121,7 @@ export default function Header() {
                 className={`transition-colors duration-300 relative ${
                   isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'
                 }`}
-                aria-label="Panier"
+                aria-label={`Panier (${cartCount} articles)`}
               >
                 <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 {cartCount > 0 && (
@@ -136,7 +136,7 @@ export default function Header() {
                 className={`hidden lg:block transition-colors duration-300 ${
                   isSolid ? 'text-[#1A1A1A] hover:text-[#0ea5e9]' : 'text-white hover:text-white/80'
                 }`}
-                aria-label="Compte"
+                aria-label="Mon Compte"
               >
                 <User className="w-[18px] h-[18px]" strokeWidth={1.5} />
               </Link>

@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-4">
-            <Link href={`/${locale}/`} className="inline-block group">
+            <Link href={`/${locale}/`} aria-label="NAY Parfums - Accueil" className="inline-block group">
               <div
                   className="w-16 h-16 lg:w-20 lg:h-20 transition-colors duration-500 bg-[#1A1A1A] group-hover:bg-[#0ea5e9]"
                   style={{
@@ -50,42 +50,42 @@ export default function Footer() {
                 />
             </Link>
 
-            <p className="mt-6 max-w-xs text-[#1A1A1A]/60 text-[14px] leading-[1.7]">
+            <p className="mt-6 max-w-xs text-[#1A1A1A]/80 text-[14px] leading-[1.7]">
               {dict.footer.aboutText}
             </p>
 
-            <div className="mt-8 space-y-2 text-[13px] text-[#1A1A1A]/70">
+            <div className="mt-8 space-y-2 text-[13px] text-[#1A1A1A]/85">
               <div>✆ {config.contactPhone || '+212 5 22 45 67 89'}</div>
               <div>✉ {config.contactEmail || 'contact@nouamane-parfums.ma'}</div>
             </div>
 
             <div className="flex gap-6 mt-8">
               {config.instagramUrl && (
-                <a href={config.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/50 hover:text-[#0ea5e9] transition-colors">
+                <a href={config.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram NAY Parfums" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/75 hover:text-[#0ea5e9] transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                   Instagram
                 </a>
               )}
               {config.facebookUrl && (
-                <a href={config.facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/50 hover:text-[#0ea5e9] transition-colors">
+                <a href={config.facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook NAY Parfums" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/75 hover:text-[#0ea5e9] transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                   Facebook
                 </a>
               )}
               {config.tiktokUrl && (
-                <a href={config.tiktokUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/50 hover:text-[#0ea5e9] transition-colors">
+                <a href={config.tiktokUrl} target="_blank" rel="noopener noreferrer" aria-label="TikTok NAY Parfums" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/75 hover:text-[#0ea5e9] transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
                   TikTok
                 </a>
               )}
               {config.whatsappUrl && (
-                <a href={config.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/50 hover:text-[#0ea5e9] transition-colors">
+                <a href={config.whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp NAY Parfums" className="flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/75 hover:text-[#0ea5e9] transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                   WhatsApp
                 </a>
               )}
               {!config.instagramUrl && !config.facebookUrl && !config.tiktokUrl && !config.whatsappUrl && (
-                <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/30">
+                <div className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#1A1A1A]/50">
                   Réseaux sociaux bientôt disponibles
                 </div>
               )}

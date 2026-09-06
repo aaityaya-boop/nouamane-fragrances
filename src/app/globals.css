@@ -437,3 +437,40 @@ input[type="email"]::placeholder {
   20% { transform: translate(calc(var(--tx) * 0.2), calc(var(--ty) * 0.2)) scale(1.5) rotate(calc(var(--r) * 0.5)); opacity: 1; }
   100% { transform: translate(var(--tx), var(--ty)) scale(0.5) rotate(var(--r)); opacity: 0; }
 }
+
+/* =============================================
+   GPU-ACCELERATED HERO BACKGROUNDS & PARTICLES
+   ============================================= */
+@keyframes spinSlow {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes spinSlowReverse {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-180deg) scale(1.12); }
+  100% { transform: rotate(-360deg) scale(1); }
+}
+
+.animate-glow-1 {
+  animation: spinSlow 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-glow-2 {
+  animation: spinSlowReverse 35s linear infinite;
+  will-change: transform;
+}
+
+@keyframes floatDust {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  50% { opacity: 0.4; }
+  100% { transform: translateY(-80px) translateX(15px); opacity: 0; }
+}
+
+.animate-dust {
+  animation: floatDust 12s linear infinite;
+  will-change: transform, opacity;
+}
+

@@ -19,16 +19,18 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
 
   useEffect(() => {
     setMounted(true);
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      const x = (clientX / innerWidth - 0.5) * 100;
-      const y = (clientY / innerHeight - 0.5) * 100;
-      mouseX.set(x);
-      mouseY.set(y);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const { clientX, clientY } = e;
+        const { innerWidth, innerHeight } = window;
+        const x = (clientX / innerWidth - 0.5) * 60;
+        const y = (clientY / innerHeight - 0.5) * 60;
+        mouseX.set(x);
+        mouseY.set(y);
+      };
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
   }, [mouseX, mouseY]);
   
   const { scrollYProgress } = useScroll({
@@ -72,60 +74,37 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
       {/* Interactive Shape 1 */}
       <motion.div 
         style={{ y: bgY1, x: mouseX }}
-        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full blur-[100px] opacity-30 mix-blend-multiply pointer-events-none"
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full blur-[90px] opacity-30 mix-blend-multiply pointer-events-none"
       >
-        <motion.div 
-          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="w-full h-full bg-gradient-to-br from-[#0ea5e9] to-transparent rounded-full"
-        />
+        <div className="w-full h-full bg-gradient-to-br from-[#0ea5e9] to-transparent rounded-full animate-glow-1" />
       </motion.div>
 
       {/* Interactive Shape 2 */}
       <motion.div 
         style={{ y: bgY2, x: useTransform(mouseX, (v) => -v) }}
-        className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] max-w-[1000px] max-h-[1000px] rounded-full blur-[120px] opacity-20 mix-blend-multiply pointer-events-none"
+        className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] max-w-[1000px] max-h-[1000px] rounded-full blur-[100px] opacity-20 mix-blend-multiply pointer-events-none"
       >
-        <motion.div 
-          animate={{ rotate: -360, scale: [1, 1.2, 1] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="w-full h-full bg-gradient-to-tl from-[#111] via-[#333] to-transparent rounded-full"
-        />
+        <div className="w-full h-full bg-gradient-to-tl from-[#111] via-[#333] to-transparent rounded-full animate-glow-2" />
       </motion.div>
 
       {/* Floating Sparkles/Dust */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {mounted && [...Array(15)].map((_, i) => {
-            const r1 = (i * 13) % 100;
-            const r2 = (i * 17) % 100;
-            const r4 = (i * 29) % 50 - 25;
-            const r5 = (i * 31) % 10;
-            const r6 = (i * 37) % 10;
-            const r7 = (i * 41) % 4 + 1;
-            const r8 = (i * 43) % 4 + 1;
+        {mounted && [...Array(10)].map((_, i) => {
+            const r7 = (i * 41) % 3 + 1;
+            const r8 = (i * 43) % 3 + 1;
             const r9 = (i * 47) % 100;
             const r10 = (i * 53) % 100;
+            const delay = (i * 1.2) % 6;
             return (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: r1 }}
-              animate={{ 
-                opacity: [0, 0.5, 0],
-                y: [r1, r2 * -1 - 50],
-                x: r4
-              }}
-              transition={{
-                duration: 10 + r5,
-                repeat: Infinity,
-                delay: r6,
-                ease: "linear"
-              }}
-              className="absolute rounded-full bg-[#111]/10"
+              className="absolute rounded-full bg-[#111]/10 animate-dust"
               style={{
                 width: r7 + "px",
                 height: r8 + "px",
                 left: r9 + "%",
                 top: r10 + "%",
+                animationDelay: `${delay}s`,
               }}
             />
           );
