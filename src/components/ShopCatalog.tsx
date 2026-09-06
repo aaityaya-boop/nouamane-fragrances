@@ -179,15 +179,52 @@ function ShopCatalogInner({
     if (minRating > 0) list = list.filter((p) => p.rating >= minRating);
 
     switch (sortBy) {
-      case 'price-low': list.sort((a, b) => a.price - b.price); break;
-      case 'price-high': list.sort((a, b) => b.price - a.price); break;
-      case 'rating': list.sort((a, b) => b.rating - a.rating); break;
-      case 'newest':
-        list.sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+      case 'price-low':
+        list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+          return a.price - b.price;
+        });
         break;
-      case 'name': list.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case 'price-high':
+        list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+          return b.price - a.price;
+        });
+        break;
+      case 'rating':
+        list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+          return b.rating - a.rating;
+        });
+        break;
+      case 'newest':
+        list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+          return new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime();
+        });
+        break;
+      case 'name':
+        list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+          return a.name.localeCompare(b.name);
+        });
+        break;
       default:
         list.sort((a, b) => {
+          const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+          const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+          if (aInStock !== bInStock) return bInStock - aInStock;
+
           if (recommendedSlugs && recommendedSlugs.length > 0) {
             const indexA = recommendedSlugs.indexOf(a.slug);
             const indexB = recommendedSlugs.indexOf(b.slug);

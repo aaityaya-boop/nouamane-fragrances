@@ -55,16 +55,20 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
     };
   });
 
-  if (recommendedCoffrets.length > 0) {
-    parsedCoffrets.sort((a, b) => {
+  parsedCoffrets.sort((a, b) => {
+    const aInStock = (a.inStock !== false && (a.stock === undefined || a.stock > 0)) ? 1 : 0;
+    const bInStock = (b.inStock !== false && (b.stock === undefined || b.stock > 0)) ? 1 : 0;
+    if (aInStock !== bInStock) return bInStock - aInStock;
+
+    if (recommendedCoffrets.length > 0) {
       const indexA = recommendedCoffrets.indexOf(a.slug);
       const indexB = recommendedCoffrets.indexOf(b.slug);
       if (indexA !== -1 && indexB !== -1) return indexA - indexB;
       if (indexA !== -1) return -1;
       if (indexB !== -1) return 1;
-      return 0;
-    });
-  }
+    }
+    return 0;
+  });
 
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-[#9E1B1B] selection:text-white">
