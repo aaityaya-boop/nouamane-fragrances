@@ -50,15 +50,24 @@ export default async function CategoryPage({
   const category = getCategoryBySlug(gender);
   if (!category) notFound();
 
-  const dbProducts = await prisma.product.findMany({
-    where: { 
-      published: true,
-      gender: category.key,
-      subcategory: { notIn: ['master-copier', 'coffrets'] }
-    }
-  });
-  
-  const dbBrands = await prisma.brand.findMany();
+  const [dbProducts, dbBrands, config] = await Promise.all([
+    prisma.product.findMany({
+      where: { 
+        published: true,
+        gender: category.key,
+        subcategory: { notIn: ['master-copier', 'coffrets'] }
+      }
+    }),
+    prisma.brand.findMany(),
+    prisma.siteConfig.findFirst()
+  ]);
+
+  let recommendedSlugs: string[] = [];
+  try {
+    if (category.key === 'men') recommendedSlugs = JSON.parse(config?.recommendedMen || '[]');
+    else if (category.key === 'women') recommendedSlugs = JSON.parse(config?.recommendedWomen || '[]');
+    else if (category.key === 'unisex') recommendedSlugs = JSON.parse(config?.recommendedUnisex || '[]');
+  } catch {}
 
   const products = dbProducts.map((p) => ({
     ...p,
@@ -133,7 +142,7 @@ export default async function CategoryPage({
       {/* CATALOG (locked to gender) */}
       <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
         <Suspense fallback={<div className="text-[#9A9A9A]">Chargement…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} lockedGender={category.key as Gender} />
+          <ShopCatalog products={products} brands={dbBrands} lockedGender={category.key as Gender} recommendedSlugs={recommendedSlugs} />
         </Suspense>
       </section>
 

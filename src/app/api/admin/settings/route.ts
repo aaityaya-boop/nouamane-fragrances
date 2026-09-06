@@ -45,6 +45,13 @@ export async function PUT(request: Request) {
         coffretsCoverImage: body.coffretsCoverImage !== undefined ? body.coffretsCoverImage : undefined,
         seasonalTrendTitle: body.seasonalTrendTitle !== undefined ? body.seasonalTrendTitle : undefined,
         seasonalTrendSubtitle: body.seasonalTrendSubtitle !== undefined ? body.seasonalTrendSubtitle : undefined,
+        recommendedShop: body.recommendedShop !== undefined ? body.recommendedShop : undefined,
+        recommendedMen: body.recommendedMen !== undefined ? body.recommendedMen : undefined,
+        recommendedWomen: body.recommendedWomen !== undefined ? body.recommendedWomen : undefined,
+        recommendedUnisex: body.recommendedUnisex !== undefined ? body.recommendedUnisex : undefined,
+        recommendedOriental: body.recommendedOriental !== undefined ? body.recommendedOriental : undefined,
+        recommendedMaster: body.recommendedMaster !== undefined ? body.recommendedMaster : undefined,
+        recommendedCoffrets: body.recommendedCoffrets !== undefined ? body.recommendedCoffrets : undefined,
       }
     });
 

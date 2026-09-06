@@ -15,10 +15,18 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default async function MasterCopierPage() {
-  const dbProducts = await prisma.product.findMany({
-    where: { subcategory: 'master-copier' }
-  });
-  const dbBrands = await prisma.brand.findMany();
+  const [dbProducts, dbBrands, config] = await Promise.all([
+    prisma.product.findMany({
+      where: { published: true, subcategory: 'master-copier' }
+    }),
+    prisma.brand.findMany(),
+    prisma.siteConfig.findFirst()
+  ]);
+
+  let recommendedSlugs: string[] = [];
+  try {
+    recommendedSlugs = JSON.parse(config?.recommendedMaster || '[]');
+  } catch {}
   
   const products: Product[] = dbProducts.map((p) => ({
     ...p,
@@ -101,7 +109,7 @@ export default async function MasterCopierPage() {
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} lockedSubcategory="master-copier" />
+          <ShopCatalog products={products} brands={dbBrands} lockedSubcategory="master-copier" recommendedSlugs={recommendedSlugs} />
         </Suspense>
       </section>
 

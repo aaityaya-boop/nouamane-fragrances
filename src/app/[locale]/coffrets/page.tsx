@@ -16,19 +16,24 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
   const resolvedParams = await params;
   const locale = resolvedParams.locale;
   
-  // Fetch all products marked as coffrets
-  const coffrets = await prisma.product.findMany({
-    where: { subcategory: 'coffrets' },
-    orderBy: { createdAt: 'desc' }
-  });
+  const [coffrets, standardProducts, config] = await Promise.all([
+    prisma.product.findMany({
+      where: { subcategory: 'coffrets' },
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.product.findMany({
+      where: { subcategory: { not: 'coffrets' } }
+    }),
+    prisma.siteConfig.findFirst()
+  ]);
 
-  // Fetch all standard products to display included items
-  const standardProducts = await prisma.product.findMany({
-    where: { subcategory: { not: 'coffrets' } }
-  });
+  let recommendedCoffrets: string[] = [];
+  try {
+    recommendedCoffrets = JSON.parse(config?.recommendedCoffrets || '[]');
+  } catch {}
 
   // Parse images and tags for each coffret
-  const parsedCoffrets = coffrets.map(c => {
+  let parsedCoffrets = coffrets.map(c => {
     const tags = typeof c.tags === 'string' ? JSON.parse(c.tags) : c.tags;
     
     // Find the actual product objects that are included in this coffret
@@ -49,6 +54,17 @@ export default async function CoffretsPage({ params }: { params: Promise<{ local
       includedProducts
     };
   });
+
+  if (recommendedCoffrets.length > 0) {
+    parsedCoffrets.sort((a, b) => {
+      const indexA = recommendedCoffrets.indexOf(a.slug);
+      const indexB = recommendedCoffrets.indexOf(b.slug);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return 0;
+    });
+  }
 
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-[#9E1B1B] selection:text-white">

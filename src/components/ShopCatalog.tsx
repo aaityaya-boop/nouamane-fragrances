@@ -31,6 +31,8 @@ type Props = {
   lockedBrand?: Brand;
   /** Optional subcategory pre-filter. */
   lockedSubcategory?: string;
+  /** Curated list of recommended product slugs to prioritize */
+  recommendedSlugs?: string[];
 };
 
 const COLORS = [
@@ -64,6 +66,7 @@ function ShopCatalogInner({
   lockedGender,
   lockedBrand,
   lockedSubcategory,
+  recommendedSlugs,
 }: Props) {
   const searchParams = useSearchParams();
   const initialSub = searchParams?.get('sub') || 'all';
@@ -185,13 +188,20 @@ function ShopCatalogInner({
       case 'name': list.sort((a, b) => a.name.localeCompare(b.name)); break;
       default:
         list.sort((a, b) => {
+          if (recommendedSlugs && recommendedSlugs.length > 0) {
+            const indexA = recommendedSlugs.indexOf(a.slug);
+            const indexB = recommendedSlugs.indexOf(b.slug);
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+          }
           const aBest = a.tags.includes('bestseller') ? 1 : 0;
           const bBest = b.tags.includes('bestseller') ? 1 : 0;
           return bBest - aBest;
         });
     }
     return list;
-  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons, specialFilter, searchQuery]);
+  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, lockedBrand, lockedGender, selectedSeasons, specialFilter, searchQuery, recommendedSlugs]);
 
   const clearFilters = () => {
     if (!lockedBrand) setBrand('all');

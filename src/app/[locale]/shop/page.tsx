@@ -25,12 +25,20 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default async function ShopPage() {
-  const dbProducts = await prisma.product.findMany({
-    where: { published: true, 
-      subcategory: { notIn: ['master-copier', 'coffrets'] }
-    }
-  });
-  const dbBrands = await prisma.brand.findMany();
+  const [dbProducts, dbBrands, config] = await Promise.all([
+    prisma.product.findMany({
+      where: { published: true, 
+        subcategory: { notIn: ['master-copier', 'coffrets'] }
+      }
+    }),
+    prisma.brand.findMany(),
+    prisma.siteConfig.findFirst()
+  ]);
+
+  let recommendedSlugs: string[] = [];
+  try {
+    recommendedSlugs = JSON.parse(config?.recommendedShop || '[]');
+  } catch {}
   
   const products: Product[] = dbProducts.map((p) => ({
     ...p,
@@ -113,7 +121,7 @@ export default async function ShopPage() {
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} />
+          <ShopCatalog products={products} brands={dbBrands} recommendedSlugs={recommendedSlugs} />
         </Suspense>
       </section>
 

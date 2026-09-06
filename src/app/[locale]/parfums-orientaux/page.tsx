@@ -24,11 +24,19 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-export default async function ArabicPerfumesPage() {
-  const dbProducts = await prisma.product.findMany({
-    where: { published: true, subcategory: 'arabic' }
-  });
-  const dbBrands = await prisma.brand.findMany();
+export default async function ParfumsOrientauxPage() {
+  const [dbProducts, dbBrands, config] = await Promise.all([
+    prisma.product.findMany({
+      where: { published: true, subcategory: 'arabic' }
+    }),
+    prisma.brand.findMany(),
+    prisma.siteConfig.findFirst()
+  ]);
+
+  let recommendedSlugs: string[] = [];
+  try {
+    recommendedSlugs = JSON.parse(config?.recommendedOriental || '[]');
+  } catch {}
   
   const products: Product[] = dbProducts.map((p) => ({
     ...p,
@@ -111,7 +119,7 @@ export default async function ArabicPerfumesPage() {
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
         <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} lockedSubcategory="arabic" />
+          <ShopCatalog products={products} brands={dbBrands} lockedSubcategory="arabic" recommendedSlugs={recommendedSlugs} />
         </Suspense>
       </section>
 
