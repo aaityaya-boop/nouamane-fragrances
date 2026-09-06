@@ -63,6 +63,7 @@ export default function BrandsMarquee({ brands }: { brands: Brand[] }) {
                     src={brand.image} 
                     alt={brand.name} 
                     fill 
+                    sizes="(max-width: 768px) 160px, 224px"
                     className="object-contain mix-blend-multiply" 
                   />
                 </div>

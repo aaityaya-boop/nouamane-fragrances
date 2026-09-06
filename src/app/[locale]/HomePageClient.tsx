@@ -58,20 +58,30 @@ const staggerItem: any = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
 };
 
-export default function HomePageClient({ products, config, latestReviews = [] }: { products: Product[], config?: any, latestReviews?: any[] }) {
+export default function HomePageClient({ 
+  products, 
+  config, 
+  latestReviews = [],
+  initialBrands = [],
+  initialBlogPosts = []
+}: { 
+  products: Product[], 
+  config?: any, 
+  latestReviews?: any[],
+  initialBrands?: any[],
+  initialBlogPosts?: any[]
+}) {
   const { scrollY } = useScroll();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
   const newArrivalsDefault = [...products].sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()).slice(0, 4);
 
-
-
   const currentMonth = new Date().getMonth();
   const isFallWinter = currentMonth >= 8 || currentMonth <= 1;
 
-  const [brands, setBrands] = useState<any[]>([]);
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
-  const [homepageConfig, setHomepageConfig] = useState<any>(null);
+  const [brands, setBrands] = useState<any[]>(initialBrands);
+  const [blogPosts, setBlogPosts] = useState<any[]>(initialBlogPosts);
+  const [homepageConfig, setHomepageConfig] = useState<any>(config || null);
 
   const seasonalTitleFull = homepageConfig?.seasonalTrendTitle || (isFallWinter ? 'Tendances Automne-Hiver' : 'Tendances Printemps-Été');
   const seasonalTitleParts = seasonalTitleFull.split(' ');
@@ -95,23 +105,29 @@ export default function HomePageClient({ products, config, latestReviews = [] }:
     : 'Nos fragrances fraîches, solaires et florales pour la belle saison.');
 
   useEffect(() => {
-    fetch('/api/brands')
-      .then(res => res.json())
-      .then(data => setBrands(data))
-      .catch(console.error);
+    if (initialBrands.length === 0) {
+      fetch('/api/brands')
+        .then(res => res.json())
+        .then(data => setBrands(data))
+        .catch(console.error);
+    }
       
-    fetch('/api/blog')
-      .then(res => res.json())
-      .then(data => {
-        if(Array.isArray(data)) setBlogPosts(data);
-      })
-      .catch(console.error);
+    if (initialBlogPosts.length === 0) {
+      fetch('/api/blog')
+        .then(res => res.json())
+        .then(data => {
+          if(Array.isArray(data)) setBlogPosts(data);
+        })
+        .catch(console.error);
+    }
 
-    fetch('/api/settings')
-      .then(res => res.json())
-      .then(data => setHomepageConfig(data))
-      .catch(console.error);
-  }, []);
+    if (!config) {
+      fetch('/api/settings')
+        .then(res => res.json())
+        .then(data => setHomepageConfig(data))
+        .catch(console.error);
+    }
+  }, [initialBrands.length, initialBlogPosts.length, config]);
 
   // Use admin-configured products if set, else fallback to tag-based
   const bestsellersDisplay = (() => {

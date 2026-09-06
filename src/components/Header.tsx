@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -8,9 +9,10 @@ import { Search, ShoppingBag, User, Menu, X, ChevronDown, Package, ChevronRight,
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { MAIN_CATEGORIES } from '@/lib/products';
-import SearchModal from './SearchModal';
 import { useDictionary } from '@/context/DictionaryContext';
 import LanguageSwitcher from './LanguageSwitcher';
+
+const SearchModal = dynamic(() => import('./SearchModal'), { ssr: false });
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);

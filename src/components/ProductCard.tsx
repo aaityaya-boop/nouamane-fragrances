@@ -56,7 +56,7 @@ export default function ProductCard({ product, showRating = true, onQuickView }:
           alt={`Parfum ${product.name} au Maroc - NAY Parfums`}
           fill
           loading="lazy"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover perfume-bottle group-hover:scale-110 transition-transform duration-[1500ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
         />
         

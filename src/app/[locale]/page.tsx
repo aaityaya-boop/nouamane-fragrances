@@ -3,12 +3,28 @@ import HomePageClient from './HomePageClient';
 import prisma from '@/lib/prisma';
 import { Product } from '@/lib/products';
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function HomePage() {
-  const dbProducts = await prisma.product.findMany({ where: { published: true } });
-  let siteConfig = await prisma.siteConfig.findFirst();
+  const [dbProducts, siteConfigDb, dbReviewsDb, brandsDb, blogPostsDb] = await Promise.all([
+    prisma.product.findMany({ where: { published: true } }),
+    prisma.siteConfig.findFirst(),
+    prisma.review.findMany({
+      where: { verified: true },
+      take: 100,
+      include: { product: true }
+    }),
+    prisma.brand.findMany({
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.blogPost.findMany({
+      where: { status: 'published' },
+      orderBy: { publishedAt: 'desc' },
+      take: 3
+    })
+  ]);
 
+  let siteConfig = siteConfigDb;
   if (!siteConfig) {
     siteConfig = {
       id: 1,
@@ -31,12 +47,7 @@ export default async function HomePage() {
     originalPrice: p.originalPrice ?? undefined,
   }));
 
-  let dbReviews = await prisma.review.findMany({
-    where: { verified: true },
-    take: 100,
-    include: { product: true }
-  });
-  
+  let dbReviews = dbReviewsDb;
   if (!dbReviews || dbReviews.length === 0) {
     dbReviews = [
       { id: 1, comment: "Franchement j'avais des doutes, mais sda9 site sadi9. Khdit Libre Eau de Parfum, c'est l'original. Tbarkallah 3likom.", author: "Mounia T.", city: "Marrakech", product: { name: "YSL Libre Eau de Parfum", slug: "ysl-libre" }, rating: 5, verified: true } as any,
@@ -53,5 +64,13 @@ export default async function HomePage() {
   // Randomize reviews
   let randomReviews = [...dbReviews].sort(() => 0.5 - Math.random()).slice(0, 6);
 
-  return <HomePageClient products={products} config={siteConfig} latestReviews={randomReviews} />;
+  return (
+    <HomePageClient 
+      products={products} 
+      config={siteConfig} 
+      latestReviews={randomReviews} 
+      initialBrands={brandsDb}
+      initialBlogPosts={blogPostsDb}
+    />
+  );
 }

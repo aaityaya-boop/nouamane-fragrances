@@ -6,9 +6,9 @@
  */
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
-import QuickViewModal from '@/components/QuickViewModal';
 import {
   MAIN_CATEGORIES,
   type Product,
@@ -17,6 +17,8 @@ import {
 } from '@/lib/products';
 import { useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, X, Star, ChevronDown, Check, Search } from 'lucide-react';
+
+const QuickViewModal = dynamic(() => import('@/components/QuickViewModal'), { ssr: false });
 
 type SortKey = 'featured' | 'price-low' | 'price-high' | 'rating' | 'newest' | 'name';
 

@@ -1,22 +1,39 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import dynamic from 'next/dynamic';
+import { Montserrat, Tajawal } from 'next/font/google';
 import "../globals.css";
-import { notFound } from 'next/navigation';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import { CartProvider } from "@/context/CartContext";
-import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { DictionaryProvider } from "@/context/DictionaryContext";
 import { getDictionary } from "@/lib/dictionaries";
 import { AuthProvider } from "@/context/AuthContext";
 import FacebookPixel from "@/components/FacebookPixel";
 import CookieConsent from "@/components/CookieConsent";
-import AIChatWidget from "@/components/AIChatWidget";
 import { PreferencesProvider } from "@/context/PreferencesContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import { GoogleTagManager, GoogleTagManagerNoScript } from "@/components/analytics/GoogleTagManager";
+
+const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'), { ssr: false });
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+  preload: true,
+});
+
+const tajawal = Tajawal({
+  subsets: ['arabic'],
+  weight: ['300', '400', '500', '700', '800'],
+  variable: '--font-arabic',
+  display: 'swap',
+  preload: false,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nayparfum.ma'),
@@ -80,19 +97,17 @@ export default async function LocaleLayout({
   const dir = validLocale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={validLocale} dir={dir}>
+    <html lang={validLocale} dir={dir} className={`${montserrat.variable} ${tajawal.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <Script
           id="tiktok-pixel"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               !function (w, d, t) {
                 w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
-              var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
-              ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+                var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+                ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
 
                 ttq.load('DA87OEJC77UES9745EC0');
                 ttq.page();
@@ -147,10 +162,10 @@ export default async function LocaleLayout({
         <Analytics />
 
         {/* ========== GOOGLE CUSTOMER REVIEWS BADGE ========== */}
-        <Script id="merchantWidgetScript" src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" strategy="afterInteractive" />
+        <Script id="merchantWidgetScript" src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" strategy="lazyOnload" />
         <Script
           id="gcr-badge"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               var gcrInterval = setInterval(function() {

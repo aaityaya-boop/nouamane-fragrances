@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 
@@ -127,11 +128,9 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
                 top: r10 + "%",
               }}
             />
-          )})}
+          );
+        })}
       </div>
-
-      {/* Ultra-subtle luxury noise texture */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
 
       <motion.div 
         className="relative z-10 w-full max-w-[1400px] mx-auto px-6 text-center flex flex-col items-center justify-center"
@@ -144,9 +143,12 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="mb-12 flex flex-col items-center justify-center relative group"
         >
-          <img
+          <Image
             src="/images/nay/nay-logo-new.png"
             alt="NAY Parfums"
+            width={224}
+            height={80}
+            priority
             className="w-32 sm:w-40 md:w-48 lg:w-56 h-auto object-contain transition-transform duration-1000 group-hover:scale-105"
           />
         </motion.div>
