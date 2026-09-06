@@ -57,6 +57,7 @@ export type Product = {
   releaseDate: string;
   tags: Array<'bestseller' | 'new-arrival' | 'seasonal-fall' | 'seasonal-spring' | 'staff-pick' | 'limited'>;
   inStock: boolean;
+  stock?: number;
   perfectSeason: Season;
   isTester?: boolean;
 };
