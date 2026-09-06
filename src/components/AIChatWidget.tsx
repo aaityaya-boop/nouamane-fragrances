@@ -70,7 +70,11 @@ export default function AIChatWidget() {
                 />
                 <div className="font-semibold text-[14px]">Conseiller NAY</div>
               </div>
-              <button onClick={toggleChat} className="text-gray-400 hover:text-white transition-colors">
+              <button 
+                onClick={toggleChat} 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Fermer la fenêtre du conseiller virtuel"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -144,11 +148,13 @@ export default function AIChatWidget() {
                   value={input}
                   onChange={handleInputChange}
                   placeholder="Posez votre question..."
+                  aria-label="Message au conseiller virtuel"
                   className="flex-1 bg-transparent text-[13px] outline-none text-gray-700 py-2"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
+                  aria-label="Envoyer le message"
                   className="w-8 h-8 flex items-center justify-center bg-[#1A1A1A] text-white rounded-full disabled:opacity-50 hover:bg-[#0ea5e9] transition-colors"
                 >
                   <Send size={14} className="-ml-0.5" />
@@ -162,6 +168,7 @@ export default function AIChatWidget() {
       {/* Floating Button */}
       <button
         onClick={toggleChat}
+        aria-label={isOpen ? "Fermer le conseiller virtuel" : "Ouvrir le conseiller virtuel IA"}
         className="fixed bottom-[100px] right-4 sm:right-6 w-14 h-14 bg-[#1A1A1A] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 hover:bg-[#0ea5e9] active:scale-95 transition-all z-50 border-2 border-white/10"
       >
         {isOpen ? (
