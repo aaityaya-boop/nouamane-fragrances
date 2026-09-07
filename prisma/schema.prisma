@@ -111,8 +111,8 @@ model SiteConfig {
   adminUsername       String   @default("admin")
   adminPassword       String   @default("nouamane2024")
   shippingFee         Float    @default(35)
-  contactPhone        String   @default("+212 5 35 63 42 18")
-  contactEmail        String   @default("contact@nouamane.ma")
+  contactPhone        String   @default("+212 663-380011")
+  contactEmail        String   @default("contact@nayparfum.ma")
   heroTitle           String   @default("L'Essence de l'Élégance")
   heroSubtitle        String   @default("Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.")
   instagramUrl        String?
