@@ -41,9 +41,9 @@ export default function InvoiceClient({ order }: { order: any }) {
             <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-3">Émetteur</h3>
             <div className="text-sm space-y-1">
               <p className="font-semibold">NAY Parfums</p>
-              <p>Fès, Maroc</p>
-              <p>Contact : +212 5 35 63 42 18</p>
-              <p>Email : contact@nouamane.ma</p>
+              <p>Maroc</p>
+              <p>Contact : +212 663-380011</p>
+              <p>Email : contact@nayparfum.ma</p>
             </div>
           </div>
           <div className="text-right">

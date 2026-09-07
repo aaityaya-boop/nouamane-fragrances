@@ -130,7 +130,7 @@ export default async function LocaleLayout({
               logo: "https://nayparfum.ma/icon.png",
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+212 5 35 63 42 18",
+                telephone: "+212 663-380011",
                 contactType: "customer service",
                 areaServed: "MA",
                 availableLanguage: ["fr", "en", "ar"]

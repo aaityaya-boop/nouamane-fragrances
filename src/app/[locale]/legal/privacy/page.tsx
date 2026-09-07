@@ -32,7 +32,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-bold text-[#1A1A1A] mb-4">4. Vos droits</h2>
-            <p>Conformément à la loi en vigueur, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ce droit en nous contactant à l'adresse email : contact@nouamane-parfums.ma.</p>
+            <p>Conformément à la loi en vigueur, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ce droit en nous contactant à l'adresse email : contact@nayparfum.ma.</p>
           </section>
         </div>
       </main>

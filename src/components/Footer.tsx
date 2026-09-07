@@ -55,8 +55,8 @@ export default function Footer() {
             </p>
 
             <div className="mt-8 space-y-2 text-[13px] text-[#1A1A1A]/85">
-              <div>✆ {config.contactPhone || '+212 5 22 45 67 89'}</div>
-              <div>✉ {config.contactEmail || 'contact@nouamane-parfums.ma'}</div>
+              <div>✆ {config.contactPhone || '+212 663-380011'}</div>
+              <div>✉ {config.contactEmail || 'contact@nayparfum.ma'}</div>
             </div>
 
             <div className="flex gap-6 mt-8">

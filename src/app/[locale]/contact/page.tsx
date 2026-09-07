@@ -61,7 +61,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-[14px] font-bold text-[#1A1A1A] mb-1">Téléphone & WhatsApp</h3>
-                  <p className="text-[14px] text-[#6B6B6B]">+212 5 22 45 67 89</p>
+                  <a href="tel:+212663380011" className="text-[14px] text-[#6B6B6B] hover:text-[#0ea5e9] transition-colors block">+212 663-380011</a>
                   <p className="text-[12px] text-[#9A9A9A] mt-1">Lun-Sam, 9h-19h</p>
                 </div>
               </div>
@@ -72,7 +72,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-[14px] font-bold text-[#1A1A1A] mb-1">Email</h3>
-                  <p className="text-[14px] text-[#6B6B6B]">contact@nouamane-parfums.ma</p>
+                  <a href="mailto:contact@nayparfum.ma" className="text-[14px] text-[#6B6B6B] hover:text-[#0ea5e9] transition-colors block">contact@nayparfum.ma</a>
                 </div>
               </div>
             </div>

@@ -10,8 +10,8 @@ export async function POST() {
         data: {
           adminPassword: "nouamane2024",
           shippingFee: 35,
-          contactPhone: "+212 5 35 63 42 18",
-          contactEmail: "contact@nouamane.ma",
+          contactPhone: "+212 663-380011",
+          contactEmail: "contact@nayparfum.ma",
           heroTitle: "L'Essence de l'Élégance",
           heroSubtitle: "Découvrez notre collection de parfums de luxe, conçue pour laisser une empreinte inoubliable.",
         }
