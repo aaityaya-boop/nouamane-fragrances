@@ -106,7 +106,7 @@ export default async function AdminDashboard() {
         </div>
         <div className="flex gap-3">
           <Link href="/admin/products" className="bg-white border border-[#eaeaea] hover:border-[#ccc] hover:bg-gray-50 text-[#111] px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all shadow-sm">
-            Ajouter un produit
+            Ajouter un testeur
           </Link>
           <Link href="/" target="_blank" className="bg-[#111] text-white px-4 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md flex items-center gap-2">
             Voir le site <ArrowUpRight size={16} className="text-gray-400" />

@@ -250,8 +250,8 @@ export default function AdminProductsPage() {
     <div className="p-4 md:p-8 lg:p-12 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Produits</h1>
-          <p className="text-[14px] text-[#666]">Gérez votre catalogue de parfums ({products.length} au total).</p>
+          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Testeurs</h1>
+          <p className="text-[14px] text-[#666]">Gérez votre catalogue de testeurs ({products.length} au total).</p>
         </div>
         
         <div className="flex flex-wrap gap-3">
@@ -265,7 +265,7 @@ export default function AdminProductsPage() {
             onClick={openAddModal}
             className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
           >
-            <Plus size={16} /> Ajouter un produit
+            <Plus size={16} /> Ajouter un testeur
           </button>
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function AdminProductsPage() {
           <Search size={16} className="text-[#999]" />
           <input 
             type="text" 
-            placeholder="Rechercher un parfum..." 
+            placeholder="Rechercher un testeur..." 
             className="flex-1 bg-transparent border-none focus:outline-none text-[14px] text-[#111] placeholder:text-[#999]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -287,7 +287,7 @@ export default function AdminProductsPage() {
           <table className="w-full text-left">
             <thead className="bg-[#fafafa] border-b border-[#eaeaea]">
               <tr>
-                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Produit & SKU</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Testeur & SKU</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Prix (MAD)</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Stock/Statut</th>
@@ -301,7 +301,7 @@ export default function AdminProductsPage() {
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvé.</td>
+                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun testeur trouvé.</td>
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
@@ -391,10 +391,10 @@ export default function AdminProductsPage() {
             <div className="bg-white border-b border-[#e0ddd4] px-8 py-5 flex items-center justify-between sticky top-0 z-20">
               <div>
                 <h2 className="heading-font text-2xl text-[#1A1A1A]">
-                  {editingProduct ? 'Modifier le produit' : 'Nouveau parfum'}
+                  {editingProduct ? 'Modifier le testeur' : 'Nouveau testeur'}
                 </h2>
                 <p className="text-[#9A9A9A] text-[13px] mt-1">
-                  {editingProduct ? 'Mettez à jour les fiches produits et les pyramides olfactives.' : 'Ajoutez un nouveau parfum au catalogue.'}
+                  {editingProduct ? 'Mettez à jour les fiches testeurs et les pyramides olfactives.' : 'Ajoutez un nouveau testeur au catalogue.'}
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ export default function AdminProductsPage() {
                   Annuler
                 </button>
                 <button onClick={handleSave} className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#0ea5e9] transition-all shadow-md">
-                  {editingProduct ? 'Enregistrer' : 'Créer le produit'}
+                  {editingProduct ? 'Enregistrer' : 'Créer le testeur'}
                 </button>
               </div>
             </div>
