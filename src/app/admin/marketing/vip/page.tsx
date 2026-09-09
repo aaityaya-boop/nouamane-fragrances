@@ -17,37 +17,30 @@ import {
   UserCheck
 } from 'lucide-react';
 import { formatMAD } from '@/lib/products';
+import { getUnifiedCustomers } from '@/lib/unifiedCustomers';
 
 export const dynamic = 'force-dynamic';
 
 export default async function VIPMarketingPage() {
-  const allCustomers = await prisma.customer.findMany({
-    include: { 
-      orders: { 
-        where: { status: 'delivered' }, 
-        orderBy: { createdAt: 'desc' } 
-      } 
-    }
-  });
+  const allCustomers = await getUnifiedCustomers();
 
   let totalStoreRevenue = 0;
   
   const customerStats = allCustomers.map(c => {
-    const spent = c.orders.reduce((sum, o) => sum + o.total, 0);
-    const count = c.orders.length;
-    const lastOrder = count > 0 ? c.orders[0] : null;
-    totalStoreRevenue += spent;
-
-    let tier: 'DIAMOND' | 'GOLD' | 'SILVER' | 'STANDARD' = 'STANDARD';
-    if (spent >= 5000 || count >= 5) {
-      tier = 'DIAMOND';
-    } else if (spent >= 2500 || count >= 3) {
-      tier = 'GOLD';
-    } else if (spent >= 1000 || count >= 2) {
-      tier = 'SILVER';
-    }
-
-    return { ...c, spent, count, lastOrder, tier };
+    totalStoreRevenue += c.totalSpent;
+    return {
+      id: c.id,
+      name: c.name,
+      email: c.email,
+      phone: c.phone,
+      cleanPhone: c.cleanPhone,
+      city: c.city,
+      address: c.address,
+      count: c.ordersCount,
+      spent: c.totalSpent,
+      lastOrder: c.lastOrderDate ? { createdAt: c.lastOrderDate } : null,
+      tier: c.tier
+    };
   });
 
   const vipCustomers = customerStats

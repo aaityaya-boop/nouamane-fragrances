@@ -17,16 +17,13 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { formatMAD } from '@/lib/products';
+import { getUnifiedCustomers } from '@/lib/unifiedCustomers';
 
 export const dynamic = 'force-dynamic';
 
 export default async function MarketingAnalyticsPage() {
   const [allCustomers, deliveredOrders, abandonedCarts, campaigns] = await Promise.all([
-    prisma.customer.findMany({
-      include: { 
-        orders: { where: { status: 'delivered' } } 
-      }
-    }),
+    getUnifiedCustomers(),
     prisma.order.findMany({
       where: { status: 'delivered' },
       orderBy: { createdAt: 'desc' }
@@ -48,9 +45,8 @@ export default async function MarketingAnalyticsPage() {
   let cohort5plus = 0; // 5+ orders
 
   allCustomers.forEach(c => {
-    const orders = c.orders;
-    const count = orders.length;
-    const spent = orders.reduce((sum, o) => sum + o.total, 0);
+    const count = c.ordersCount;
+    const spent = c.totalSpent;
     totalRevenue += spent;
 
     if (count === 1) {
@@ -73,7 +69,7 @@ export default async function MarketingAnalyticsPage() {
   });
 
   const totalDelivered = deliveredOrders.length;
-  const aov = totalDelivered > 0 ? Math.round(totalRevenue / totalDelivered) : 0;
+  const aov = totalDelivered > 0 ? Math.round(totalRevenue / totalDelivered) : (singleBuyerCount + returningCustomerCount > 0 ? Math.round(totalRevenue / (singleBuyerCount + returningCustomerCount)) : 0);
   const cltv = allCustomers.length > 0 ? Math.round(totalRevenue / allCustomers.length) : 0;
   const repeatRate = allCustomers.length > 0 ? ((returningCustomerCount / allCustomers.length) * 100).toFixed(1) : '0';
   const repeatRevShare = totalRevenue > 0 ? ((repeatRevenue / totalRevenue) * 100).toFixed(1) : '0';

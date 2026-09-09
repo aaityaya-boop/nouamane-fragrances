@@ -25,17 +25,13 @@ import {
   BookUser
 } from 'lucide-react';
 import { formatMAD } from '@/lib/products';
+import { getUnifiedCustomers } from '@/lib/unifiedCustomers';
 
 export const dynamic = 'force-dynamic';
 
 export default async function MarketingDashboardPage() {
   const [allCustomers, recentAbandonedCarts, campaigns, liveSessions] = await Promise.all([
-    prisma.customer.findMany({
-      include: { 
-        orders: { orderBy: { createdAt: 'desc' } },
-        abandonedCarts: { orderBy: { lastActivity: 'desc' } }
-      }
-    }),
+    getUnifiedCustomers(),
     prisma.abandonedCart.findMany({
       where: { status: { in: ['ABANDONED', 'ACTIVE'] } },
       include: { customer: true },
@@ -68,31 +64,29 @@ export default async function MarketingDashboardPage() {
 
   allCustomers.forEach(c => {
     if (c.phone) withPhoneCount++;
-    const deliveredOrders = c.orders.filter(o => o.status === 'delivered');
-    const spent = deliveredOrders.reduce((sum, o) => sum + o.total, 0);
-    totalRevenue += spent;
-    const count = deliveredOrders.length;
-    totalDeliveredOrders += count;
+    totalRevenue += c.totalSpent;
+    const count = c.ordersCount;
+    totalDeliveredOrders += c.deliveredOrdersCount;
 
     if (count === 1) newCustomers++;
     if (count > 1) {
       returningCustomers++;
-      repeatRevenue += spent;
+      repeatRevenue += c.totalSpent;
     }
 
-    // VIP criteria: >3 orders OR spent >= 2000 MAD
-    if (count >= 3 || spent >= 2000) {
+    // VIP criteria
+    if (c.isVip) {
       vipCustomers++;
     }
 
-    const lastOrder = count > 0 ? deliveredOrders[0] : null;
-    const daysSince = lastOrder ? Math.floor((now - new Date(lastOrder.createdAt).getTime()) / (1000 * 3600 * 24)) : 999;
+    const lastOrder = c.lastOrderDate;
+    const daysSince = lastOrder ? Math.floor((now - new Date(lastOrder).getTime()) / (1000 * 3600 * 24)) : 999;
 
     if (count > 0 && daysSince > 90 && daysSince <= 180) atRiskCustomers++;
     if (count > 0 && daysSince > 180) inactiveCustomers++;
   });
 
-  const aov = totalDeliveredOrders > 0 ? Math.round(totalRevenue / totalDeliveredOrders) : 0;
+  const aov = totalDeliveredOrders > 0 ? Math.round(totalRevenue / totalDeliveredOrders) : (newCustomers + returningCustomers > 0 ? Math.round(totalRevenue / (newCustomers + returningCustomers)) : 0);
   const cltv = allCustomers.length > 0 ? Math.round(totalRevenue / allCustomers.length) : 0;
   const repeatRate = allCustomers.length > 0 ? ((returningCustomers / allCustomers.length) * 100).toFixed(1) : '0';
 
