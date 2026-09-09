@@ -17,11 +17,14 @@ import {
   ArrowUpRight,
   ShieldCheck,
   MessageCircle,
-  Flame
+  Flame,
+  PhoneCall,
+  Contact
 } from 'lucide-react';
 
 const MARKETING_TABS = [
   { href: '/admin/marketing', label: "Vue d'ensemble", icon: <LayoutDashboard size={15} /> },
+  { href: '/admin/marketing/contacts', label: 'Répertoire Contacts', icon: <PhoneCall size={15} /> },
   { href: '/admin/marketing/abandoned-carts', label: 'Paniers Abandonnés', icon: <ShoppingCart size={15} /> },
   { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Radio size={15} />, live: true },
   { href: '/admin/marketing/campaigns', label: 'Campagnes & Messages', icon: <Send size={15} /> },
@@ -62,26 +65,26 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
               Command Center Rétention & Marketing
             </h1>
             <p className="text-gray-400 text-sm md:text-base max-w-2xl font-normal leading-relaxed">
-              Pilotez la fidélisation de vos clients, convertissez les paniers abandonnés sur WhatsApp et optimisez le revenu récurrent de votre maison de parfum.
+              Pilotez la fidélisation de vos clients, consultez le répertoire complet des téléphones et emails, et diffusez vos offres directes.
             </p>
           </div>
 
           {/* Luxury Action Buttons */}
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Link
+              href="/admin/marketing/contacts"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#161616] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-200 hover:text-white font-semibold text-xs transition-all duration-200 active:scale-95"
+            >
+              <PhoneCall size={14} className="text-[#0ea5e9]" />
+              <span>Répertoire Contacts</span>
+            </Link>
+
+            <Link
               href="/admin/marketing/campaigns/new"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] via-sky-500 to-blue-600 hover:brightness-110 text-white font-bold text-xs tracking-wide shadow-lg shadow-sky-500/25 transition-all duration-200 active:scale-95 border border-sky-400/30"
             >
               <PlusCircle size={16} />
               <span>Nouvelle Campagne</span>
-            </Link>
-
-            <Link
-              href="/admin/marketing/live-carts"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#161616] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-200 hover:text-white font-semibold text-xs transition-all duration-200 active:scale-95"
-            >
-              <Radio size={14} className="text-[#0ea5e9] animate-pulse" />
-              <span>Paniers en direct</span>
             </Link>
 
             <Link

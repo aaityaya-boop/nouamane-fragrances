@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Package,
   Layers,
-  Radio
+  Radio,
+  BookUser
 } from 'lucide-react';
 import { formatMAD } from '@/lib/products';
 
@@ -61,10 +62,12 @@ export default async function MarketingDashboardPage() {
   let atRiskCustomers = 0;
   let inactiveCustomers = 0;
   let totalDeliveredOrders = 0;
+  let withPhoneCount = 0;
 
   const now = new Date().getTime();
 
   allCustomers.forEach(c => {
+    if (c.phone) withPhoneCount++;
     const deliveredOrders = c.orders.filter(o => o.status === 'delivered');
     const spent = deliveredOrders.reduce((sum, o) => sum + o.total, 0);
     totalRevenue += spent;
@@ -113,16 +116,16 @@ export default async function MarketingDashboardPage() {
         {/* Metric 1: Total Customer Base */}
         <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Base Clients NAY</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Base Clients & Téléphones</span>
             <div className="p-2.5 rounded-xl bg-neutral-100 text-neutral-800 group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
               <Users size={17} />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-3xl font-black text-neutral-900 tracking-tight">{allCustomers.length}</span>
-            <span className="text-[11px] font-bold text-[#0ea5e9] bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
-              Actifs
-            </span>
+            <Link href="/admin/marketing/contacts" className="text-[11px] font-bold text-[#0ea5e9] bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200 hover:bg-sky-100 transition-colors">
+              {withPhoneCount} Téléphones WhatsApp →
+            </Link>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-neutral-100">
             <span>Nouveaux: <b className="text-neutral-800 font-semibold">{newCustomers}</b></span>
@@ -186,6 +189,34 @@ export default async function MarketingDashboardPage() {
           </div>
         </div>
 
+      </div>
+
+      {/* Direct Contact Directory Quick Access Banner */}
+      <div className="bg-gradient-to-r from-[#0A0A0A] via-[#141414] to-[#0A0A0A] rounded-2xl p-5 border border-[#1e1e1e] text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#1c1c1c] text-[#0ea5e9] flex items-center justify-center border border-white/10 shrink-0 shadow-sm">
+            <PhoneCall size={20} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-white">Répertoire Centralisé des Téléphones & Emails</h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#0ea5e9]/20 text-[#0ea5e9] border border-sky-500/30">
+                {withPhoneCount} NUMÉROS PRÊTS
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Accédez à la liste complète de tous vos clients avec copie 1-clic des numéros WhatsApp et export CSV.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/admin/marketing/contacts"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold text-xs shadow-md shadow-sky-500/20 transition-all shrink-0 active:scale-95"
+        >
+          <span>Ouvrir le Répertoire Contacts</span>
+          <ArrowRight size={13} />
+        </Link>
       </div>
 
       {/* Audience Segmentation & 1-Click Launch Grid */}
