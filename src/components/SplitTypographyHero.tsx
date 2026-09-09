@@ -175,7 +175,7 @@ export default function SplitTypographyHero({ config }: { config?: any }) {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
           className="text-[11px] sm:text-[13px] md:text-[14px] text-[#555] font-light max-w-2xl mx-auto leading-[2.2] tracking-[0.2em] uppercase mb-16"
         >
-          Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums prestigieux</span>. L'essence du luxe, de la magie orientale et de l'exception.
+          Découvrez notre sélection de <span className="font-semibold text-[#111]">parfums prestigieux</span>. L'essence du luxe, de l'authenticité et de l'exception.
         </motion.p>
         
         {/* Call to Actions */}

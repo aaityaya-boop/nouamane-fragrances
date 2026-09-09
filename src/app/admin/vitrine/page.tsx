@@ -91,12 +91,12 @@ const TABS: TabConfig[] = [
   },
   {
     key: 'recommendedOriental',
-    label: 'Orientaux',
+    label: 'Originaux',
     group: 'shop',
-    icon: <Moon size={15} className="text-[#f59e0b]" />,
-    pageUrl: '/fr/parfums-orientaux',
-    pageLabel: '/parfums-orientaux',
-    description: 'Parfums recommandés affichés en premier dans Parfums Orientaux.',
+    icon: <Sparkles size={15} className="text-[#0ea5e9]" />,
+    pageUrl: '/fr/parfums-originaux',
+    pageLabel: '/parfums-originaux',
+    description: 'Parfums recommandés affichés en premier dans Parfums Originaux.',
     defaultSubcategory: 'arabic'
   },
   {
