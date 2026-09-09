@@ -8,11 +8,12 @@ export const dynamic = 'force-dynamic';
 export default async function CustomersDashboardPage({
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string; filter?: string }
+  searchParams: Promise<{ q?: string; page?: string; filter?: string }>;
 }) {
-  const query = searchParams.q || '';
-  const page = parseInt(searchParams.page || '1');
-  const filter = searchParams.filter || 'all';
+  const sp = await searchParams;
+  const query = sp?.q || '';
+  const page = parseInt(sp?.page || '1');
+  const filter = sp?.filter || 'all';
   const take = 20;
   const skip = (page - 1) * take;
 

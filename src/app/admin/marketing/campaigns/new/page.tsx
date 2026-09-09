@@ -9,10 +9,10 @@ export const dynamic = 'force-dynamic';
 export default async function NewCampaignPage({
   searchParams
 }: {
-  searchParams: { audience?: string }
+  searchParams: Promise<{ audience?: string }>
 }) {
-  
-  const audience = searchParams.audience || 'ALL';
+  const sp = await searchParams;
+  const audience = sp?.audience || 'ALL';
 
   async function createDraft(formData: FormData) {
     'use server';

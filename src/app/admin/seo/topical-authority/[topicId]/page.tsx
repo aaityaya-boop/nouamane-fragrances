@@ -7,9 +7,14 @@ import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function TopicDetailPage({ params }: { params: { topicId: string } }) {
+export default async function TopicDetailPage({
+  params,
+}: {
+  params: Promise<{ topicId: string }>;
+}) {
+  const { topicId } = await params;
   const topic = await prisma.seoTopic.findUnique({
-    where: { id: params.topicId }
+    where: { id: topicId }
   });
 
   if (!topic) {
