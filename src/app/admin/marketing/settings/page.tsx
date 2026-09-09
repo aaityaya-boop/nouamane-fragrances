@@ -22,7 +22,7 @@ export default async function MarketingSettingsPage() {
       {/* Header */}
       <div>
         <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
-          <Sliders size={22} className="text-amber-500" />
+          <Sliders size={22} className="text-[#0ea5e9]" />
           Paramètres & Automatisations du Moteur de Rétention
         </h2>
         <p className="text-xs md:text-sm text-neutral-500 mt-1">
@@ -61,7 +61,7 @@ export default async function MarketingSettingsPage() {
         {/* Module 2: Automation Pipelines */}
         <div className="bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-neutral-100">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold border border-amber-200">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 text-[#0ea5e9] flex items-center justify-center font-bold border border-sky-200">
               <Zap size={20} />
             </div>
             <div>
@@ -75,7 +75,7 @@ export default async function MarketingSettingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 gap-3">
               <div className="space-y-1">
                 <div className="font-bold text-sm text-neutral-900 flex items-center gap-2">
-                  <Clock size={14} className="text-amber-600" />
+                  <Clock size={14} className="text-[#0ea5e9]" />
                   Seuil de détection du Panier Abandonné (60 minutes)
                 </div>
                 <div className="text-xs text-neutral-500">
@@ -91,7 +91,7 @@ export default async function MarketingSettingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 gap-3">
               <div className="space-y-1">
                 <div className="font-bold text-sm text-neutral-900 flex items-center gap-2">
-                  <Sparkles size={14} className="text-amber-600" />
+                  <Sparkles size={14} className="text-[#0ea5e9]" />
                   Attribution Automatique des Rangs VIP
                 </div>
                 <div className="text-xs text-neutral-500">
@@ -122,33 +122,33 @@ export default async function MarketingSettingsPage() {
         </div>
 
         {/* Module 3: Pre-configured Luxury Templates */}
-        <div className="bg-gradient-to-b from-neutral-900 to-neutral-950 text-white rounded-2xl p-6 border border-neutral-800 shadow-xl space-y-4">
-          <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-6 border border-[#1e1e1e] shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-4 border-b border-[#1e1e1e]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold border border-amber-500/20">
+              <div className="w-10 h-10 rounded-xl bg-[#0ea5e9]/10 text-[#0ea5e9] flex items-center justify-center font-bold border border-[#0ea5e9]/20">
                 <Sparkles size={20} />
               </div>
               <div>
                 <h3 className="font-bold text-white text-base">Modèles de Messages Pré-intégrés</h3>
-                <p className="text-xs text-neutral-400">Modèles haute conversion français & darija pour les parfums de luxe.</p>
+                <p className="text-xs text-gray-400">Modèles haute conversion français & darija pour les parfums de luxe.</p>
               </div>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400 text-neutral-950">
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#0ea5e9] text-white">
               4 Modèles Prêts
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-xl bg-neutral-800/60 border border-neutral-700/60 space-y-2">
-              <span className="font-bold text-amber-300">1. Relance Panier Abandonné + Cadeau</span>
-              <p className="text-neutral-300 leading-relaxed font-mono text-[11px]">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#222222] space-y-2">
+              <span className="font-bold text-[#0ea5e9]">1. Relance Panier Abandonné + Cadeau</span>
+              <p className="text-gray-300 leading-relaxed font-mono text-[11px]">
                 "Salam &#123;&#123;first_name&#125;&#125; 👋, votre panier chez NAY Parfum vous attend ! Pour toute commande validée aujourd'hui, nous vous offrons un flacon découverte de 5ml..."
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-neutral-800/60 border border-neutral-700/60 space-y-2">
-              <span className="font-bold text-amber-300">2. Offre Privilège Membre VIP</span>
-              <p className="text-neutral-300 leading-relaxed font-mono text-[11px]">
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#222222] space-y-2">
+              <span className="font-bold text-[#0ea5e9]">2. Offre Privilège Membre VIP</span>
+              <p className="text-gray-300 leading-relaxed font-mono text-[11px]">
                 "Salam &#123;&#123;first_name&#125;&#125; ✨, en tant que client VIP d'honneur chez NAY Parfum, nous vous réservons une remise exclusive de -15% avec le code VIP15..."
               </p>
             </div>

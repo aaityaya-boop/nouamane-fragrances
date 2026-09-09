@@ -36,7 +36,7 @@ export default async function CampaignsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
-            <Send size={22} className="text-amber-500" />
+            <Send size={22} className="text-[#0ea5e9]" />
             Campagnes de Diffusion & Messages Ciblés
           </h2>
           <p className="text-xs md:text-sm text-neutral-500 mt-1">
@@ -46,7 +46,7 @@ export default async function CampaignsPage() {
 
         <Link
           href="/admin/marketing/campaigns/new"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-black text-sm shadow-md shadow-amber-500/20 transition-all active:scale-95 shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold text-xs shadow-md shadow-sky-500/20 transition-all active:scale-95 shrink-0"
         >
           <Plus size={18} />
           <span>Nouvelle Campagne</span>
@@ -57,7 +57,7 @@ export default async function CampaignsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Total Campagnes</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Total Campagnes</span>
             <div className="p-2 rounded-xl bg-neutral-100 text-neutral-800">
               <Layers size={16} />
             </div>
@@ -68,7 +68,7 @@ export default async function CampaignsPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Campagnes Envoyées</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Campagnes Envoyées</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
               <CheckCircle2 size={16} />
             </div>
@@ -79,8 +79,8 @@ export default async function CampaignsPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Brouillons & En Préparation</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Brouillons & En Préparation</span>
+            <div className="p-2 rounded-xl bg-sky-50 text-[#0ea5e9]">
               <FileEdit size={16} />
             </div>
           </div>
@@ -88,15 +88,15 @@ export default async function CampaignsPage() {
           <p className="text-xs text-neutral-400 mt-1">Prêts pour révision</p>
         </div>
 
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-5 border border-neutral-800 shadow-sm">
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-5 border border-[#1e1e1e] shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Portée Potentielle</span>
-            <div className="p-2 rounded-xl bg-neutral-800 text-amber-400">
+            <span className="text-[11px] font-bold text-[#0ea5e9] uppercase tracking-wider">Portée Potentielle</span>
+            <div className="p-2 rounded-xl bg-[#1c1c1c] text-[#0ea5e9]">
               <Users size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-white">{totalCustomers} contacts</div>
-          <p className="text-xs text-neutral-400 mt-1">Base clients réels NAY</p>
+          <p className="text-xs text-gray-400 mt-1">Base clients réels NAY</p>
         </div>
       </div>
 
@@ -104,10 +104,10 @@ export default async function CampaignsPage() {
       <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/60">
           <h3 className="font-bold text-neutral-900 text-sm flex items-center gap-2">
-            <Send size={15} className="text-amber-600" />
+            <Send size={15} className="text-[#0ea5e9]" />
             Liste des Campagnes & Automations
           </h3>
-          <span className="text-xs text-neutral-500 font-medium">{campaigns.length} campagne(s)</span>
+          <span className="text-xs text-neutral-500 font-semibold">{campaigns.length} campagne(s)</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -135,7 +135,7 @@ export default async function CampaignsPage() {
                     </p>
                     <Link
                       href="/admin/marketing/campaigns/new"
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 text-amber-400 text-xs font-bold hover:bg-neutral-800 transition-colors"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 text-[#0ea5e9] text-xs font-bold hover:bg-neutral-800 transition-colors shadow-sm"
                     >
                       <Plus size={14} /> Créer Maintenant
                     </Link>
@@ -158,7 +158,7 @@ export default async function CampaignsPage() {
                         <span className={`p-1.5 rounded-lg ${
                           camp.channel === 'WHATSAPP' 
                             ? 'bg-[#25D366]/10 text-[#25D366]' 
-                            : 'bg-indigo-50 text-indigo-600'
+                            : 'bg-sky-50 text-[#0ea5e9]'
                         }`}>
                           {camp.channel === 'WHATSAPP' ? <MessageSquare size={14} /> : <Mail size={14} />}
                         </span>
@@ -182,12 +182,12 @@ export default async function CampaignsPage() {
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                         camp.status === 'DRAFT' 
                           ? 'bg-neutral-100 text-neutral-700 border border-neutral-200' :
-                        'bg-blue-50 text-blue-700 border border-blue-200'
+                        'bg-sky-50 text-sky-700 border border-sky-200'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${
                           camp.status === 'SENT' ? 'bg-emerald-500' :
                           camp.status === 'DRAFT' ? 'bg-neutral-400' :
-                          'bg-blue-500'
+                          'bg-[#0ea5e9]'
                         }`} />
                         {camp.status}
                       </span>
@@ -207,7 +207,7 @@ export default async function CampaignsPage() {
                     <td className="py-4 px-6 text-right">
                       <Link
                         href={`/admin/marketing/campaigns/new?audience=${camp.audience}`}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-lg transition-colors border border-amber-200"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#0ea5e9] hover:text-sky-700 bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-lg transition-colors border border-sky-200"
                       >
                         Dupliquer
                       </Link>

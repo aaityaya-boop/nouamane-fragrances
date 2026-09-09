@@ -20,7 +20,8 @@ import {
   Send,
   ShieldCheck,
   Package,
-  Layers
+  Layers,
+  Radio
 } from 'lucide-react';
 import { formatMAD } from '@/lib/products';
 
@@ -110,16 +111,16 @@ export default async function MarketingDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Metric 1: Total Customer Base */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all group">
+        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Base Clients NAY</span>
-            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-800 group-hover:bg-neutral-900 group-hover:text-amber-400 transition-colors">
-              <Users size={18} />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Base Clients NAY</span>
+            <div className="p-2.5 rounded-xl bg-neutral-100 text-neutral-800 group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
+              <Users size={17} />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900">{allCustomers.length}</span>
-            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+            <span className="text-3xl font-black text-neutral-900 tracking-tight">{allCustomers.length}</span>
+            <span className="text-[11px] font-bold text-[#0ea5e9] bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
               Actifs
             </span>
           </div>
@@ -130,16 +131,16 @@ export default async function MarketingDashboardPage() {
         </div>
 
         {/* Metric 2: Repeat Purchase Rate */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all group">
+        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Taux de Réachat</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700 group-hover:bg-amber-500 group-hover:text-neutral-950 transition-colors">
-              <Repeat size={18} />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Taux de Réachat</span>
+            <div className="p-2.5 rounded-xl bg-sky-50 text-[#0ea5e9] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
+              <Repeat size={17} />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900">{repeatRate}%</span>
-            <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            <span className="text-3xl font-black text-neutral-900 tracking-tight">{repeatRate}%</span>
+            <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
               Rétention
             </span>
           </div>
@@ -150,15 +151,15 @@ export default async function MarketingDashboardPage() {
         </div>
 
         {/* Metric 3: Customer Lifetime Value (LTV) */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all group">
+        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Valeur Vie Client (LTV)</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <TrendingUp size={18} />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Valeur Vie Client (LTV)</span>
+            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
+              <TrendingUp size={17} />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900">{formatMAD(cltv)}</span>
+            <span className="text-3xl font-black text-neutral-900 tracking-tight">{formatMAD(cltv)}</span>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-neutral-100">
             <span>Panier Moyen (AOV):</span>
@@ -167,19 +168,19 @@ export default async function MarketingDashboardPage() {
         </div>
 
         {/* Metric 4: Recoverable Revenue */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-2xl p-6 border border-neutral-800 text-white shadow-lg group">
+        <div className="relative overflow-hidden bg-[#0A0A0A] rounded-2xl p-6 border border-[#1e1e1e] text-white shadow-xl group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">À Récupérer (Paniers)</span>
-            <div className="p-2 rounded-xl bg-neutral-800 text-amber-400 group-hover:bg-amber-400 group-hover:text-neutral-950 transition-colors">
-              <ShoppingCart size={18} />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9]">Paniers à Récupérer</span>
+            <div className="p-2.5 rounded-xl bg-[#1c1c1c] text-[#0ea5e9] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
+              <ShoppingCart size={17} />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{formatMAD(recoverableMAD)}</span>
+            <span className="text-3xl font-black text-white tracking-tight">{formatMAD(recoverableMAD)}</span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-neutral-400 pt-3 border-t border-neutral-800">
+          <div className="mt-3 flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-[#1e1e1e]">
             <span>{abandonedCartsCount} paniers en attente</span>
-            <Link href="/admin/marketing/abandoned-carts" className="text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
+            <Link href="/admin/marketing/abandoned-carts" className="text-[#0ea5e9] hover:text-sky-300 font-bold flex items-center gap-1">
               Relancer <ArrowRight size={12} />
             </Link>
           </div>
@@ -191,14 +192,14 @@ export default async function MarketingDashboardPage() {
       <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-neutral-50 to-white">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-              <Sparkles size={14} /> Ciblage Intelligent & Audiences Prêtes
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">
+              <Sparkles size={14} /> Segmentation de Luxe & Ciblage Direct
             </div>
-            <h2 className="text-lg font-bold text-neutral-900">Segments Clients & Actions Directes</h2>
+            <h2 className="text-lg font-bold text-neutral-900">Segments Clients & Actions 1-Clic</h2>
           </div>
           <Link
             href="/admin/marketing/campaigns/new"
-            className="inline-flex items-center gap-2 text-xs font-bold text-neutral-900 bg-amber-400 hover:bg-amber-300 px-4 py-2 rounded-xl transition-all shadow-sm"
+            className="inline-flex items-center gap-2 text-xs font-bold text-white bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-sky-500/20 active:scale-95"
           >
             <Send size={14} /> Créer Diffusion Personnalisée
           </Link>
@@ -210,10 +211,10 @@ export default async function MarketingDashboardPage() {
           <div className="p-6 hover:bg-neutral-50/50 transition-colors flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60">
+                <span className="p-2.5 rounded-xl bg-sky-50 text-[#0ea5e9] border border-sky-200/60">
                   <Crown size={20} />
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800">
                   Top Valeur
                 </span>
               </div>
@@ -227,13 +228,13 @@ export default async function MarketingDashboardPage() {
             <div className="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between">
               <Link
                 href="/admin/marketing/vip"
-                className="text-xs font-bold text-neutral-900 hover:text-amber-600 flex items-center gap-1"
+                className="text-xs font-bold text-neutral-900 hover:text-[#0ea5e9] flex items-center gap-1"
               >
                 Voir Liste VIP <ArrowRight size={12} />
               </Link>
               <Link
                 href="/admin/marketing/campaigns/new?audience=VIP"
-                className="text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200 transition-colors"
+                className="text-xs font-bold text-[#0ea5e9] bg-sky-50 hover:bg-sky-100 px-3 py-1 rounded-lg border border-sky-200 transition-colors"
               >
                 Offre VIP
               </Link>
@@ -244,10 +245,10 @@ export default async function MarketingDashboardPage() {
           <div className="p-6 hover:bg-neutral-50/50 transition-colors flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="p-2.5 rounded-xl bg-orange-50 text-orange-700 border border-orange-200/60">
+                <span className="p-2.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60">
                   <Clock size={20} />
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
                   90-180 jours
                 </span>
               </div>
@@ -259,10 +260,10 @@ export default async function MarketingDashboardPage() {
               </div>
             </div>
             <div className="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between">
-              <span className="text-xs text-neutral-400">Risque de désabonnement</span>
+              <span className="text-xs text-neutral-400">Risque de départ</span>
               <Link
                 href="/admin/marketing/campaigns/new?audience=AT_RISK"
-                className="text-xs font-bold text-orange-800 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors"
+                className="text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-3 py-1 rounded-lg border border-amber-200 transition-colors"
               >
                 Relance Win-Back
               </Link>
@@ -276,7 +277,7 @@ export default async function MarketingDashboardPage() {
                 <span className="p-2.5 rounded-xl bg-neutral-100 text-neutral-600 border border-neutral-200">
                   <Users size={20} />
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-700">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-700">
                   &gt;180 jours
                 </span>
               </div>
@@ -291,7 +292,7 @@ export default async function MarketingDashboardPage() {
               <span className="text-xs text-neutral-400">Offre cadeau testeur</span>
               <Link
                 href="/admin/marketing/campaigns/new?audience=INACTIVE"
-                className="text-xs font-bold text-neutral-800 bg-neutral-100 hover:bg-neutral-200 px-2.5 py-1 rounded-lg border border-neutral-300 transition-colors"
+                className="text-xs font-bold text-neutral-800 bg-neutral-100 hover:bg-neutral-200 px-3 py-1 rounded-lg border border-neutral-300 transition-colors"
               >
                 Cadeau Réveil
               </Link>
@@ -299,18 +300,18 @@ export default async function MarketingDashboardPage() {
           </div>
 
           {/* Segment 4: Hot Live Abandoned Carts */}
-          <div className="p-6 hover:bg-neutral-50/50 transition-colors flex flex-col justify-between bg-gradient-to-b from-amber-50/30 to-white">
+          <div className="p-6 hover:bg-neutral-50/50 transition-colors flex flex-col justify-between bg-gradient-to-b from-sky-50/30 to-white">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="p-2.5 rounded-xl bg-red-50 text-red-600 border border-red-200/60">
                   <Flame size={20} />
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 animate-pulse">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 animate-pulse">
                   Chaud &lt;24h
                 </span>
               </div>
               <h3 className="font-bold text-neutral-900 text-base">Paniers Récents</h3>
-              <p className="text-xs text-neutral-500 mt-1">Paniers chauds enregistrés sur la boutique en ligne.</p>
+              <p className="text-xs text-neutral-500 mt-1">Paniers chauds enregistrés sur la boutique.</p>
               <div className="mt-4">
                 <span className="text-3xl font-black text-red-600">{recentAbandonedCarts.length}</span>
                 <span className="text-xs text-neutral-500 ml-2">en file</span>
@@ -325,7 +326,7 @@ export default async function MarketingDashboardPage() {
               </Link>
               <Link
                 href="/admin/marketing/live-carts"
-                className="text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200 transition-colors"
+                className="text-xs font-bold text-[#0ea5e9] bg-sky-50 hover:bg-sky-100 px-3 py-1 rounded-lg border border-sky-200 transition-colors"
               >
                 Live Radar
               </Link>
@@ -344,7 +345,7 @@ export default async function MarketingDashboardPage() {
             <div className="p-6 border-b border-neutral-100 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-neutral-900 text-lg flex items-center gap-2">
-                  <ShoppingCart size={18} className="text-amber-500" />
+                  <ShoppingCart size={18} className="text-[#0ea5e9]" />
                   Paniers Abandonnés Récents à Relancer
                 </h3>
                 <p className="text-xs text-neutral-500 mt-0.5">Relancez vos clients en 1 clic direct sur WhatsApp avec message pré-rempli.</p>
@@ -360,8 +361,8 @@ export default async function MarketingDashboardPage() {
             <div className="divide-y divide-neutral-100">
               {recentAbandonedCarts.length === 0 ? (
                 <div className="p-12 text-center text-neutral-400">
-                  <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
-                  <p className="text-sm font-medium text-neutral-700">Aucun panier abandonné en attente !</p>
+                  <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={32} />
+                  <p className="text-sm font-bold text-neutral-800">Aucun panier abandonné en attente !</p>
                   <p className="text-xs text-neutral-500 mt-1">Tous les paniers sont finalisés ou en cours de commande.</p>
                 </div>
               ) : (
@@ -390,12 +391,12 @@ export default async function MarketingDashboardPage() {
                   return (
                     <div key={cart.id} className="p-5 hover:bg-neutral-50/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] text-[#0ea5e9] font-black flex items-center justify-center text-xs shrink-0 shadow-sm border border-white/10">
                           {cart.customer.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <Link href={`/admin/customers/${cart.customer.id}`} className="font-bold text-neutral-900 text-sm hover:underline">
+                            <Link href={`/admin/customers/${cart.customer.id}`} className="font-bold text-neutral-900 text-sm hover:underline hover:text-[#0ea5e9]">
                               {cart.customer.name}
                             </Link>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -431,7 +432,7 @@ export default async function MarketingDashboardPage() {
 
                       <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-0 border-neutral-100">
                         <div className="text-right mr-2">
-                          <span className="text-xs text-neutral-400 block">Valeur panier</span>
+                          <span className="text-[11px] text-neutral-400 block">Valeur panier</span>
                           <span className="text-base font-black text-neutral-900">{formatMAD(cart.cartValue)}</span>
                         </div>
 
@@ -440,7 +441,7 @@ export default async function MarketingDashboardPage() {
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold shadow-sm transition-all active:scale-95"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all active:scale-95"
                           >
                             <MessageSquare size={14} />
                             <span>1-Click WhatsApp</span>
@@ -463,7 +464,7 @@ export default async function MarketingDashboardPage() {
             <div className="p-4 bg-neutral-50 border-t border-neutral-100 text-center">
               <Link
                 href="/admin/marketing/abandoned-carts"
-                className="text-xs font-bold text-neutral-700 hover:text-neutral-950 inline-flex items-center gap-1"
+                className="text-xs font-bold text-neutral-700 hover:text-[#0ea5e9] inline-flex items-center gap-1 transition-colors"
               >
                 Ouvrir le centre complet des relances <ArrowRight size={13} />
               </Link>
@@ -491,10 +492,10 @@ export default async function MarketingDashboardPage() {
             <div className="divide-y divide-neutral-100">
               {campaigns.length === 0 ? (
                 <div className="p-8 text-center text-neutral-400">
-                  <p className="text-sm">Aucune campagne encore créée.</p>
+                  <p className="text-sm font-medium">Aucune campagne encore créée.</p>
                   <Link
                     href="/admin/marketing/campaigns/new"
-                    className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg hover:bg-amber-100"
+                    className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-white bg-[#0ea5e9] px-3.5 py-2 rounded-lg hover:bg-sky-600 transition-colors shadow-sm"
                   >
                     Créer votre première campagne
                   </Link>
@@ -514,7 +515,7 @@ export default async function MarketingDashboardPage() {
                     </div>
                     <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                       camp.status === 'SENT' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                      camp.status === 'SCHEDULED' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                      camp.status === 'SCHEDULED' ? 'bg-sky-50 text-sky-700 border border-sky-200' :
                       'bg-neutral-100 text-neutral-700 border border-neutral-200'
                     }`}>
                       {camp.status}
@@ -530,70 +531,70 @@ export default async function MarketingDashboardPage() {
         <div className="space-y-6">
           
           {/* Automated Sequences Card */}
-          <div className="bg-gradient-to-b from-neutral-900 to-neutral-950 text-white rounded-2xl p-6 border border-neutral-800 shadow-xl space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <div className="bg-[#0A0A0A] text-white rounded-2xl p-6 border border-[#1e1e1e] shadow-2xl space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#1e1e1e]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-[#141414] text-[#0ea5e9] border border-white/10">
                   <Zap size={18} />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-base">Moteur d'Automatisations</h3>
-                  <p className="text-neutral-400 text-xs">Séquences programmées NAY Parfum</p>
+                  <p className="text-gray-400 text-xs">Séquences programmées NAY Parfum</p>
                 </div>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
                 Actif
               </span>
             </div>
 
             {/* Sequence 1: Abandoned Cart H+1 */}
-            <div className="bg-neutral-800/60 rounded-xl p-4 border border-neutral-700/60 space-y-2">
+            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Clock size={14} className="text-amber-400" /> Relance Panier H+1
+                  <Clock size={14} className="text-[#0ea5e9]" /> Relance Panier H+1
                 </span>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
                   ARMÉ
                 </span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-gray-400">
                 Notification de rappel douce avec rappel du testeur ou flacon choisi.
               </p>
             </div>
 
             {/* Sequence 2: Welcome VIP Onboarding */}
-            <div className="bg-neutral-800/60 rounded-xl p-4 border border-neutral-700/60 space-y-2">
+            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Crown size={14} className="text-amber-400" /> Bienvenue Club Privilège
+                  <Crown size={14} className="text-[#0ea5e9]" /> Bienvenue Club Privilège
                 </span>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
                   ARMÉ
                 </span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-gray-400">
                 Message VIP envoyé dès la 2ème commande avec avantages exclusifs.
               </p>
             </div>
 
             {/* Sequence 3: Post-Purchase Guide */}
-            <div className="bg-neutral-800/60 rounded-xl p-4 border border-neutral-700/60 space-y-2">
+            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Sparkles size={14} className="text-amber-400" /> Conseils d'Application J+3
+                  <Sparkles size={14} className="text-[#0ea5e9]" /> Conseils d'Application J+3
                 </span>
-                <span className="text-[10px] font-bold text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
+                <span className="text-[10px] font-bold text-gray-400 bg-black px-2 py-0.5 rounded border border-[#2a2a2a]">
                   AUTO
                 </span>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-gray-400">
                 Guide olfactif pour optimiser la tenue de la fragrance sur la peau.
               </p>
             </div>
 
             <Link
               href="/admin/marketing/settings"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs transition-colors border border-neutral-700"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#161616] hover:bg-[#202020] text-gray-200 hover:text-white font-semibold text-xs transition-colors border border-[#2a2a2a]"
             >
               <span>Configurer les Règles & Templates</span>
               <ArrowRight size={13} />
@@ -601,17 +602,17 @@ export default async function MarketingDashboardPage() {
           </div>
 
           {/* WhatsApp Direct Recovery Banner */}
-          <div className="bg-gradient-to-br from-emerald-900/40 via-neutral-900 to-neutral-950 border border-emerald-800/40 rounded-2xl p-6 text-white space-y-4">
+          <div className="bg-gradient-to-br from-[#0c2438] via-[#0A0A0A] to-[#0A0A0A] border border-sky-500/20 rounded-2xl p-6 text-white space-y-4 shadow-xl">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-900/30">
                 <MessageSquare size={20} />
               </div>
               <div>
                 <h4 className="font-bold text-sm text-white">Canal WhatsApp Direct</h4>
-                <p className="text-xs text-emerald-300 font-medium">Taux d'ouverture estimé à 98% au Maroc</p>
+                <p className="text-xs text-[#0ea5e9] font-medium">Taux d'ouverture estimé à 98% au Maroc</p>
               </div>
             </div>
-            <p className="text-xs text-neutral-300 leading-relaxed">
+            <p className="text-xs text-gray-300 leading-relaxed">
               Vos messages sont prêts avec personnalisation du prénom, montant en MAD et lien direct vers le panier.
             </p>
             <div className="pt-2">

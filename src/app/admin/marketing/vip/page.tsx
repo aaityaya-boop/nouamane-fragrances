@@ -66,7 +66,7 @@ export default async function VIPMarketingPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
-            <Crown size={22} className="text-amber-500" />
+            <Crown size={22} className="text-[#0ea5e9]" />
             Club Privilège & Fidélisation VIP
           </h2>
           <p className="text-xs md:text-sm text-neutral-500 mt-1">
@@ -77,7 +77,7 @@ export default async function VIPMarketingPage() {
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/admin/marketing/campaigns/new?audience=VIP"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-black text-xs shadow-md transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold text-xs shadow-md shadow-sky-500/20 transition-all active:scale-95"
           >
             <Gift size={15} />
             <span>Offre Privilège VIP</span>
@@ -87,32 +87,32 @@ export default async function VIPMarketingPage() {
 
       {/* Luxury KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-5 border border-neutral-800 shadow-sm">
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-5 border border-[#1e1e1e] shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Membres VIP</span>
-            <div className="p-2 rounded-xl bg-neutral-800 text-amber-400">
+            <span className="text-[11px] font-bold text-[#0ea5e9] uppercase tracking-wider">Membres VIP</span>
+            <div className="p-2 rounded-xl bg-[#1c1c1c] text-[#0ea5e9]">
               <Crown size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-white">{vipCustomers.length} clients</div>
-          <p className="text-xs text-neutral-400 mt-1">Segments Diamant, Or & Argent</p>
+          <p className="text-xs text-gray-400 mt-1">Segments Diamant, Or & Argent</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Chiffre d'Affaires VIP</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Chiffre d'Affaires VIP</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
               <TrendingUp size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-neutral-900">{formatMAD(totalVipRevenue)}</div>
-          <p className="text-xs text-emerald-600 font-semibold mt-1">{vipShare}% du CA total boutique</p>
+          <p className="text-xs text-emerald-600 font-bold mt-1">{vipShare}% du CA total boutique</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Club Diamant (&gt;5k MAD)</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Club Diamant (&gt;5k MAD)</span>
+            <div className="p-2 rounded-xl bg-sky-50 text-[#0ea5e9]">
               <Diamond size={16} />
             </div>
           </div>
@@ -122,8 +122,8 @@ export default async function VIPMarketingPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Club Or (&gt;2.5k MAD)</span>
-            <div className="p-2 rounded-xl bg-yellow-50 text-yellow-700">
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Club Or (&gt;2.5k MAD)</span>
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
               <Award size={16} />
             </div>
           </div>
@@ -136,10 +136,10 @@ export default async function VIPMarketingPage() {
       <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/60">
           <div className="flex items-center gap-2">
-            <Crown size={16} className="text-amber-500" />
+            <Crown size={16} className="text-[#0ea5e9]" />
             <h3 className="font-bold text-neutral-900 text-sm">Registre des Membres VIP ({vipCustomers.length})</h3>
           </div>
-          <span className="text-xs text-neutral-500 font-medium">Trié par dépenses cumulées (MAD)</span>
+          <span className="text-xs text-neutral-500 font-semibold">Trié par dépenses cumulées (MAD)</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -184,8 +184,8 @@ export default async function VIPMarketingPage() {
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <div className={`w-9 h-9 rounded-xl font-black flex items-center justify-center text-xs shrink-0 ${
-                            vip.tier === 'DIAMOND' ? 'bg-neutral-950 text-amber-400 border border-amber-500/40 shadow-sm' :
-                            vip.tier === 'GOLD' ? 'bg-amber-500 text-neutral-950 shadow-sm' :
+                            vip.tier === 'DIAMOND' ? 'bg-[#0A0A0A] text-[#0ea5e9] border border-sky-500/40 shadow-sm' :
+                            vip.tier === 'GOLD' ? 'bg-[#0ea5e9] text-white shadow-sm' :
                             'bg-neutral-100 text-neutral-700'
                           }`}>
                             {vip.name.charAt(0).toUpperCase()}
@@ -193,7 +193,7 @@ export default async function VIPMarketingPage() {
                           <div>
                             <Link 
                               href={`/admin/customers/${vip.id}`} 
-                              className="font-bold text-neutral-900 hover:text-amber-600 transition-colors flex items-center gap-1"
+                              className="font-bold text-neutral-900 hover:text-[#0ea5e9] transition-colors flex items-center gap-1"
                             >
                               {vip.name}
                               <ExternalLink size={11} className="text-neutral-400" />
@@ -211,13 +211,13 @@ export default async function VIPMarketingPage() {
                       <td className="py-4 px-6">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
                           vip.tier === 'DIAMOND' 
-                            ? 'bg-neutral-950 text-amber-400 border border-amber-500/50 shadow-xs' :
+                            ? 'bg-[#0A0A0A] text-[#0ea5e9] border border-sky-500/40 shadow-xs' :
                           vip.tier === 'GOLD' 
-                            ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                            ? 'bg-sky-50 text-sky-800 border border-sky-200' :
                             'bg-neutral-100 text-neutral-700 border border-neutral-200'
                         }`}>
-                          {vip.tier === 'DIAMOND' ? <Diamond size={12} className="text-amber-400" /> :
-                           vip.tier === 'GOLD' ? <Crown size={12} className="text-amber-600" /> :
+                          {vip.tier === 'DIAMOND' ? <Diamond size={12} className="text-[#0ea5e9]" /> :
+                           vip.tier === 'GOLD' ? <Crown size={12} className="text-[#0ea5e9]" /> :
                            <Award size={12} className="text-neutral-500" />}
                           <span>VIP {vip.tier === 'DIAMOND' ? 'Diamant' : vip.tier === 'GOLD' ? 'Or' : 'Argent'}</span>
                         </span>
@@ -255,7 +255,7 @@ export default async function VIPMarketingPage() {
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Message Concierge VIP direct"
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-sm transition-all active:scale-95"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all active:scale-95"
                             >
                               <MessageSquare size={13} />
                               <span>Concierge WhatsApp</span>

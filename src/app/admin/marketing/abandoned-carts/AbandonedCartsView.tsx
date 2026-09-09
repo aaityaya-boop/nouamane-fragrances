@@ -83,7 +83,7 @@ export default function AbandonedCartsView({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Total Paniers</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Total Paniers</span>
             <div className="p-2 rounded-xl bg-neutral-100 text-neutral-800">
               <ShoppingCart size={16} />
             </div>
@@ -92,20 +92,20 @@ export default function AbandonedCartsView({
           <p className="text-xs text-neutral-400 mt-1">Enregistrés en base de données</p>
         </div>
 
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-5 border border-neutral-800 shadow-sm">
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-5 border border-[#1e1e1e] shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Montant Total à Récupérer</span>
-            <div className="p-2 rounded-xl bg-neutral-800 text-amber-400">
+            <span className="text-[11px] font-bold text-[#0ea5e9] uppercase tracking-wider">Montant Total à Récupérer</span>
+            <div className="p-2 rounded-xl bg-[#1c1c1c] text-[#0ea5e9]">
               <TrendingDown size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-white">{formatMAD(totalValue)}</div>
-          <p className="text-xs text-neutral-400 mt-1">Chiffre d'affaires potentiel</p>
+          <p className="text-xs text-gray-400 mt-1">Chiffre d'affaires potentiel</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Paniers Chauds (&lt;24h)</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Paniers Chauds (&lt;24h)</span>
             <div className="p-2 rounded-xl bg-red-50 text-red-600">
               <Clock size={16} />
             </div>
@@ -116,8 +116,8 @@ export default function AbandonedCartsView({
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Panier Moyen Abandonné</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Panier Moyen Abandonné</span>
+            <div className="p-2 rounded-xl bg-sky-50 text-[#0ea5e9]">
               <Sparkles size={16} />
             </div>
           </div>
@@ -126,14 +126,14 @@ export default function AbandonedCartsView({
         </div>
       </div>
 
-      {/* Filter Tabs & Search Bar */}
+      {/* Filter Tabs & Counter */}
       <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto scrollbar-none">
           <button
             onClick={() => setFilter('ALL')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               filter === 'ALL'
-                ? 'bg-neutral-900 text-white shadow-sm'
+                ? 'bg-[#0A0A0A] text-white shadow-md'
                 : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
@@ -143,7 +143,7 @@ export default function AbandonedCartsView({
             onClick={() => setFilter('HOT')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               filter === 'HOT'
-                ? 'bg-red-600 text-white shadow-sm'
+                ? 'bg-red-600 text-white shadow-md'
                 : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
@@ -153,7 +153,7 @@ export default function AbandonedCartsView({
             onClick={() => setFilter('ABANDONED')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               filter === 'ABANDONED'
-                ? 'bg-amber-500 text-neutral-950 shadow-sm'
+                ? 'bg-[#0ea5e9] text-white shadow-md'
                 : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
@@ -163,7 +163,7 @@ export default function AbandonedCartsView({
             onClick={() => setFilter('ACTIVE')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               filter === 'ACTIVE'
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-emerald-600 text-white shadow-md'
                 : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
@@ -171,17 +171,17 @@ export default function AbandonedCartsView({
           </button>
         </div>
 
-        <div className="text-xs text-neutral-500 font-medium">
+        <div className="text-xs text-neutral-500 font-semibold">
           {filteredCarts.length} paniers affichés
         </div>
       </div>
 
-      {/* Abandoned Carts Table / Cards */}
+      {/* Abandoned Carts Table */}
       <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-neutral-50/80 border-b border-neutral-200 text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
+              <tr className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
                 <th className="py-3.5 px-6">Client & Contact</th>
                 <th className="py-3.5 px-6">Articles & Flacons</th>
                 <th className="py-3.5 px-6">Valeur Panier</th>
@@ -195,7 +195,7 @@ export default function AbandonedCartsView({
                 <tr>
                   <td colSpan={6} className="py-16 text-center text-neutral-400">
                     <AlertCircle className="mx-auto text-neutral-300 mb-2" size={32} />
-                    <p className="font-semibold text-neutral-700">Aucun panier trouvé pour ce filtre.</p>
+                    <p className="font-bold text-neutral-700">Aucun panier trouvé pour ce filtre.</p>
                     <p className="text-xs text-neutral-400 mt-1">Modifiez vos filtres ou revenez plus tard.</p>
                   </td>
                 </tr>
@@ -236,13 +236,13 @@ export default function AbandonedCartsView({
                         {/* Customer Info */}
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-neutral-900 text-amber-400 font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                            <div className="w-9 h-9 rounded-xl bg-[#0A0A0A] text-[#0ea5e9] font-black flex items-center justify-center text-xs shrink-0 shadow-sm border border-white/10">
                               {cart.customer.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
                               <Link 
                                 href={`/admin/customers/${cart.customer.id}`}
-                                className="font-bold text-neutral-900 hover:text-amber-600 transition-colors flex items-center gap-1"
+                                className="font-bold text-neutral-900 hover:text-[#0ea5e9] transition-colors flex items-center gap-1"
                               >
                                 {cart.customer.name}
                                 <ExternalLink size={11} className="text-neutral-400" />
@@ -265,7 +265,7 @@ export default function AbandonedCartsView({
                               onClick={() => setExpandedId(isExpanded ? null : cart.id)}
                               className="text-xs font-semibold text-neutral-800 hover:text-neutral-950 flex items-center gap-1.5 bg-neutral-100 hover:bg-neutral-200/80 px-2.5 py-1.5 rounded-lg transition-colors text-left"
                             >
-                              <Package size={13} className="text-neutral-500 shrink-0" />
+                              <Package size={13} className="text-[#0ea5e9] shrink-0" />
                               <span>{items.length} article(s)</span>
                               {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                             </button>
@@ -317,7 +317,7 @@ export default function AbandonedCartsView({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Relancer directement sur WhatsApp avec message pré-rempli"
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-sm transition-all active:scale-95"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all active:scale-95"
                               >
                                 <MessageSquare size={13} />
                                 <span>WhatsApp</span>
@@ -357,7 +357,7 @@ export default function AbandonedCartsView({
                           <td colSpan={6} className="p-6">
                             <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-inner space-y-3">
                               <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider flex items-center gap-1.5">
-                                <Package size={14} className="text-amber-500" />
+                                <Package size={14} className="text-[#0ea5e9]" />
                                 Détail des articles du panier ({items.length})
                               </h4>
                               
@@ -374,7 +374,7 @@ export default function AbandonedCartsView({
                                     <div className="min-w-0 flex-1">
                                       <p className="text-xs font-bold text-neutral-900 truncate">{item.name}</p>
                                       <p className="text-[11px] text-neutral-500">Qté: {item.quantity || 1} {item.size ? `• ${item.size}` : ''}</p>
-                                      <p className="text-xs font-black text-amber-700 mt-0.5">{formatMAD(item.price * (item.quantity || 1))}</p>
+                                      <p className="text-xs font-black text-neutral-900 mt-0.5">{formatMAD(item.price * (item.quantity || 1))}</p>
                                     </div>
                                   </div>
                                 ))}
@@ -390,7 +390,7 @@ export default function AbandonedCartsView({
                                       href={whatsappUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] text-white font-bold text-xs"
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] text-white font-bold text-xs shadow-sm"
                                     >
                                       <MessageSquare size={13} />
                                       Envoyer via WhatsApp Web / App

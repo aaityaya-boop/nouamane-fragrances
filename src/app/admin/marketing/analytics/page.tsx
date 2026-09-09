@@ -92,7 +92,7 @@ export default async function MarketingAnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
-            <BarChart3 size={22} className="text-amber-500" />
+            <BarChart3 size={22} className="text-[#0ea5e9]" />
             Cockpit Analytique & Attribution du Chiffre d'Affaires
           </h2>
           <p className="text-xs md:text-sm text-neutral-500 mt-1">
@@ -102,7 +102,7 @@ export default async function MarketingAnalyticsPage() {
 
         <Link
           href="/admin/marketing/campaigns/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-900 text-amber-400 hover:bg-neutral-800 font-bold text-xs shadow-sm transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0A0A0A] text-[#0ea5e9] hover:bg-[#161616] font-bold text-xs shadow-sm transition-all border border-white/10"
         >
           <Sparkles size={14} />
           <span>Lancer une Campagne Ciblée</span>
@@ -113,18 +113,18 @@ export default async function MarketingAnalyticsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Chiffre d'Affaires Récurrent</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Chiffre d'Affaires Récurrent</span>
+            <div className="p-2 rounded-xl bg-sky-50 text-[#0ea5e9]">
               <Repeat size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-neutral-900">{formatMAD(repeatRevenue)}</div>
-          <p className="text-xs text-amber-700 font-semibold mt-1">{repeatRevShare}% du CA total réalisé par les clients fidèles</p>
+          <p className="text-xs text-sky-700 font-bold mt-1">{repeatRevShare}% du CA total réalisé par les clients fidèles</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Taux de Rétention</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Taux de Rétention</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
               <TrendingUp size={16} />
             </div>
@@ -135,7 +135,7 @@ export default async function MarketingAnalyticsPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Valeur Vie Client (LTV)</span>
+            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Valeur Vie Client (LTV)</span>
             <div className="p-2 rounded-xl bg-neutral-100 text-neutral-800">
               <Users size={16} />
             </div>
@@ -144,15 +144,15 @@ export default async function MarketingAnalyticsPage() {
           <p className="text-xs text-neutral-500 mt-1">Dépense moyenne par client</p>
         </div>
 
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-5 border border-neutral-800 shadow-sm">
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-5 border border-[#1e1e1e] shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Potentiel Paniers Abandonnés</span>
-            <div className="p-2 rounded-xl bg-neutral-800 text-amber-400">
+            <span className="text-[11px] font-bold text-[#0ea5e9] uppercase tracking-wider">Potentiel Paniers Abandonnés</span>
+            <div className="p-2 rounded-xl bg-[#1c1c1c] text-[#0ea5e9]">
               <ShoppingCart size={16} />
             </div>
           </div>
           <div className="mt-3 text-2xl font-black text-white">{formatMAD(abandonedValue)}</div>
-          <p className="text-xs text-neutral-400 mt-1">À convertir via WhatsApp</p>
+          <p className="text-xs text-gray-400 mt-1">À convertir via WhatsApp</p>
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export default async function MarketingAnalyticsPage() {
               </div>
               <div className="h-3 w-full bg-neutral-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-amber-500 rounded-full transition-all"
+                  className="h-full bg-sky-400 rounded-full transition-all"
                   style={{ width: `${allCustomers.length > 0 ? (cohort2 / allCustomers.length) * 100 : 0}%` }}
                 />
               </div>
@@ -208,7 +208,7 @@ export default async function MarketingAnalyticsPage() {
               </div>
               <div className="h-3 w-full bg-neutral-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-amber-600 rounded-full transition-all"
+                  className="h-full bg-[#0ea5e9] rounded-full transition-all"
                   style={{ width: `${allCustomers.length > 0 ? (cohort3to5 / allCustomers.length) * 100 : 0}%` }}
                 />
               </div>
@@ -222,7 +222,7 @@ export default async function MarketingAnalyticsPage() {
               </div>
               <div className="h-3 w-full bg-neutral-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-neutral-900 rounded-full transition-all"
+                  className="h-full bg-blue-700 rounded-full transition-all"
                   style={{ width: `${allCustomers.length > 0 ? (cohort5plus / allCustomers.length) * 100 : 0}%` }}
                 />
               </div>
@@ -235,7 +235,7 @@ export default async function MarketingAnalyticsPage() {
             </span>
             <Link 
               href="/admin/marketing/campaigns/new?audience=ALL" 
-              className="font-bold text-amber-700 hover:underline shrink-0 ml-4"
+              className="font-bold text-[#0ea5e9] hover:underline shrink-0 ml-4"
             >
               Créer offre 2ème achat →
             </Link>
@@ -243,31 +243,31 @@ export default async function MarketingAnalyticsPage() {
         </div>
 
         {/* Right: Revenue Breakdown (1 Col) */}
-        <div className="bg-gradient-to-b from-neutral-900 to-neutral-950 text-white rounded-2xl p-6 border border-neutral-800 shadow-xl space-y-6 flex flex-col justify-between">
-          <div className="space-y-2 border-b border-neutral-800 pb-4">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Structure du CA</span>
+        <div className="bg-[#0A0A0A] text-white rounded-2xl p-6 border border-[#1e1e1e] shadow-xl space-y-6 flex flex-col justify-between">
+          <div className="space-y-2 border-b border-[#1e1e1e] pb-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#0ea5e9]">Structure du CA</span>
             <h3 className="font-bold text-white text-base">Impact de la Rétention</h3>
-            <p className="text-xs text-neutral-400">Comparatif direct Premier Achat vs Réachat.</p>
+            <p className="text-xs text-gray-400">Comparatif direct Premier Achat vs Réachat.</p>
           </div>
 
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-neutral-800/60 border border-neutral-700/60">
-              <div className="text-xs text-neutral-400">Premières Acquisitions</div>
+            <div className="p-4 rounded-xl bg-[#141414] border border-[#222222]">
+              <div className="text-xs text-gray-400">Premières Acquisitions</div>
               <div className="text-xl font-bold text-white mt-1">{formatMAD(firstOrderRevenue)}</div>
-              <div className="text-[11px] text-neutral-400 mt-1">Nouveaux clients découvrant NAY</div>
+              <div className="text-[11px] text-gray-500 mt-1">Nouveaux clients découvrant NAY</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-              <div className="text-xs text-amber-300 font-semibold">Chiffre d'Affaires Fidélisé</div>
-              <div className="text-xl font-black text-amber-400 mt-1">{formatMAD(repeatRevenue)}</div>
-              <div className="text-[11px] text-neutral-300 mt-1">Commandes répétées à haute marge</div>
+            <div className="p-4 rounded-xl bg-[#0ea5e9]/10 border border-[#0ea5e9]/30">
+              <div className="text-xs text-[#0ea5e9] font-bold">Chiffre d'Affaires Fidélisé</div>
+              <div className="text-xl font-black text-[#0ea5e9] mt-1">{formatMAD(repeatRevenue)}</div>
+              <div className="text-[11px] text-gray-300 mt-1">Commandes répétées à haute marge</div>
             </div>
           </div>
 
           <div className="pt-2">
             <Link
               href="/admin/marketing/vip"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-neutral-950 font-bold text-xs shadow-md transition-all active:scale-95"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold text-xs shadow-md shadow-sky-500/20 transition-all active:scale-95"
             >
               <span>Accéder aux Membres VIP</span>
               <ArrowRight size={13} />
