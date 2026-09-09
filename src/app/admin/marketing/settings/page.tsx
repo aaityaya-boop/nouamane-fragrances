@@ -1,88 +1,156 @@
 import React from 'react';
-import { Settings2, ShieldCheck, Mail, MessageSquare } from 'lucide-react';
+import { 
+  Sliders, 
+  ShieldCheck, 
+  Mail, 
+  MessageSquare, 
+  Zap, 
+  CheckCircle2, 
+  Bell, 
+  Clock, 
+  Sparkles,
+  Smartphone,
+  Lock,
+  ArrowRight
+} from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function MarketingSettingsPage() {
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-5xl">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Marketing Settings</h1>
-        <p className="text-muted-foreground mt-2">Configure email and WhatsApp provider credentials securely.</p>
+        <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
+          <Sliders size={22} className="text-amber-500" />
+          Paramètres & Automatisations du Moteur de Rétention
+        </h2>
+        <p className="text-xs md:text-sm text-neutral-500 mt-1">
+          Gérez vos protocoles d'envoi, les déclencheurs automatiques et les règles de sécurité pour NAY Parfum.
+        </p>
       </div>
 
       <div className="grid gap-6">
         
-        {/* Email Provider */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <Mail className="text-gray-400" size={24} />
-            <div>
-              <h3 className="font-bold text-gray-900">Email Provider (SMTP / API)</h3>
-              <p className="text-sm text-gray-500">Configure Resend, SendGrid, or standard SMTP.</p>
+        {/* Module 1: WhatsApp Direct Integration */}
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center font-bold shadow-sm">
+                <MessageSquare size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-neutral-900 text-base">Canal WhatsApp Direct (1-Click wa.me)</h3>
+                <p className="text-xs text-neutral-500">Relance instantanée optimisée pour les clients marocains sans intermédiaire.</p>
+              </div>
             </div>
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              ACTIF & OPÉRATIONNEL
+            </span>
           </div>
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-              <span className="text-sm font-medium text-gray-700">Status: NOT_CONFIGURED</span>
-            </div>
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Configure Keys
-            </button>
+
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 space-y-2 text-xs">
+            <p className="font-bold text-neutral-800">Formatage automatique des numéros :</p>
+            <p className="text-neutral-600">
+              Tous les numéros marocains (ex: <code className="bg-neutral-200 px-1 py-0.5 rounded text-neutral-800">0661xxxxxx</code> ou <code className="bg-neutral-200 px-1 py-0.5 rounded text-neutral-800">0700xxxxxx</code>) sont automatiquement normalisés au format international <code className="bg-neutral-200 px-1 py-0.5 rounded text-neutral-800">+212</code> pour une ouverture instantanée sur l'application WhatsApp.
+            </p>
           </div>
         </div>
 
-        {/* WhatsApp Provider */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <MessageSquare className="text-gray-400" size={24} />
+        {/* Module 2: Automation Pipelines */}
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-neutral-100">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold border border-amber-200">
+              <Zap size={20} />
+            </div>
             <div>
-              <h3 className="font-bold text-gray-900">WhatsApp Business API</h3>
-              <p className="text-sm text-gray-500">Official Meta API integration for secure messaging.</p>
+              <h3 className="font-bold text-neutral-900 text-base">Pipelines & Règles d'Automatisation</h3>
+              <p className="text-xs text-neutral-500">Déclencheurs intelligents pour maximiser le taux de conversion.</p>
             </div>
           </div>
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-              <span className="text-sm font-medium text-gray-700">Status: NOT_CONFIGURED</span>
-            </div>
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Connect Meta App
-            </button>
-          </div>
-        </div>
 
-        {/* Safety & Automation Rules */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <ShieldCheck className="text-indigo-500" size={24} />
-            <div>
-              <h3 className="font-bold text-gray-900">Safety & Automation Rules</h3>
-              <p className="text-sm text-gray-500">Strict rules to prevent spam and ensure GDPR/consent compliance.</p>
-            </div>
-          </div>
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <div>
-                <div className="font-medium text-sm text-gray-900">Require Admin Approval</div>
-                <div className="text-xs text-gray-500">All campaigns must be manually approved before sending.</div>
+            {/* Rule 1 */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 gap-3">
+              <div className="space-y-1">
+                <div className="font-bold text-sm text-neutral-900 flex items-center gap-2">
+                  <Clock size={14} className="text-amber-600" />
+                  Seuil de détection du Panier Abandonné (60 minutes)
+                </div>
+                <div className="text-xs text-neutral-500">
+                  Un panier est marqué comme abandonné après 1h sans activité et apparaît immédiatement dans la file de relance.
+                </div>
               </div>
-              <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">ENABLED</div>
+              <span className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
+                ACTIF (60 min)
+              </span>
             </div>
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <div>
-                <div className="font-medium text-sm text-gray-900">Enforce Marketing Consent</div>
-                <div className="text-xs text-gray-500">Only send to customers with explicitly captured consent flags.</div>
+
+            {/* Rule 2 */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 gap-3">
+              <div className="space-y-1">
+                <div className="font-bold text-sm text-neutral-900 flex items-center gap-2">
+                  <Sparkles size={14} className="text-amber-600" />
+                  Attribution Automatique des Rangs VIP
+                </div>
+                <div className="text-xs text-neutral-500">
+                  Calcul en direct des paliers VIP Diamant (&gt;5k MAD), VIP Or (&gt;2.5k MAD) et VIP Argent (&gt;1k MAD).
+                </div>
               </div>
-              <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">ENABLED</div>
+              <span className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
+                ACTIF (En Direct)
+              </span>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-sm text-gray-900">Automatic Abandoned Cart Emails</div>
-                <div className="text-xs text-gray-500">Send without approval after 60 mins.</div>
+
+            {/* Rule 3 */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-neutral-50 border border-neutral-200/70 gap-3">
+              <div className="space-y-1">
+                <div className="font-bold text-sm text-neutral-900 flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-indigo-600" />
+                  Mode Sécurité & Anti-Spam
+                </div>
+                <div className="text-xs text-neutral-500">
+                  Validation manuelle requise avant tout envoi groupé pour protéger la délivrabilité et éviter les blocages.
+                </div>
               </div>
-              <div className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded font-bold">DISABLED</div>
+              <span className="text-xs font-bold px-3 py-1 rounded-lg bg-indigo-100 text-indigo-800 shrink-0">
+                PROTECTION ACTIVE
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Module 3: Pre-configured Luxury Templates */}
+        <div className="bg-gradient-to-b from-neutral-900 to-neutral-950 text-white rounded-2xl p-6 border border-neutral-800 shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold border border-amber-500/20">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">Modèles de Messages Pré-intégrés</h3>
+                <p className="text-xs text-neutral-400">Modèles haute conversion français & darija pour les parfums de luxe.</p>
+              </div>
+            </div>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400 text-neutral-950">
+              4 Modèles Prêts
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-xl bg-neutral-800/60 border border-neutral-700/60 space-y-2">
+              <span className="font-bold text-amber-300">1. Relance Panier Abandonné + Cadeau</span>
+              <p className="text-neutral-300 leading-relaxed font-mono text-[11px]">
+                "Salam &#123;&#123;first_name&#125;&#125; 👋, votre panier chez NAY Parfum vous attend ! Pour toute commande validée aujourd'hui, nous vous offrons un flacon découverte de 5ml..."
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-neutral-800/60 border border-neutral-700/60 space-y-2">
+              <span className="font-bold text-amber-300">2. Offre Privilège Membre VIP</span>
+              <p className="text-neutral-300 leading-relaxed font-mono text-[11px]">
+                "Salam &#123;&#123;first_name&#125;&#125; ✨, en tant que client VIP d'honneur chez NAY Parfum, nous vous réservons une remise exclusive de -15% avec le code VIP15..."
+              </p>
             </div>
           </div>
         </div>
