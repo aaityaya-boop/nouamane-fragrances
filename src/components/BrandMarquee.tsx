@@ -23,7 +23,7 @@ export default function BrandMarquee({ brands }: { brands: any[] }) {
               className="relative w-32 h-16 md:w-40 md:h-20 flex-shrink-0 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300 mix-blend-multiply"
             >
               <Image
-                src={`/images/brands/${brand.slug}-logo.jpg`}
+                src={brand.image || `/images/brands/${brand.slug?.toLowerCase()}-logo.jpg`}
                 alt={brand.name}
                 fill
                 sizes="(max-width: 768px) 128px, 160px"

@@ -103,7 +103,7 @@ export default async function BrandPage({
             <div className="w-32 h-32 md:w-40 md:h-40 relative rounded-full bg-white border border-[#e0ddd4] p-4 flex items-center justify-center shadow-sm mb-6 mix-blend-multiply">
               <div className="relative w-full h-full">
                 <BrandLogo 
-                  src={`/images/brands/${brand.slug}-logo.jpg`} 
+                  src={brand.image || `/images/brands/${brand.slug?.toLowerCase()}-logo.jpg`} 
                   alt={`${brand.label} Logo`}
                   label={brand.label}
                   className="object-contain mix-blend-multiply" 
@@ -144,7 +144,7 @@ export default async function BrandPage({
               >
                 <div className="relative h-full w-full flex flex-col items-center justify-center p-6">
                   <BrandLogo 
-                    src={`/images/brands/${b.slug}-logo.jpg`} 
+                    src={b.image || `/images/brands/${b.slug?.toLowerCase()}-logo.jpg`} 
                     alt={b.name} 
                     label={b.label}
                     className="object-contain p-8 pb-10 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 mix-blend-multiply" 

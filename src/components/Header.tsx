@@ -302,7 +302,7 @@ export default function Header() {
                         >
                           <div className="relative h-24 w-full flex items-center justify-center p-6">
                             <Image 
-                              src={`/images/brands/${brand.slug}-logo.jpg`} 
+                              src={brand.image || `/images/brands/${brand.slug?.toLowerCase()}-logo.jpg`} 
                               alt={brand.name} 
                               fill
                               sizes="(max-width: 768px) 100vw, 200px"
@@ -454,7 +454,7 @@ export default function Header() {
                         >
                           <div className="relative w-full h-10 mb-2">
                             <Image 
-                              src={`/images/brands/${brand.slug}-logo.jpg`} 
+                              src={brand.image || `/images/brands/${brand.slug?.toLowerCase()}-logo.jpg`} 
                               alt={brand.name} 
                               fill
                               sizes="(max-width: 768px) 50vw, 100px"
