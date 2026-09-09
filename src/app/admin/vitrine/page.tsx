@@ -191,21 +191,32 @@ export default function VitrinePage() {
       fetch('/api/admin/products').then(r => r.json()),
       fetch('/api/admin/settings').then(r => r.json()),
     ]).then(([products, config]) => {
-      setAllProducts(Array.isArray(products) ? products : []);
+      const productList = Array.isArray(products) ? products : [];
+      setAllProducts(productList);
+      const validSlugs = new Set(productList.map(p => p.slug));
+      const parseValid = (raw: string | undefined): string[] => {
+        try {
+          const arr = JSON.parse(raw || '[]');
+          return Array.isArray(arr) ? arr.filter((s: string) => validSlugs.has(s)) : [];
+        } catch {
+          return [];
+        }
+      };
+
       try {
-        setBestsellersSlug(JSON.parse(config.featuredBestsellers || '[]'));
-        setSeasonalSlug(JSON.parse(config.featuredSeasonal || '[]'));
-        setLatestSlug(JSON.parse(config.featuredLatest || '[]'));
+        setBestsellersSlug(parseValid(config.featuredBestsellers));
+        setSeasonalSlug(parseValid(config.featuredSeasonal));
+        setLatestSlug(parseValid(config.featuredLatest));
         if (config.seasonalTrendTitle) setSeasonalTrendTitle(config.seasonalTrendTitle);
         if (config.seasonalTrendSubtitle) setSeasonalTrendSubtitle(config.seasonalTrendSubtitle);
 
-        setRecommendedMen(JSON.parse(config.recommendedMen || '[]'));
-        setRecommendedWomen(JSON.parse(config.recommendedWomen || '[]'));
-        setRecommendedUnisex(JSON.parse(config.recommendedUnisex || '[]'));
-        setRecommendedOriental(JSON.parse(config.recommendedOriental || '[]'));
-        setRecommendedMaster(JSON.parse(config.recommendedMaster || '[]'));
-        setRecommendedCoffrets(JSON.parse(config.recommendedCoffrets || '[]'));
-        setRecommendedShop(JSON.parse(config.recommendedShop || '[]'));
+        setRecommendedMen(parseValid(config.recommendedMen));
+        setRecommendedWomen(parseValid(config.recommendedWomen));
+        setRecommendedUnisex(parseValid(config.recommendedUnisex));
+        setRecommendedOriental(parseValid(config.recommendedOriental));
+        setRecommendedMaster(parseValid(config.recommendedMaster));
+        setRecommendedCoffrets(parseValid(config.recommendedCoffrets));
+        setRecommendedShop(parseValid(config.recommendedShop));
       } catch {
         // Safe fallbacks
       }
