@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2592000, // 30 days
     remotePatterns: [
@@ -25,13 +26,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/:locale/parfums-originaux',
-        destination: '/:locale/parfums-orientaux',
+        source: '/:locale/parfums-orientaux',
+        destination: '/:locale/parfums-originaux',
         permanent: true,
       },
       {
-        source: '/parfums-originaux',
-        destination: '/fr/parfums-orientaux',
+        source: '/parfums-orientaux',
+        destination: '/fr/parfums-originaux',
         permanent: true,
       },
     ];
