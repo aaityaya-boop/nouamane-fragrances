@@ -10,6 +10,8 @@ import {
   LayoutDashboard, 
   ArrowUp, 
   ArrowDown, 
+  ChevronsUp,
+  GripVertical,
   Trash2, 
   User, 
   Users, 
@@ -20,7 +22,7 @@ import {
   ExternalLink,
   Filter
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 
 interface Product {
   id: number;
@@ -248,6 +250,19 @@ export default function VitrinePage() {
     setActiveSlugs(prev =>
       prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
     );
+  };
+
+  const handleReorder = (newSlugs: string[]) => {
+    setActiveSlugs(() => newSlugs);
+  };
+
+  const moveToTop = (index: number) => {
+    if (index === 0) return;
+    setActiveSlugs(prev => {
+      const item = prev[index];
+      const rest = prev.filter((_, i) => i !== index);
+      return [item, ...rest];
+    });
   };
 
   const moveProduct = (index: number, direction: 'up' | 'down') => {
@@ -625,46 +640,71 @@ export default function VitrinePage() {
               </div>
             )}
 
-            {/* Curated list items */}
-            <div className="space-y-2.5">
-              <AnimatePresence mode="popLayout">
-                {currentSlugs.length === 0 ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="border-2 border-dashed border-[#e0ddd4] rounded-3xl p-10 flex flex-col items-center justify-center text-center bg-white/50"
-                  >
-                    <div className="w-14 h-14 bg-[#f8fafc] rounded-2xl flex items-center justify-center mb-3">
-                      <LayoutDashboard size={22} className="text-[#9A9A9A]" />
-                    </div>
-                    <h4 className="text-[14px] font-bold text-[#1A1A1A] mb-1.5">Aucun parfum recommandé configuré</h4>
-                    <p className="text-[12px] text-[#9A9A9A] max-w-xs leading-relaxed">
-                      Cliquez sur des parfums dans la bibliothèque à gauche pour les ajouter en tête de liste sur cette page.
-                    </p>
-                  </motion.div>
-                ) : (
-                  currentSlugs.map((slug, index) => {
+            {/* Curated list items with Smooth Drag & Drop (Glissement) */}
+            {currentSlugs.length === 0 ? (
+              <div className="border-2 border-dashed border-[#e0ddd4] rounded-3xl p-10 flex flex-col items-center justify-center text-center bg-white/50">
+                <div className="w-14 h-14 bg-[#f8fafc] rounded-2xl flex items-center justify-center mb-3">
+                  <LayoutDashboard size={22} className="text-[#9A9A9A]" />
+                </div>
+                <h4 className="text-[14px] font-bold text-[#1A1A1A] mb-1.5">Aucun parfum recommandé configuré</h4>
+                <p className="text-[12px] text-[#9A9A9A] max-w-xs leading-relaxed">
+                  Cliquez sur des parfums dans la bibliothèque à gauche pour les ajouter en tête de liste sur cette page.
+                </p>
+              </div>
+            ) : (
+              <div>
+                {/* Visual Guidance Banner */}
+                <div className="flex items-center justify-between px-3 py-2 mb-3 text-[11px] font-semibold text-[#0ea5e9] bg-sky-50 border border-sky-100 rounded-xl">
+                  <span className="flex items-center gap-1.5">
+                    <GripVertical size={14} className="text-[#0ea5e9]" />
+                    Glissez & déposez les cartes de haut en bas pour réordonner
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-normal">
+                    {currentSlugs.length} sélectionné{currentSlugs.length > 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                <Reorder.Group 
+                  axis="y" 
+                  values={currentSlugs} 
+                  onReorder={handleReorder} 
+                  className="space-y-2.5"
+                >
+                  {currentSlugs.map((slug, index) => {
                     const p = allProducts.find(x => x.slug === slug);
                     if (!p) return null;
                     return (
-                      <motion.div
-                        layout
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
+                      <Reorder.Item
                         key={slug}
-                        className="group flex items-center gap-3 bg-white p-3 rounded-2xl border border-black/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all"
+                        value={slug}
+                        className="group relative flex items-center gap-3 bg-white p-3 rounded-2xl border border-black/5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.07)] hover:border-[#0ea5e9]/40 transition-shadow select-none cursor-grab active:cursor-grabbing"
+                        whileDrag={{
+                          scale: 1.025,
+                          boxShadow: "0 20px 30px -5px rgba(14, 165, 233, 0.18), 0 10px 15px -5px rgba(0, 0, 0, 0.08)",
+                          borderColor: "#0ea5e9",
+                          backgroundColor: "#f0f9ff",
+                          zIndex: 50
+                        }}
                       >
+                        {/* Drag Handle Icon */}
+                        <div 
+                          className="text-gray-300 group-hover:text-[#0ea5e9] transition-colors p-1 cursor-grab active:cursor-grabbing flex-shrink-0"
+                          title="Glisser pour déplacer"
+                        >
+                          <GripVertical size={18} />
+                        </div>
+
                         {/* Order Position Badge */}
-                        <div className="flex flex-col items-center justify-center w-7 h-7 rounded-xl bg-gray-100 text-gray-700 font-extrabold text-[12px]">
+                        <div 
+                          className="flex flex-col items-center justify-center w-7 h-7 rounded-xl bg-gray-100 text-gray-700 font-extrabold text-[12px] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors flex-shrink-0"
+                          title={`Rang #${index + 1}`}
+                        >
                           #{index + 1}
                         </div>
 
                         {/* Image */}
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#f8fafc] flex-shrink-0">
-                          <img src={getImage(p)} alt={p.name} className="w-full h-full object-cover border border-black/5" />
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#f8fafc] flex-shrink-0 border border-black/5">
+                          <img src={getImage(p)} alt={p.name} className="w-full h-full object-cover" />
                         </div>
 
                         {/* Info */}
@@ -673,40 +713,69 @@ export default function VitrinePage() {
                           <div className="text-[10px] text-[#0ea5e9] uppercase tracking-widest font-bold">{p.brandLabel}</div>
                         </div>
 
-                        {/* Reorder Arrows */}
-                        <div className="flex flex-col gap-0.5 pr-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => moveProduct(index, 'up')}
-                            disabled={index === 0}
-                            className="p-1 hover:bg-[#f8fafc] rounded text-[#666] disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                            title="Monter"
-                          >
-                            <ArrowUp size={13} strokeWidth={2.5} />
-                          </button>
-                          <button
-                            onClick={() => moveProduct(index, 'down')}
-                            disabled={index === currentSlugs.length - 1}
-                            className="p-1 hover:bg-[#f8fafc] rounded text-[#666] disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                            title="Descendre"
-                          >
-                            <ArrowDown size={13} strokeWidth={2.5} />
-                          </button>
+                        {/* Quick Actions: Move to Top + Move buttons + Remove */}
+                        <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveToTop(index);
+                              }}
+                              className="p-1.5 hover:bg-blue-50 hover:text-[#0ea5e9] rounded-lg text-gray-400 transition-colors cursor-pointer"
+                              title="Placer tout en haut (Position #1)"
+                            >
+                              <ChevronsUp size={15} strokeWidth={2.5} />
+                            </button>
+                          )}
+                          
+                          <div className="flex flex-col">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveProduct(index, 'up');
+                              }}
+                              disabled={index === 0}
+                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-black disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                              title="Monter d'une position"
+                            >
+                              <ArrowUp size={11} strokeWidth={2.5} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveProduct(index, 'down');
+                              }}
+                              disabled={index === currentSlugs.length - 1}
+                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-black disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                              title="Descendre d'une position"
+                            >
+                              <ArrowDown size={11} strokeWidth={2.5} />
+                            </button>
+                          </div>
+
+                          <div className="border-l border-gray-200 pl-1 ml-1">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleProduct(slug);
+                              }}
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-[#9A9A9A] hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Retirer des recommandés"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="pr-1 border-l border-black/5 pl-2">
-                          <button
-                            onClick={() => toggleProduct(slug)}
-                            className="w-7 h-7 rounded-full flex items-center justify-center text-[#9A9A9A] hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                            title="Retirer des recommandés"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </motion.div>
+                      </Reorder.Item>
                     );
-                  })
-                )}
-              </AnimatePresence>
-            </div>
+                  })}
+                </Reorder.Group>
+              </div>
+            )}
             
           </div>
         </div>
