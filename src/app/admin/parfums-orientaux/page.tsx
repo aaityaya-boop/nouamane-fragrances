@@ -114,7 +114,7 @@ export default function AdminArabicPage() {
       brandLabel: 'Lattafa',
       gender: 'unisex',
       subcategory: 'arabic',
-      subcategoryLabel: 'Ambré Épicé',
+      subcategoryLabel: '',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -274,6 +274,7 @@ export default function AdminArabicPage() {
               <tr>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Produit & SKU</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Famille Olfactive</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Prix (MAD)</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Stock/Statut</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider text-right">Actions</th>
@@ -282,11 +283,11 @@ export default function AdminArabicPage() {
             <tbody className="divide-y divide-[#eaeaea]">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Chargement...</td>
+                  <td colSpan={6} className="p-8 text-center text-[#9A9A9A]">Chargement...</td>
                 </tr>
               ) : filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvé�.</td>
+                  <td colSpan={6} className="p-8 text-center text-[#9A9A9A]">Aucun produit trouvé.</td>
                 </tr>
               ) : (
                 filteredProducts.map((p) => (
@@ -313,6 +314,11 @@ export default function AdminArabicPage() {
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-500/20 uppercase tracking-wider">
                         {p.brandLabel}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sky-50 text-[#0ea5e9] border border-sky-200/60 shadow-xs">
+                        {p.subcategoryLabel || 'Non définie'}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-semibold text-[13px] text-[#111]">
@@ -468,11 +474,11 @@ export default function AdminArabicPage() {
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
                       <select 
                         required
-                        className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
-                        value={formData.subcategoryLabel || 'Ambré Épicé'}
+                        className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] text-[#111] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all font-medium cursor-pointer"
+                        value={formData.subcategoryLabel || ''}
                         onChange={e => setFormData({ ...formData, subcategoryLabel: e.target.value })}
                       >
-                        <option value="">Sélectionnez une famille olfactive</option>
+                        <option value="" disabled>✨ Sélectionnez une famille olfactive...</option>
                         {OLFACTIVE_FAMILIES.map(group => (
                           <optgroup key={group.group} label={group.group}>
                             {group.options.map(opt => (
@@ -486,6 +492,12 @@ export default function AdminArabicPage() {
                           </optgroup>
                         )}
                       </select>
+                      {formData.subcategoryLabel && (
+                        <div className="mt-2 flex items-center gap-1.5 text-[12px] text-[#0ea5e9] font-medium">
+                          <span>Famille sélectionnée :</span>
+                          <span className="font-bold text-[#111] bg-sky-50 px-2 py-0.5 rounded border border-sky-200/50">{formData.subcategoryLabel}</span>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
