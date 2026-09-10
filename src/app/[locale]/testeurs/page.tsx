@@ -6,30 +6,30 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import ShopCatalog from '@/components/ShopCatalog';
 import prisma from '@/lib/prisma';
-import { Product, MAIN_CATEGORIES } from '@/lib/products';
-import { ShieldCheck, Truck, Clock } from 'lucide-react';
+import { Product } from '@/lib/products';
+import { ShieldCheck, Truck, Clock, Sparkles } from 'lucide-react';
 
 export const metadata = {
-  title: 'Parfums Originaux Scellés 100% Authentiques Maroc | NAY Parfums',
-  description: 'Découvrez notre collection de parfums 100% originaux dans leur packaging et boîte scellée d\'origine au Maroc. Livraison rapide partout au royaume.',
+  title: 'Testeurs de Parfums 100% Originaux au Maroc | NAY Parfums',
+  description: "Découvrez notre collection exclusive de testeurs de grandes marques 100% authentiques au Maroc. Même sillage, flacon d'origine, prix exceptionnels. عطور تيستر أصلية",
   openGraph: {
-    title: 'Parfums Originaux Scellés 100% Authentiques Maroc | NAY Parfums',
-    description: 'Découvrez notre collection de parfums 100% originaux dans leur packaging et boîte scellée d\'origine au Maroc. Livraison rapide partout au royaume.',
-    url: 'https://nayparfum.ma/parfums-originaux',
+    title: 'Testeurs de Parfums 100% Originaux au Maroc | NAY Parfums',
+    description: "Découvrez notre collection exclusive de testeurs de grandes marques 100% authentiques au Maroc. Même sillage, flacon d'origine, prix exceptionnels. عطور تيستر أصلية",
+    url: 'https://nayparfum.ma/testeurs',
   },
   alternates: {
-    canonical: 'https://nayparfum.ma/parfums-originaux',
+    canonical: 'https://nayparfum.ma/testeurs',
   },
 };
 
 export const revalidate = 3600;
 
-export default async function ParfumsOriginauxPage() {
+export default async function TesteursPage() {
   const [dbProducts, dbBrands, config] = await Promise.all([
     prisma.product.findMany({
       where: { 
         published: true, 
-        isTester: false,
+        isTester: true,
         subcategory: { notIn: ['master-copier', 'coffrets'] }
       }
     }),
@@ -39,7 +39,7 @@ export default async function ParfumsOriginauxPage() {
 
   let recommendedSlugs: string[] = [];
   try {
-    recommendedSlugs = JSON.parse(config?.recommendedOriental || '[]');
+    recommendedSlugs = JSON.parse(config?.recommendedShop || '[]');
   } catch {}
   
   const products: Product[] = dbProducts.map((p) => ({
@@ -55,7 +55,7 @@ export default async function ParfumsOriginauxPage() {
     bottleMaterial: p.bottleMaterial as any,
     perfectSeason: p.perfectSeason as any,
     originalPrice: p.originalPrice ?? undefined,
-    isTester: false,
+    isTester: true,
   }));
 
   return (
@@ -91,16 +91,16 @@ export default async function ParfumsOriginauxPage() {
 
       <section className="relative pt-32 pb-12 lg:pt-48 lg:pb-16">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 text-center relative z-10 flex flex-col items-center">
-          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-4">
-            Collection Parfums Originaux
+          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-4 flex items-center gap-1.5">
+            <Sparkles size={14} /> Collection Testeurs de Luxe
           </span>
           <h1 className="heading-font text-5xl sm:text-6xl lg:text-[90px] leading-none tracking-tight mb-6">
             <span className="liquid-glace-text">L'EXCELLENCE</span>
             <br />
-            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Originale Scellée</span>
+            <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Des Testeurs</span>
           </h1>
           <p className="mt-2 text-[13px] md:text-[15px] text-[#555] font-light max-w-xl leading-[2] tracking-widest uppercase mb-10">
-            Découvrez notre sélection exclusive de parfums originaux dans leur conditionnement et emballage scellé d'origine. 100% Authentiques.
+            Découvrez notre sélection exclusive de <span className="font-semibold text-[#111]">testeurs 100% authentiques</span> des plus grandes maisons. Flacon d'origine, même sillage et tenue d'exception.
           </p>
 
           {/* Minimalist Trust Signals */}
@@ -123,8 +123,8 @@ export default async function ParfumsOriginauxPage() {
 
       {/* CATALOG */}
       <section className="relative z-10 max-w-[1600px] mx-auto px-6 lg:px-12 py-10">
-        <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement du catalogue…</div>}>
-          <ShopCatalog products={products} brands={dbBrands} lockedIsTester={false} recommendedSlugs={recommendedSlugs} />
+        <Suspense fallback={<div className="text-[#9A9A9A] text-sm">Chargement des testeurs…</div>}>
+          <ShopCatalog products={products} brands={dbBrands} lockedIsTester={true} recommendedSlugs={recommendedSlugs} />
         </Suspense>
       </section>
 

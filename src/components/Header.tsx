@@ -19,7 +19,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAllMobileBrands, setShowAllMobileBrands] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'unisex' | 'brands' | 'bundles' | 'originaux' | null>(null);
+  const [activeMenu, setActiveMenu] = useState<'women' | 'men' | 'testers' | 'unisex' | 'brands' | 'bundles' | 'originaux' | null>(null);
   const { getItemCount } = useCart();
   const pathname = usePathname();
   const dict = useDictionary();
@@ -60,9 +60,9 @@ export default function Header() {
         <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
           <div className="flex items-center justify-between h-[60px] lg:h-[75px]">
             {/* LEFT NAV (Desktop) */}
-            <nav className="hidden lg:flex items-center gap-8 w-1/3">
-              {['women', 'men', 'originaux', 'brands', 'bundles'].map((menuKey) => {
-                const labels: any = { women: 'Femme', men: 'Homme', originaux: 'Parfums Originaux', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-1">
+              {['women', 'men', 'testers', 'originaux', 'brands', 'bundles'].map((menuKey) => {
+                const labels: any = { women: 'Femme', men: 'Homme', testers: 'Testeurs', originaux: 'Parfums Originaux', brands: 'Marques', bundles: 'Coffrets Cadeaux' };
                 return (
                   <div 
                     key={menuKey} 
@@ -70,7 +70,7 @@ export default function Header() {
                     onMouseEnter={() => setActiveMenu(menuKey as any)}
                   >
                     <button
-                      className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 flex items-center gap-1.5 h-[75px] border-b-2 ${
+                      className={`text-[11px] font-bold tracking-[0.12em] xl:tracking-[0.14em] uppercase transition-colors duration-300 flex items-center gap-1.5 h-[75px] border-b-2 whitespace-nowrap ${
                         activeMenu === menuKey ? 'border-[#0ea5e9] text-[#0ea5e9]' : 'border-transparent ' + (isSolid ? 'text-[#1A1A1A]' : 'text-white hover:text-white/80')
                       }`}
                     >
@@ -83,7 +83,7 @@ export default function Header() {
             </nav>
 
             {/* LOGO */}
-            <div className="w-1/3 flex justify-center">
+            <div className="flex-shrink-0 flex justify-center px-4">
               <Link href={`/${locale}`} aria-label="NAY Parfums - Accueil" className="group flex flex-col items-center">
                 <div
                   className={`w-16 h-16 lg:w-20 lg:h-20 transition-colors duration-300 group-hover:bg-[#0ea5e9] ${
@@ -104,7 +104,7 @@ export default function Header() {
             </div>
 
             {/* RIGHT ICONS */}
-            <div className="w-1/3 flex items-center justify-end gap-5 lg:gap-6">
+            <div className="flex-1 flex items-center justify-end gap-5 lg:gap-6">
               <button
                 onClick={() => setIsSearchOpen(true)}
                 className={`hidden lg:block transition-colors duration-300 ${
@@ -184,16 +184,16 @@ export default function Header() {
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=oriental`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Orientaux</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=woody`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Boisés</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women?sub=fresh`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Frais</Link></li>
-                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tous les Parfums Femme <ChevronRight size={14}/></Link></li>
                         </ul>
                       </div>
                       <div>
-                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Collections & Formats</div>
                         <ul className="space-y-4">
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs/women`} className="text-[13px] font-semibold text-[#0ea5e9] hover:text-[#0284c7] transition-colors flex items-center gap-2">✨ Testeurs Femme (100% Authentiques)</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/parfums-originaux`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Originaux Scellés</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copy</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Toute la Sélection Femme</Link></li>
                         </ul>
                       </div>
                       <div>
@@ -219,16 +219,16 @@ export default function Header() {
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=oriental`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Orientaux</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=aromatic`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Aromatiques</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men?sub=fresh`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Frais</Link></li>
-                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tous les Parfums Homme <ChevronRight size={14}/></Link></li>
                         </ul>
                       </div>
                       <div>
-                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Découverte</div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Collections & Formats</div>
                         <ul className="space-y-4">
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center gap-2">Testeurs Originaux </Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs/men`} className="text-[13px] font-semibold text-[#0ea5e9] hover:text-[#0284c7] transition-colors flex items-center gap-2">✨ Testeurs Homme (100% Authentiques)</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/parfums-originaux`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Originaux Scellés</Link></li>
                           <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Parfums Master Copy</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Meilleures Ventes</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Nouveautés</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Toute la Sélection Homme</Link></li>
                         </ul>
                       </div>
                       <div>
@@ -243,20 +243,71 @@ export default function Header() {
                   </>
                 )}
 
+                {/* --- TESTEURS MEGA MENU --- */}
+                {activeMenu === 'testers' && (
+                  <>
+                    <div className="flex-1 grid grid-cols-3 gap-12">
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Catégories Testeurs</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs/women`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center justify-between font-medium">Testeurs Femme <ChevronRight size={14} className="text-[#9A9A9A]"/></Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs/men`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center justify-between font-medium">Testeurs Homme <ChevronRight size={14} className="text-[#9A9A9A]"/></Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors flex items-center justify-between font-medium">Tous les Testeurs Originaux <ChevronRight size={14} className="text-[#9A9A9A]"/></Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Voir tout le catalogue testeurs <ChevronRight size={14}/></Link></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Grandes Maisons en Testeur</div>
+                        <ul className="space-y-4">
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs?brand=dior`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Dior</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs?brand=chanel`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Chanel</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs?brand=yves-saint-laurent`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Yves Saint Laurent</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs?brand=tom-ford`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Tom Ford</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs?brand=armani`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Giorgio Armani</Link></li>
+                        </ul>
+                      </div>
+                      <div className="bg-[#f8fafc] border border-[#e0ddd4] p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                          <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-2 block">100% Flacons Authentiques</span>
+                          <h4 className="heading-font text-xl text-[#1A1A1A] mb-2">Testeurs de Démonstration</h4>
+                          <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
+                            Même jus prestigieux, même sillage et tenue irréprochable que les flacons retail, conditionnés en boîte neutre de testeur à un tarif exceptionnel.
+                          </p>
+                        </div>
+                        <Link onClick={() => setActiveMenu(null)} href={`/${locale}/testeurs`} className="mt-4 bg-[#111] text-white text-[11px] font-bold uppercase tracking-wider py-2.5 px-4 rounded-full text-center hover:bg-[#0ea5e9] transition-colors">
+                          Accéder aux Testeurs
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* --- ORIGINAUX MEGA MENU --- */}
                 {activeMenu === 'originaux' && (
                   <div className="w-full flex-1">
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-6">Authenticité & Prestige</div>
-                    <div className="grid grid-cols-1 gap-12">
+                    <div className="grid grid-cols-2 gap-8">
                       <Link href={`/${locale}/parfums-originaux`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#0ea5e9] hover:shadow-2xl transition-all">
                         <div className="flex-1">
-                          <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-3 block">Collection Originale</span>
-                          <h3 className="heading-font text-3xl text-[#1A1A1A] mb-4 group-hover:text-[#0ea5e9] transition-colors">Découvrez Nos Parfums Originaux</h3>
-                          <p className="text-[14px] text-[#6B6B6B] mb-8 leading-relaxed max-w-lg">
-                            Découvrez une sélection de parfums originaux d'exception, authentiques et longue tenue.
+                          <span className="text-[#0ea5e9] text-[10px] font-bold uppercase tracking-widest mb-3 block">Collection Scellée</span>
+                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-3 group-hover:text-[#0ea5e9] transition-colors">Parfums Originaux</h3>
+                          <p className="text-[13px] text-[#6B6B6B] mb-6 leading-relaxed">
+                            Parfums 100% originaux dans leurs boîtes commerciales officielles scellées.
                           </p>
-                          <span className="bg-[#111] text-white text-[13px] px-8 py-3 rounded-full inline-block group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-md group-hover:shadow-lg">
-                            Explorer la Collection
+                          <span className="bg-[#111] text-white text-[12px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#0ea5e9] group-hover:text-white transition-all shadow-md">
+                            Explorer les Originaux
+                          </span>
+                        </div>
+                      </Link>
+                      <Link href={`/${locale}/parfums-orientaux`} onClick={() => setActiveMenu(null)} className="group cursor-pointer flex items-center bg-[#f8fafc] border border-[#e0ddd4] p-8 rounded-xl hover:border-[#d97706] hover:shadow-2xl transition-all">
+                        <div className="flex-1">
+                          <span className="text-[#d97706] text-[10px] font-bold uppercase tracking-widest mb-3 block">Maison d'Orient</span>
+                          <h3 className="heading-font text-2xl text-[#1A1A1A] mb-3 group-hover:text-[#d97706] transition-colors">Parfums Orientaux & Arabes</h3>
+                          <p className="text-[13px] text-[#6B6B6B] mb-6 leading-relaxed">
+                            Lattafa, Asad, Yara, Afnan, Khamrah et les plus grands chefs-d'œuvre de la parfumerie orientale.
+                          </p>
+                          <span className="bg-[#111] text-white text-[12px] px-6 py-2.5 rounded-full inline-block group-hover:bg-[#d97706] group-hover:text-white transition-all shadow-md">
+                            Explorer les Orientaux
                           </span>
                         </div>
                       </Link>
@@ -271,17 +322,15 @@ export default function Header() {
                       <div>
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Idées Cadeaux</div>
                         <ul className="space-y-4">
-                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=gift-bundles" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Cadeaux</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=discovery-sets" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Découverte</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex?sub=limited-editions" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Éditions Limitées</Link></li>
-                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/coffrets`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Cadeaux</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/coffrets`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Coffrets Découverte</Link></li>
+                          <li className="pt-2"><Link onClick={() => setActiveMenu(null)} href={`/${locale}/coffrets`} className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9] flex items-center gap-1">Tout voir <ChevronRight size={14}/></Link></li>
                         </ul>
                       </div>
                       <div>
                         <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A] mb-5">Parfums de niche / Unisexe</div>
                         <ul className="space-y-4">
-                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Collection Privée Armani</Link></li>
-                          <li><Link onClick={() => setActiveMenu(null)} href="/shop/unisex" className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Le Vestiaire des Parfums YSL</Link></li>
+                          <li><Link onClick={() => setActiveMenu(null)} href={`/${locale}/shop/unisex`} className="text-[13px] text-[#1A1A1A] hover:text-[#0ea5e9] transition-colors">Collection Privée & Unisexe</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -375,36 +424,50 @@ export default function Header() {
                   <div className="border-b border-[#e0ddd4] pb-6 bg-[#f8fafc] -mx-6 px-6 pt-4">
                     <div className="flex items-center gap-2 mb-4">
                       <span className="w-2 h-2 rounded-full bg-[#0ea5e9]"></span>
-                      <div className="heading-font text-2xl text-[#1A1A1A]">Explorer</div>
+                      <div className="heading-font text-2xl text-[#1A1A1A]">Collections</div>
                     </div>
-                    <div className="grid grid-cols-1 gap-3 pl-4 border-l-2 border-[#e0ddd4]/50">
+                    <div className="grid grid-cols-1 gap-3 pl-4 border-l-2 border-[#0ea5e9]/50">
                       <Link 
-                        href={`/${locale}/decouverte`} 
+                        href={`/${locale}/testeurs`} 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[15px] font-medium text-[#0ea5e9] flex items-center justify-between"
+                        className="text-[15px] font-bold text-[#0ea5e9] flex items-center justify-between"
                       >
-                        L'Expérience Découverte <ChevronRight size={16} />
-                      </Link>
-                      <Link 
-                        href={`/${locale}/master-copier`} 
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[14px] text-[#444]"
-                      >
-                        Parfums Master Copy
+                        ✨ Testeurs de Luxe (Authentiques) <ChevronRight size={16} />
                       </Link>
                       <Link 
                         href={`/${locale}/parfums-originaux`} 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[14px] text-[#444]"
+                        className="text-[14px] font-medium text-[#1A1A1A] flex items-center justify-between"
                       >
-                        Parfums Originaux
+                        Parfums Originaux Scellés <ChevronRight size={16} />
                       </Link>
                       <Link 
-                        href={`/${locale}/shop/women`} 
+                        href={`/${locale}/parfums-orientaux`} 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-[14px] text-[#444]"
+                        className="text-[14px] font-medium text-[#1A1A1A] flex items-center justify-between"
                       >
-                        Testeurs Originaux
+                        Parfums Orientaux & Arabes <ChevronRight size={16} />
+                      </Link>
+                      <Link 
+                        href={`/${locale}/coffrets`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] font-medium text-[#1A1A1A] flex items-center justify-between"
+                      >
+                        Coffrets Cadeaux <ChevronRight size={16} />
+                      </Link>
+                      <Link 
+                        href={`/${locale}/master-copier`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] text-[#555] flex items-center justify-between"
+                      >
+                        Parfums Master Copy <ChevronRight size={16} />
+                      </Link>
+                      <Link 
+                        href={`/${locale}/shop`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-[14px] font-bold text-[#111] uppercase tracking-wider flex items-center justify-between pt-2 border-t border-[#e0ddd4]"
+                      >
+                        Toute La Boutique (Tous les parfums) <ChevronRight size={16} />
                       </Link>
                     </div>
                   </div>

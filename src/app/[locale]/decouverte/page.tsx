@@ -20,10 +20,10 @@ export default async function DecouvertePage({ params }: { params: Promise<{ loc
       subtitle: "Le Luxe Authentique",
       description: "Vos parfums de créateurs favoris en format testeur 100% authentique. Toute l'essence du luxe, à un tarif exclusif.",
       buttonText: "Voir les Testeurs",
-      link: `/${locale}/shop`,
-      color: "hover:border-[#9E1B1B]",
-      themeText: "text-[#9E1B1B]",
-      themeBg: "bg-[#9E1B1B]",
+      link: `/${locale}/testeurs`,
+      color: "hover:border-[#0ea5e9]",
+      themeText: "text-[#0ea5e9]",
+      themeBg: "bg-[#0ea5e9]",
       bgHover: "group-hover:bg-white"
     },
     {

@@ -10,11 +10,11 @@ import { Product, MAIN_CATEGORIES } from '@/lib/products';
 import { ShieldCheck, Truck, Clock } from 'lucide-react';
 
 export const metadata = {
-  title: 'Boutique Parfums & Testeurs Originaux Maroc | NAY Parfums',
-  description: 'Découvrez toute la collection de parfums de grandes marques et testeurs 100% originaux au Maroc. Filtrage par marque et prix. عطور أصلية',
+  title: 'La Boutique Complète | Tous les Parfums & Testeurs Maroc | NAY Parfums',
+  description: 'Découvrez l\'ensemble de nos parfums au Maroc : Testeurs de grandes marques, Parfums Originaux scellés, Fragrances Orientales et Coffrets de prestige.',
   openGraph: {
-    title: 'Boutique Parfums & Testeurs Originaux Maroc | NAY Parfums',
-    description: 'Découvrez toute la collection de parfums de grandes marques et testeurs 100% originaux au Maroc. Filtrage par marque et prix. عطور أصلية',
+    title: 'La Boutique Complète | Tous les Parfums & Testeurs Maroc | NAY Parfums',
+    description: 'Découvrez l\'ensemble de nos parfums au Maroc : Testeurs de grandes marques, Parfums Originaux scellés, Fragrances Orientales et Coffrets de prestige.',
     url: 'https://nayparfum.ma/shop',
   },
   alternates: {
@@ -27,9 +27,7 @@ export const revalidate = 3600;
 export default async function ShopPage() {
   const [dbProducts, dbBrands, config] = await Promise.all([
     prisma.product.findMany({
-      where: { published: true, 
-        subcategory: { notIn: ['master-copier', 'coffrets'] }
-      }
+      where: { published: true }
     }),
     prisma.brand.findMany(),
     prisma.siteConfig.findFirst()
@@ -53,6 +51,7 @@ export default async function ShopPage() {
     bottleMaterial: p.bottleMaterial as any,
     perfectSeason: p.perfectSeason as any,
     originalPrice: p.originalPrice ?? undefined,
+    isTester: p.isTester ?? false,
   }));
 
   return (
@@ -89,15 +88,15 @@ export default async function ShopPage() {
       <section className="relative pt-32 pb-12 lg:pt-48 lg:pb-16">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 text-center relative z-10 flex flex-col items-center">
           <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#0ea5e9] mb-4">
-            La Boutique
+            Toute La Boutique
           </span>
           <h1 className="heading-font text-5xl sm:text-6xl lg:text-[90px] leading-none tracking-tight mb-6">
-            <span className="liquid-glace-text">L'EXCELLENCE</span>
+            <span className="liquid-glace-text">L'UNIVERS</span>
             <br />
             <span className="font-serif italic font-light text-[#0ea5e9] text-4xl sm:text-5xl lg:text-[80px] liquid-glace-text">Olfactive</span>
           </h1>
           <p className="mt-2 text-[13px] md:text-[15px] text-[#555] font-light max-w-xl leading-[2] tracking-widest uppercase mb-10">
-            Découvrez notre collection exclusive de <span className="font-semibold text-[#111]">testeurs 100% authentiques</span>. Le luxe des grandes maisons, désormais accessible.
+            Explorez l'ensemble de notre univers : <span className="font-semibold text-[#111]">Testeurs de luxe</span>, <span className="font-semibold text-[#111]">Parfums Originaux scellés</span>, Fragrances Orientales et Coffrets d'exception.
           </p>
 
           {/* Minimalist Trust Signals */}

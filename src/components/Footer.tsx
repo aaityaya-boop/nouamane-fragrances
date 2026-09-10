@@ -97,22 +97,37 @@ export default function Footer() {
             <h4 className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#1A1A1A]/50 mb-6">
               {dict.footer.boutique}
             </h4>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li>
-                <Link href={`/${locale}/shop`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                <Link href={`/${locale}/testeurs`} className="text-[13px] font-semibold text-[#0ea5e9] hover:text-[#0284c7] transition-colors">
+                  ✨ Testeurs de Luxe
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/parfums-originaux`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                  Parfums Originaux
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/parfums-orientaux`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                  Parfums Orientaux
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/coffrets`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                  Coffrets Cadeaux
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/master-copier`} className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors">
+                  Master Copy
+                </Link>
+              </li>
+              <li>
+                <Link href={`/${locale}/shop`} className="text-[13px] font-medium text-[#1A1A1A]/90 hover:text-[#0ea5e9] transition-colors">
                   {dict.nav.allFragrances}
                 </Link>
               </li>
-              {MAIN_CATEGORIES.map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    href={`/${locale}/shop/${c.slug}`}
-                    className="text-[13px] text-[#1A1A1A]/70 hover:text-[#0ea5e9] transition-colors"
-                  >
-                    {c.label}
-                  </Link>
-                </li>
-              ))}
             </ul>
           </div>
 

@@ -22,7 +22,10 @@ export type Subcategory =
   | 'discovery-sets'
   | 'gift-bundles'
   | 'limited-editions'
-  | 'coffrets';
+  | 'coffrets'
+  | 'arabic'
+  | 'master-copier'
+  | (string & {});
 
 export type Brand = 'valentino' | 'yves-saint-laurent' | 'armani' | 'dolce-gabbana' | 'burberry' | 'prada';
 

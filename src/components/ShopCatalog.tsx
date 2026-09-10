@@ -33,6 +33,8 @@ type Props = {
   lockedBrand?: Brand;
   /** Optional subcategory pre-filter. */
   lockedSubcategory?: string;
+  /** Lock to testers (true) or non-testers (false). */
+  lockedIsTester?: boolean;
   /** Curated list of recommended product slugs to prioritize */
   recommendedSlugs?: string[];
 };
@@ -68,10 +70,12 @@ function ShopCatalogInner({
   lockedGender,
   lockedBrand,
   lockedSubcategory,
+  lockedIsTester,
   recommendedSlugs,
 }: Props) {
   const searchParams = useSearchParams();
   const initialSub = searchParams?.get('sub') || 'all';
+  const initialType = searchParams?.get('type') || 'all';
   const initialSort = searchParams?.get('sort') as SortKey || 'featured';
   const initialSpecial = searchParams?.get('special') || 'all';
   const initialSeasonsStr = searchParams?.get('seasons');
@@ -80,6 +84,7 @@ function ShopCatalogInner({
   const [brand, setBrand] = useState<string>('all');
   const [gender, setGender] = useState<string>(lockedGender || 'all');
   const [subcategory, setSubcategory] = useState<string>(lockedSubcategory || initialSub);
+  const [typeFilter, setTypeFilter] = useState<string>(initialType);
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>(initialSeasons);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -99,9 +104,11 @@ function ShopCatalogInner({
       const sub = searchParams.get('sub');
       const sort = searchParams.get('sort');
       const special = searchParams.get('special');
+      const type = searchParams.get('type');
       const seasonsStr = searchParams.get('seasons');
       
       if (sub && sub !== subcategory && !lockedSubcategory) setSubcategory(sub);
+      if (type && type !== typeFilter) setTypeFilter(type);
       if (sort && sort !== sortBy) setSortBy(sort as SortKey);
       if (special && special !== specialFilter) setSpecialFilter(special);
       if (seasonsStr) {
@@ -117,13 +124,24 @@ function ShopCatalogInner({
   // Reset page when any filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [brand, gender, subcategory, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, specialFilter, searchQuery]);
+  }, [brand, gender, subcategory, typeFilter, priceRange, selectedSizes, selectedColors, selectedMaterials, minRating, sortBy, specialFilter, searchQuery]);
 
   const toggleFrom = (list: string[], value: string): string[] =>
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 
   const filtered = useMemo(() => {
     let list: Product[] = [...products];
+
+    // Lock isTester if passed
+    if (lockedIsTester !== undefined) {
+      list = list.filter((p) => (lockedIsTester ? p.isTester === true : p.isTester === false));
+    } else if (typeFilter !== 'all') {
+      if (typeFilter === 'testers') list = list.filter((p) => p.isTester === true);
+      else if (typeFilter === 'originals') list = list.filter((p) => p.isTester === false && p.subcategory !== 'coffrets' && (p.subcategory as string) !== 'master-copier');
+      else if (typeFilter === 'oriental') list = list.filter((p) => (p.subcategory as string) === 'arabic' || p.subcategory === 'oriental');
+      else if (typeFilter === 'coffrets') list = list.filter((p) => p.subcategory === 'coffrets' || p.subcategory === 'gift-bundles' || p.subcategory === 'discovery-sets');
+      else if (typeFilter === 'master-copier') list = list.filter((p) => (p.subcategory as string) === 'master-copier');
+    }
 
     if (lockedBrand) list = list.filter((p) => p.brand === lockedBrand);
     else if (brand !== 'all') list = list.filter((p) => p.brand === brand);
@@ -246,6 +264,7 @@ function ShopCatalogInner({
     if (!lockedBrand) setBrand('all');
     if (!lockedGender) setGender('all');
     if (!lockedSubcategory) setSubcategory('all');
+    if (lockedIsTester === undefined) setTypeFilter('all');
     setPriceRange([0, 3000]);
     setSelectedSizes([]);
     setSelectedSeasons([]);
@@ -259,6 +278,7 @@ function ShopCatalogInner({
     (brand !== 'all' && !lockedBrand ? 1 : 0) +
     (gender !== 'all' && !lockedGender ? 1 : 0) +
     (subcategory !== 'all' && !lockedSubcategory ? 1 : 0) +
+    (typeFilter !== 'all' && lockedIsTester === undefined ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 3000 ? 1 : 0) +
     selectedSeasons.length +
     selectedSizes.length +
@@ -390,6 +410,7 @@ function ShopCatalogInner({
               brands={brands}
               gender={gender} setGender={setGender}
               subcategory={subcategory} setSubcategory={setSubcategory}
+              typeFilter={typeFilter} setTypeFilter={setTypeFilter}
               priceRange={priceRange} setPriceRange={setPriceRange}
               selectedSeasons={selectedSeasons} toggleSeason={(v) => setSelectedSeasons(toggleFrom(selectedSeasons, v))}
               selectedSizes={selectedSizes} toggleSize={(v) => setSelectedSizes(toggleFrom(selectedSizes, v))}
@@ -399,6 +420,7 @@ function ShopCatalogInner({
               specialFilter={specialFilter} setSpecialFilter={setSpecialFilter}
               clearFilters={clearFilters} activeCount={activeCount}
               lockedBrand={!!lockedBrand} lockedGender={!!lockedGender} lockedSubcategory={!!lockedSubcategory}
+              lockedIsTester={lockedIsTester}
             />
             <button
               onClick={() => setFiltersOpenMobile(false)}
@@ -436,6 +458,7 @@ function FiltersPanel(props: {
   brands: any[];
   gender: string; setGender: (v: string) => void;
   subcategory: string; setSubcategory: (v: string) => void;
+  typeFilter: string; setTypeFilter: (v: string) => void;
   priceRange: [number, number]; setPriceRange: (p: [number, number]) => void;
   selectedSeasons: string[]; toggleSeason: (v: string) => void;
   selectedSizes: string[]; toggleSize: (v: string) => void;
@@ -445,6 +468,7 @@ function FiltersPanel(props: {
   specialFilter: string; setSpecialFilter: (v: string) => void;
   clearFilters: () => void; activeCount: number;
   lockedBrand: boolean; lockedGender: boolean; lockedSubcategory: boolean;
+  lockedIsTester?: boolean;
 }) {
   const allSubcategories = React.useMemo(() => {
     const map = new Map();
@@ -472,6 +496,17 @@ function FiltersPanel(props: {
         >
           <X size={12} /> Effacer ({props.activeCount})
         </button>
+      )}
+
+      {/* Collection / Type */}
+      {props.lockedIsTester === undefined && !props.lockedSubcategory && (
+        <FilterGroup title="Collection / Type">
+          <RadioOption label="Toutes les collections" checked={props.typeFilter === 'all'} onChange={() => props.setTypeFilter('all')} />
+          <RadioOption label="💎 Testeurs de Luxe" checked={props.typeFilter === 'testers'} onChange={() => props.setTypeFilter('testers')} />
+          <RadioOption label="📦 Parfums Originaux (Scellés)" checked={props.typeFilter === 'originals'} onChange={() => props.setTypeFilter('originals')} />
+          <RadioOption label="🌙 Parfums Orientaux / Arabes" checked={props.typeFilter === 'oriental'} onChange={() => props.setTypeFilter('oriental')} />
+          <RadioOption label="🎁 Coffrets Cadeaux" checked={props.typeFilter === 'coffrets'} onChange={() => props.setTypeFilter('coffrets')} />
+        </FilterGroup>
       )}
 
       {/* Brand */}
