@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
+import { OLFACTIVE_FAMILIES } from '@/lib/olfactiveFamilies';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 
@@ -111,7 +112,7 @@ export default function AdminMasterCopierPage() {
       brandLabel: 'Valentino',
       gender: 'women',
       subcategory: 'master-copier',
-      subcategoryLabel: 'Master Copy Parfum',
+      subcategoryLabel: 'Ambré Épicé',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -457,23 +458,31 @@ export default function AdminMasterCopierPage() {
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
-                      <select className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
-                        value={formData.subcategory} 
+                      <select 
+                        required
+                        className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.subcategoryLabel || 'Ambré Épicé'} 
                         onChange={e => {
-                          const labelMap: any = {
-                            floral: 'Floral', oriental: 'Oriental', fresh: 'Frais', woody: 'Boisé', 
-                            aromatic: 'Aromatique', 'discovery-sets': 'Coffrets Découverte', 
-                            'gift-bundles': 'Coffrets Cadeaux', 'limited-editions': 'Éditions Limitées',
-                            'master-copier': 'Master Copy Parfum'
-                          };
-                          setFormData({...formData, subcategory: e.target.value, subcategoryLabel: labelMap[e.target.value]});
-                        }}>
-                        <option value="floral">Floral</option>
-                        <option value="oriental">Oriental</option>
-                        <option value="fresh">Frais</option>
-                        <option value="woody">Boisé</option>
-                        <option value="aromatic">Aromatique</option>
-                        <option value="master-copier">Master Copy Parfum</option>
+                          setFormData({
+                            ...formData, 
+                            subcategory: 'master-copier',
+                            subcategoryLabel: e.target.value
+                          });
+                        }}
+                      >
+                        <option value="">Sélectionnez une famille olfactive</option>
+                        {OLFACTIVE_FAMILIES.map(group => (
+                          <optgroup key={group.group} label={group.group}>
+                            {group.options.map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </optgroup>
+                        ))}
+                        {formData.subcategoryLabel && !OLFACTIVE_FAMILIES.some(g => g.options.includes(formData.subcategoryLabel)) && (
+                          <optgroup label="Actuel / Personnalisé">
+                            <option value={formData.subcategoryLabel}>{formData.subcategoryLabel}</option>
+                          </optgroup>
+                        )}
                       </select>
                     </div>
                     <div>

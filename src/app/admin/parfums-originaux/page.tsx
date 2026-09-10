@@ -2,86 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
+import { OLFACTIVE_FAMILIES } from '@/lib/olfactiveFamilies';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
-
-const OLFACTIVE_FAMILIES = [
-  { 
-    group: 'Ambré & Oriental', 
-    options: [
-      'Ambré', 
-      'Ambré Épicé', 
-      'Ambré Boisé', 
-      'Ambré Vanillé', 
-      'Ambré Floral', 
-      'Ambré Fougère', 
-      'Ambré Boisé Gourmand', 
-      'Ambré Fruité', 
-      'Oriental', 
-      'Oriental Boisé', 
-      'Oriental Floral', 
-      'Oriental Épicé'
-    ] 
-  },
-  { 
-    group: 'Boisé', 
-    options: [
-      'Boisé', 
-      'Boisé Aromatique', 
-      'Boisé Épicé', 
-      'Boisé Floral Musqué', 
-      'Boisé Épicé (Frais)', 
-      'Aromatique Aquatique Boisé'
-    ] 
-  },
-  { 
-    group: 'Floral', 
-    options: [
-      'Floral', 
-      'Floral Blanc', 
-      'Floral Fruité', 
-      'Floral Gourmand', 
-      'Floral Poudré', 
-      'Floral Aquatique', 
-      'Floral Aldéhydé', 
-      'Floral Pétillant', 
-      'Floral Boisé', 
-      'Ambré Floral Fruité', 
-      'Chypré Floral'
-    ] 
-  },
-  { 
-    group: 'Aromatique & Frais', 
-    options: [
-      'Aromatique', 
-      'Aromatique Fougère', 
-      'Aromatique Boisé', 
-      'Aromatique Vert', 
-      'Aromatique Fruité', 
-      'Hespéridé', 
-      'Hespéridé Aromatique', 
-      'Frais'
-    ] 
-  },
-  { 
-    group: 'Chypré & Cuir', 
-    options: [
-      'Chypré', 
-      'Chypré Fruité', 
-      'Chypré Oriental', 
-      'Cuir', 
-      'Cuir Floral Solaire'
-    ] 
-  },
-  { 
-    group: 'Gourmand & Spécial', 
-    options: [
-      'Gourmand', 
-      'Floral Gourmand Marin', 
-      'Signature'
-    ] 
-  },
-];
 
 export default function AdminArabicPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -191,7 +114,7 @@ export default function AdminArabicPage() {
       brandLabel: 'Lattafa',
       gender: 'unisex',
       subcategory: 'arabic',
-      subcategoryLabel: 'Parfums Originaux',
+      subcategoryLabel: 'Ambré Épicé',
       price: 0,
       originalPrice: 0,
       images: [],
@@ -324,11 +247,7 @@ export default function AdminArabicPage() {
               Générer SKUs
             </button>
             <button 
-              onClick={() => {
-                setEditingProduct(null);
-                setFormData({ subcategory: 'arabic', subcategoryLabel: 'Parfums Originaux', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
-                setIsModalOpen(true);
-              }}
+              onClick={openAddModal}
               className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
             >
               <Plus size={16} /> Nouveau parfum original

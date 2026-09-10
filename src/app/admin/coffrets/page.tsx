@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
+import { OLFACTIVE_FAMILIES } from '@/lib/olfactiveFamilies';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 
@@ -239,11 +240,7 @@ export default function AdminCoffretsPage() {
         
         <div className="flex gap-3">
           <button 
-            onClick={() => {
-              setEditingProduct(null);
-              setFormData({ subcategory: 'coffrets', subcategoryLabel: 'Coffrets', gender: 'unisex', brand: 'valentino', brandLabel: 'Valentino' });
-              setIsModalOpen(true);
-            }}
+            onClick={openAddModal}
             className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-[#333] transition-all shadow-md"
           >
             <Plus size={16} /> Nouveau Coffret
@@ -456,10 +453,38 @@ export default function AdminCoffretsPage() {
                   
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive</label>
-                      <div className="w-full bg-[#eaeaea] border border-[#e0ddd4] rounded-xl p-3 text-[14px] text-[#666] cursor-not-allowed">
-                        Coffrets Cadeaux
-                      </div>
+                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Famille olfactive / Coffret</label>
+                      <select 
+                        className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                        value={formData.subcategoryLabel || 'Coffrets Cadeaux'} 
+                        onChange={e => {
+                          setFormData({
+                            ...formData, 
+                            subcategory: 'coffrets',
+                            subcategoryLabel: e.target.value
+                          });
+                        }}
+                      >
+                        <optgroup label="Types de Coffrets">
+                          <option value="Coffrets Cadeaux">Coffrets Cadeaux</option>
+                          <option value="Coffrets Découverte">Coffrets Découverte</option>
+                          <option value="Éditions Limitées">Éditions Limitées</option>
+                        </optgroup>
+                        {OLFACTIVE_FAMILIES.map(group => (
+                          <optgroup key={group.group} label={group.group}>
+                            {group.options.map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </optgroup>
+                        ))}
+                        {formData.subcategoryLabel && 
+                         !['Coffrets Cadeaux', 'Coffrets Découverte', 'Éditions Limitées'].includes(formData.subcategoryLabel) && 
+                         !OLFACTIVE_FAMILIES.some(g => g.options.includes(formData.subcategoryLabel)) && (
+                          <optgroup label="Actuel / Personnalisé">
+                            <option value={formData.subcategoryLabel}>{formData.subcategoryLabel}</option>
+                          </optgroup>
+                        )}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
