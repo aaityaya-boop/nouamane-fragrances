@@ -5,12 +5,13 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '25', 10);
+    const limit = parseInt(searchParams.get('limit') || '20', 10);
     const search = searchParams.get('q')?.trim() || '';
     const ratingFilter = searchParams.get('rating');
     const verifiedFilter = searchParams.get('verified');
     const productSlug = searchParams.get('productSlug');
     const sortBy = searchParams.get('sortBy') || 'newest';
+    const recentOnly = searchParams.get('recentOnly') === 'true';
 
     const where: any = {};
 
@@ -39,14 +40,20 @@ export async function GET(request: Request) {
       where.productSlug = productSlug;
     }
 
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    if (recentOnly) {
+      where.createdAt = { gte: sevenDaysAgo };
+    }
+
     let orderBy: any = { createdAt: 'desc' };
     if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
-    else if (sortBy === 'rating-high') orderBy = { rating: 'desc' };
-    else if (sortBy === 'rating-low') orderBy = { rating: 'asc' };
+    else if (sortBy === 'rating-high') orderBy = [{ rating: 'desc' }, { createdAt: 'desc' }];
+    else if (sortBy === 'rating-low') orderBy = [{ rating: 'asc' }, { createdAt: 'desc' }];
+    else if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
 
     const skip = (page - 1) * limit;
 
-    const [reviews, totalCount, statsAll, productsList] = await Promise.all([
+    const [reviews, totalCount, statsAll, productsList, recentCount, latestSpotlight] = await Promise.all([
       prisma.review.findMany({
         where,
         include: {
@@ -72,8 +79,20 @@ export async function GET(request: Request) {
       }),
       prisma.product.findMany({
         where: { published: true },
-        select: { slug: true, name: true },
+        select: { slug: true, name: true, brandLabel: true },
         orderBy: { name: 'asc' }
+      }),
+      prisma.review.count({
+        where: { createdAt: { gte: sevenDaysAgo } }
+      }),
+      prisma.review.findMany({
+        take: 3,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          product: {
+            select: { id: true, name: true, slug: true, images: true, brandLabel: true }
+          }
+        }
       })
     ]);
 
@@ -82,6 +101,7 @@ export async function GET(request: Request) {
     let verifiedCount = 0;
     let pendingCount = 0;
     let ratingSum = 0;
+    let positiveCount = 0;
     const ratingDist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
     for (const s of statsAll) {
@@ -89,6 +109,7 @@ export async function GET(request: Request) {
       totalReviews += count;
       ratingSum += s.rating * count;
       ratingDist[s.rating] = (ratingDist[s.rating] || 0) + count;
+      if (s.rating >= 4) positiveCount += count;
       if (s.verified) {
         verifiedCount += count;
       } else {
@@ -96,7 +117,8 @@ export async function GET(request: Request) {
       }
     }
 
-    const avgRating = totalReviews > 0 ? +(ratingSum / totalReviews).toFixed(2) : 0;
+    const avgRating = totalReviews > 0 ? +(ratingSum / totalReviews).toFixed(2) : 5.0;
+    const csatPercentage = totalReviews > 0 ? Math.round((positiveCount / totalReviews) * 100) : 100;
 
     return NextResponse.json({
       reviews,
@@ -112,7 +134,10 @@ export async function GET(request: Request) {
         pendingCount,
         avgRating,
         ratingDist,
+        recentCount,
+        csatPercentage,
       },
+      latestSpotlight,
       productsList,
     });
   } catch (error) {

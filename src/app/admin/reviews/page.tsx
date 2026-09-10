@@ -24,7 +24,14 @@ import {
   Download,
   SlidersHorizontal,
   MapPin,
-  Check
+  Check,
+  Share2,
+  Copy,
+  LayoutGrid,
+  List,
+  ShieldCheck,
+  TrendingUp,
+  Award
 } from 'lucide-react';
 
 interface ProductInfo {
@@ -55,20 +62,25 @@ interface Stats {
   pendingCount: number;
   avgRating: number;
   ratingDist: Record<number, number>;
+  recentCount: number;
+  csatPercentage: number;
 }
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [latestSpotlight, setLatestSpotlight] = useState<ReviewItem[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalReviews: 0,
     verifiedCount: 0,
     pendingCount: 0,
     avgRating: 5.0,
     ratingDist: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    recentCount: 0,
+    csatPercentage: 99,
   });
-  const [productsList, setProductsList] = useState<{ slug: string; name: string }[]>([]);
+  const [productsList, setProductsList] = useState<{ slug: string; name: string; brandLabel?: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPending, startTransition] = useTransition();
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
   // Filters & Pagination State
   const [search, setSearch] = useState('');
@@ -76,6 +88,7 @@ export default function AdminReviewsPage() {
   const [verifiedFilter, setVerifiedFilter] = useState('all');
   const [productFilter, setProductFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [recentOnly, setRecentOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -97,6 +110,7 @@ export default function AdminReviewsPage() {
   });
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
@@ -114,12 +128,14 @@ export default function AdminReviewsPage() {
         verified: verifiedFilter,
         productSlug: productFilter,
         sortBy,
+        recentOnly: String(recentOnly),
       });
 
       const res = await fetch(`/api/admin/reviews?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setReviews(data.reviews || []);
+        setLatestSpotlight(data.latestSpotlight || []);
         setStats(data.stats || stats);
         setProductsList(data.productsList || []);
         setCurrentPage(data.pagination.page);
@@ -136,7 +152,7 @@ export default function AdminReviewsPage() {
 
   useEffect(() => {
     fetchReviews(1);
-  }, [ratingFilter, verifiedFilter, productFilter, sortBy]);
+  }, [ratingFilter, verifiedFilter, productFilter, sortBy, recentOnly]);
 
   // Debounced search
   useEffect(() => {
@@ -149,7 +165,6 @@ export default function AdminReviewsPage() {
   // Toggle quick verify
   const handleToggleVerify = async (review: ReviewItem) => {
     const updatedStatus = !review.verified;
-    // Optimistic UI update
     setReviews(prev => prev.map(r => r.id === review.id ? { ...r, verified: updatedStatus } : r));
     
     try {
@@ -159,7 +174,7 @@ export default function AdminReviewsPage() {
         body: JSON.stringify({ verified: updatedStatus }),
       });
       if (res.ok) {
-        showNotification('success', updatedStatus ? 'Avis marqué comme vérifié.' : 'Avis marqué comme en attente.');
+        showNotification('success', updatedStatus ? 'Avis certifié et vérifié avec succès.' : 'Avis marqué comme en attente.');
         fetchReviews(currentPage);
       } else {
         throw new Error();
@@ -191,7 +206,7 @@ export default function AdminReviewsPage() {
       city: 'Casablanca',
       productSlug: productsList[0]?.slug || '',
       rating: 5,
-      title: 'Très satisfait(e)',
+      title: 'Excellente fragrance et tenue parfaite',
       comment: '',
       verified: true,
     });
@@ -205,14 +220,13 @@ export default function AdminReviewsPage() {
 
     try {
       if (editingReview) {
-        // Update existing
         const res = await fetch(`/api/admin/reviews/${editingReview.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
         if (res.ok) {
-          showNotification('success', 'Avis modifié avec succès.');
+          showNotification('success', 'Avis client mis à jour avec succès.');
           setEditingReview(null);
           fetchReviews(currentPage);
         } else {
@@ -220,14 +234,13 @@ export default function AdminReviewsPage() {
           showNotification('error', data.error || 'Erreur lors de la modification.');
         }
       } else {
-        // Create new
         const res = await fetch('/api/admin/reviews', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
         if (res.ok) {
-          showNotification('success', 'Nouvel avis ajouté avec succès.');
+          showNotification('success', 'Nouvel avis ajouté au sommet de la première page.');
           setIsAddModalOpen(false);
           fetchReviews(1);
         } else {
@@ -251,7 +264,7 @@ export default function AdminReviewsPage() {
         method: 'DELETE',
       });
       if (res.ok) {
-        showNotification('success', 'Avis supprimé avec succès.');
+        showNotification('success', 'Avis client supprimé avec succès.');
         setDeletingReview(null);
         fetchReviews(currentPage);
       } else {
@@ -264,9 +277,21 @@ export default function AdminReviewsPage() {
     }
   };
 
+  // Copy for Story / Social Media
+  const handleCopyStory = (review: ReviewItem) => {
+    const stars = '⭐'.repeat(review.rating);
+    const prodName = review.product?.name || review.productSlug;
+    const text = `✨ AVIS CLIENT CERTIFIÉ NAY PARFUMS\n${stars} ${review.rating}/5\n\n"${review.comment}"\n\n👤 ${review.author} (${review.city || 'Maroc'})\n🛍️ Parfum : ${prodName}\n🌐 nayparfum.ma`;
+    
+    navigator.clipboard.writeText(text);
+    setCopiedId(review.id);
+    showNotification('success', 'Témoignage copié dans le presse-papier pour WhatsApp / Instagram Story !');
+    setTimeout(() => setCopiedId(null), 3000);
+  };
+
   // Export CSV
   const handleExportCSV = () => {
-    const headers = ['ID', 'Auteur', 'Ville', 'Note', 'Titre', 'Commentaire', 'Produit', 'Vérifié', 'Date'];
+    const headers = ['ID', 'Client', 'Ville', 'Note', 'Titre', 'Commentaire', 'Produit', 'Statut', 'Date'];
     const rows = reviews.map(r => [
       r.id,
       `"${r.author.replace(/"/g, '""')}"`,
@@ -275,7 +300,7 @@ export default function AdminReviewsPage() {
       `"${r.title.replace(/"/g, '""')}"`,
       `"${r.comment.replace(/"/g, '""')}"`,
       `"${(r.product?.name || r.productSlug).replace(/"/g, '""')}"`,
-      r.verified ? 'Oui' : 'Non',
+      r.verified ? 'Vérifié' : 'En attente',
       new Date(r.createdAt).toLocaleDateString('fr-FR')
     ]);
 
@@ -283,7 +308,7 @@ export default function AdminReviewsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `avis_clients_nay_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `avis_nay_parfums_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -300,200 +325,241 @@ export default function AdminReviewsPage() {
     }
   };
 
+  // Helper for checking if review is recent (less than 48 hours)
+  const isRecentReview = (dateStr: string) => {
+    const reviewDate = new Date(dateStr).getTime();
+    const now = Date.now();
+    return (now - reviewDate) < (48 * 60 * 60 * 1000);
+  };
+
   return (
-    <div className="p-6 lg:p-10 space-y-8 max-w-[1600px] mx-auto min-h-screen text-[#f0f0f0]">
+    <div className="space-y-8 max-w-[1600px] mx-auto min-h-screen text-[#111827] pb-24">
       
       {/* NOTIFICATION TOAST */}
       {notification && (
-        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl border transition-all animate-bounce ${
+        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border transition-all ${
           notification.type === 'success' 
-            ? 'bg-[#064e3b] text-emerald-100 border-emerald-500/50' 
-            : 'bg-[#7f1d1d] text-red-100 border-red-500/50'
+            ? 'bg-[#0f172a] text-white border-emerald-500/50' 
+            : 'bg-red-900 text-white border-red-500/50'
         }`}>
-          {notification.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+          {notification.type === 'success' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <AlertCircle size={18} className="text-red-400" />}
           <span className="text-sm font-medium">{notification.message}</span>
         </div>
       )}
 
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      {/* LUXURY HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 lg:p-8 rounded-3xl border border-[#e5e7eb] shadow-sm">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0ea5e9]/20 to-[#0284c7]/30 border border-[#0ea5e9]/30 flex items-center justify-center text-[#0ea5e9]">
-              <MessageSquare size={20} />
-            </div>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-                Avis & Retours Clients
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#0ea5e9]/20 text-[#0ea5e9] border border-[#0ea5e9]/30">
-                  {stats.totalReviews} avis
-                </span>
-              </h1>
-              <p className="text-xs lg:text-sm text-[#888888] mt-0.5">
-                Gérez, modérez, vérifiez et ajoutez les retours d'expérience et témoignages de vos clients.
-              </p>
-            </div>
+          <div className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] text-[#9ca3af] uppercase mb-1.5">
+            <span>Maison de Parfum</span>
+            <span>·</span>
+            <span className="text-[#0284c7]">Satisfaction Client & E-Réputation</span>
           </div>
+          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0f172a] flex items-center gap-3">
+            Avis & Témoignages
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              {stats.totalReviews.toLocaleString('fr-FR')} avis certifiés
+            </span>
+          </h1>
+          <p className="text-xs lg:text-sm text-[#64748b] mt-1.5 max-w-2xl leading-relaxed">
+            Supervisez la réputation olfactive de vos fragrances, modérez les retours clients et valorisez les meilleurs témoignages en direct.
+          </p>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => fetchReviews(currentPage)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1a1a1a] hover:bg-[#252525] border border-white/10 text-xs font-semibold text-[#ccc] hover:text-white transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-semibold text-[#475569] hover:text-[#0f172a] transition-all shadow-sm"
             title="Rafraîchir"
           >
             <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
-            <span className="hidden sm:inline">Actualiser</span>
+            <span>Actualiser</span>
           </button>
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1a1a1a] hover:bg-[#252525] border border-white/10 text-xs font-semibold text-[#ccc] hover:text-white transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-semibold text-[#475569] hover:text-[#0f172a] transition-all shadow-sm"
           >
             <Download size={14} />
-            <span className="hidden sm:inline">Exporter CSV</span>
+            <span>Exporter CSV</span>
           </button>
 
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-[#0284c7] hover:from-[#0284c7] hover:to-[#0369a1] text-white text-xs font-bold tracking-wide transition-all shadow-lg shadow-[#0ea5e9]/20 hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs font-bold tracking-wide transition-all shadow-md hover:shadow-lg active:scale-95"
           >
             <Plus size={16} />
-            <span>Ajouter un Avis</span>
+            <span>+ Ajouter un Avis</span>
           </button>
         </div>
       </div>
 
-      {/* KPI METRIC CARDS */}
+      {/* KPI METRIC CARDS (HAUTE PARFUMERIE STYLE) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
-        {/* Total Reviews Card */}
-        <div className="bg-[#141414] border border-white/10 rounded-2xl p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#888]">Total des Avis</span>
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <MessageSquare size={18} />
-            </div>
-          </div>
-          <div className="text-3xl font-extrabold text-white tracking-tight">
-            {stats.totalReviews}
-          </div>
-          <div className="flex items-center gap-2 mt-2 text-xs text-[#888]">
-            <span className="text-emerald-400 font-medium">100% stockés</span> dans la base Neon
-          </div>
-        </div>
-
-        {/* Note Moyenne Card */}
-        <div className="bg-[#141414] border border-white/10 rounded-2xl p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#888]">Note Globale</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <Star size={18} className="fill-amber-400" />
+        {/* CSAT / Satisfaction Index */}
+        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Indice de Satisfaction</span>
+            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/60">
+              <Award size={20} />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white tracking-tight">{stats.avgRating}</span>
-            <span className="text-sm font-semibold text-[#888]">/ 5.0</span>
+            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">{stats.csatPercentage}%</span>
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              Excellence
+            </span>
           </div>
-          <div className="flex items-center gap-1 mt-2 text-amber-400">
+          <p className="text-xs text-[#64748b] mt-3 flex items-center gap-1.5">
+            <CheckCircle2 size={13} className="text-emerald-500" />
+            <span>Basé sur les avis 4★ et 5★</span>
+          </p>
+        </div>
+
+        {/* Note Moyenne Globale */}
+        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Note Moyenne</span>
+            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-200/60">
+              <Star size={20} className="fill-amber-400" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">{stats.avgRating}</span>
+            <span className="text-sm font-semibold text-[#94a3b8]">/ 5.0</span>
+          </div>
+          <div className="flex items-center gap-1 mt-3">
             {[1, 2, 3, 4, 5].map((s) => (
               <Star 
                 key={s} 
-                size={13} 
-                className={s <= Math.round(stats.avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-600'} 
+                size={14} 
+                className={s <= Math.round(stats.avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'} 
               />
             ))}
-            <span className="text-xs text-[#888] ml-1.5">Excellente satisfaction</span>
+            <span className="text-xs font-semibold text-[#64748b] ml-1.5">1 779 évaluations</span>
           </div>
         </div>
 
-        {/* Verified Reviews Card */}
-        <div className="bg-[#141414] border border-white/10 rounded-2xl p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#888]">Avis Vérifiés</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <CheckCircle2 size={18} />
+        {/* Avis Vérifiés */}
+        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Avis Certifiés</span>
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/60">
+              <ShieldCheck size={20} />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-emerald-400 tracking-tight">
-            {stats.verifiedCount}
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
+              {stats.verifiedCount.toLocaleString('fr-FR')}
+            </span>
+            <span className="text-xs font-semibold text-[#64748b]">
+              ({stats.totalReviews > 0 ? Math.round((stats.verifiedCount / stats.totalReviews) * 100) : 0}%)
+            </span>
           </div>
-          <div className="text-xs text-[#888] mt-2">
-            {stats.totalReviews > 0 ? Math.round((stats.verifiedCount / stats.totalReviews) * 100) : 0}% des avis publiés avec badge
-          </div>
+          <p className="text-xs text-[#64748b] mt-3 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Badge de confiance visible en boutique</span>
+          </p>
         </div>
 
-        {/* Pending Verification Card */}
-        <div className="bg-[#141414] border border-white/10 rounded-2xl p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#888]">En Attente</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <Clock size={18} />
+        {/* Nouveaux Avis Récents (Always highlighted) */}
+        <div 
+          onClick={() => setRecentOnly(!recentOnly)}
+          className={`cursor-pointer rounded-3xl p-6 border transition-all relative overflow-hidden group ${
+            recentOnly 
+              ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-lg' 
+              : 'bg-white border-[#e5e7eb] text-[#0f172a] shadow-sm hover:border-[#0f172a]/30'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className={`text-[11px] font-bold tracking-[0.15em] uppercase ${recentOnly ? 'text-blue-300' : 'text-[#64748b]'}`}>
+              {recentOnly ? '⚡ Filtre Nouveaux Actif' : 'Nouveaux Avis Récents'}
+            </span>
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border ${
+              recentOnly 
+                ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' 
+                : 'bg-blue-50 text-blue-600 border-blue-200/60'
+            }`}>
+              <Clock size={20} />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 tracking-tight">
-            {stats.pendingCount}
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl lg:text-4xl font-black tracking-tight">
+              {stats.recentCount > 0 ? `+${stats.recentCount}` : stats.totalReviews}
+            </span>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+              recentOnly ? 'bg-blue-400/20 text-blue-300' : 'bg-blue-50 text-blue-700'
+            }`}>
+              {recentOnly ? 'Désactiver' : 'Cliquez pour filtrer'}
+            </span>
           </div>
-          <div className="text-xs text-[#888] mt-2">
-            {stats.pendingCount > 0 ? (
-              <button onClick={() => setVerifiedFilter('false')} className="text-amber-400 hover:underline">
-                Filtrer pour modérer &rarr;
-              </button>
-            ) : (
-              <span className="text-emerald-400">Tous les avis sont traités</span>
-            )}
-          </div>
+          <p className={`text-xs mt-3 ${recentOnly ? 'text-blue-200' : 'text-[#64748b]'}`}>
+            {recentOnly ? 'Affichage exclusif des récents' : 'Toujours affichés en tête de page 1'}
+          </p>
         </div>
 
       </div>
 
-      {/* RATING DISTRIBUTION PROGRESS BARS */}
-      <div className="bg-[#141414] border border-white/10 rounded-2xl p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      {/* RATING BREAKDOWN (CLEAN LUXURY ACCORDION) */}
+      <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 lg:p-7 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-              <Sparkles size={16} className="text-amber-400" /> Répartition des Évaluations Étoiles
+            <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-[#0f172a] flex items-center gap-2">
+              <Sparkles size={16} className="text-amber-500" /> Structure Olfactive des Évaluations
             </h2>
-            <p className="text-xs text-[#888] mt-0.5">Distribution détaillée des avis par nombre d'étoiles.</p>
+            <p className="text-xs text-[#64748b] mt-0.5">
+              Cliquez sur un nombre d'étoiles pour filtrer instantanément les avis clients.
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            {[5, 4, 3, 2, 1].map((ratingNum) => (
-              <button
-                key={ratingNum}
-                onClick={() => setRatingFilter(ratingFilter === String(ratingNum) ? 'all' : String(ratingNum))}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${
-                  ratingFilter === String(ratingNum)
-                    ? 'bg-amber-400/20 border-amber-400 text-amber-300'
-                    : 'bg-[#1e1e1e] border-white/5 text-[#aaa] hover:text-white hover:border-white/20'
-                }`}
-              >
-                <span>{ratingNum}</span>
-                <Star size={12} className="fill-amber-400 text-amber-400" />
-                <span className="text-[10px] opacity-70">({stats.ratingDist[ratingNum] || 0})</span>
-              </button>
-            ))}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {[5, 4, 3, 2, 1].map((starNum) => {
+              const count = stats.ratingDist[starNum] || 0;
+              const isSelected = ratingFilter === String(starNum);
+              return (
+                <button
+                  key={starNum}
+                  onClick={() => setRatingFilter(isSelected ? 'all' : String(starNum))}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+                    isSelected 
+                      ? 'bg-amber-50 border-amber-300 text-amber-800 shadow-sm ring-2 ring-amber-400/30' 
+                      : 'bg-[#f8fafc] border-[#e2e8f0] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#0f172a]'
+                  }`}
+                >
+                  <span>{starNum}</span>
+                  <Star size={12} className="fill-amber-400 text-amber-400" />
+                  <span className="text-[11px] font-normal text-[#94a3b8]">({count})</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {[5, 4, 3, 2, 1].map((star) => {
             const count = stats.ratingDist[star] || 0;
             const pct = stats.totalReviews > 0 ? Math.round((count / stats.totalReviews) * 100) : 0;
+            const isSelected = ratingFilter === String(star);
+
             return (
               <div 
                 key={star} 
-                onClick={() => setRatingFilter(ratingFilter === String(star) ? 'all' : String(star))}
-                className="bg-[#1a1a1a] border border-white/5 p-3 rounded-xl cursor-pointer hover:border-amber-400/40 transition-all"
+                onClick={() => setRatingFilter(isSelected ? 'all' : String(star))}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                  isSelected 
+                    ? 'bg-amber-50/50 border-amber-300 shadow-sm' 
+                    : 'bg-[#f8fafc] border-[#e2e8f0] hover:border-amber-300 hover:bg-white'
+                }`}
               >
-                <div className="flex items-center justify-between text-xs font-semibold mb-2">
-                  <span className="flex items-center gap-1 text-amber-400">
-                    {star} <Star size={12} className="fill-amber-400" />
+                <div className="flex items-center justify-between text-xs font-bold mb-2">
+                  <span className="flex items-center gap-1 text-[#0f172a]">
+                    {star} <Star size={13} className="fill-amber-400 text-amber-400" />
                   </span>
-                  <span className="text-[#888]">{count} ({pct}%)</span>
+                  <span className="text-[#64748b] font-medium">{count} ({pct}%)</span>
                 </div>
-                <div className="w-full bg-[#111] h-2 rounded-full overflow-hidden border border-white/5">
+                <div className="w-full bg-[#e2e8f0] h-2.5 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-300 rounded-full transition-all duration-500" 
+                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-500" 
                     style={{ width: `${pct}%` }} 
                   />
                 </div>
@@ -504,34 +570,34 @@ export default function AdminReviewsPage() {
       </div>
 
       {/* FILTER AND SEARCH TOOLBAR */}
-      <div className="bg-[#141414] border border-white/10 rounded-2xl p-5 space-y-4">
+      <div className="bg-white border border-[#e5e7eb] rounded-3xl p-5 lg:p-6 shadow-sm space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           
-          {/* Search Bar */}
+          {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#666]" size={16} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8]" size={16} />
             <input
               type="text"
-              placeholder="Rechercher par client, ville, extrait de commentaire, parfum..."
+              placeholder="Rechercher par client, ville (Casablanca, Marrakech...), extrait de commentaire, parfum..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-xs lg:text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#0ea5e9] transition-all"
+              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl pl-11 pr-10 py-3 text-xs lg:text-sm text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all shadow-inner"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#666] hover:text-white">
-                <X size={14} />
+              <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#0f172a]">
+                <X size={15} />
               </button>
             )}
           </div>
 
-          {/* Filter by Product */}
-          <div className="w-full lg:w-64">
+          {/* Product Select */}
+          <div className="w-full lg:w-72">
             <select
               value={productFilter}
               onChange={(e) => setProductFilter(e.target.value)}
-              className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all cursor-pointer"
+              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
             >
-              <option value="all">Tous les Produits ({productsList.length})</option>
+              <option value="all">Tous les Parfums ({productsList.length})</option>
               {productsList.map((p) => (
                 <option key={p.slug} value={p.slug}>
                   {p.name}
@@ -540,15 +606,15 @@ export default function AdminReviewsPage() {
             </select>
           </div>
 
-          {/* Filter by Verification */}
+          {/* Verification Status */}
           <div className="w-full lg:w-48">
             <select
               value={verifiedFilter}
               onChange={(e) => setVerifiedFilter(e.target.value)}
-              className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all cursor-pointer"
+              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
             >
               <option value="all">Tous les Statuts</option>
-              <option value="true">✅ Vérifiés Uniquement</option>
+              <option value="true">✅ Achat Vérifié</option>
               <option value="false">⏳ En Attente</option>
             </select>
           </div>
@@ -558,43 +624,75 @@ export default function AdminReviewsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all cursor-pointer"
+              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
             >
-              <option value="newest">Plus récents</option>
+              <option value="newest">✨ Plus récents (Tête de liste)</option>
               <option value="oldest">Plus anciens</option>
               <option value="rating-high">Meilleures notes (5★ &rarr; 1★)</option>
               <option value="rating-low">Moins bonnes notes (1★ &rarr; 5★)</option>
             </select>
           </div>
 
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 bg-[#f8fafc] border border-[#e2e8f0] p-1 rounded-2xl self-end lg:self-auto">
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`p-2 rounded-xl transition-all ${
+                viewMode === 'cards' 
+                  ? 'bg-white text-[#0f172a] shadow-sm font-bold' 
+                  : 'text-[#94a3b8] hover:text-[#0f172a]'
+              }`}
+              title="Vue Cartes Prestige"
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-2 rounded-xl transition-all ${
+                viewMode === 'table' 
+                  ? 'bg-white text-[#0f172a] shadow-sm font-bold' 
+                  : 'text-[#94a3b8] hover:text-[#0f172a]'
+              }`}
+              title="Vue Tableau Détaillé"
+            >
+              <List size={16} />
+            </button>
+          </div>
+
         </div>
 
-        {/* Active filter tags */}
-        {(search || ratingFilter !== 'all' || verifiedFilter !== 'all' || productFilter !== 'all') && (
-          <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-white/5 text-xs">
-            <span className="text-[#888]">Filtres actifs :</span>
+        {/* Active Filter Chips */}
+        {(search || ratingFilter !== 'all' || verifiedFilter !== 'all' || productFilter !== 'all' || recentOnly) && (
+          <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-[#f1f5f9] text-xs">
+            <span className="text-[#94a3b8] font-medium">Filtres actifs :</span>
             {search && (
-              <span className="bg-[#1e1e1e] text-[#ccc] px-2.5 py-1 rounded-md border border-white/10 flex items-center gap-1.5">
+              <span className="bg-[#f1f5f9] text-[#0f172a] px-3 py-1 rounded-xl border border-[#e2e8f0] flex items-center gap-1.5 font-medium">
                 Recherche: "{search}"
-                <button onClick={() => setSearch('')}><X size={12} /></button>
+                <button onClick={() => setSearch('')}><X size={13} /></button>
               </span>
             )}
             {ratingFilter !== 'all' && (
-              <span className="bg-[#1e1e1e] text-amber-300 px-2.5 py-1 rounded-md border border-white/10 flex items-center gap-1.5">
+              <span className="bg-amber-50 text-amber-800 px-3 py-1 rounded-xl border border-amber-200 flex items-center gap-1.5 font-medium">
                 Note: {ratingFilter}★
-                <button onClick={() => setRatingFilter('all')}><X size={12} /></button>
+                <button onClick={() => setRatingFilter('all')}><X size={13} /></button>
               </span>
             )}
             {verifiedFilter !== 'all' && (
-              <span className="bg-[#1e1e1e] text-emerald-300 px-2.5 py-1 rounded-md border border-white/10 flex items-center gap-1.5">
+              <span className="bg-emerald-50 text-emerald-800 px-3 py-1 rounded-xl border border-emerald-200 flex items-center gap-1.5 font-medium">
                 {verifiedFilter === 'true' ? 'Vérifiés' : 'En attente'}
-                <button onClick={() => setVerifiedFilter('all')}><X size={12} /></button>
+                <button onClick={() => setVerifiedFilter('all')}><X size={13} /></button>
               </span>
             )}
             {productFilter !== 'all' && (
-              <span className="bg-[#1e1e1e] text-[#0ea5e9] px-2.5 py-1 rounded-md border border-white/10 flex items-center gap-1.5">
+              <span className="bg-blue-50 text-blue-800 px-3 py-1 rounded-xl border border-blue-200 flex items-center gap-1.5 font-medium">
                 Produit sélectionné
-                <button onClick={() => setProductFilter('all')}><X size={12} /></button>
+                <button onClick={() => setProductFilter('all')}><X size={13} /></button>
+              </span>
+            )}
+            {recentOnly && (
+              <span className="bg-purple-50 text-purple-800 px-3 py-1 rounded-xl border border-purple-200 flex items-center gap-1.5 font-medium">
+                Nouveaux 7 jours
+                <button onClick={() => setRecentOnly(false)}><X size={13} /></button>
               </span>
             )}
             <button
@@ -603,211 +701,338 @@ export default function AdminReviewsPage() {
                 setRatingFilter('all');
                 setVerifiedFilter('all');
                 setProductFilter('all');
+                setRecentOnly(false);
               }}
-              className="text-xs text-[#0ea5e9] hover:underline ml-2"
+              className="text-xs text-[#0284c7] hover:underline ml-2 font-semibold"
             >
-              Réinitialiser tout
+              Effacer tous les filtres
             </button>
           </div>
         )}
       </div>
 
-      {/* REVIEWS LIST / TABLE */}
-      <div className="bg-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
-              Liste des Avis
-            </h3>
-            <span className="text-xs text-[#888]">
-              ({totalCount} avis trouvés)
-            </span>
+      {/* REVIEWS LIST / FEED */}
+      <div className="space-y-4">
+        
+        {/* Results Header */}
+        <div className="flex items-center justify-between px-2">
+          <div className="text-xs font-bold uppercase tracking-[0.15em] text-[#64748b]">
+            Affichage de {totalCount > 0 ? ((currentPage - 1) * 20) + 1 : 0} à {Math.min(currentPage * 20, totalCount)} sur {totalCount.toLocaleString('fr-FR')} avis
           </div>
-          <div className="text-xs text-[#888]">
-            Page {currentPage} sur {totalPages}
+          <div className="text-xs font-semibold text-[#64748b]">
+            Page {currentPage} / {totalPages}
           </div>
         </div>
 
         {isLoading ? (
-          <div className="py-24 text-center">
-            <RefreshCw size={28} className="animate-spin text-[#0ea5e9] mx-auto mb-3" />
-            <p className="text-sm text-[#888]">Chargement des avis clients…</p>
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl py-24 text-center shadow-sm">
+            <RefreshCw size={32} className="animate-spin text-[#0f172a] mx-auto mb-3" />
+            <p className="text-sm font-semibold text-[#0f172a]">Chargement des avis de la Maison...</p>
+            <p className="text-xs text-[#94a3b8] mt-1">Synchronisation des 1 779 témoignages</p>
           </div>
         ) : reviews.length === 0 ? (
-          <div className="py-20 text-center px-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#666] mx-auto mb-4">
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl py-20 text-center px-4 shadow-sm">
+            <div className="w-16 h-16 rounded-3xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center text-[#94a3b8] mx-auto mb-4">
               <MessageSquare size={28} />
             </div>
-            <h4 className="text-base font-bold text-white mb-1">Aucun avis trouvé</h4>
-            <p className="text-xs text-[#888] max-w-sm mx-auto mb-6">
-              Aucun avis ne correspond à vos critères de recherche ou de filtre actuels.
+            <h4 className="text-lg font-bold text-[#0f172a] mb-1">Aucun avis correspondant</h4>
+            <p className="text-xs text-[#64748b] max-w-sm mx-auto mb-6">
+              Ajustez vos filtres de recherche pour afficher les retours d'expérience clients.
             </p>
             <button
               onClick={openAddModal}
-              className="px-4 py-2 rounded-xl bg-[#0ea5e9] text-white text-xs font-bold hover:bg-[#0284c7] transition-colors"
+              className="px-5 py-2.5 rounded-2xl bg-[#0f172a] text-white text-xs font-bold hover:bg-[#1e293b] transition-colors"
             >
-              Ajouter un premier avis
+              + Ajouter un avis client
             </button>
           </div>
-        ) : (
-          <div className="divide-y divide-white/5">
-            {reviews.map((review) => (
-              <div 
-                key={review.id} 
-                className="p-5 hover:bg-[#181818] transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-6 group"
-              >
-                
-                {/* Left: Client info & comment */}
-                <div className="flex-1 space-y-3">
+        ) : viewMode === 'cards' ? (
+          
+          /* ============================================================== */
+          /* VUE CARTES PRESTIGE */
+          /* ============================================================== */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {reviews.map((review) => {
+              const isRecent = isRecentReview(review.createdAt);
+              return (
+                <div 
+                  key={review.id} 
+                  className="bg-white border border-[#e5e7eb] hover:border-[#0f172a]/40 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group relative"
+                >
                   
-                  {/* Client name, city, rating, date */}
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {/* Initials Avatar */}
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0ea5e9]/30 to-[#38bdf8]/10 border border-[#0ea5e9]/40 flex items-center justify-center text-xs font-bold text-white uppercase shadow-sm">
-                      {review.author?.slice(0, 2) || 'CL'}
+                  {/* Top Bar: Client & Stars */}
+                  <div>
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      
+                      {/* Avatar & Client Info */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#334155] text-white flex items-center justify-center text-xs font-bold uppercase shadow-sm">
+                          {review.author?.slice(0, 2) || 'CL'}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#0f172a]">{review.author}</span>
+                            {isRecent && (
+                              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 animate-pulse">
+                                Nouveau
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {review.city && (
+                              <span className="text-[11px] font-medium text-[#64748b] flex items-center gap-1">
+                                <MapPin size={10} className="text-[#0284c7]" /> {review.city}
+                              </span>
+                            )}
+                            <span className="text-[11px] text-[#94a3b8]">·</span>
+                            <span className="text-[11px] text-[#94a3b8]">
+                              {new Date(review.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Star Rating Badge */}
+                      <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200/70">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={13}
+                              className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs font-black text-amber-700 ml-1">{review.rating}.0</span>
+                      </div>
+
                     </div>
+
+                    {/* Review Title & Comment Quote */}
+                    <div className="mt-4 space-y-1.5">
+                      {review.title && (
+                        <h4 className="text-sm font-bold text-[#0f172a] tracking-tight">
+                          {review.title}
+                        </h4>
+                      )}
+                      <p className="text-xs lg:text-[13px] text-[#334155] leading-relaxed italic">
+                        "{review.comment}"
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Bar: Associated Product & Actions */}
+                  <div className="mt-6 pt-4 border-t border-[#f1f5f9] flex items-center justify-between gap-4 flex-wrap">
                     
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-white">{review.author}</span>
-                        {review.city && (
-                          <span className="text-[11px] text-[#888] flex items-center gap-1 bg-[#1e1e1e] px-2 py-0.5 rounded-full border border-white/5">
-                            <MapPin size={10} className="text-[#0ea5e9]" /> {review.city}
-                          </span>
+                    {/* Product Pill */}
+                    <Link
+                      href={`/fr/product/${review.productSlug}`}
+                      target="_blank"
+                      className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] transition-all max-w-[240px] group/item"
+                    >
+                      <div className="relative w-8 h-8 rounded-xl overflow-hidden bg-white border border-[#e5e7eb] flex-shrink-0">
+                        <Image
+                          src={getProductImage(review.product)}
+                          alt={review.product?.name || review.productSlug}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="overflow-hidden">
+                        <span className="text-[9px] uppercase font-bold text-[#94a3b8] tracking-wider block truncate">
+                          {review.product?.brandLabel || 'Maison'}
+                        </span>
+                        <span className="text-xs font-bold text-[#0f172a] group-hover/item:text-[#0284c7] transition-colors truncate block">
+                          {review.product?.name || review.productSlug}
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* Quick Status Pill + Actions */}
+                    <div className="flex items-center gap-2">
+                      
+                      {/* Verification status toggle */}
+                      <button
+                        onClick={() => handleToggleVerify(review)}
+                        className={`text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all border shadow-sm ${
+                          review.verified 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
+                            : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                        }`}
+                        title="Cliquer pour basculer le statut vérifié"
+                      >
+                        {review.verified ? (
+                          <>
+                            <CheckCircle2 size={13} className="text-emerald-600" /> Achat Vérifié
+                          </>
+                        ) : (
+                          <>
+                            <Clock size={13} className="text-amber-600" /> En Attente
+                          </>
                         )}
-                        {/* Verified badge */}
+                      </button>
+
+                      {/* Story Copy button */}
+                      <button
+                        onClick={() => handleCopyStory(review)}
+                        className={`p-2 rounded-xl border transition-all ${
+                          copiedId === review.id 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
+                            : 'bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-[#f1f5f9] hover:text-[#0f172a]'
+                        }`}
+                        title="Copier le format Story pour WhatsApp / Instagram"
+                      >
+                        {copiedId === review.id ? <Check size={14} /> : <Share2 size={14} />}
+                      </button>
+
+                      {/* Edit */}
+                      <button
+                        onClick={() => openEditModal(review)}
+                        className="p-2 rounded-xl bg-[#f8fafc] text-[#475569] border border-[#e2e8f0] hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all"
+                        title="Modifier cet avis"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+
+                      {/* Delete */}
+                      <button
+                        onClick={() => setDeletingReview(review)}
+                        className="p-2 rounded-xl bg-[#f8fafc] text-[#475569] border border-[#e2e8f0] hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
+                        title="Supprimer cet avis"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              );
+            })}
+          </div>
+
+        ) : (
+          
+          /* ============================================================== */
+          /* VUE TABLEAU DÉTAILLÉ */
+          /* ============================================================== */
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#f8fafc] border-b border-[#e5e7eb] text-[#64748b] uppercase font-bold tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4">Client & Ville</th>
+                    <th className="px-6 py-4">Note & Date</th>
+                    <th className="px-6 py-4">Commentaire</th>
+                    <th className="px-6 py-4">Parfum</th>
+                    <th className="px-6 py-4">Statut</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#f1f5f9]">
+                  {reviews.map((review) => (
+                    <tr key={review.id} className="hover:bg-[#f8fafc] transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-[#0f172a]">{review.author}</div>
+                        <div className="text-[11px] text-[#64748b] flex items-center gap-1 mt-0.5">
+                          <MapPin size={10} className="text-[#0284c7]" /> {review.city || 'Maroc'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1 font-bold text-amber-600">
+                          <span>{review.rating}.0</span>
+                          <Star size={12} className="fill-amber-400 text-amber-400" />
+                        </div>
+                        <div className="text-[11px] text-[#94a3b8] mt-0.5">
+                          {new Date(review.createdAt).toLocaleDateString('fr-FR')}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 max-w-md">
+                        <div className="font-bold text-[#0f172a] mb-0.5">{review.title}</div>
+                        <div className="text-[#475569] line-clamp-2 leading-relaxed">"{review.comment}"</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link 
+                          href={`/fr/product/${review.productSlug}`} 
+                          target="_blank"
+                          className="font-bold text-[#0f172a] hover:text-[#0284c7] transition-colors flex items-center gap-1.5"
+                        >
+                          <span>{review.product?.name || review.productSlug}</span>
+                          <ExternalLink size={12} className="text-[#94a3b8]" />
+                        </Link>
+                        <div className="text-[10px] text-[#94a3b8] uppercase font-semibold">
+                          {review.product?.brandLabel}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => handleToggleVerify(review)}
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 transition-all border ${
+                          className={`text-[11px] font-bold px-3 py-1 rounded-xl border flex items-center gap-1.5 ${
                             review.verified 
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20' 
-                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
                           }`}
-                          title="Cliquez pour changer le statut vérifié"
                         >
-                          {review.verified ? (
-                            <>
-                              <Check size={11} /> Achat Vérifié
-                            </>
-                          ) : (
-                            <>
-                              <Clock size={11} /> En Attente
-                            </>
-                          )}
+                          {review.verified ? <Check size={12} /> : <Clock size={12} />}
+                          {review.verified ? 'Vérifié' : 'En attente'}
                         </button>
-                      </div>
-                    </div>
-
-                    {/* Stars */}
-                    <div className="flex items-center gap-1 ml-auto lg:ml-0 bg-[#1a1a1a] px-2.5 py-1 rounded-lg border border-white/5">
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            size={12}
-                            className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-600'}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs font-bold text-amber-400 ml-1">{review.rating}.0</span>
-                    </div>
-
-                    <span className="text-[11px] text-[#666]">
-                      {new Date(review.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </span>
-                  </div>
-
-                  {/* Title & Comment Text */}
-                  <div className="pl-12 space-y-1">
-                    {review.title && (
-                      <h4 className="text-xs font-bold text-white tracking-wide">
-                        {review.title}
-                      </h4>
-                    )}
-                    <p className="text-xs lg:text-sm text-[#ccc] leading-relaxed max-w-3xl">
-                      "{review.comment}"
-                    </p>
-                  </div>
-
-                </div>
-
-                {/* Right: Associated Product & Actions */}
-                <div className="flex items-center justify-between lg:justify-end gap-5 pl-12 lg:pl-0 border-t lg:border-t-0 border-white/5 pt-3 lg:pt-0">
-                  
-                  {/* Product Mini Pill */}
-                  <Link
-                    href={`/fr/product/${review.productSlug}`}
-                    target="_blank"
-                    className="flex items-center gap-3 p-2 rounded-xl bg-[#1c1c1c] hover:bg-[#252525] border border-white/10 hover:border-[#0ea5e9]/50 transition-all max-w-[240px] group/prod"
-                  >
-                    <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                      <Image
-                        src={getProductImage(review.product)}
-                        alt={review.product?.name || review.productSlug}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="overflow-hidden">
-                      <span className="text-[10px] uppercase font-bold text-[#888] tracking-wider block truncate">
-                        {review.product?.brandLabel || 'Parfum'}
-                      </span>
-                      <span className="text-xs font-semibold text-white group-hover/prod:text-[#0ea5e9] transition-colors truncate block">
-                        {review.product?.name || review.productSlug}
-                      </span>
-                    </div>
-                    <ExternalLink size={13} className="text-[#666] group-hover/prod:text-[#0ea5e9] ml-auto flex-shrink-0" />
-                  </Link>
-
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => openEditModal(review)}
-                      className="p-2 rounded-xl bg-[#1e1e1e] hover:bg-blue-500/20 hover:text-blue-400 text-[#aaa] border border-white/5 hover:border-blue-500/30 transition-all"
-                      title="Modifier cet avis"
-                    >
-                      <Edit3 size={15} />
-                    </button>
-                    <button
-                      onClick={() => setDeletingReview(review)}
-                      className="p-2 rounded-xl bg-[#1e1e1e] hover:bg-red-500/20 hover:text-red-400 text-[#aaa] border border-white/5 hover:border-red-500/30 transition-all"
-                      title="Supprimer cet avis"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-            ))}
+                      </td>
+                      <td className="px-6 py-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleCopyStory(review)}
+                            className="p-2 rounded-xl bg-[#f8fafc] text-[#475569] hover:bg-emerald-50 hover:text-emerald-700 border border-[#e2e8f0]"
+                            title="Copier Story"
+                          >
+                            <Share2 size={13} />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(review)}
+                            className="p-2 rounded-xl bg-[#f8fafc] text-[#475569] hover:bg-blue-50 hover:text-blue-700 border border-[#e2e8f0]"
+                            title="Modifier"
+                          >
+                            <Edit3 size={13} />
+                          </button>
+                          <button
+                            onClick={() => setDeletingReview(review)}
+                            className="p-2 rounded-xl bg-[#f8fafc] text-[#475569] hover:bg-red-50 hover:text-red-700 border border-[#e2e8f0]"
+                            title="Supprimer"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
-        {/* PAGINATION FOOTER */}
+        {/* PAGINATION CONTROLS */}
         {!isLoading && totalPages > 1 && (
-          <div className="p-5 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap bg-[#111]/50">
-            <div className="text-xs text-[#888]">
-              Affichage de {((currentPage - 1) * 20) + 1} à {Math.min(currentPage * 20, totalCount)} sur {totalCount} avis
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl p-5 flex items-center justify-between gap-4 flex-wrap shadow-sm">
+            <div className="text-xs font-semibold text-[#64748b]">
+              Page {currentPage} sur {totalPages} ({totalCount.toLocaleString('fr-FR')} avis au total)
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => fetchReviews(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="p-2 rounded-xl bg-[#1e1e1e] hover:bg-[#282828] border border-white/10 text-[#ccc] hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all"
+                className="px-3.5 py-2 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-bold text-[#475569] hover:text-[#0f172a] disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={14} /> Précédent
               </button>
 
               <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                   let pageNum = i + 1;
-                  if (totalPages > 7) {
-                    if (currentPage > 4) {
-                      pageNum = currentPage - 3 + i;
-                    }
-                    if (pageNum > totalPages) return null;
+                  if (totalPages > 5 && currentPage > 3) {
+                    pageNum = currentPage - 2 + i;
+                    if (pageNum > totalPages) pageNum = totalPages - (4 - i);
                   }
                   return (
                     <button
@@ -815,8 +1040,8 @@ export default function AdminReviewsPage() {
                       onClick={() => fetchReviews(pageNum)}
                       className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
                         currentPage === pageNum
-                          ? 'bg-[#0ea5e9] text-white shadow-md shadow-[#0ea5e9]/30'
-                          : 'bg-[#1e1e1e] hover:bg-[#282828] text-[#aaa] hover:text-white border border-white/5'
+                          ? 'bg-[#0f172a] text-white shadow-md'
+                          : 'bg-[#f8fafc] hover:bg-[#f1f5f9] text-[#64748b] hover:text-[#0f172a] border border-[#e2e8f0]'
                       }`}
                     >
                       {pageNum}
@@ -828,33 +1053,34 @@ export default function AdminReviewsPage() {
               <button
                 onClick={() => fetchReviews(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="p-2 rounded-xl bg-[#1e1e1e] hover:bg-[#282828] border border-white/10 text-[#ccc] hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all"
+                className="px-3.5 py-2 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-bold text-[#475569] hover:text-[#0f172a] disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1"
               >
-                <ChevronRight size={16} />
+                Suivant <ChevronRight size={14} />
               </button>
             </div>
           </div>
         )}
+
       </div>
 
       {/* ============================================================== */}
-      {/* MODAL: ADD / EDIT REVIEW */}
+      {/* MODAL: ADD / EDIT REVIEW (HAUTE PARFUMERIE DESIGN) */}
       {/* ============================================================== */}
       {(isAddModalOpen || editingReview) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#141414] border border-white/15 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl">
             
-            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+            <div className="p-6 lg:p-7 border-b border-[#f1f5f9] flex items-center justify-between bg-[#f8fafc]">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#0ea5e9]/20 text-[#0ea5e9] flex items-center justify-center">
-                  <Star size={18} className="fill-[#0ea5e9]" />
+                <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center">
+                  <Star size={20} className="fill-amber-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">
-                    {editingReview ? 'Modifier l\'Avis Client' : 'Ajouter un Nouvel Avis'}
+                  <h3 className="text-lg font-bold text-[#0f172a]">
+                    {editingReview ? 'Modifier le Témoignage Client' : 'Rédiger un Nouvel Avis Client'}
                   </h3>
-                  <p className="text-xs text-[#888]">
-                    {editingReview ? `ID de l'avis : #${editingReview.id}` : 'Remplissez les détails du témoignage client'}
+                  <p className="text-xs text-[#64748b]">
+                    {editingReview ? `Référence avis : #${editingReview.id}` : 'L\'avis apparaîtra immédiatement en tête de liste.'}
                   </p>
                 </div>
               </div>
@@ -863,26 +1089,26 @@ export default function AdminReviewsPage() {
                   setIsAddModalOpen(false);
                   setEditingReview(null);
                 }}
-                className="text-[#888] hover:text-white p-1 rounded-lg"
+                className="text-[#94a3b8] hover:text-[#0f172a] p-2 rounded-xl hover:bg-white"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveReview} className="p-6 space-y-4">
+            <form onSubmit={handleSaveReview} className="p-6 lg:p-7 space-y-5">
               
               {/* Product selector */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
-                  Parfum Associé <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
+                  Parfum Associé <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
                   value={formData.productSlug}
                   onChange={(e) => setFormData({ ...formData, productSlug: e.target.value })}
-                  className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all cursor-pointer"
+                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all cursor-pointer"
                 >
-                  <option value="" disabled>Sélectionner un produit</option>
+                  <option value="" disabled>Sélectionner une fragrance</option>
                   {productsList.map((p) => (
                     <option key={p.slug} value={p.slug}>
                       {p.name}
@@ -894,8 +1120,8 @@ export default function AdminReviewsPage() {
               {/* Author and City */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
-                    Nom du Client <span className="text-red-400">*</span>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
+                    Nom du Client <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -903,12 +1129,12 @@ export default function AdminReviewsPage() {
                     placeholder="ex: Mounia T."
                     value={formData.author}
                     onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                    className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all"
+                    className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
                     Ville au Maroc
                   </label>
                   <input
@@ -916,98 +1142,100 @@ export default function AdminReviewsPage() {
                     placeholder="ex: Casablanca, Marrakech, Tanger..."
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all"
+                    className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all"
                   />
                 </div>
               </div>
 
               {/* Rating Selector */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
-                  Note Attribuée ({formData.rating}/5)
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
+                  Note Attribuée ({formData.rating}/5 Étoiles)
                 </label>
-                <div className="flex items-center gap-2 bg-[#1c1c1c] border border-white/10 p-3 rounded-xl">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, rating: star })}
-                      className="p-1 hover:scale-125 transition-transform"
-                    >
-                      <Star
-                        size={22}
-                        className={star <= formData.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-600 hover:text-amber-300'}
-                      />
-                    </button>
-                  ))}
-                  <span className="text-xs font-bold text-amber-400 ml-2">
-                    {formData.rating === 5 ? '5 Étoiles (Excellent)' : `${formData.rating} Étoiles`}
+                <div className="flex items-center gap-3 bg-[#f8fafc] border border-[#e2e8f0] p-3.5 rounded-2xl">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, rating: star })}
+                        className="p-1 hover:scale-125 transition-transform"
+                      >
+                        <Star
+                          size={24}
+                          className={star <= formData.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300 hover:text-amber-300'}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-amber-700 ml-2">
+                    {formData.rating === 5 ? '5.0 (Recommandé / Parfait)' : `${formData.rating}.0 Étoiles`}
                   </span>
                 </div>
               </div>
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
-                  Titre du Témoignage <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
+                  Titre du Témoignage <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="ex: Produit original et livraison rapide"
+                  placeholder="ex: Parfum 100% original, sillage exceptionnel"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all"
+                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all"
                 />
               </div>
 
               {/* Comment text */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#aaa] mb-1.5">
-                  Commentaire / Avis <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#475569] mb-1.5">
+                  Commentaire / Avis Client <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   rows={4}
                   required
-                  placeholder="Rédigez le retour d'expérience du client..."
+                  placeholder="Rédigez l'avis ou collez le message WhatsApp du client..."
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                  className="w-full bg-[#1c1c1c] border border-white/10 rounded-xl p-3.5 text-xs text-white focus:outline-none focus:border-[#0ea5e9] transition-all leading-relaxed"
+                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl p-4 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all leading-relaxed"
                 />
               </div>
 
               {/* Verified Checkbox */}
-              <div className="flex items-center gap-3 bg-[#1c1c1c] border border-white/10 p-3.5 rounded-xl">
+              <div className="flex items-center gap-3 bg-emerald-50/50 border border-emerald-200 p-4 rounded-2xl">
                 <input
                   type="checkbox"
                   id="verified-checkbox"
                   checked={formData.verified}
                   onChange={(e) => setFormData({ ...formData, verified: e.target.checked })}
-                  className="w-4 h-4 rounded text-[#0ea5e9] bg-[#111] border-white/20 focus:ring-[#0ea5e9] cursor-pointer"
+                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                 />
-                <label htmlFor="verified-checkbox" className="text-xs text-[#ccc] cursor-pointer select-none">
-                  Marquer comme <strong className="text-emerald-400">Achat Vérifié</strong> (affiche le badge vert de confiance)
+                <label htmlFor="verified-checkbox" className="text-xs text-[#0f172a] font-medium cursor-pointer select-none">
+                  Certifier comme <strong className="text-emerald-700">Achat Vérifié</strong> (affiche le badge vert de confiance et d'authenticité)
                 </label>
               </div>
 
               {/* Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#f1f5f9]">
                 <button
                   type="button"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     setEditingReview(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#1e1e1e] hover:bg-[#282828] text-xs font-semibold text-[#ccc] hover:text-white transition-all"
+                  className="px-5 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-bold text-[#64748b] hover:text-[#0f172a] transition-all"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-[#0284c7] hover:from-[#0284c7] hover:to-[#0369a1] text-white text-xs font-bold tracking-wide transition-all disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-2xl bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs font-bold tracking-wide transition-all shadow-md disabled:opacity-50"
                 >
-                  {formSubmitting ? 'Enregistrement…' : editingReview ? 'Mettre à jour' : 'Créer l\'avis'}
+                  {formSubmitting ? 'Enregistrement…' : editingReview ? 'Mettre à jour l\'avis' : 'Publier au sommet'}
                 </button>
               </div>
 
@@ -1021,38 +1249,38 @@ export default function AdminReviewsPage() {
       {/* MODAL: DELETE CONFIRMATION */}
       {/* ============================================================== */}
       {deletingReview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#141414] border border-red-500/30 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
-              <Trash2 size={24} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white border border-[#e5e7eb] rounded-3xl w-full max-w-md p-6 lg:p-7 shadow-2xl space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto">
+              <Trash2 size={22} />
             </div>
 
             <div className="text-center">
-              <h3 className="text-base font-bold text-white mb-1">
+              <h3 className="text-lg font-bold text-[#0f172a] mb-1">
                 Supprimer cet avis ?
               </h3>
-              <p className="text-xs text-[#888]">
-                Êtes-vous sûr de vouloir supprimer l'avis de <strong className="text-white">{deletingReview.author}</strong> ? Cette action recalculera automatiquement la note moyenne du produit.
+              <p className="text-xs text-[#64748b]">
+                Êtes-vous certain de vouloir supprimer l'avis de <strong className="text-[#0f172a]">{deletingReview.author}</strong> ? La note globale du produit sera automatiquement recalculée.
               </p>
             </div>
 
-            <div className="bg-[#1c1c1c] border border-white/5 p-3 rounded-xl text-xs text-[#aaa] italic line-clamp-3">
+            <div className="bg-[#f8fafc] border border-[#e2e8f0] p-4 rounded-2xl text-xs text-[#475569] italic line-clamp-3">
               "{deletingReview.comment}"
             </div>
 
             <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => setDeletingReview(null)}
-                className="px-4 py-2 rounded-xl bg-[#1e1e1e] hover:bg-[#282828] text-xs font-semibold text-[#ccc] hover:text-white transition-all"
+                className="px-5 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-bold text-[#64748b] hover:text-[#0f172a] transition-all"
               >
                 Annuler
               </button>
               <button
                 onClick={handleDeleteReview}
                 disabled={formSubmitting}
-                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all disabled:opacity-50 shadow-lg shadow-red-600/30"
+                className="px-6 py-2.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all disabled:opacity-50 shadow-md shadow-red-600/20"
               >
-                {formSubmitting ? 'Suppression…' : 'Oui, Supprimer'}
+                {formSubmitting ? 'Suppression…' : 'Confirmer la suppression'}
               </button>
             </div>
           </div>
