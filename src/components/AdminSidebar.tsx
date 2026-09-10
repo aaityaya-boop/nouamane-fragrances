@@ -39,6 +39,7 @@ const MENU_ITEMS = [
   { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} /> },
   { href: '/admin/finance', label: 'Finance & Rapports', icon: <TrendingUp size={18} /> },
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} /> },
+  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={18} /> },
   { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={18} /> },
   { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} /> },
   { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={18} /> },
@@ -70,6 +71,7 @@ const SYSTEM_ITEMS = [
 const CRM_ITEMS = [
   { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={18} /> },
   { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={18} /> },
+  { href: '/admin/reviews', label: 'Avis Clients', icon: <MessageSquare size={18} /> },
 ];
 
 export default function AdminSidebar() {
