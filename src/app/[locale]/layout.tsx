@@ -45,7 +45,9 @@ export const metadata: Metadata = {
   keywords: [
     "parfum original Maroc", "acheter parfum luxe Maroc", "testeur parfum authentique", "site vente parfum Maroc", 
     "parfumerie en ligne Maroc", "عطور أصلية في المغرب", "تستر عطور ماركات", "nay parfum", 
-    "parfum marrakech", "agadir", "casablanca", "rabat", "tanger", "parfum oriental", "oud"
+    "parfum marrakech", "agadir", "casablanca", "rabat", "tanger", "parfum oriental", "oud",
+    "parfum pas cher maroc", "meilleur parfum homme maroc", "parfum femme maroc", "توصيل عطور بالمغرب",
+    "شراء عطور الدار البيضاء", "عطور فرنسية أصلية المغرب", "testeur parfum maroc", "boutique parfum maroc"
   ],
   authors: [{ name: "NAY Parfums" }],
   creator: "NAY Parfums",
