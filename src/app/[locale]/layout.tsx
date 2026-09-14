@@ -126,10 +126,20 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": "Store",
               name: "NAY Parfums",
+              description: "Vente de parfums de luxe et testeurs originaux au Maroc",
               url: "https://nayparfum.ma",
               logo: "https://nayparfum.ma/icon.png",
+              image: "https://nayparfum.ma/icon.png",
+              telephone: "+212 663-380011",
+              priceRange: "$$",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "MA",
+                addressLocality: "Casablanca",
+                addressRegion: "Casablanca-Settat"
+              },
               contactPoint: {
                 "@type": "ContactPoint",
                 telephone: "+212 663-380011",
