@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
-import { cookies } from 'next/headers';
 
 const JWT_SECRET_STRING = process.env.JWT_SECRET || 'nouamane_super_secret_key_2024';
 const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
@@ -89,10 +88,13 @@ export async function getAuthenticatedAdmin(req?: Request): Promise<AdminUserSaf
   try {
     let token: string | undefined;
 
-    // 1. Check cookies via next/headers
+    // 1. Check cookies dynamically from next/headers if running in Server Component / App Router context
     try {
-      const cookieStore = await cookies();
-      token = cookieStore.get('admin_token')?.value;
+      const nextHeaders = await import('next/headers');
+      if (nextHeaders && typeof nextHeaders.cookies === 'function') {
+        const cookieStore = await nextHeaders.cookies();
+        token = cookieStore.get('admin_token')?.value;
+      }
     } catch {
       // Ignore if called outside Server Component/Route handler context
     }

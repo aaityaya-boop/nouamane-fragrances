@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requirePermission, canManageUser } from '@/lib/auth/rbac/accessControl';
+import { canManageUser } from '@/lib/auth/rbac/accessControl';
+import { requirePermission } from '@/lib/auth/rbac/serverGuard';
 import { logAdminActivity } from '@/lib/activityLogger';
 
 interface RouteContext {

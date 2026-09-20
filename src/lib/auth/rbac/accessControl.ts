@@ -1,11 +1,16 @@
-import { NextResponse } from 'next/server';
 import { ALL_PERMISSIONS } from './permissions';
 import { getRoleDefinition } from './roles';
-import { getAuthenticatedAdmin, AdminUserSafe } from '../adminAuth';
 
 export interface CustomPermissionsPayload {
   granted?: string[];
   revoked?: string[];
+}
+
+export interface UserPermissionsSubject {
+  id?: string;
+  role: string;
+  customPermissions?: string | null;
+  status?: string;
 }
 
 /**
@@ -29,11 +34,7 @@ export function parseCustomPermissions(raw: string | null | undefined): CustomPe
  * Formula: (RoleDefaultPermissions ∪ GrantedOverrides) \ RevokedOverrides
  * Owners always get all permissions.
  */
-export function getUserEffectivePermissions(user: {
-  role: string;
-  customPermissions?: string | null;
-  status?: string;
-}): string[] {
+export function getUserEffectivePermissions(user: UserPermissionsSubject): string[] {
   if (user.status && user.status !== 'ACTIVE') {
     return [];
   }
@@ -64,7 +65,7 @@ export function getUserEffectivePermissions(user: {
  * Check if an active user has a specific permission
  */
 export function hasPermission(
-  user: { role: string; customPermissions?: string | null; status?: string } | null | undefined,
+  user: UserPermissionsSubject | null | undefined,
   permissionKey: string
 ): boolean {
   if (!user || (user.status && user.status !== 'ACTIVE')) return false;
@@ -82,7 +83,7 @@ export function hasPermission(
  * Check if an active user has at least one of the specified permissions
  */
 export function hasAnyPermission(
-  user: { role: string; customPermissions?: string | null; status?: string } | null | undefined,
+  user: UserPermissionsSubject | null | undefined,
   permissionKeys: string[]
 ): boolean {
   if (!user || (user.status && user.status !== 'ACTIVE')) return false;
@@ -100,7 +101,7 @@ export function hasAnyPermission(
  * Check if an active user has all of the specified permissions
  */
 export function hasAllPermissions(
-  user: { role: string; customPermissions?: string | null; status?: string } | null | undefined,
+  user: UserPermissionsSubject | null | undefined,
   permissionKeys: string[]
 ): boolean {
   if (!user || (user.status && user.status !== 'ACTIVE')) return false;
@@ -118,7 +119,7 @@ export function hasAllPermissions(
  * Validate if an actor can manage (edit, change role, disable) another target user
  */
 export function canManageUser(
-  actor: AdminUserSafe,
+  actor: { id: string; role: string; customPermissions?: string | null; status?: string },
   target: { id: string; role: string; status?: string }
 ): { allowed: boolean; reason?: string } {
   const actorIsOwner =
@@ -143,50 +144,4 @@ export function canManageUser(
   }
 
   return { allowed: true };
-}
-
-/**
- * Server Route Helper: Guard an API endpoint with a required permission
- */
-export async function requirePermission(
-  req: Request | undefined,
-  permissionKey: string
-): Promise<{ user: AdminUserSafe | null; errorResponse: NextResponse | null }> {
-  const user = await getAuthenticatedAdmin(req);
-
-  if (!user) {
-    return {
-      user: null,
-      errorResponse: NextResponse.json(
-        { error: 'Session expirée ou utilisateur non connecté', code: 'UNAUTHORIZED' },
-        { status: 401 }
-      ),
-    };
-  }
-
-  if (user.status !== 'ACTIVE') {
-    return {
-      user: null,
-      errorResponse: NextResponse.json(
-        { error: 'Votre compte est désactivé. Veuillez contacter un administrateur.', code: 'DISABLED' },
-        { status: 403 }
-      ),
-    };
-  }
-
-  if (!hasPermission(user, permissionKey)) {
-    return {
-      user: null,
-      errorResponse: NextResponse.json(
-        {
-          error: 'Accès refusé. Privilèges insuffisants pour cette action.',
-          code: 'FORBIDDEN',
-          requiredPermission: permissionKey,
-        },
-        { status: 403 }
-      ),
-    };
-  }
-
-  return { user, errorResponse: null };
 }

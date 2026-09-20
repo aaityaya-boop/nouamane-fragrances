@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth/adminAuth';
-import { requirePermission, getUserEffectivePermissions } from '@/lib/auth/rbac/accessControl';
+import { getUserEffectivePermissions } from '@/lib/auth/rbac/accessControl';
+import { requirePermission } from '@/lib/auth/rbac/serverGuard';
 import { getRoleDefinition } from '@/lib/auth/rbac/roles';
 import { logAdminActivity } from '@/lib/activityLogger';
 
