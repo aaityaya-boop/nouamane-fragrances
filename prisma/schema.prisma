@@ -846,6 +846,7 @@ model AdminUser {
   sentMessages      AdminChatMessage[]  @relation("SentMessages")
   receivedMessages  AdminChatMessage[]  @relation("ReceivedMessages")
   createdCreatives  AdminCreative[]     @relation("CreatedCreatives")
+  createdExpenses   AdminExpense[]      @relation("CreatedExpenses")
 
   @@index([email])
   @@index([role])
@@ -1002,6 +1003,34 @@ model AdminCreative {
   @@index([createdById])
   @@index([createdAt])
 }
+
+// ==========================================
+// EXPENSES & CHARGES (CHARGES & DÉPENSES NAY)
+// ==========================================
+
+model AdminExpense {
+  id            String     @id @default(cuid())
+  title         String     // e.g. "TikTok Ads Campagne Mars", "Hébergement Vercel & Domaine", "Emballages & Packaging"
+  category      String     // ADS, HOSTING, SALARY, PACKAGING, LOGISTICS, TOOLS, OFFICE, OTHER
+  amount        Float      // Amount in Moroccan Dirhams (MAD)
+  date          DateTime   @default(now())
+  description   String?
+  receiptUrl    String?    // Invoice / Receipt attachment URL
+  paymentMethod String     @default("CREDIT_CARD") // CREDIT_CARD, BANK_TRANSFER, CASH, CHECK, OTHER
+  recurring     String     @default("ONE_TIME")    // ONE_TIME, MONTHLY, ANNUAL
+  createdById   String?
+  creatorName   String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  creator       AdminUser? @relation("CreatedExpenses", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@index([date])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
 
 
 
