@@ -21,6 +21,8 @@ export interface AdminUserSafe {
   jobTitle?: string | null;
   phone?: string | null;
   status: string;
+  salary?: number | null;
+  salaryType?: string | null;
   avatar: string | null;
   customPermissions?: string | null;
   lastLoginAt: Date | null;
@@ -127,6 +129,8 @@ export async function getAuthenticatedAdmin(req?: Request): Promise<AdminUserSaf
         jobTitle: true,
         phone: true,
         status: true,
+        salary: true,
+        salaryType: true,
         avatar: true,
         customPermissions: true,
         lastLoginAt: true,

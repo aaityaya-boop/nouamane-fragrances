@@ -831,6 +831,8 @@ model AdminUser {
   jobTitle          String?
   phone             String?
   status            String              @default("ACTIVE") // ACTIVE, DISABLED
+  salary            Float?              @default(0) // Salary in Moroccan Dirhams (MAD)
+  salaryType        String?             @default("MONTHLY") // MONTHLY, COMMISSION, HOURLY
   customPermissions String?             // JSON: { granted: string[], revoked: string[] }
   lastLoginAt       DateTime?
   lastActivityAt    DateTime?

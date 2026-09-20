@@ -28,6 +28,8 @@ export async function GET(req: Request, context: RouteContext) {
         jobTitle: true,
         phone: true,
         status: true,
+        salary: true,
+        salaryType: true,
         avatar: true,
         customPermissions: true,
         lastLoginAt: true,
@@ -142,6 +144,12 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (body.role !== undefined && body.role.trim()) updateData.role = body.role.trim().toUpperCase();
     if (body.jobTitle !== undefined) updateData.jobTitle = body.jobTitle ? body.jobTitle.trim() : null;
     if (body.phone !== undefined) updateData.phone = body.phone ? body.phone.trim() : null;
+    if (body.salary !== undefined) {
+      updateData.salary = typeof body.salary === 'number' ? body.salary : parseFloat(body.salary) || 0;
+    }
+    if (body.salaryType !== undefined) {
+      updateData.salaryType = body.salaryType || 'MONTHLY';
+    }
     if (body.avatar !== undefined) updateData.avatar = body.avatar || null;
     if (body.status !== undefined && (body.status === 'ACTIVE' || body.status === 'DISABLED')) {
       updateData.status = body.status;
@@ -177,6 +185,8 @@ export async function PATCH(req: Request, context: RouteContext) {
         role: true,
         jobTitle: true,
         phone: true,
+        salary: true,
+        salaryType: true,
         status: true,
         avatar: true,
         customPermissions: true,
@@ -193,9 +203,9 @@ export async function PATCH(req: Request, context: RouteContext) {
       action: 'UPDATE_TEAM_MEMBER',
       entityType: 'USER',
       entityId: updated.id,
-      description: `Mise à jour du profil collaborateur de "${updated.name}" (${updated.role})`,
-      oldValue: { role: targetUser.role, status: targetUser.status, jobTitle: targetUser.jobTitle },
-      newValue: { role: updated.role, status: updated.status, jobTitle: updated.jobTitle },
+      description: `Mise à jour du profil collaborateur de "${updated.name}" (${updated.role})${updated.salary !== null ? ` - Salaire: ${updated.salary} MAD` : ''}`,
+      oldValue: { role: targetUser.role, status: targetUser.status, jobTitle: targetUser.jobTitle, salary: targetUser.salary },
+      newValue: { role: updated.role, status: updated.status, jobTitle: updated.jobTitle, salary: updated.salary },
     });
 
     return NextResponse.json({

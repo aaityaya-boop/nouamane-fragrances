@@ -50,6 +50,8 @@ export async function GET(req: Request) {
         jobTitle: true,
         phone: true,
         status: true,
+        salary: true,
+        salaryType: true,
         avatar: true,
         customPermissions: true,
         lastLoginAt: true,
@@ -95,6 +97,9 @@ export async function GET(req: Request) {
     const activeMembers = members.filter((m) => m.status === 'ACTIVE').length;
     const disabledMembers = members.filter((m) => m.status === 'DISABLED').length;
     const onlineMembers = enrichedMembers.filter((m) => m.isOnline).length;
+    const totalPayrollMAD = members
+      .filter((m) => m.status === 'ACTIVE')
+      .reduce((sum, m) => sum + (m.salary || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -104,6 +109,7 @@ export async function GET(req: Request) {
         active: activeMembers,
         disabled: disabledMembers,
         online: onlineMembers,
+        totalPayrollMAD,
       },
     });
   } catch (error) {
@@ -122,7 +128,18 @@ export async function POST(req: Request) {
     if (errorResponse) return errorResponse;
 
     const body = await req.json();
-    const { name, email, password, role = 'GUEST_VIEWER', jobTitle, phone, avatar, customPermissions } = body;
+    const { 
+      name, 
+      email, 
+      password, 
+      role = 'GUEST_VIEWER', 
+      jobTitle, 
+      phone, 
+      salary = 0, 
+      salaryType = 'MONTHLY',
+      avatar, 
+      customPermissions 
+    } = body;
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -171,6 +188,7 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await hashPassword(password);
+    const parsedSalary = typeof salary === 'number' ? salary : parseFloat(salary) || 0;
 
     // Format customPermissions if provided
     let customPermsString: string | null = null;
@@ -186,6 +204,8 @@ export async function POST(req: Request) {
         role: role.toUpperCase(),
         jobTitle: jobTitle ? jobTitle.trim() : null,
         phone: phone ? phone.trim() : null,
+        salary: parsedSalary,
+        salaryType: salaryType || 'MONTHLY',
         avatar: avatar || null,
         status: 'ACTIVE',
         customPermissions: customPermsString,
@@ -197,6 +217,8 @@ export async function POST(req: Request) {
         role: true,
         jobTitle: true,
         phone: true,
+        salary: true,
+        salaryType: true,
         status: true,
         avatar: true,
         createdAt: true,
@@ -212,8 +234,15 @@ export async function POST(req: Request) {
       action: 'CREATE_TEAM_MEMBER',
       entityType: 'USER',
       entityId: newMember.id,
-      description: `Création du compte collaborateur pour "${newMember.name}" avec le rôle ${newMember.role}`,
-      newValue: { name: newMember.name, email: newMember.email, role: newMember.role, jobTitle: newMember.jobTitle },
+      description: `Création du compte collaborateur pour "${newMember.name}" avec le rôle ${newMember.role} (Salaire: ${newMember.salary} MAD)`,
+      newValue: { 
+        name: newMember.name, 
+        email: newMember.email, 
+        role: newMember.role, 
+        jobTitle: newMember.jobTitle,
+        salary: newMember.salary,
+        salaryType: newMember.salaryType,
+      },
     });
 
     return NextResponse.json(

@@ -45,7 +45,10 @@ import {
   AlertCircle,
   Clock,
   Layers,
-  Power
+  Power,
+  Banknote,
+  Coins,
+  Wallet
 } from 'lucide-react';
 
 interface TeamMember {
@@ -55,6 +58,8 @@ interface TeamMember {
   role: string;
   jobTitle?: string | null;
   phone?: string | null;
+  salary?: number | null;
+  salaryType?: string | null;
   status: string;
   avatar?: string | null;
   customPermissions?: string | null;
@@ -86,7 +91,7 @@ function TeamManagementContent() {
   const openNewParam = searchParams.get('openNew');
 
   const [members, setMembers] = useState<TeamMember[]>([]);
-  const [stats, setStats] = useState({ total: 0, active: 0, disabled: 0, online: 0 });
+  const [stats, setStats] = useState({ total: 0, active: 0, disabled: 0, online: 0, totalPayrollMAD: 0 });
   const [currentUser, setCurrentUser] = useState<CurrentAdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,6 +112,8 @@ function TeamManagementContent() {
     role: initialRoleParam || 'CUSTOMER_SUPPORT_AGENT',
     jobTitle: '',
     phone: '',
+    salary: '' as string | number,
+    salaryType: 'MONTHLY',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
   });
   const [newMemberLoading, setNewMemberLoading] = useState(false);
@@ -118,6 +125,8 @@ function TeamManagementContent() {
     role: '',
     jobTitle: '',
     phone: '',
+    salary: 0 as number,
+    salaryType: 'MONTHLY',
     avatar: '',
     newPassword: '',
     status: 'ACTIVE',
@@ -154,7 +163,7 @@ function TeamManagementContent() {
         const teamData = await teamRes.json();
         if (teamData.success) {
           setMembers(teamData.members || []);
-          setStats(teamData.stats || { total: 0, active: 0, disabled: 0, online: 0 });
+          setStats(teamData.stats || { total: 0, active: 0, disabled: 0, online: 0, totalPayrollMAD: 0 });
         }
       }
     } catch (err) {
@@ -199,6 +208,8 @@ function TeamManagementContent() {
       role: member.role,
       jobTitle: member.jobTitle || '',
       phone: member.phone || '',
+      salary: member.salary || 0,
+      salaryType: member.salaryType || 'MONTHLY',
       avatar: member.avatar || '',
       newPassword: '',
       status: member.status,
@@ -221,6 +232,8 @@ function TeamManagementContent() {
         role: editMemberForm.role,
         jobTitle: editMemberForm.jobTitle,
         phone: editMemberForm.phone,
+        salary: Number(editMemberForm.salary) || 0,
+        salaryType: editMemberForm.salaryType,
         avatar: editMemberForm.avatar,
         status: editMemberForm.status,
       };
@@ -241,7 +254,7 @@ function TeamManagementContent() {
         return;
       }
 
-      showToast(`Profil de "${editMemberForm.name}" mis à jour avec succès.`);
+      showToast(`Profil et rémunération de "${editMemberForm.name}" mis à jour avec succès.`);
       setIsEditModalOpen(false);
       loadData();
     } catch (err: any) {
@@ -258,10 +271,15 @@ function TeamManagementContent() {
       setNewMemberLoading(true);
       setNewMemberError('');
 
+      const payload = {
+        ...newMemberForm,
+        salary: Number(newMemberForm.salary) || 0,
+      };
+
       const res = await fetch('/api/admin/team', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMemberForm),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -270,7 +288,7 @@ function TeamManagementContent() {
         return;
       }
 
-      showToast(`Compte créé avec succès pour ${newMemberForm.name} !`);
+      showToast(`Compte créé avec succès pour ${newMemberForm.name} (Salaire: ${payload.salary} MAD) !`);
       setIsNewMemberModalOpen(false);
       setNewMemberForm({
         name: '',
@@ -279,6 +297,8 @@ function TeamManagementContent() {
         role: 'CUSTOMER_SUPPORT_AGENT',
         jobTitle: '',
         phone: '',
+        salary: '',
+        salaryType: 'MONTHLY',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
       });
       loadData();
@@ -433,6 +453,13 @@ function TeamManagementContent() {
     setNewMemberForm({ ...newMemberForm, password: pwd });
   };
 
+  // Format Salary type label
+  const getSalaryTypeLabel = (type?: string | null) => {
+    if (type === 'COMMISSION') return 'Fixe + Commission';
+    if (type === 'HOURLY') return 'Horaire';
+    return 'Mensuel';
+  };
+
   // Avatar presets
   const AVATAR_PRESETS = [
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
@@ -471,14 +498,17 @@ function TeamManagementContent() {
               Contrôle d&apos;Accès & RBAC Multi-Employés
             </span>
             <span className="text-xs text-[#555]">•</span>
-            <span className="text-xs text-[#888888]">Espace Collaboratif Unique NAY Parfum</span>
+            <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 flex items-center gap-1">
+              <Banknote size={12} />
+              <span>Gestion des Salaires (MAD)</span>
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
             <ShieldCheck className="text-sky-400" size={28} />
-            <span>Gestion de l&apos;Équipe & Permissions</span>
+            <span>Gestion de l&apos;Équipe & Salaires</span>
           </h1>
           <p className="text-sm text-[#888888]">
-            Administrez les comptes collaborateurs, assignez les 26 rôles opérationnels et personnalisez les permissions granulaires.
+            Administrez les comptes collaborateurs, rémunérations en Dirhams (MAD), assignez les 26 rôles opérationnels et personnalisez les permissions.
           </p>
         </div>
 
@@ -503,8 +533,8 @@ function TeamManagementContent() {
         </div>
       </div>
 
-      {/* KPI Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* KPI Stats Bar with Payroll */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
           <div className="text-[11px] font-bold text-[#888888] uppercase tracking-wider">Total Équipe</div>
           <div className="text-2xl font-black text-white mt-1">{stats.total}</div>
@@ -529,7 +559,18 @@ function TeamManagementContent() {
         <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
           <div className="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Désactivés</div>
           <div className="text-2xl font-black text-white mt-1">{stats.disabled}</div>
-          <div className="text-[10px] text-[#666] mt-0.5">Accès révoqués</div>
+          <div className="text-[10px] text-[#666] mt-0.5">Accès bloqués</div>
+        </div>
+
+        <div className="bg-[#111111] border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl p-4 col-span-2 sm:col-span-1">
+          <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+            <Coins size={13} />
+            <span>Masse Salariale</span>
+          </div>
+          <div className="text-2xl font-black text-amber-300 mt-1">
+            {(stats.totalPayrollMAD || 0).toLocaleString('fr-FR')} <span className="text-xs font-normal text-amber-400/80">MAD</span>
+          </div>
+          <div className="text-[10px] text-[#888] mt-0.5">Total mensuel actif</div>
         </div>
       </div>
 
@@ -591,6 +632,7 @@ function TeamManagementContent() {
                 <th className="py-3.5 px-4">Collaborateur</th>
                 <th className="py-3.5 px-4">Rôle & Département</th>
                 <th className="py-3.5 px-4">Poste & Spécialité</th>
+                <th className="py-3.5 px-4">Rémunération (MAD)</th>
                 <th className="py-3.5 px-4">Statut & Présence</th>
                 <th className="py-3.5 px-4 text-center">Permissions</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
@@ -599,7 +641,7 @@ function TeamManagementContent() {
             <tbody className="divide-y divide-white/5 text-xs text-[#ccc]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[#666]">
+                  <td colSpan={7} className="py-12 text-center text-[#666]">
                     <div className="inline-flex items-center gap-2">
                       <RefreshCw size={16} className="animate-spin text-sky-400" />
                       <span>Chargement des collaborateurs...</span>
@@ -608,7 +650,7 @@ function TeamManagementContent() {
                 </tr>
               ) : filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[#666]">
+                  <td colSpan={7} className="py-12 text-center text-[#666]">
                     Aucun collaborateur trouvé correspondant à vos critères de recherche.
                   </td>
                 </tr>
@@ -712,6 +754,23 @@ function TeamManagementContent() {
                         </div>
                       </td>
 
+                      {/* Salary / Rémunération in MAD */}
+                      <td className="py-4 px-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 font-bold text-amber-400">
+                            <Wallet size={13} className="text-amber-400 shrink-0" />
+                            <span>
+                              {member.salary && member.salary > 0
+                                ? `${member.salary.toLocaleString('fr-FR')} MAD`
+                                : 'Non défini'}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-[#666] font-medium">
+                            {getSalaryTypeLabel(member.salaryType)}
+                          </div>
+                        </div>
+                      </td>
+
                       {/* Status & Activity */}
                       <td className="py-4 px-4">
                         <div className="space-y-1">
@@ -773,12 +832,12 @@ function TeamManagementContent() {
                             <Key size={14} />
                           </button>
 
-                          {/* Edit Profile & Role Button */}
+                          {/* Edit Profile, Role & Salary Button */}
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(member)}
                             className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white border border-white/5 transition-colors"
-                            title="Modifier le profil & mot de passe"
+                            title="Modifier le profil, salaire & mot de passe"
                           >
                             <Edit3 size={14} />
                           </button>
@@ -810,7 +869,7 @@ function TeamManagementContent() {
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL 1: AJOUTER UN COLLABORATEUR                        */}
+      {/* MODAL 1: AJOUTER UN COLLABORATEUR AVEC SALAIRE EN MAD     */}
       {/* ======================================================== */}
       {isNewMemberModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
@@ -831,7 +890,7 @@ function TeamManagementContent() {
                 <span>Ajouter un Collaborateur NAY</span>
               </h2>
               <p className="text-xs text-[#888888]">
-                Créez les identifiants d&apos;accès et assignez le rôle opérationnel correspondant.
+                Créez les identifiants d&apos;accès, assignez le rôle et fixez la rémunération en Dirhams (MAD).
               </p>
             </div>
 
@@ -848,7 +907,7 @@ function TeamManagementContent() {
                 <label className="block text-[#aaa] font-semibold mb-2">Photo de Profil</label>
                 <div className="flex items-center gap-3">
                   <img
-                    src={newMemberForm.avatar}
+                    src={typeof newMemberForm.avatar === 'string' ? newMemberForm.avatar : ''}
                     alt="Preview"
                     className="w-12 h-12 rounded-full object-cover border-2 border-sky-500 shadow-md"
                   />
@@ -947,6 +1006,47 @@ function TeamManagementContent() {
                 </div>
               </div>
 
+              {/* Salary & Salary Type (MAD) */}
+              <div className="bg-[#161616] p-4 rounded-2xl border border-amber-500/20 space-y-3">
+                <div className="flex items-center gap-2 text-amber-400 font-bold">
+                  <Banknote size={16} />
+                  <span>Rémunération & Salaire (MAD)</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#aaa] font-semibold mb-1.5">Montant du Salaire (MAD / DH)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        placeholder="Ex: 6500"
+                        value={newMemberForm.salary}
+                        onChange={(e) => setNewMemberForm({ ...newMemberForm, salary: e.target.value })}
+                        className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-amber-300 font-bold placeholder-[#555] focus:outline-none focus:border-amber-500 pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#777]">
+                        MAD
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[#aaa] font-semibold mb-1.5">Type de Rémunération</label>
+                    <select
+                      value={newMemberForm.salaryType}
+                      onChange={(e) => setNewMemberForm({ ...newMemberForm, salaryType: e.target.value })}
+                      className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500"
+                    >
+                      <option value="MONTHLY">Mensuel Fixe</option>
+                      <option value="COMMISSION">Fixe + Commission</option>
+                      <option value="HOURLY">Par Heure / Prestation</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               {/* Password */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
@@ -992,7 +1092,7 @@ function TeamManagementContent() {
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 2: MODIFIER PROFIL, POSTE & MOT DE PASSE           */}
+      {/* MODAL 2: MODIFIER PROFIL, POSTE, SALAIRE & MOT DE PASSE  */}
       {/* ======================================================== */}
       {isEditModalOpen && selectedMember && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
@@ -1076,6 +1176,46 @@ function TeamManagementContent() {
                     onChange={(e) => setEditMemberForm({ ...editMemberForm, phone: e.target.value })}
                     className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-sky-500"
                   />
+                </div>
+              </div>
+
+              {/* Salary & Salary Type Edit (MAD) */}
+              <div className="bg-[#161616] p-4 rounded-2xl border border-amber-500/20 space-y-3">
+                <div className="flex items-center gap-2 text-amber-400 font-bold">
+                  <Banknote size={16} />
+                  <span>Modifier le Salaire (MAD)</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#aaa] font-semibold mb-1.5">Montant du Salaire (MAD)</label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        value={editMemberForm.salary}
+                        onChange={(e) => setEditMemberForm({ ...editMemberForm, salary: Number(e.target.value) || 0 })}
+                        className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-500 pr-12"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#777]">
+                        MAD
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[#aaa] font-semibold mb-1.5">Type de Rémunération</label>
+                    <select
+                      value={editMemberForm.salaryType}
+                      onChange={(e) => setEditMemberForm({ ...editMemberForm, salaryType: e.target.value })}
+                      className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500"
+                    >
+                      <option value="MONTHLY">Mensuel Fixe</option>
+                      <option value="COMMISSION">Fixe + Commission</option>
+                      <option value="HOURLY">Par Heure / Prestation</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
