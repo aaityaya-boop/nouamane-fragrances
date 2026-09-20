@@ -130,6 +130,22 @@ export async function POST(request: Request) {
       });
     }
 
+    // Record Initial Order Timeline Event
+    try {
+      await prisma.orderTimelineEvent.create({
+        data: {
+          orderId: created.id,
+          status: 'CREATED',
+          title: 'Commande créée',
+          description: `Commande #${created.orderNumber} enregistrée via la boutique en ligne`,
+          actorName: `${created.customerName} (Client)`,
+          actorRole: 'CLIENT',
+        },
+      });
+    } catch (e) {
+      console.error('Failed to create order timeline event:', e);
+    }
+
     // Dispatch REAL admin notification for new order
     try {
       await prisma.adminNotification.create({

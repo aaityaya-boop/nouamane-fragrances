@@ -29,8 +29,9 @@ model Order {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   customerId         String?
-  affiliate          Affiliate? @relation(fields: [affiliateCode], references: [code])
-  customer           Customer?  @relation(fields: [customerId], references: [id])
+  affiliate          Affiliate?           @relation(fields: [affiliateCode], references: [code])
+  customer           Customer?            @relation(fields: [customerId], references: [id])
+  timeline           OrderTimelineEvent[]
 }
 
 model Customer {
@@ -1030,6 +1031,32 @@ model AdminExpense {
   @@index([createdById])
   @@index([createdAt])
 }
+
+// ==========================================
+// ORDER LIFECYCLE TIMELINE & AUDIT TRAIL
+// ==========================================
+
+model OrderTimelineEvent {
+  id             String     @id @default(cuid())
+  orderId        String
+  order          Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status         String     // CREATED, CONFIRMED, PREPARING, PREPARED, SHIPPED, DELIVERED, CANCELED, REFUSED, RETURNED, CALL_ATTEMPT, NOTE
+  title          String     // e.g. "Commande créée", "Confirmée par Sara", "Colis préparé & emballé", "Expédiée avec Amana"
+  description    String?    // e.g. "Validée avec client. Joignable sur WhatsApp", "N° suivi: AMN-98472"
+  actorId        String?    // AdminUser ID or null if created by client/system
+  actorName      String     // e.g. "Boutique en ligne (Client)", "Sara Mansouri", "Youssef El Alami"
+  actorRole      String?    // e.g. "CLIENT", "ORDER_CONFIRMATION_AGENT", "ORDER_PREPARATION_AGENT", "OWNER"
+  actorAvatar    String?
+  carrier        String?    // e.g. "Amana Express", "Cathedis", "Ozon Express", "Livreur Interne"
+  trackingNumber String?    // e.g. "AMN-98472"
+  metadata       String?    // JSON extra data (phone, call result, packaging notes)
+  createdAt      DateTime   @default(now())
+
+  @@index([orderId])
+  @@index([status])
+  @@index([createdAt])
+}
+
 
 
 

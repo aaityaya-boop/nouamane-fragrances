@@ -1,12 +1,31 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
+import { recordStatusTransition, generateFallbackTimeline } from '@/lib/orders/timeline';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const orders = await prisma.order.findMany({
+      include: {
+        timeline: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json(orders);
+
+    // Attach enriched timeline (falling back to generated progression if legacy order has 0 timeline events)
+    const enrichedOrders = orders.map((order) => {
+      const timeline = order.timeline && order.timeline.length > 0
+        ? order.timeline
+        : generateFallbackTimeline(order);
+      return {
+        ...order,
+        timeline,
+      };
+    });
+
+    return NextResponse.json(enrichedOrders);
   } catch (error) {
     console.error('Error fetching admin orders:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
@@ -15,8 +34,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const admin = await getAuthenticatedAdmin(request);
     const body = await request.json();
-    const { id, status, customerName, city, total } = body;
+    const { id, status, customerName, city, total, carrier, trackingNumber, customNote, actorNameOverride } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
@@ -24,6 +44,7 @@ export async function PUT(request: Request) {
 
     const currentOrder = await prisma.order.findUnique({
       where: { id },
+      include: { timeline: true },
     });
 
     if (!currentOrder) {
@@ -31,7 +52,7 @@ export async function PUT(request: Request) {
     }
 
     // Logic for Stock update
-    if (status) {
+    if (status && status !== currentOrder.status) {
       const oldStatus = currentOrder.status;
       const newStatus = status;
 
@@ -70,6 +91,26 @@ export async function PUT(request: Request) {
           }
         }
       }
+
+      // Record timeline transition event
+      const effectiveActor = admin || (actorNameOverride ? {
+        id: 'manual',
+        name: actorNameOverride,
+        role: 'STAFF',
+        jobTitle: 'Équipe NAY',
+        status: 'ACTIVE',
+        avatar: null,
+      } as any : null);
+
+      await recordStatusTransition({
+        orderId: currentOrder.id,
+        oldStatus,
+        newStatus,
+        actor: effectiveActor,
+        carrier,
+        trackingNumber,
+        customNote,
+      });
     }
 
     const updated = await prisma.order.update({
@@ -79,6 +120,11 @@ export async function PUT(request: Request) {
         ...(customerName && { customerName }),
         ...(city && { shippingCity: city }),
         ...(total !== undefined && { total: Number(total) }),
+      },
+      include: {
+        timeline: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
     });
 
