@@ -64,7 +64,6 @@ const MARKETING_ITEMS = [
 const SYSTEM_ITEMS = [
   { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
   { href: '/admin/vitrine', label: 'Vitrine & Recommandés', icon: <Sparkles size={18} /> },
-  { href: '/admin/profiles', label: 'Profils Administrateurs', icon: <Users size={18} /> },
   { href: '/admin/profile', label: 'Mon Compte Propriétaire', icon: <User size={18} /> },
   { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} /> },
 ];

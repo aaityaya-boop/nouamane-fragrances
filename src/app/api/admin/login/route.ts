@@ -6,56 +6,33 @@ import { logAdminActivity } from '@/lib/activityLogger';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const profileSlug = (body.profile || '').trim().toLowerCase();
-    const userIdInput = (body.userId || '').trim();
-    const emailInput = (body.email || body.username || '').trim().toLowerCase();
+    const identifier = (body.email || body.username || body.identifier || '').trim().toLowerCase();
     const password = (body.password || '').trim();
     const rememberMe = Boolean(body.rememberMe ?? true);
 
-    if (!password) {
+    if (!identifier || !password) {
       return NextResponse.json(
-        { error: 'Veuillez saisir votre mot de passe pour déverrouiller ce profil.' },
+        { error: 'Veuillez saisir votre identifiant personnel et votre mot de passe.' },
         { status: 400 }
       );
     }
 
-    // Ensure owners exist
+    // Ensure initial owner accounts exist in database
     await seedDefaultOwnersIfEmpty();
 
     // 1. Find user in AdminUser table
-    let user = null;
+    let user = await prisma.adminUser.findFirst({
+      where: {
+        OR: [
+          { email: { equals: identifier, mode: 'insensitive' } },
+          { email: { startsWith: identifier, mode: 'insensitive' } },
+          { name: { contains: identifier, mode: 'insensitive' } },
+        ],
+      },
+    });
 
-    if (userIdInput && !userIdInput.includes('fallback')) {
-      user = await prisma.adminUser.findUnique({
-        where: { id: userIdInput },
-      });
-    }
-
-    if (!user && profileSlug) {
-      user = await prisma.adminUser.findFirst({
-        where: {
-          OR: [
-            { email: { startsWith: profileSlug, mode: 'insensitive' } },
-            { name: { contains: profileSlug, mode: 'insensitive' } },
-          ],
-        },
-      });
-    }
-
-    if (!user && emailInput) {
-      user = await prisma.adminUser.findFirst({
-        where: {
-          OR: [
-            { email: { equals: emailInput, mode: 'insensitive' } },
-            { email: { startsWith: emailInput, mode: 'insensitive' } },
-            { name: { contains: emailInput, mode: 'insensitive' } },
-          ],
-        },
-      });
-    }
-
-    // Legacy fallback for "admin"
-    if (!user && (emailInput === 'admin' || !emailInput)) {
+    // Fallback for generic "admin"
+    if (!user && identifier === 'admin') {
       const config = await prisma.siteConfig.findFirst();
       const legacyPass = config?.adminPassword || 'nouamane2024';
       if (password === legacyPass) {
@@ -68,21 +45,22 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Profil administrateur introuvable.' },
+        { error: 'Compte administrateur introuvable.' },
         { status: 404 }
       );
     }
 
     if (user.status !== 'ACTIVE') {
       return NextResponse.json(
-        { error: 'Ce profil administrateur est désactivé.' },
+        { error: 'Ce compte administrateur est désactivé.' },
         { status: 403 }
       );
     }
 
-    // 2. Verify password (matches bcrypt hash, or default NayParfum2026!, or master nouamane2024)
+    // 2. Verify password
     let isMatch = await verifyPassword(password, user.passwordHash);
     
+    // Fallback for initial default passwords
     if (!isMatch) {
       const config = await prisma.siteConfig.findFirst();
       const legacyPass = config?.adminPassword || 'nouamane2024';
@@ -93,7 +71,7 @@ export async function POST(request: Request) {
 
     if (!isMatch) {
       return NextResponse.json(
-        { error: 'Mot de passe incorrect pour ' + user.name + '.' },
+        { error: 'Mot de passe incorrect pour ce compte.' },
         { status: 401 }
       );
     }
@@ -128,7 +106,7 @@ export async function POST(request: Request) {
       action: 'LOGIN',
       entityType: 'AUTH',
       entityId: user.id,
-      description: `${user.name} a ouvert une session d'administration NAY Workspace.`,
+      description: `${user.name} s'est connecté à son compte administrateur personnel.`,
       req: request,
     });
 

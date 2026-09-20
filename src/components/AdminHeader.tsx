@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { 
   User, 
   ShieldCheck, 
@@ -10,11 +10,7 @@ import {
   LogOut, 
   ExternalLink, 
   ChevronDown, 
-  Sparkles,
-  CheckCircle2,
-  Users,
-  KeyRound,
-  ArrowRightLeft
+  CheckCircle2
 } from 'lucide-react';
 
 interface AdminUser {
@@ -29,9 +25,7 @@ interface AdminUser {
 
 export default function AdminHeader() {
   const pathname = usePathname();
-  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
-  const [teamMembers, setTeamMembers] = useState<AdminUser[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -48,7 +42,6 @@ export default function AdminHeader() {
           const data = await res.json();
           if (isMounted && data.success) {
             setCurrentUser(data.user);
-            setTeamMembers(data.teamMembers || []);
           }
         }
       } catch (err) {
@@ -90,10 +83,6 @@ export default function AdminHeader() {
     return name.slice(0, 2).toUpperCase();
   };
 
-  const otherOwner = teamMembers.find(
-    (m) => m.role === 'OWNER' && m.id !== currentUser?.id
-  );
-
   return (
     <header className="w-full bg-white border-b border-[#e2e8f0] px-4 lg:px-8 py-3 mb-6 rounded-2xl shadow-sm flex items-center justify-between transition-all">
       {/* Left: Quick Workspace Badge / Context */}
@@ -117,29 +106,16 @@ export default function AdminHeader() {
         </Link>
       </div>
 
-      {/* Right: Active Profile & Fast Switcher */}
+      {/* Right: Connected Personal Owner Profile Dropdown */}
       <div className="flex items-center gap-3 ml-auto">
-        {/* Fast Switch Button between Ayoub and Nouamane */}
-        {otherOwner && (
-          <button
-            onClick={handleLogout}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-[#0ea5e9]/10 text-slate-600 hover:text-[#0ea5e9] rounded-full border border-slate-200 hover:border-[#0ea5e9]/30 text-xs font-medium transition-colors cursor-pointer"
-            title={`Basculer sur le compte de ${otherOwner.name}`}
-          >
-            <ArrowRightLeft size={13} className="text-[#0ea5e9]" />
-            <span>Basculer vers <strong>{otherOwner.name.split(' ')[0]}</strong></span>
-          </button>
-        )}
-
-        {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all focus:outline-none"
+            className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all focus:outline-none cursor-pointer"
             aria-label="Menu profil administrateur"
           >
             {/* Avatar Pill */}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white overflow-hidden">
               {currentUser?.avatar ? (
                 <img
                   src={currentUser.avatar}
@@ -171,11 +147,11 @@ export default function AdminHeader() {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* Profile Card Header */}
               <div className="px-4 py-3 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-sky-500/20 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-sky-500/20 overflow-hidden shrink-0">
                     {currentUser?.avatar ? (
                       <img
                         src={currentUser.avatar}
@@ -197,10 +173,10 @@ export default function AdminHeader() {
                 </div>
 
                 <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
-                  <span className="text-slate-400 font-medium">Statut</span>
+                  <span className="text-slate-400 font-medium">Statut compte</span>
                   <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                     <CheckCircle2 size={11} />
-                    Propriétaire Actif
+                    Actif
                   </span>
                 </div>
               </div>
@@ -208,21 +184,12 @@ export default function AdminHeader() {
               {/* Menu Links */}
               <div className="py-1">
                 <Link
-                  href="/admin/profiles"
-                  onClick={() => setIsDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
-                >
-                  <Users size={15} />
-                  <span>Gestion des 2 Profils (Ayoub & Nouamane)</span>
-                </Link>
-
-                <Link
                   href="/admin/profile"
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
                 >
                   <User size={15} />
-                  <span>Mon Profil & Paramètres</span>
+                  <span>Mon Compte & Profil</span>
                 </Link>
 
                 <Link
@@ -231,7 +198,7 @@ export default function AdminHeader() {
                   className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
                 >
                   <ShieldCheck size={15} />
-                  <span>Sécurité & Mot de Passe</span>
+                  <span>Sécurité & Mon Mot de Passe</span>
                 </Link>
 
                 <Link
@@ -240,7 +207,7 @@ export default function AdminHeader() {
                   className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
                 >
                   <History size={15} />
-                  <span>Journal d'Activité</span>
+                  <span>Mon Journal d'Activité</span>
                 </Link>
               </div>
 
@@ -251,7 +218,7 @@ export default function AdminHeader() {
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <LogOut size={15} />
-                  <span>Changer de profil / Déconnexion</span>
+                  <span>Se déconnecter</span>
                 </button>
               </div>
             </div>
