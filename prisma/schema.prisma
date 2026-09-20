@@ -816,3 +816,46 @@ model SeoAiVisibilityAudit {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 }
+
+// ==========================================
+// MULTI-OWNER & ADMIN AUTHENTICATION MODELS
+// ==========================================
+
+model AdminUser {
+  id             String             @id @default(cuid())
+  name           String
+  email          String             @unique
+  passwordHash   String
+  avatar         String?
+  role           String             @default("OWNER") // OWNER, MANAGER, CUSTOMER_SERVICE, STOCK_MANAGER, MARKETING
+  status         String             @default("ACTIVE") // ACTIVE, DISABLED
+  lastLoginAt    DateTime?
+  lastActivityAt DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  activities     AdminActivityLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model AdminActivityLog {
+  id          String     @id @default(cuid())
+  userId      String?
+  userName    String
+  userEmail   String?
+  action      String     // LOGIN, LOGOUT, CREATE_PRODUCT, UPDATE_PRODUCT, DELETE_PRODUCT, UPDATE_ORDER, etc.
+  entityType  String     // PRODUCT, ORDER, REVIEW, CUSTOMER, BRAND, USER, SYSTEM
+  entityId    String?
+  description String
+  oldValue    String?
+  newValue    String?
+  ipAddress   String?
+  createdAt   DateTime   @default(now())
+  user        AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+}
+

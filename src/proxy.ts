@@ -39,8 +39,21 @@ export default async function proxy(request: NextRequest) {
   }
 
   // --- 1. ADMIN SECURITY ---
-  const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin/login';
+  const isLoginPage = pathname === '/admin/login';
+  const isAdminRoute = pathname.startsWith('/admin') && !isLoginPage;
   const isAdminApiRoute = pathname.startsWith('/api/admin') && pathname !== '/api/admin/login';
+
+  if (isLoginPage) {
+    const token = request.cookies.get('admin_token')?.value;
+    if (token) {
+      try {
+        await jwtVerify(token, JWT_SECRET);
+        return NextResponse.redirect(new URL('/admin', request.url));
+      } catch {
+        // Token invalid, allow to login page
+      }
+    }
+  }
 
   if (isAdminRoute || isAdminApiRoute) {
     const token = request.cookies.get('admin_token')?.value;

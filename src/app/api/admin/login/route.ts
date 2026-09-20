@@ -1,56 +1,135 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { SignJWT } from 'jose';
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'nouamane_super_secret_key_2024'
-);
+import { verifyPassword, createAdminToken, seedDefaultOwnersIfEmpty } from '@/lib/auth/adminAuth';
+import { logAdminActivity } from '@/lib/activityLogger';
 
 export async function POST(request: Request) {
   try {
-    const { username, password } = await request.json();
-    
-    // Default config if no DB config found
-    let adminUsername = 'admin';
-    let adminPassword = 'nouamane2024';
-    
-    const config = await prisma.siteConfig.findFirst();
-    if (config) {
-      adminUsername = config.adminUsername || adminUsername;
-      adminPassword = config.adminPassword || adminPassword;
+    const body = await request.json();
+    const emailInput = (body.email || body.username || '').trim().toLowerCase();
+    const password = body.password || '';
+    const rememberMe = Boolean(body.rememberMe);
+
+    if (!emailInput || !password) {
+      return NextResponse.json(
+        { error: 'Veuillez saisir votre email et votre mot de passe.' },
+        { status: 400 }
+      );
     }
 
-    if (username === adminUsername && password === adminPassword) {
-      // Create JWT token
-      const token = await new SignJWT({ role: 'admin' })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('7d')
-        .sign(JWT_SECRET);
+    // Ensure owners are seeded if DB was freshly pushed
+    await seedDefaultOwnersIfEmpty();
 
-      const response = NextResponse.json({ success: true });
-      
-      // Set HttpOnly cookie
-      response.cookies.set({
-        name: 'admin_token',
-        value: token,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7 // 7 days
-      });
+    // 1. Find user in AdminUser table
+    let user = await prisma.adminUser.findFirst({
+      where: {
+        OR: [
+          { email: { equals: emailInput, mode: 'insensitive' } },
+          // Allow logging in with first name e.g. "ayoub" or "nouamane"
+          { email: { startsWith: emailInput, mode: 'insensitive' } },
+        ],
+      },
+    });
 
-      return response;
+    // 2. Legacy fallback for old single admin password if someone tries "admin"
+    if (!user && emailInput === 'admin') {
+      const config = await prisma.siteConfig.findFirst();
+      const legacyPass = config?.adminPassword || 'nouamane2024';
+      if (password === legacyPass) {
+        user = await prisma.adminUser.findFirst({
+          where: { role: 'OWNER' },
+          orderBy: { createdAt: 'asc' },
+        });
+      }
     }
 
-    return NextResponse.json(
-      { error: 'Identifiant ou mot de passe incorrect' },
-      { status: 401 }
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Identifiants invalides. Vérifiez votre email et mot de passe.' },
+        { status: 401 }
+      );
+    }
+
+    if (user.status !== 'ACTIVE') {
+      return NextResponse.json(
+        { error: 'Votre compte administrateur a été désactivé. Veuillez contacter un co-propriétaire.' },
+        { status: 403 }
+      );
+    }
+
+    // 3. Verify password
+    const isMatch = await verifyPassword(password, user.passwordHash);
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: 'Mot de passe incorrect. Veuillez réessayer.' },
+        { status: 401 }
+      );
+    }
+
+    // 4. Update login timestamps
+    const now = new Date();
+    await prisma.adminUser.update({
+      where: { id: user.id },
+      data: {
+        lastLoginAt: now,
+        lastActivityAt: now,
+      },
+    });
+
+    // 5. Create signed JWT
+    const token = await createAdminToken(
+      {
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+      },
+      rememberMe
     );
+
+    // 6. Log successful login
+    await logAdminActivity({
+      userId: user.id,
+      userName: user.name,
+      userEmail: user.email,
+      action: 'LOGIN',
+      entityType: 'AUTH',
+      entityId: user.id,
+      description: `${user.name} s'est connecté à NAY Workspace.`,
+      req: request,
+    });
+
+    // 7. Response with HttpOnly Cookie
+    const maxAgeSeconds = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 1; // 30 days vs 1 day
+
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        lastLoginAt: now,
+      },
+    });
+
+    response.cookies.set({
+      name: 'admin_token',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: maxAgeSeconds,
+    });
+
+    return response;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Admin login error:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur' },
+      { error: 'Erreur de connexion au serveur. Veuillez réessayer.' },
       { status: 500 }
     );
   }
