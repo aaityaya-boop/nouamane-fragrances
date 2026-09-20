@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, PieChart, Pie, Legend
@@ -89,6 +89,17 @@ export default function FinanceClient({
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'EXPENSES'>('OVERVIEW');
   const [dateRange, setDateRange] = useState<number>(30); // days, 0 = all time
   const [expenses, setExpenses] = useState<ExpenseData[]>(initialExpenses);
+
+  // Sync tab from URL if provided (e.g. ?tab=EXPENSES)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'EXPENSES') {
+        setActiveTab('EXPENSES');
+      }
+    }
+  }, []);
 
   // Expense modal states
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);

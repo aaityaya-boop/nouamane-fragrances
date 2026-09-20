@@ -54,7 +54,7 @@ const TEAM_ITEMS: MenuItem[] = [
 const MENU_ITEMS: MenuItem[] = [
   { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} />, permission: 'dashboard.view' },
   { href: '/admin/finance', label: 'Finance & CA Net', icon: <TrendingUp size={18} />, permission: 'finance.view_revenue' },
-  { href: '/admin/finance', label: 'Charges & Dépenses', icon: <Banknote size={18} />, permission: 'finance.view_costs' },
+  { href: '/admin/finance?tab=EXPENSES', label: 'Charges & Dépenses', icon: <Banknote size={18} />, permission: 'finance.view_costs' },
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} />, permission: 'orders.view' },
   { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={18} />, permission: 'reviews.view' },
   { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={18} />, permission: 'products.view' },
@@ -163,11 +163,12 @@ export default function AdminSidebar() {
     if (visibleItems.length === 0) return null;
 
     return visibleItems.map((item) => {
-      const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href}/`));
+      const isExactOrSub = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href.split('?')[0]}/`));
+      const isActive = item.href.includes('?') ? `${pathname}${typeof window !== 'undefined' ? window.location.search : ''}` === item.href : isExactOrSub;
       
       return (
         <Link
-          key={item.href}
+          key={`${item.href}-${item.label}`}
           href={item.href}
           onClick={() => setIsOpen(false)}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative overflow-hidden ${
