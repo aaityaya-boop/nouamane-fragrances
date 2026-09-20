@@ -27,8 +27,15 @@ import {
   Star, 
   Activity,
   User,
-  ShieldCheck
+  ShieldCheck,
+  CheckSquare,
+  History
 } from 'lucide-react';
+
+const TEAM_ITEMS = [
+  { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={18} /> },
+  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={18} /> },
+];
 
 const MENU_ITEMS = [
   { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} /> },
@@ -227,6 +234,15 @@ export default function AdminSidebar() {
             <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Général</div>
             <div className="space-y-0.5">
               {renderLinks(MENU_ITEMS)}
+            </div>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#0ea5e9] mb-2 px-3 flex items-center gap-1.5">
+              <span>Équipe & Collaboration</span>
+            </div>
+            <div className="space-y-0.5">
+              {renderLinks(TEAM_ITEMS)}
             </div>
           </div>
 

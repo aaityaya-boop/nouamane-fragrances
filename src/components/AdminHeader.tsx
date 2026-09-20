@@ -193,21 +193,30 @@ export default function AdminHeader() {
                 </Link>
 
                 <Link
+                  href="/admin/tasks"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
+                >
+                  <CheckCircle2 size={15} className="text-[#0ea5e9]" />
+                  <span>Missions & Tâches</span>
+                </Link>
+
+                <Link
+                  href="/admin/activity"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
+                >
+                  <History size={15} className="text-purple-500" />
+                  <span>Journal d'Activité Global</span>
+                </Link>
+
+                <Link
                   href="/admin/profile?tab=security"
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
                 >
                   <ShieldCheck size={15} />
                   <span>Sécurité & Mon Mot de Passe</span>
-                </Link>
-
-                <Link
-                  href="/admin/profile?tab=activity"
-                  onClick={() => setIsDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
-                >
-                  <History size={15} />
-                  <span>Mon Journal d'Activité</span>
                 </Link>
               </div>
 

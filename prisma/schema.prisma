@@ -834,6 +834,9 @@ model AdminUser {
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   activities     AdminActivityLog[]
+  createdTasks   AdminTask[]        @relation("CreatedTasks")
+  assignedTasks  AdminTask[]        @relation("AssignedTasks")
+  taskComments   AdminTaskComment[]
 
   @@index([email])
   @@index([role])
@@ -844,8 +847,8 @@ model AdminActivityLog {
   userId      String?
   userName    String
   userEmail   String?
-  action      String     // LOGIN, LOGOUT, CREATE_PRODUCT, UPDATE_PRODUCT, DELETE_PRODUCT, UPDATE_ORDER, etc.
-  entityType  String     // PRODUCT, ORDER, REVIEW, CUSTOMER, BRAND, USER, SYSTEM
+  action      String     // LOGIN, LOGOUT, CREATE_PRODUCT, UPDATE_PRODUCT, DELETE_PRODUCT, UPDATE_ORDER, CREATE_TASK, UPDATE_TASK, etc.
+  entityType  String     // PRODUCT, ORDER, REVIEW, CUSTOMER, BRAND, USER, TASK, SYSTEM
   entityId    String?
   description String
   oldValue    String?
@@ -858,4 +861,53 @@ model AdminActivityLog {
   @@index([entityType])
   @@index([createdAt])
 }
+
+// ==========================================
+// MISSIONS & TASKS MODELS (GESTION DES TÂCHES)
+// ==========================================
+
+model AdminTask {
+  id           String             @id @default(cuid())
+  title        String
+  description  String?
+  priority     String             @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  status       String             @default("TODO")   // TODO, IN_PROGRESS, IN_REVIEW, COMPLETED, CANCELLED
+  dueDate      DateTime?
+  
+  createdById  String?
+  creator      AdminUser?         @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: SetNull)
+  creatorName  String
+  
+  assignedToId String?
+  assignee     AdminUser?         @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assigneeName String?
+  
+  tags         String?            // e.g. "Stock, Urgent, Marketing, Commandes"
+  completedAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  comments     AdminTaskComment[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([createdById])
+  @@index([dueDate])
+}
+
+model AdminTaskComment {
+  id         String     @id @default(cuid())
+  taskId     String
+  task       AdminTask  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName   String
+  userAvatar String?
+  content    String
+  createdAt  DateTime   @default(now())
+
+  @@index([taskId])
+}
+
 

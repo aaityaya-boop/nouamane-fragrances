@@ -1,4 +1,4 @@
-﻿import prisma from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { getAuthenticatedAdmin } from './auth/adminAuth';
 
 export interface LogActivityParams {
@@ -6,7 +6,7 @@ export interface LogActivityParams {
   userName?: string;
   userEmail?: string;
   action: string;
-  entityType: 'PRODUCT' | 'ORDER' | 'REVIEW' | 'CUSTOMER' | 'BRAND' | 'COFFRET' | 'MARKETING' | 'USER' | 'AUTH' | 'SYSTEM';
+  entityType: 'PRODUCT' | 'ORDER' | 'REVIEW' | 'CUSTOMER' | 'BRAND' | 'COFFRET' | 'MARKETING' | 'USER' | 'AUTH' | 'TASK' | 'SYSTEM';
   entityId?: string | number | null;
   description: string;
   oldValue?: any;
