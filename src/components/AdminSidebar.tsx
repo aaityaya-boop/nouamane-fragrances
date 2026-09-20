@@ -30,7 +30,8 @@ import {
   ShieldCheck,
   CheckSquare,
   History,
-  Bell
+  Bell,
+  Film
 } from 'lucide-react';
 
 const TEAM_ITEMS = [
@@ -60,6 +61,7 @@ const CRM_ITEMS = [
 ];
 
 const MARKETING_ITEMS = [
+  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads Hub)', icon: <Film size={18} /> },
   { href: '/admin/marketing', label: 'Retention & Marketing', icon: <TrendingUp size={18} /> },
   { href: '/admin/marketing/campaigns', label: 'Campagnes', icon: <Mail size={18} /> },
   { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={18} /> },

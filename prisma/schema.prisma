@@ -840,6 +840,7 @@ model AdminUser {
   notifications    AdminNotification[]
   sentMessages     AdminChatMessage[]  @relation("SentMessages")
   receivedMessages AdminChatMessage[]  @relation("ReceivedMessages")
+  createdCreatives AdminCreative[]     @relation("CreatedCreatives")
 
   @@index([email])
   @@index([role])
@@ -961,6 +962,41 @@ model AdminChatMessage {
   @@index([channel])
   @@index([createdAt])
 }
+
+// ==========================================
+// AD CREATIVES & ADS VAULT (CRÉATIFS PUBS)
+// ==========================================
+
+model AdminCreative {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  mediaUrl     String
+  mediaType    String     @default("IMAGE") // IMAGE, VIDEO
+  thumbnailUrl String?
+  platform     String     @default("META") // META, TIKTOK, SNAPCHAT, GOOGLE, INFLUENCE, ALL
+  aspectRatio  String     @default("9:16") // 9:16, 1:1, 16:9, 4:5
+  category     String     @default("UGC") // UGC, UNBOXING, PRODUCT_SHOT, HOOK, TESTIMONIAL, PROMO
+  status       String     @default("TESTING") // TESTING, WINNER, ACTIVE, PAUSED, ARCHIVED
+  adCopy       String?    // Script, Hook text, primary text
+  productSlug  String?    // associated perfume slug
+  productName  String?
+  createdById  String?
+  creatorName  String
+  tags         String?    // comma separated tags
+  viewsCount   Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  creator      AdminUser? @relation("CreatedCreatives", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([platform])
+  @@index([category])
+  @@index([status])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
 
 
 
