@@ -34,50 +34,59 @@ import {
   Film
 } from 'lucide-react';
 
-const TEAM_ITEMS = [
-  { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={18} /> },
+interface MenuItem {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  permission?: string;
+}
+
+const TEAM_ITEMS: MenuItem[] = [
+  { href: '/admin/team', label: 'Gestion Équipe (RBAC)', icon: <ShieldCheck size={18} />, permission: 'team.view' },
+  { href: '/admin/team/roles', label: 'Annuaire des 26 Rôles', icon: <Users size={18} />, permission: 'team.view' },
+  { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={18} />, permission: 'tasks.view' },
   { href: '/admin/chat', label: 'NAY Chat (WhatsApp)', icon: <MessageSquare size={18} /> },
   { href: '/admin/notifications', label: 'Notifications & Alertes', icon: <Bell size={18} /> },
-  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={18} /> },
+  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={18} />, permission: 'activity.view_own' },
 ];
 
-const MENU_ITEMS = [
-  { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} /> },
-  { href: '/admin/finance', label: 'Finance & Rapports', icon: <TrendingUp size={18} /> },
-  { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} /> },
-  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={18} /> },
-  { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={18} /> },
-  { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} /> },
-  { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={18} /> },
-  { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={18} /> },
-  { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} /> },
-  { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} /> },
+const MENU_ITEMS: MenuItem[] = [
+  { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} />, permission: 'dashboard.view' },
+  { href: '/admin/finance', label: 'Finance & Rapports', icon: <TrendingUp size={18} />, permission: 'finance.view_revenue' },
+  { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} />, permission: 'orders.view' },
+  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={18} />, permission: 'reviews.view' },
+  { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={18} />, permission: 'products.view' },
+  { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} />, permission: 'products.view' },
+  { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={18} />, permission: 'products.view' },
+  { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={18} />, permission: 'products.edit' },
+  { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} />, permission: 'inventory.view' },
+  { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} />, permission: 'products.view' },
 ];
 
-const CRM_ITEMS = [
-  { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={18} /> },
-  { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={18} /> },
-  { href: '/admin/reviews', label: 'Avis Clients', icon: <MessageSquare size={18} /> },
+const CRM_ITEMS: MenuItem[] = [
+  { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={18} />, permission: 'customers.view' },
+  { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={18} />, permission: 'customers.view_vip' },
+  { href: '/admin/reviews', label: 'Avis Clients', icon: <MessageSquare size={18} />, permission: 'reviews.view' },
 ];
 
-const MARKETING_ITEMS = [
-  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads Hub)', icon: <Film size={18} /> },
-  { href: '/admin/marketing', label: 'Retention & Marketing', icon: <TrendingUp size={18} /> },
-  { href: '/admin/marketing/campaigns', label: 'Campagnes', icon: <Mail size={18} /> },
-  { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={18} /> },
-  { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} /> },
-  { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} /> },
-  { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} /> },
-  { href: '/admin/analytics', label: 'Audience', icon: <TrendingUp size={18} /> },
-  { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={18} /> },
-  { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} /> },
+const MARKETING_ITEMS: MenuItem[] = [
+  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads Hub)', icon: <Film size={18} />, permission: 'marketing.manage_creatives' },
+  { href: '/admin/marketing', label: 'Retention & Marketing', icon: <TrendingUp size={18} />, permission: 'marketing.view' },
+  { href: '/admin/marketing/campaigns', label: 'Campagnes', icon: <Mail size={18} />, permission: 'marketing.manage_campaigns' },
+  { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={18} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} />, permission: 'marketing.manage_landing_pages' },
+  { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} />, permission: 'marketing.manage_promotions' },
+  { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} />, permission: 'marketing.manage_affiliates' },
+  { href: '/admin/analytics', label: 'Audience', icon: <TrendingUp size={18} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={18} />, permission: 'marketing.manage_newsletter' },
+  { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} />, permission: 'marketing.manage_seo' },
 ];
 
-const SYSTEM_ITEMS = [
-  { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
-  { href: '/admin/vitrine', label: 'Vitrine & Recommandés', icon: <Sparkles size={18} /> },
-  { href: '/admin/profile', label: 'Mon Compte Propriétaire', icon: <User size={18} /> },
-  { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} /> },
+const SYSTEM_ITEMS: MenuItem[] = [
+  { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} />, permission: 'messages.view' },
+  { href: '/admin/vitrine', label: 'Vitrine & Recommandés', icon: <Sparkles size={18} />, permission: 'products.edit' },
+  { href: '/admin/profile', label: 'Mon Compte Utilisateur', icon: <User size={18} /> },
+  { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} />, permission: 'settings.view' },
 ];
 
 interface AdminUser {
@@ -86,6 +95,8 @@ interface AdminUser {
   email: string;
   role: string;
   avatar?: string | null;
+  effectivePermissions?: string[];
+  isOwner?: boolean;
 }
 
 export default function AdminSidebar() {
@@ -137,8 +148,19 @@ export default function AdminSidebar() {
     return name.slice(0, 2).toUpperCase();
   };
 
-  const renderLinks = (items: typeof MENU_ITEMS) => {
-    return items.map((item) => {
+  // Check if item is permitted for current user
+  const isItemVisible = (item: MenuItem) => {
+    if (!user) return true; // optimistic render before auth loads
+    if (user.isOwner) return true;
+    if (!item.permission) return true;
+    return (user.effectivePermissions || []).includes(item.permission);
+  };
+
+  const renderLinks = (items: MenuItem[]) => {
+    const visibleItems = items.filter(isItemVisible);
+    if (visibleItems.length === 0) return null;
+
+    return visibleItems.map((item) => {
       const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(`${item.href}/`));
       
       return (
@@ -164,6 +186,12 @@ export default function AdminSidebar() {
       );
     });
   };
+
+  const hasGeneralItems = MENU_ITEMS.some(isItemVisible);
+  const hasTeamItems = TEAM_ITEMS.some(isItemVisible);
+  const hasCrmItems = CRM_ITEMS.some(isItemVisible);
+  const hasMarketingItems = MARKETING_ITEMS.some(isItemVisible);
+  const hasSystemItems = SYSTEM_ITEMS.some(isItemVisible);
 
   return (
     <>
@@ -235,45 +263,55 @@ export default function AdminSidebar() {
         </div>
 
         <nav className="flex-1 px-4 space-y-6 overflow-y-auto mt-2 custom-scrollbar">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Général</div>
-            <div className="space-y-0.5">
-              {renderLinks(MENU_ITEMS)}
+          {hasGeneralItems && (
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Général</div>
+              <div className="space-y-0.5">
+                {renderLinks(MENU_ITEMS)}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#0ea5e9] mb-2 px-3 flex items-center gap-1.5">
-              <span>Équipe & Collaboration</span>
+          {hasTeamItems && (
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#0ea5e9] mb-2 px-3 flex items-center gap-1.5">
+                <span>Équipe & Collaboration</span>
+              </div>
+              <div className="space-y-0.5">
+                {renderLinks(TEAM_ITEMS)}
+              </div>
             </div>
-            <div className="space-y-0.5">
-              {renderLinks(TEAM_ITEMS)}
-            </div>
-          </div>
+          )}
 
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">CRM & Clients</div>
-            <div className="space-y-0.5">
-              {renderLinks(CRM_ITEMS)}
+          {hasCrmItems && (
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">CRM & Clients</div>
+              <div className="space-y-0.5">
+                {renderLinks(CRM_ITEMS)}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Marketing & Ventes</div>
-            <div className="space-y-0.5">
-              {renderLinks(MARKETING_ITEMS)}
+          {hasMarketingItems && (
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Marketing & Ventes</div>
+              <div className="space-y-0.5">
+                {renderLinks(MARKETING_ITEMS)}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Système</div>
-            <div className="space-y-0.5">
-              {renderLinks(SYSTEM_ITEMS)}
+          {hasSystemItems && (
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Système</div>
+              <div className="space-y-0.5">
+                {renderLinks(SYSTEM_ITEMS)}
+              </div>
             </div>
-          </div>
+          )}
         </nav>
 
-        {/* Current Connected Owner Card & Footer */}
+        {/* Current Connected User Card & Footer */}
         <div className="p-3 border-t border-[#1e1e1e] bg-[#0A0A0A] mt-auto space-y-2">
           {/* User Card */}
           <Link
@@ -298,7 +336,7 @@ export default function AdminSidebar() {
               </p>
               <div className="flex items-center gap-1">
                 <span className="text-[9px] uppercase font-bold tracking-wider text-[#0ea5e9] bg-[#0ea5e9]/10 px-1.5 py-0.2 rounded">
-                  {user?.role === 'OWNER' ? 'Propriétaire' : 'Admin'}
+                  {user?.isOwner ? 'Propriétaire' : (user?.role || 'Membre')}
                 </span>
               </div>
             </div>

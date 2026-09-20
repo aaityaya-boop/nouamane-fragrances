@@ -19,8 +19,11 @@ export interface AdminUserSafe {
   name: string;
   email: string;
   role: string;
+  jobTitle?: string | null;
+  phone?: string | null;
   status: string;
   avatar: string | null;
+  customPermissions?: string | null;
   lastLoginAt: Date | null;
   lastActivityAt: Date | null;
   createdAt: Date;
@@ -119,8 +122,11 @@ export async function getAuthenticatedAdmin(req?: Request): Promise<AdminUserSaf
         name: true,
         email: true,
         role: true,
+        jobTitle: true,
+        phone: true,
         status: true,
         avatar: true,
+        customPermissions: true,
         lastLoginAt: true,
         lastActivityAt: true,
         createdAt: true,

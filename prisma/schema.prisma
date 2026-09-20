@@ -822,28 +822,32 @@ model SeoAiVisibilityAudit {
 // ==========================================
 
 model AdminUser {
-  id               String              @id @default(cuid())
-  name             String
-  email            String              @unique
-  passwordHash     String
-  avatar           String?
-  role             String              @default("OWNER") // OWNER, MANAGER, CUSTOMER_SERVICE, STOCK_MANAGER, MARKETING
-  status           String              @default("ACTIVE") // ACTIVE, DISABLED
-  lastLoginAt      DateTime?
-  lastActivityAt   DateTime?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  activities       AdminActivityLog[]
-  createdTasks     AdminTask[]         @relation("CreatedTasks")
-  assignedTasks    AdminTask[]         @relation("AssignedTasks")
-  taskComments     AdminTaskComment[]
-  notifications    AdminNotification[]
-  sentMessages     AdminChatMessage[]  @relation("SentMessages")
-  receivedMessages AdminChatMessage[]  @relation("ReceivedMessages")
-  createdCreatives AdminCreative[]     @relation("CreatedCreatives")
+  id                String              @id @default(cuid())
+  name              String
+  email             String              @unique
+  passwordHash      String
+  avatar            String?
+  role              String              @default("OWNER")
+  jobTitle          String?
+  phone             String?
+  status            String              @default("ACTIVE") // ACTIVE, DISABLED
+  customPermissions String?             // JSON: { granted: string[], revoked: string[] }
+  lastLoginAt       DateTime?
+  lastActivityAt    DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  activities        AdminActivityLog[]
+  createdTasks      AdminTask[]         @relation("CreatedTasks")
+  assignedTasks     AdminTask[]         @relation("AssignedTasks")
+  taskComments      AdminTaskComment[]
+  notifications     AdminNotification[]
+  sentMessages      AdminChatMessage[]  @relation("SentMessages")
+  receivedMessages  AdminChatMessage[]  @relation("ReceivedMessages")
+  createdCreatives  AdminCreative[]     @relation("CreatedCreatives")
 
   @@index([email])
   @@index([role])
+  @@index([status])
 }
 
 model AdminActivityLog {

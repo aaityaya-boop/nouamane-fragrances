@@ -1,5 +1,7 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
+import { getUserEffectivePermissions } from '@/lib/auth/rbac/accessControl';
+import { getRoleDefinition } from '@/lib/auth/rbac/roles';
 import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
@@ -9,7 +11,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
-    // Also get list of all workspace owners/members
+    const effectivePermissions = getUserEffectivePermissions(admin);
+    const roleDefinition = getRoleDefinition(admin.role);
+    const isOwner = admin.role === 'OWNER' || admin.role === 'CO_OWNER' || admin.role === 'SUPER_ADMIN';
+
+    // Also get active team members list for presence / chat
     const teamMembers = await prisma.adminUser.findMany({
       where: { status: 'ACTIVE' },
       select: {
@@ -17,6 +23,7 @@ export async function GET(request: Request) {
         name: true,
         email: true,
         role: true,
+        jobTitle: true,
         avatar: true,
         lastLoginAt: true,
         lastActivityAt: true,
@@ -26,7 +33,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      user: admin,
+      user: {
+        ...admin,
+        roleDefinition,
+        effectivePermissions,
+        isOwner,
+      },
       teamMembers,
     });
   } catch (error) {
