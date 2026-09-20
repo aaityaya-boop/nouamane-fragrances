@@ -3,21 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Search,
-  Filter,
   ChevronDown,
   X,
   Printer,
   PackageOpen,
   CreditCard,
   Truck,
-  Phone,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  RotateCcw,
-  UserCheck,
   RefreshCw,
-  ExternalLink,
 } from 'lucide-react';
 import OrderTimelineStepper from '@/components/OrderTimelineStepper';
 import OrderTimelineFull from '@/components/OrderTimelineFull';
@@ -42,14 +34,14 @@ const STATUS_LABELS: Record<string, string> = {
   unconfirmed: 'Non confirmé',
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-700 ring-amber-500/30 border-amber-200',
-  processing: 'bg-indigo-50 text-indigo-700 ring-indigo-500/30 border-indigo-200',
-  shipped: 'bg-purple-50 text-purple-700 ring-purple-500/30 border-purple-200',
-  delivered: 'bg-emerald-50 text-emerald-700 ring-emerald-500/30 border-emerald-200',
-  refused: 'bg-red-50 text-red-700 ring-red-500/30 border-red-200',
-  returned: 'bg-gray-100 text-gray-700 ring-gray-500/30 border-gray-300',
-  unconfirmed: 'bg-orange-50 text-orange-700 ring-orange-500/30 border-orange-200',
+const STATUS_CLASSES: Record<string, string> = {
+  pending: 'bg-stone-100 text-stone-700 border-stone-200',
+  processing: 'bg-slate-100 text-slate-800 border-slate-200',
+  shipped: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+  delivered: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+  refused: 'bg-rose-50 text-rose-800 border-rose-200',
+  returned: 'bg-neutral-100 text-neutral-700 border-neutral-300',
+  unconfirmed: 'bg-amber-50 text-amber-800 border-amber-200',
 };
 
 const formatMAD = (amount: number) => {
@@ -83,7 +75,6 @@ export default function OrdersPage() {
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
-        // If an order is currently open in modal, update it with new timeline
         if (editingOrder) {
           const updatedCurrent = data.find((o: any) => o.id === editingOrder.id);
           if (updatedCurrent) setEditingOrder(updatedCurrent);
@@ -106,7 +97,6 @@ export default function OrdersPage() {
     newStatus: string,
     options?: { carrier?: string; trackingNumber?: string; customNote?: string; actorNameOverride?: string }
   ) => {
-    // Optimistic UI update
     setOrders((prev) =>
       prev.map((order) =>
         order.id === orderId ? { ...order, status: newStatus } : order
@@ -154,7 +144,6 @@ export default function OrdersPage() {
       });
 
       if (res.ok) {
-        // Refresh orders to fetch latest timeline
         await fetchOrders();
       }
     } catch (e) {
@@ -222,106 +211,104 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-4 md:p-8 lg:p-10 max-w-[1700px] mx-auto relative">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-neutral-200">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Commandes & Timeline</h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-black text-white text-[11px] font-mono font-bold">
-              {orders.length} total
-            </span>
-          </div>
-          <p className="text-[14px] text-gray-500">
-            Suivi complet en temps réel du parcours de chaque commande NAY (Création → Confirmation → Préparation → Expédition → Livraison).
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Commandes</h1>
+          <p className="text-[13px] text-neutral-500 mt-1">
+            Suivi des commandes NAY et historique des actions.
           </p>
         </div>
 
         <button
           onClick={fetchOrders}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-[13px] font-semibold shadow-xs transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
         >
-          <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} /> Actualiser
+          <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+          Actualiser
         </button>
       </div>
 
-      {/* Tabs Filter */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+      {/* Clean Horizontal Filter Tabs */}
+      <div className="flex items-center gap-6 overflow-x-auto border-b border-neutral-200 mb-6 scrollbar-none">
         {[
-          { id: 'ALL', label: 'Toutes les commandes', count: tabCounts.ALL },
-          { id: 'PENDING', label: 'En attente de confirmation', count: tabCounts.PENDING, dot: 'bg-amber-400' },
-          { id: 'PROCESSING', label: 'En préparation', count: tabCounts.PROCESSING, dot: 'bg-indigo-400' },
-          { id: 'SHIPPED', label: 'En livraison / Expédiées', count: tabCounts.SHIPPED, dot: 'bg-purple-400' },
-          { id: 'DELIVERED', label: 'Livrées & Encaissées', count: tabCounts.DELIVERED, dot: 'bg-emerald-500' },
-          { id: 'ISSUES', label: 'Refus & Retours', count: tabCounts.ISSUES, dot: 'bg-red-500' },
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL },
+          { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING },
+          { id: 'PROCESSING', label: 'En préparation', count: tabCounts.PROCESSING },
+          { id: 'SHIPPED', label: 'En livraison', count: tabCounts.SHIPPED },
+          { id: 'DELIVERED', label: 'Livrées', count: tabCounts.DELIVERED },
+          { id: 'ISSUES', label: 'Refus & Retours', count: tabCounts.ISSUES },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all ${
+            className={`pb-3 text-[13px] font-medium transition-colors relative whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === tab.id
-                ? 'bg-gray-900 text-white shadow-sm'
-                : 'bg-white hover:bg-gray-100 text-gray-600 border border-gray-200'
+                ? 'text-neutral-900 font-semibold'
+                : 'text-neutral-500 hover:text-neutral-800'
             }`}
           >
-            {tab.dot && <span className={`w-2 h-2 rounded-full ${tab.dot}`} />}
             <span>{tab.label}</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[11px] font-mono ${
-                activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'
-              }`}
-            >
+            <span className={`text-[11px] font-mono px-1.5 py-0.2 rounded ${
+              activeTab === tab.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-500'
+            }`}>
               {tab.count}
             </span>
+            {activeTab === tab.id && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-900" />
+            )}
           </button>
         ))}
       </div>
 
-      {/* Main Table Card */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
-        {/* Search Bar */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-4 bg-white">
-          <div className="flex items-center gap-3 flex-1 bg-gray-50 px-3.5 py-2.5 rounded-xl border border-gray-200">
-            <Search size={16} className="text-gray-400" />
-            <input
-              type="text"
-              placeholder="Rechercher par Référence (NF-...), Nom du client, Téléphone, Ville..."
-              className="flex-1 bg-transparent border-none focus:outline-none text-[13px] text-gray-900 placeholder:text-gray-400 font-medium"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
-              <button onClick={() => setSearch('')} className="text-gray-400 hover:text-gray-600">
-                <X size={14} />
-              </button>
-            )}
-          </div>
+      {/* Search Input */}
+      <div className="mb-4">
+        <div className="relative max-w-md">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+          <input
+            type="text"
+            placeholder="Rechercher une commande, client, ville, téléphone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 text-[13px] bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 placeholder:text-neutral-400"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
+      </div>
 
-        {/* Table */}
+      {/* Orders Table */}
+      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50/80 border-b border-gray-200">
+          <table className="w-full text-left text-[13px]">
+            <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">
               <tr>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Commande</th>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Client & Ville</th>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Timeline / Parcours</th>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Montant</th>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Statut</th>
-                <th className="px-6 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Action</th>
+                <th className="px-5 py-3">Réf</th>
+                <th className="px-5 py-3">Client</th>
+                <th className="px-5 py-3">Étape actuelle</th>
+                <th className="px-5 py-3">Total</th>
+                <th className="px-5 py-3">Statut</th>
+                <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-neutral-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-gray-500 text-[13px]">
-                    <RefreshCw className="animate-spin inline-block mr-2" size={16} /> Chargement des commandes NAY...
+                  <td colSpan={6} className="text-center py-12 text-neutral-400">
+                    Chargement...
                   </td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-gray-500 text-[13px]">
-                    Aucune commande trouvée pour ces critères.
+                  <td colSpan={6} className="text-center py-12 text-neutral-400">
+                    Aucune commande trouvée.
                   </td>
                 </tr>
               ) : (
@@ -339,38 +326,30 @@ export default function OrdersPage() {
                     <tr
                       key={order.id}
                       onClick={() => setEditingOrder(order)}
-                      className="hover:bg-gray-50/80 transition-colors cursor-pointer group"
+                      className="hover:bg-neutral-50/70 transition-colors cursor-pointer group"
                     >
-                      {/* Order Number & Date */}
-                      <td className="px-6 py-4">
-                        <div className="font-mono text-[13px] font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {/* Ref & Date */}
+                      <td className="px-5 py-3.5">
+                        <div className="font-mono font-semibold text-neutral-900 group-hover:text-black">
                           {order.orderNumber}
                         </div>
-                        <div className="text-[11px] text-gray-400 mt-0.5">{formattedDate}</div>
+                        <div className="text-[11px] text-neutral-400 mt-0.5">
+                          {formattedDate}
+                        </div>
                       </td>
 
                       {/* Customer */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[12px] font-bold text-gray-700 border border-gray-200">
-                            {order.customerName.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="text-[13px] font-bold text-gray-900">{order.customerName}</div>
-                            <div className="text-[12px] text-gray-500 mt-0.5 flex items-center gap-1.5">
-                              <span>{order.shippingCity}</span>
-                              {order.customerPhone && (
-                                <span className="text-gray-400 font-mono text-[11px]">
-                                  • {order.customerPhone}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                      <td className="px-5 py-3.5">
+                        <div className="font-medium text-neutral-900">
+                          {order.customerName}
+                        </div>
+                        <div className="text-[11px] text-neutral-500 mt-0.5">
+                          {order.shippingCity} {order.customerPhone ? `• ${order.customerPhone}` : ''}
                         </div>
                       </td>
 
-                      {/* Timeline Stepper */}
-                      <td className="px-6 py-4 min-w-[340px]">
+                      {/* Timeline Summary (Handmade minimal progress) */}
+                      <td className="px-5 py-3.5">
                         <OrderTimelineStepper
                           status={order.status}
                           timeline={order.timeline || []}
@@ -379,19 +358,23 @@ export default function OrdersPage() {
                       </td>
 
                       {/* Total */}
-                      <td className="px-6 py-4">
-                        <div className="text-[13px] font-extrabold text-gray-900">{formatMAD(order.total)}</div>
-                        <div className="text-[11px] text-gray-500 font-medium">{itemsCount} article(s)</div>
+                      <td className="px-5 py-3.5">
+                        <div className="font-semibold text-neutral-900">
+                          {formatMAD(order.total)}
+                        </div>
+                        <div className="text-[11px] text-neutral-400">
+                          {itemsCount} art.
+                        </div>
                       </td>
 
                       {/* Status Dropdown */}
-                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="relative inline-block w-[130px]">
+                      <td className="px-5 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="relative inline-block w-[125px]">
                           <select
                             value={order.status}
                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                            className={`w-full appearance-none flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide cursor-pointer transition-colors border focus:outline-none focus:ring-2 ${
-                              STATUS_COLORS[order.status] || STATUS_COLORS.pending
+                            className={`w-full appearance-none px-2.5 py-1 rounded-md text-[11px] font-medium border cursor-pointer focus:outline-none ${
+                              STATUS_CLASSES[order.status] || STATUS_CLASSES.pending
                             }`}
                           >
                             {Object.keys(STATUS_LABELS).map((status) => (
@@ -401,19 +384,19 @@ export default function OrdersPage() {
                             ))}
                           </select>
                           <ChevronDown
-                            size={14}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-60"
+                            size={12}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50"
                           />
                         </div>
                       </td>
 
                       {/* Action */}
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-5 py-3.5 text-right">
                         <button
                           onClick={() => setEditingOrder(order)}
-                          className="px-3 py-1.5 bg-gray-100 group-hover:bg-gray-900 group-hover:text-white rounded-lg text-[12px] font-semibold text-gray-700 transition-all"
+                          className="text-[12px] font-medium text-neutral-600 hover:text-neutral-900 underline decoration-neutral-300"
                         >
-                          Détails & Timeline
+                          Détails
                         </button>
                       </td>
                     </tr>
@@ -425,34 +408,29 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Slide-over Order Details & Full Timeline Drawer */}
+      {/* Details & Timeline Drawer */}
       {editingOrder && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-50 flex justify-end">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            className="absolute inset-0 bg-black/20 transition-opacity"
             onClick={() => setEditingOrder(null)}
           />
 
-          {/* Panel */}
-          <div className="relative w-full max-w-3xl bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-gray-200">
-            {/* Drawer Header */}
-            <div className="px-8 py-5 border-b border-gray-200 bg-white flex items-center justify-between shrink-0">
+          <div className="relative w-full max-w-2xl bg-white h-full shadow-xl flex flex-col border-l border-neutral-200">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-neutral-900">
                     {editingOrder.orderNumber}
                   </h2>
-                  <span
-                    className={`px-3 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${
-                      STATUS_COLORS[editingOrder.status] || STATUS_COLORS.pending
-                    }`}
-                  >
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
+                    STATUS_CLASSES[editingOrder.status] || STATUS_CLASSES.pending
+                  }`}>
                     {STATUS_LABELS[editingOrder.status] || editingOrder.status}
                   </span>
                 </div>
-                <div className="text-[12px] text-gray-500 mt-1">
-                  Commande passée le{' '}
+                <div className="text-[11px] text-neutral-400 mt-0.5">
                   {new Date(editingOrder.createdAt).toLocaleDateString('fr-MA', {
                     year: 'numeric',
                     month: 'long',
@@ -468,23 +446,23 @@ export default function OrdersPage() {
                   href={`/invoice/${editingOrder.orderNumber}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors border border-gray-200"
-                  title="Imprimer le bon / Facture"
+                  className="p-2 text-neutral-600 hover:text-neutral-900 border border-neutral-200 rounded-lg hover:bg-neutral-50"
+                  title="Facture"
                 >
-                  <Printer size={18} />
+                  <Printer size={15} />
                 </a>
                 <button
                   onClick={() => setEditingOrder(null)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors border border-gray-200"
+                  className="p-2 text-neutral-400 hover:text-neutral-900 border border-neutral-200 rounded-lg hover:bg-neutral-50"
                 >
-                  <X size={20} />
+                  <X size={15} />
                 </button>
               </div>
             </div>
 
-            {/* Drawer Body */}
-            <div className="p-8 overflow-y-auto space-y-8 flex-1 bg-gray-50/50">
-              {/* TIMELINE & AUDIT TRAIL (CORE FEATURE) */}
+            {/* Body */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-[13px]">
+              {/* Timeline Section */}
               <OrderTimelineFull
                 order={editingOrder}
                 currentUser={currentUser}
@@ -495,98 +473,43 @@ export default function OrdersPage() {
                 onAddAttachment={handleAddAttachment}
               />
 
-              {/* Customer & Shipping Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-                  <div className="flex items-center gap-2 text-gray-900 font-bold mb-3 text-[13px] uppercase tracking-wider">
-                    <CreditCard size={16} className="text-[#0ea5e9]" /> Coordonnées Client
-                  </div>
-                  <div className="space-y-1.5 text-[13px] text-gray-800">
-                    <p className="font-bold text-[14px] text-gray-900">{editingOrder.customerName}</p>
-                    <p className="text-gray-600">{editingOrder.customerEmail || 'Aucun email renseigné'}</p>
-                    <p className="text-gray-900 font-mono font-semibold">
-                      {editingOrder.customerPhone || 'Aucun téléphone'}
-                    </p>
-                  </div>
+              {/* Client & Shipping */}
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-200">
+                <div className="space-y-1">
+                  <div className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Client</div>
+                  <div className="font-semibold text-neutral-900">{editingOrder.customerName}</div>
+                  <div className="text-neutral-500">{editingOrder.customerPhone || 'Sans téléphone'}</div>
+                  <div className="text-neutral-500">{editingOrder.customerEmail || 'Sans email'}</div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-                  <div className="flex items-center gap-2 text-gray-900 font-bold mb-3 text-[13px] uppercase tracking-wider">
-                    <Truck size={16} className="text-purple-600" /> Adresse de Livraison
-                  </div>
-                  <div className="space-y-1.5 text-[13px] text-gray-800">
-                    <p className="font-bold text-gray-900">{editingOrder.shippingCity}</p>
-                    <p className="text-gray-600 leading-relaxed">{editingOrder.shippingAddress}</p>
-                    {editingOrder.shippingPostalCode && (
-                      <p className="text-gray-400 font-mono text-[11px]">{editingOrder.shippingPostalCode}</p>
-                    )}
-                  </div>
+                <div className="space-y-1">
+                  <div className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">Livraison</div>
+                  <div className="font-semibold text-neutral-900">{editingOrder.shippingCity}</div>
+                  <div className="text-neutral-500 leading-snug">{editingOrder.shippingAddress}</div>
                 </div>
               </div>
 
-              {/* Ordered Items */}
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 bg-white flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-gray-900 font-bold text-[13px] uppercase tracking-wider">
-                    <PackageOpen size={16} className="text-amber-500" /> Articles commandés
-                  </div>
-                </div>
-                <table className="w-full text-left">
-                  <thead className="bg-gray-50/80 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-[11px] font-bold tracking-wider uppercase text-gray-500">Produit</th>
-                      <th className="px-6 py-3 text-[11px] font-bold tracking-wider uppercase text-gray-500 text-center">Qté</th>
-                      <th className="px-6 py-3 text-[11px] font-bold tracking-wider uppercase text-gray-500 text-right">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {getParsedItems(editingOrder.items).map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="px-6 py-3.5">
-                          <div className="text-[13px] font-bold text-gray-900">{item.name}</div>
-                          <div className="text-[11px] text-gray-500 mt-0.5">
-                            {item.size} {item.sku && `• Réf: ${item.sku}`}
-                          </div>
-                        </td>
-                        <td className="px-6 py-3.5 text-[13px] font-semibold text-center text-gray-900">
-                          {item.quantity}
-                        </td>
-                        <td className="px-6 py-3.5 text-[13px] font-bold text-right text-gray-900">
-                          {formatMAD(item.price * item.quantity)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Payment Summary */}
-              <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-                <h3 className="text-[12px] font-bold text-gray-900 mb-3 uppercase tracking-wider">Récapitulatif financier</h3>
-                <div className="space-y-2.5 text-[13px]">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Sous-total</span>
-                    <span className="font-semibold text-gray-900">{formatMAD(editingOrder.subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Frais de livraison</span>
-                    <span className="font-semibold text-gray-900">{formatMAD(editingOrder.shippingCost)}</span>
-                  </div>
-                  {editingOrder.discount > 0 && (
-                    <div className="flex justify-between text-emerald-600">
-                      <span>Remise appliquée</span>
-                      <span className="font-semibold">-{formatMAD(editingOrder.discount)}</span>
+              {/* Items */}
+              <div className="pt-4 border-t border-neutral-200">
+                <div className="text-[11px] uppercase tracking-wider text-neutral-400 font-semibold mb-3">Articles</div>
+                <div className="space-y-2">
+                  {getParsedItems(editingOrder.items).map((item, idx) => (
+                    <div key={idx} className="flex justify-between py-1 border-b border-neutral-100 last:border-0">
+                      <div>
+                        <span className="font-medium text-neutral-900">{item.name}</span>
+                        {item.size && <span className="text-neutral-400 text-xs ml-1">({item.size})</span>}
+                        <span className="text-neutral-500 text-xs ml-2">× {item.quantity}</span>
+                      </div>
+                      <span className="font-semibold text-neutral-900">{formatMAD(item.price * item.quantity)}</span>
                     </div>
-                  )}
-                  <div className="flex justify-between text-gray-600 pt-2.5 border-t border-dashed border-gray-200">
-                    <span>Mode de paiement</span>
-                    <span className="font-bold text-gray-900 uppercase tracking-wider">{editingOrder.paymentMethod}</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                    <span className="font-bold text-gray-900 text-[15px]">Total Net à Encaisser</span>
-                    <span className="text-2xl font-black text-gray-900 tracking-tight">{formatMAD(editingOrder.total)}</span>
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              {/* Total Summary */}
+              <div className="pt-4 border-t border-neutral-200 flex justify-between items-center text-sm">
+                <span className="font-semibold text-neutral-700">Total</span>
+                <span className="text-lg font-bold text-neutral-900">{formatMAD(editingOrder.total)}</span>
               </div>
             </div>
           </div>
