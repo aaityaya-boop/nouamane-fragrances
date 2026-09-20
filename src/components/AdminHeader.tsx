@@ -12,7 +12,9 @@ import {
   ChevronDown, 
   Sparkles,
   CheckCircle2,
-  Users
+  Users,
+  KeyRound,
+  ArrowRightLeft
 } from 'lucide-react';
 
 interface AdminUser {
@@ -81,41 +83,22 @@ export default function AdminHeader() {
     }
   };
 
-  // Extract initials for fallback avatar
   const getInitials = (name?: string) => {
     if (!name) return 'NA';
     const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
   };
 
-  const getRoleLabel = (role?: string) => {
-    switch (role) {
-      case 'OWNER':
-        return 'Propriétaire';
-      case 'MANAGER':
-        return 'Manager';
-      case 'STOCK_MANAGER':
-        return 'Gestionnaire Stock';
-      case 'MARKETING':
-        return 'Marketing';
-      default:
-        return 'Administrateur';
-    }
-  };
-
-  // Find co-owner (the other owner)
   const otherOwner = teamMembers.find(
     (m) => m.role === 'OWNER' && m.id !== currentUser?.id
   );
 
   return (
-    <header className="w-full bg-white/80 backdrop-blur-md border-b border-[#e2e8f0] px-4 lg:px-8 py-3.5 mb-6 rounded-2xl shadow-sm flex items-center justify-between transition-all">
+    <header className="w-full bg-white border-b border-[#e2e8f0] px-4 lg:px-8 py-3 mb-6 rounded-2xl shadow-sm flex items-center justify-between transition-all">
       {/* Left: Quick Workspace Badge / Context */}
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100/80 border border-slate-200/80 text-[12px] font-medium text-slate-700">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -126,7 +109,7 @@ export default function AdminHeader() {
         <Link
           href="/"
           target="_blank"
-          className="hidden md:flex items-center gap-1.5 text-[12px] font-medium text-slate-500 hover:text-[#0ea5e9] transition-colors"
+          className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#0ea5e9] transition-colors"
           title="Voir la boutique publique"
         >
           <span>nayparfum.ma</span>
@@ -134,37 +117,29 @@ export default function AdminHeader() {
         </Link>
       </div>
 
-      {/* Right: Co-Owners & User Profile Dropdown */}
+      {/* Right: Active Profile & Fast Switcher */}
       <div className="flex items-center gap-3 ml-auto">
-        {/* Workspace Owners Indicator on Desktop */}
-        {teamMembers.length > 0 && (
-          <div className="hidden xl:flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg border border-slate-200/60 text-[11px] text-slate-500">
-            <Users size={13} className="text-[#0ea5e9]" />
-            <span>Co-propriétaires :</span>
-            <div className="flex items-center gap-1 font-semibold text-slate-700">
-              {teamMembers
-                .filter((m) => m.role === 'OWNER')
-                .map((m, idx) => (
-                  <span key={m.id} className="flex items-center gap-1">
-                    {idx > 0 && <span className="text-slate-300">•</span>}
-                    <span className={m.id === currentUser?.id ? 'text-[#0ea5e9]' : ''}>
-                      {m.name.split(' ')[0]}
-                    </span>
-                  </span>
-                ))}
-            </div>
-          </div>
+        {/* Fast Switch Button between Ayoub and Nouamane */}
+        {otherOwner && (
+          <button
+            onClick={handleLogout}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-[#0ea5e9]/10 text-slate-600 hover:text-[#0ea5e9] rounded-full border border-slate-200 hover:border-[#0ea5e9]/30 text-xs font-medium transition-colors cursor-pointer"
+            title={`Basculer sur le compte de ${otherOwner.name}`}
+          >
+            <ArrowRightLeft size={13} className="text-[#0ea5e9]" />
+            <span>Basculer vers <strong>{otherOwner.name.split(' ')[0]}</strong></span>
+          </button>
         )}
 
         {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20"
-            aria-label="Menu profil utilisateur"
+            className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all focus:outline-none"
+            aria-label="Menu profil administrateur"
           >
             {/* Avatar Pill */}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-900 to-slate-700 text-white flex items-center justify-center text-xs font-bold shadow-sm border border-white">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white">
               {currentUser?.avatar ? (
                 <img
                   src={currentUser.avatar}
@@ -178,11 +153,11 @@ export default function AdminHeader() {
 
             {/* User Info */}
             <div className="text-left hidden sm:block">
-              <div className="text-[13px] font-semibold text-slate-900 leading-tight">
+              <div className="text-xs font-bold text-slate-900 leading-tight">
                 {isLoading ? 'Chargement...' : currentUser?.name || 'Administrateur'}
               </div>
               <div className="text-[10px] uppercase font-bold tracking-wider text-[#0ea5e9] leading-tight">
-                {getRoleLabel(currentUser?.role)}
+                Propriétaire NAY
               </div>
             </div>
 
@@ -200,7 +175,7 @@ export default function AdminHeader() {
               {/* Profile Card Header */}
               <div className="px-4 py-3 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-sky-500/20">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-sky-500/20 overflow-hidden">
                     {currentUser?.avatar ? (
                       <img
                         src={currentUser.avatar}
@@ -212,39 +187,35 @@ export default function AdminHeader() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">
+                    <p className="text-xs font-bold text-slate-900 truncate">
                       {currentUser?.name}
                     </p>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-[11px] text-slate-500 truncate">
                       {currentUser?.email}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
-                  <span className="text-slate-400 font-medium">Statut compte</span>
+                  <span className="text-slate-400 font-medium">Statut</span>
                   <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                     <CheckCircle2 size={11} />
-                    Actif
+                    Propriétaire Actif
                   </span>
                 </div>
               </div>
 
-              {/* Co-Owner Quick Info */}
-              {otherOwner && (
-                <div className="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between text-[11px]">
-                  <div className="flex items-center gap-1.5 text-slate-600">
-                    <Users size={12} className="text-[#0ea5e9]" />
-                    <span>Autre propriétaire :</span>
-                  </div>
-                  <span className="font-semibold text-slate-800">
-                    {otherOwner.name}
-                  </span>
-                </div>
-              )}
-
               {/* Menu Links */}
               <div className="py-1">
+                <Link
+                  href="/admin/profiles"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
+                >
+                  <Users size={15} />
+                  <span>Gestion des 2 Profils (Ayoub & Nouamane)</span>
+                </Link>
+
                 <Link
                   href="/admin/profile"
                   onClick={() => setIsDropdownOpen(false)}
@@ -277,10 +248,10 @@ export default function AdminHeader() {
               <div className="pt-1 border-t border-slate-100">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <LogOut size={15} />
-                  <span>Se déconnecter</span>
+                  <span>Changer de profil / Déconnexion</span>
                 </button>
               </div>
             </div>

@@ -41,7 +41,9 @@ export default async function proxy(request: NextRequest) {
   // --- 1. ADMIN SECURITY ---
   const isLoginPage = pathname === '/admin/login';
   const isAdminRoute = pathname.startsWith('/admin') && !isLoginPage;
-  const isAdminApiRoute = pathname.startsWith('/api/admin') && pathname !== '/api/admin/login';
+  const isAdminApiRoute = pathname.startsWith('/api/admin') && 
+    pathname !== '/api/admin/login' && 
+    pathname !== '/api/admin/auth/profiles';
 
   if (isLoginPage) {
     const token = request.cookies.get('admin_token')?.value;
