@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   User, 
   ShieldCheck, 
@@ -10,7 +10,16 @@ import {
   LogOut, 
   ExternalLink, 
   ChevronDown, 
-  CheckCircle2
+  CheckCircle2,
+  Bell,
+  MessageSquare,
+  Package,
+  ShoppingBag,
+  CheckSquare,
+  AlertTriangle,
+  Info,
+  Check,
+  X
 } from 'lucide-react';
 
 interface AdminUser {
@@ -23,16 +32,36 @@ interface AdminUser {
   lastActivityAt?: string | null;
 }
 
+interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  link?: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export default function AdminHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Notifications State
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   // Hide header on login page
   if (pathname === '/admin/login') return null;
 
+  // Fetch Current Admin Profile
   useEffect(() => {
     let isMounted = true;
     async function fetchMe() {
@@ -56,6 +85,9 @@ export default function AdminHeader() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setIsNotifOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -64,6 +96,28 @@ export default function AdminHeader() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Fetch Notifications & Polling
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/notifications?limit=7');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setNotifications(data.notifications || []);
+          setUnreadCount(data.unreadCount || 0);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications in header:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 20000); // 20s poll
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
 
   const handleLogout = async () => {
     try {
@@ -76,11 +130,71 @@ export default function AdminHeader() {
     }
   };
 
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const res = await fetch('/api/admin/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ all: true }),
+      });
+      if (res.ok) {
+        setUnreadCount(0);
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      }
+    } catch (err) {
+      console.error('Failed to mark all as read:', err);
+    }
+  };
+
+  const handleNotificationClick = async (notif: NotificationItem) => {
+    setIsNotifOpen(false);
+    if (!notif.isRead) {
+      fetch('/api/admin/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: notif.id }),
+      }).catch(() => {});
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    }
+    if (notif.link) {
+      router.push(notif.link);
+    }
+  };
+
   const getInitials = (name?: string) => {
     if (!name) return 'NA';
     const parts = name.trim().split(' ');
     if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
+  };
+
+  const getNotifIcon = (type: string) => {
+    switch (type) {
+      case 'ORDER':
+        return <ShoppingBag size={14} className="text-emerald-500" />;
+      case 'STOCK':
+        return <AlertTriangle size={14} className="text-amber-500" />;
+      case 'TASK':
+        return <CheckSquare size={14} className="text-sky-500" />;
+      case 'MESSAGE':
+        return <MessageSquare size={14} className="text-purple-500" />;
+      default:
+        return <Info size={14} className="text-slate-400" />;
+    }
+  };
+
+  const getRelativeTime = (dateStr: string) => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "À l'instant";
+    if (diffInSeconds < 3600) return `Il y a ${Math.floor(diffInSeconds / 60)} min`;
+    if (diffInSeconds < 86400) return `Il y a ${Math.floor(diffInSeconds / 3600)} h`;
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   };
 
   return (
@@ -106,8 +220,117 @@ export default function AdminHeader() {
         </Link>
       </div>
 
-      {/* Right: Connected Personal Owner Profile Dropdown */}
-      <div className="flex items-center gap-3 ml-auto">
+      {/* Right Controls: Chat, Notifications, Profile */}
+      <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+        {/* TEAM CHAT QUICK BUTTON */}
+        <Link
+          href="/admin/chat"
+          className="p-2 rounded-xl text-slate-500 hover:text-[#0ea5e9] hover:bg-slate-100 transition-colors relative flex items-center justify-center cursor-pointer"
+          title="Messagerie d'équipe (NAY Chat)"
+        >
+          <MessageSquare size={18} />
+        </Link>
+
+        {/* NOTIFICATIONS BELL & FLYOUT */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setIsNotifOpen(!isNotifOpen)}
+            className="p-2 rounded-xl text-slate-500 hover:text-[#0ea5e9] hover:bg-slate-100 transition-colors relative flex items-center justify-center cursor-pointer"
+            aria-label="Centre de notifications"
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* NOTIFICATION FLYOUT DROPDOWN */}
+          {isNotifOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 z-50 animate-in fade-in slide-in-from-top-2 duration-150 overflow-hidden">
+              {/* Flyout Header */}
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-2">
+                  <Bell size={16} className="text-[#0ea5e9]" />
+                  <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
+                    Notifications & Alertes
+                  </h4>
+                  {unreadCount > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
+                      {unreadCount} non lue{unreadCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllNotificationsAsRead}
+                    className="text-[11px] font-semibold text-[#0ea5e9] hover:text-sky-700 cursor-pointer flex items-center gap-1"
+                  >
+                    <Check size={12} />
+                    <span>Tout lire</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Notifications List */}
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="py-12 text-center text-slate-400 text-xs">
+                    <Bell size={24} className="mx-auto text-slate-300 mb-2" />
+                    <p className="font-medium text-slate-600">Aucune notification pour l'instant</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Tout est à jour sur votre boutique</p>
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      onClick={() => handleNotificationClick(notif)}
+                      className={`p-3.5 flex items-start gap-3 hover:bg-slate-50 transition-colors cursor-pointer text-xs ${
+                        !notif.isRead ? 'bg-sky-50/40' : ''
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                        {getNotifIcon(notif.type)}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <p className={`font-bold truncate ${!notif.isRead ? 'text-slate-900' : 'text-slate-700'}`}>
+                            {notif.title}
+                          </p>
+                          {!notif.isRead && (
+                            <span className="w-2 h-2 rounded-full bg-[#0ea5e9] shrink-0" />
+                          )}
+                        </div>
+                        <p className="text-slate-500 text-[11px] line-clamp-2 leading-relaxed">
+                          {notif.message}
+                        </p>
+                        <span className="text-[10px] text-slate-400 mt-1 block">
+                          {getRelativeTime(notif.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Flyout Footer */}
+              <div className="p-3 border-t border-slate-100 bg-slate-50/70 text-center">
+                <Link
+                  href="/admin/notifications"
+                  onClick={() => setIsNotifOpen(false)}
+                  className="text-xs font-bold text-[#0ea5e9] hover:text-sky-700 block transition-colors"
+                >
+                  Voir tout le centre de notifications →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Connected Personal Owner Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -193,11 +416,29 @@ export default function AdminHeader() {
                 </Link>
 
                 <Link
+                  href="/admin/chat"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
+                >
+                  <MessageSquare size={15} className="text-[#0ea5e9]" />
+                  <span>Messagerie d'Équipe (NAY Chat)</span>
+                </Link>
+
+                <Link
+                  href="/admin/notifications"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
+                >
+                  <Bell size={15} className="text-amber-500" />
+                  <span>Centre de Notifications</span>
+                </Link>
+
+                <Link
                   href="/admin/tasks"
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0ea5e9] transition-colors"
                 >
-                  <CheckCircle2 size={15} className="text-[#0ea5e9]" />
+                  <CheckSquare size={15} className="text-emerald-500" />
                   <span>Missions & Tâches</span>
                 </Link>
 

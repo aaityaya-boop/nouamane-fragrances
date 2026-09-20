@@ -29,11 +29,14 @@ import {
   User,
   ShieldCheck,
   CheckSquare,
-  History
+  History,
+  Bell
 } from 'lucide-react';
 
 const TEAM_ITEMS = [
   { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={18} /> },
+  { href: '/admin/chat', label: 'NAY Chat (WhatsApp)', icon: <MessageSquare size={18} /> },
+  { href: '/admin/notifications', label: 'Notifications & Alertes', icon: <Bell size={18} /> },
   { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={18} /> },
 ];
 

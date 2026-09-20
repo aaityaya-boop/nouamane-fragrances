@@ -822,21 +822,24 @@ model SeoAiVisibilityAudit {
 // ==========================================
 
 model AdminUser {
-  id             String             @id @default(cuid())
-  name           String
-  email          String             @unique
-  passwordHash   String
-  avatar         String?
-  role           String             @default("OWNER") // OWNER, MANAGER, CUSTOMER_SERVICE, STOCK_MANAGER, MARKETING
-  status         String             @default("ACTIVE") // ACTIVE, DISABLED
-  lastLoginAt    DateTime?
-  lastActivityAt DateTime?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  activities     AdminActivityLog[]
-  createdTasks   AdminTask[]        @relation("CreatedTasks")
-  assignedTasks  AdminTask[]        @relation("AssignedTasks")
-  taskComments   AdminTaskComment[]
+  id               String              @id @default(cuid())
+  name             String
+  email            String              @unique
+  passwordHash     String
+  avatar           String?
+  role             String              @default("OWNER") // OWNER, MANAGER, CUSTOMER_SERVICE, STOCK_MANAGER, MARKETING
+  status           String              @default("ACTIVE") // ACTIVE, DISABLED
+  lastLoginAt      DateTime?
+  lastActivityAt   DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  activities       AdminActivityLog[]
+  createdTasks     AdminTask[]         @relation("CreatedTasks")
+  assignedTasks    AdminTask[]         @relation("AssignedTasks")
+  taskComments     AdminTaskComment[]
+  notifications    AdminNotification[]
+  sentMessages     AdminChatMessage[]  @relation("SentMessages")
+  receivedMessages AdminChatMessage[]  @relation("ReceivedMessages")
 
   @@index([email])
   @@index([role])
@@ -909,5 +912,55 @@ model AdminTaskComment {
 
   @@index([taskId])
 }
+
+// ==========================================
+// NOTIFICATIONS & LIVE ALERTS MODEL
+// ==========================================
+
+model AdminNotification {
+  id        String     @id @default(cuid())
+  userId    String?    // null = global to all owners, or specific userId
+  type      String     // ORDER, STOCK, TASK, REVIEW, MESSAGE, SYSTEM
+  title     String
+  message   String
+  link      String?    // /admin/orders, /admin/inventory, /admin/tasks, etc.
+  isRead    Boolean    @default(false)
+  readAt    DateTime?
+  metadata  String?    // JSON extra info (orderId, productId, taskId)
+  createdAt DateTime   @default(now())
+  user      AdminUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ==========================================
+// INTERNAL TEAM CHAT (WHATSAPP-STYLE) MODEL
+// ==========================================
+
+model AdminChatMessage {
+  id           String     @id @default(cuid())
+  senderId     String
+  senderName   String
+  senderAvatar String?
+  recipientId  String?    // null = GENERAL room, or specific userId
+  channel      String     @default("GENERAL") // GENERAL, DIRECT, STOCK, ORDERS
+  content      String
+  attachments  String?    // JSON string array of URLs
+  isRead       Boolean    @default(false)
+  readAt       DateTime?
+  createdAt    DateTime   @default(now())
+
+  sender       AdminUser  @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient    AdminUser? @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: SetNull)
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([channel])
+  @@index([createdAt])
+}
+
 
 
