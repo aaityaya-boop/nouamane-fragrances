@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   User
 } from 'lucide-react';
+import { formatLastSeen, isUserOnline } from '@/lib/userStatus';
 
 interface AdminUser {
   id: string;
@@ -380,6 +381,7 @@ export default function AdminTeamChatPage() {
                   .filter((c) => !searchContact || c.name.toLowerCase().includes(searchContact.toLowerCase()))
                   .map((contact) => {
                     const isActive = activeChatType === 'DIRECT' && activeId === contact.id;
+                    const statusInfo = formatLastSeen(contact.lastActivityAt, contact.lastLoginAt);
 
                     return (
                       <div
@@ -404,7 +406,13 @@ export default function AdminTeamChatPage() {
                               <span>{getInitials(contact.name)}</span>
                             )}
                           </div>
-                          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+                          {/* Live Online / Offline Dot */}
+                          <span
+                            className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ${
+                              isActive ? 'ring-[#0ea5e9]' : 'ring-white'
+                            } ${statusInfo.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}
+                            title={statusInfo.text}
+                          />
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -412,16 +420,20 @@ export default function AdminTeamChatPage() {
                             <h4 className={`text-xs font-bold truncate ${isActive ? 'text-white' : 'text-slate-900'}`}>
                               {contact.name}
                             </h4>
-                            {contact.lastMessage && (
+                            {contact.lastMessage ? (
                               <span className={`text-[10px] ${isActive ? 'text-sky-100' : 'text-slate-400'}`}>
                                 {formatMessageTime(contact.lastMessage.createdAt)}
+                              </span>
+                            ) : (
+                              <span className={`text-[10px] ${isActive ? 'text-sky-100' : statusInfo.statusColor}`}>
+                                {statusInfo.isOnline ? 'En ligne' : ''}
                               </span>
                             )}
                           </div>
 
                           <div className="flex items-center justify-between gap-1">
                             <p className={`text-[11px] truncate ${isActive ? 'text-sky-100' : 'text-slate-500'}`}>
-                              {contact.lastMessage?.content || 'Cliquez pour discuter'}
+                              {contact.lastMessage?.content || statusInfo.text}
                             </p>
                             {(contact.unreadCount || 0) > 0 && (
                               <span className="px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">
@@ -443,15 +455,26 @@ export default function AdminTeamChatPage() {
           {/* Chat Window Top Bar */}
           <div className="p-4 bg-white border-b border-slate-200 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold overflow-hidden shadow-sm">
-                {activeContact ? (
-                  activeContact.avatar ? (
-                    <img src={activeContact.avatar} alt={activeContact.name} className="w-full h-full object-cover" />
+              <div className="relative">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold overflow-hidden shadow-sm">
+                  {activeContact ? (
+                    activeContact.avatar ? (
+                      <img src={activeContact.avatar} alt={activeContact.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{getInitials(activeContact.name)}</span>
+                    )
                   ) : (
-                    <span>{getInitials(activeContact.name)}</span>
-                  )
-                ) : (
-                  <Users size={18} />
+                    <Users size={18} />
+                  )}
+                </div>
+                {activeContact && (
+                  <span
+                    className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white ${
+                      formatLastSeen(activeContact.lastActivityAt, activeContact.lastLoginAt).isOnline
+                        ? 'bg-emerald-500 animate-pulse'
+                        : 'bg-slate-300'
+                    }`}
+                  />
                 )}
               </div>
 
@@ -459,9 +482,28 @@ export default function AdminTeamChatPage() {
                 <h3 className="font-bold text-sm text-slate-900 leading-tight">
                   {activeContact ? activeContact.name : activeChannel?.name || 'Salon de discussion'}
                 </h3>
-                <p className="text-[11px] text-slate-500 leading-tight">
-                  {activeContact ? 'Propriétaire NAY • En ligne' : activeChannel?.description || 'Discussion'}
-                </p>
+                {activeContact ? (
+                  (() => {
+                    const status = formatLastSeen(activeContact.lastActivityAt, activeContact.lastLoginAt);
+                    return (
+                      <div className="flex items-center gap-1.5 text-[11px] leading-tight mt-0.5">
+                        <span
+                          className={`font-semibold ${
+                            status.isOnline ? 'text-emerald-600' : 'text-slate-500'
+                          }`}
+                        >
+                          {status.isOnline ? '● En ligne' : status.text}
+                        </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-slate-400">Propriétaire NAY</span>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                    {activeChannel?.description || 'Discussion d\'équipe'}
+                  </p>
+                )}
               </div>
             </div>
 

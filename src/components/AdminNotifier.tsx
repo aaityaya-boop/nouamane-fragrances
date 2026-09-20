@@ -103,12 +103,22 @@ export default function AdminNotifier() {
       }
     };
 
+    // Send heartbeat every 30 seconds to keep online status real-time
+    const sendHeartbeat = () => {
+      fetch('/api/admin/auth/heartbeat', { method: 'POST' }).catch(() => {});
+    };
+    sendHeartbeat();
+    const heartbeatInterval = setInterval(sendHeartbeat, 30000);
+
     // Poll every 15 seconds
     const interval = setInterval(checkLatestOrder, 15000);
     // Initial check
     checkLatestOrder();
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearInterval(heartbeatInterval);
+    };
   }, [lastOrderId]);
 
   return (

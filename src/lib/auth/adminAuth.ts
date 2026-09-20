@@ -1,4 +1,4 @@
-﻿import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
@@ -129,6 +129,15 @@ export async function getAuthenticatedAdmin(req?: Request): Promise<AdminUserSaf
     });
 
     if (!user || user.status !== 'ACTIVE') return null;
+
+    // Throttle updating lastActivityAt (every 30s)
+    const now = new Date();
+    if (!user.lastActivityAt || (now.getTime() - new Date(user.lastActivityAt).getTime()) > 30000) {
+      prisma.adminUser.update({
+        where: { id: user.id },
+        data: { lastActivityAt: now },
+      }).catch(() => {});
+    }
 
     return user;
   } catch (error) {

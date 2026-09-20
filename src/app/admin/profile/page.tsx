@@ -387,8 +387,8 @@ export default function AdminProfilePage() {
           </div>
 
           <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2.5 rounded-2xl backdrop-blur-sm text-xs text-slate-300">
-            <Calendar size={14} className="text-[#38bdf8]" />
-            <span>Dernière connexion : <strong>{formatDate(currentUser?.lastLoginAt)}</strong></span>
+            <Clock size={14} className="text-[#38bdf8]" />
+            <span>Dernière visite : <strong>{formatDate(currentUser?.lastActivityAt || currentUser?.lastLoginAt)}</strong></span>
           </div>
         </div>
 
