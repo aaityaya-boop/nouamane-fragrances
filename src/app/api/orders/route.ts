@@ -130,6 +130,21 @@ export async function POST(request: Request) {
       });
     }
 
+    // Dispatch REAL admin notification for new order
+    try {
+      await prisma.adminNotification.create({
+        data: {
+          type: 'ORDER',
+          title: `Nouvelle Commande #${created.orderNumber} (${created.total} DH)`,
+          message: `Commande passée par ${created.customerName} (${created.shippingCity})`,
+          link: '/admin/orders',
+          metadata: JSON.stringify({ orderId: created.id, orderNumber: created.orderNumber, total: created.total }),
+        },
+      });
+    } catch (e) {
+      console.error('Failed to dispatch order notification:', e);
+    }
+
     return NextResponse.json({
       success: true,
       orderNumber: created.orderNumber,

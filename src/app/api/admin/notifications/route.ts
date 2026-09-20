@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
-import { checkAndGenerateStoreAlerts } from '@/lib/notificationService';
 import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
@@ -9,9 +8,6 @@ export async function GET(request: Request) {
     if (!admin) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
-
-    // Trigger alert checks (non-blocking background)
-    checkAndGenerateStoreAlerts().catch(() => {});
 
     const { searchParams } = new URL(request.url);
     const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '30', 10), 1), 100);
