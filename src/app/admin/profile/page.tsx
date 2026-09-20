@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { 
   User, 
@@ -19,7 +19,13 @@ import {
   Eye,
   EyeOff,
   Lock,
-  Mail
+  Mail,
+  UploadCloud,
+  Camera,
+  Trash2,
+  Image as ImageIcon,
+  Loader2,
+  Check
 } from 'lucide-react';
 
 interface AdminUser {
@@ -50,11 +56,11 @@ interface ActivityLog {
 }
 
 const AVATAR_PRESETS = [
-  { id: '1', label: 'Noir & Or', url: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=150&auto=format&fit=crop&q=80' },
-  { id: '2', label: 'Bleu NAY', url: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=150&auto=format&fit=crop&q=80' },
-  { id: '3', label: 'Ambre Luxe', url: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=150&auto=format&fit=crop&q=80' },
-  { id: '4', label: 'Flacon Cristal', url: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=150&auto=format&fit=crop&q=80' },
-  { id: '5', label: 'Oud Royal', url: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=150&auto=format&fit=crop&q=80' },
+  { id: '1', label: 'Noir & Or', url: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=300&auto=format&fit=crop&q=80' },
+  { id: '2', label: 'Bleu NAY', url: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=300&auto=format&fit=crop&q=80' },
+  { id: '3', label: 'Ambre Luxe', url: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=300&auto=format&fit=crop&q=80' },
+  { id: '4', label: 'Flacon Cristal', url: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=300&auto=format&fit=crop&q=80' },
+  { id: '5', label: 'Oud Royal', url: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&auto=format&fit=crop&q=80' },
 ];
 
 export default function AdminProfilePage() {
@@ -74,6 +80,12 @@ export default function AdminProfilePage() {
   const [avatar, setAvatar] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Upload state
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Security Form state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -117,6 +129,75 @@ export default function AdminProfilePage() {
   useEffect(() => {
     loadUserData();
   }, []);
+
+  // Handle direct file upload
+  const uploadImageFile = async (file: File) => {
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Veuillez sélectionner un fichier image valide (JPG, PNG, WebP).');
+      return;
+    }
+
+    // Check file size (10 MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError('La taille de l\'image ne doit pas dépasser 10 Mo.');
+      return;
+    }
+
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        setAvatar(data.url);
+        setProfileMessage({ type: 'success', text: 'Photo téléversée ! N\'oubliez pas de cliquer sur "Enregistrer mes modifications" ci-dessous.' });
+      } else {
+        setUploadError(data.error || 'Erreur lors du téléversement de l\'image.');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploadError('Erreur de connexion lors du téléversement.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadImageFile(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      uploadImageFile(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
 
   // Load activity logs (filtered by current user)
   const loadActivityLogs = async (currentPage = page) => {
@@ -172,7 +253,7 @@ export default function AdminProfilePage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setProfileMessage({ type: 'success', text: 'Vos informations personnelles ont été mises à jour avec succès.' });
+        setProfileMessage({ type: 'success', text: 'Vos informations personnelles et votre photo ont été mises à jour avec succès.' });
         setCurrentUser(data.user);
       } else {
         setProfileMessage({ type: 'error', text: data.error || 'Erreur lors de la mise à jour.' });
@@ -279,10 +360,10 @@ export default function AdminProfilePage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xl sm:text-2xl font-bold shadow-lg shadow-sky-500/30 ring-4 ring-white/10 shrink-0 overflow-hidden">
-              {currentUser?.avatar ? (
-                <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover rounded-2xl" />
+              {avatar || currentUser?.avatar ? (
+                <img src={avatar || currentUser?.avatar || ''} alt={name || 'Avatar'} className="w-full h-full object-cover rounded-2xl" />
               ) : (
-                <span>{getInitials(currentUser?.name)}</span>
+                <span>{getInitials(name || currentUser?.name)}</span>
               )}
             </div>
             
@@ -322,7 +403,7 @@ export default function AdminProfilePage() {
             }`}
           >
             <User size={15} />
-            <span>Informations Personnelles</span>
+            <span>Informations Personnelles & Photo</span>
           </button>
 
           <button
@@ -351,7 +432,7 @@ export default function AdminProfilePage() {
         </div>
       </div>
 
-      {/* TAB 1: Mon Profil */}
+      {/* TAB 1: Mon Profil & Photo */}
       {activeTab === 'profile' && (
         <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm animate-in fade-in duration-200">
           <h2 className="text-lg font-bold text-slate-900 mb-1">Détails de mon compte personnel</h2>
@@ -370,7 +451,9 @@ export default function AdminProfilePage() {
             </div>
           )}
 
-          <form onSubmit={handleSaveProfile} className="space-y-6 max-w-2xl">
+          <form onSubmit={handleSaveProfile} className="space-y-7 max-w-3xl">
+            
+            {/* NAME & EMAIL FIELDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
@@ -411,52 +494,134 @@ export default function AdminProfilePage() {
               </div>
             </div>
 
-            {/* Avatar Selection */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-                Photo de profil / Avatar personnel
-              </label>
-              <div className="mb-3">
-                <input
-                  type="url"
-                  value={avatar}
-                  onChange={(e) => setAvatar(e.target.value)}
-                  placeholder="URL de votre photo ou choisissez un modèle ci-dessous"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
-                />
+            {/* PHOTO UPLOAD & AVATAR SECTION */}
+            <div className="p-5 sm:p-6 bg-slate-50/80 rounded-3xl border border-slate-200/80 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-900">
+                    Photo de profil personnelle
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Téléversez une photo depuis votre ordinateur ou téléphone (PNG, JPG, WebP jusqu'à 10MB).
+                  </p>
+                </div>
+
+                {avatar && (
+                  <button
+                    type="button"
+                    onClick={() => setAvatar('')}
+                    className="px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg border border-red-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Retirer la photo</span>
+                  </button>
+                )}
               </div>
 
-              <div className="flex items-center gap-3 overflow-x-auto py-2">
-                <button
-                  type="button"
-                  onClick={() => setAvatar('')}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold border flex items-center gap-2 transition-all cursor-pointer ${
-                    !avatar ? 'border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+              {/* Hidden Native File Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp,image/avif"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+
+              {uploadError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-xs text-red-700">
+                  <AlertCircle size={15} className="shrink-0" />
+                  <span>{uploadError}</span>
+                </div>
+              )}
+
+              {/* Upload Dropzone & Live Preview */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                {/* Preview Circle */}
+                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-slate-200 shadow-sm text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-sky-500/20 overflow-hidden ring-4 ring-slate-100 mb-2">
+                    {avatar ? (
+                      <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{getInitials(name)}</span>
+                    )}
+                  </div>
+                  <span className="text-[11px] font-semibold text-slate-600 truncate max-w-full">
+                    {avatar ? 'Photo actuelle' : 'Initiales par défaut'}
+                  </span>
+                </div>
+
+                {/* Upload Button Box / Dropzone */}
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`sm:col-span-2 p-6 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center group ${
+                    isDragging
+                      ? 'border-[#0ea5e9] bg-[#0ea5e9]/10'
+                      : 'border-slate-300 hover:border-[#0ea5e9] bg-white hover:bg-[#0ea5e9]/5'
                   }`}
                 >
-                  <span>Initiales ({getInitials(name)})</span>
-                </button>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center py-2 text-slate-600 gap-2">
+                      <Loader2 size={24} className="animate-spin text-[#0ea5e9]" />
+                      <span className="text-xs font-semibold">Téléversement de l'image en cours...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/10 text-[#0ea5e9] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                        <UploadCloud size={20} />
+                      </div>
+                      <div className="text-xs font-bold text-slate-800 group-hover:text-[#0ea5e9] transition-colors">
+                        Cliquez ici pour choisir une photo ou glissez-déposez
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        PNG, JPG, WebP jusqu'à 10 Mo
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
 
-                {AVATAR_PRESETS.map((p) => (
+              {/* Presets Avatars (Optional choice) */}
+              <div className="pt-3 border-t border-slate-200/60">
+                <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  Ou choisir parmi nos modèles Haute Parfumerie :
+                </span>
+                
+                <div className="flex items-center gap-2.5 overflow-x-auto py-1 custom-scrollbar">
                   <button
-                    key={p.id}
                     type="button"
-                    onClick={() => setAvatar(p.url)}
-                    className={`p-1 rounded-xl border flex items-center gap-2 text-xs transition-all shrink-0 cursor-pointer ${
-                      avatar === p.url ? 'border-[#0ea5e9] ring-2 ring-[#0ea5e9]/30' : 'border-slate-200 hover:border-slate-400'
+                    onClick={() => setAvatar('')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                      !avatar ? 'border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]' : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'
                     }`}
                   >
-                    <img src={p.url} alt={p.label} className="w-8 h-8 rounded-lg object-cover" />
-                    <span className="pr-2 font-medium text-slate-700">{p.label}</span>
+                    <span>Initiales ({getInitials(name)})</span>
                   </button>
-                ))}
+
+                  {AVATAR_PRESETS.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setAvatar(p.url)}
+                      className={`p-1 rounded-xl border flex items-center gap-2 text-xs transition-all shrink-0 bg-white cursor-pointer ${
+                        avatar === p.url ? 'border-[#0ea5e9] ring-2 ring-[#0ea5e9]/30' : 'border-slate-200 hover:border-slate-400'
+                      }`}
+                    >
+                      <img src={p.url} alt={p.label} className="w-6 h-6 rounded-lg object-cover" />
+                      <span className="pr-2 font-medium text-slate-700 text-[11px]">{p.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
+            {/* SAVE BUTTON */}
             <div className="pt-4 border-t border-slate-100 flex justify-end">
               <button
                 type="submit"
-                disabled={isSavingProfile}
+                disabled={isSavingProfile || isUploading}
                 className="px-6 py-3 bg-[#0ea5e9] hover:bg-sky-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-sky-500/20 flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isSavingProfile ? (
