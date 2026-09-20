@@ -15,6 +15,9 @@ export interface TimelineEvent {
   actorAvatar?: string | null;
   carrier?: string | null;
   trackingNumber?: string | null;
+  attachmentUrl?: string | null;
+  attachmentName?: string | null;
+  attachmentType?: string | null;
   createdAt: string | Date;
 }
 
@@ -27,7 +30,7 @@ interface OrderTimelineStepperProps {
 export default function OrderTimelineStepper({ status, timeline = [], compact = false }: OrderTimelineStepperProps) {
   const normStatus = (status || 'pending').toLowerCase();
 
-  // Find corresponding events if available
+  // Find real recorded events in timeline
   const createdEvent = timeline.find((e) => e.status === 'CREATED');
   const confirmedEvent = timeline.find((e) => e.status === 'CONFIRMED');
   const prepEvent = timeline.find((e) => e.status === 'PREPARED' || e.status === 'PREPARING');
@@ -36,19 +39,20 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
   const refusedEvent = timeline.find((e) => e.status === 'REFUSED');
   const returnedEvent = timeline.find((e) => e.status === 'RETURNED');
 
-  const isDelivered = normStatus === 'delivered';
-  const isRefused = normStatus === 'refused';
-  const isReturned = normStatus === 'returned';
+  const isDelivered = Boolean(deliveredEvent) || normStatus === 'delivered';
+  const isRefused = Boolean(refusedEvent) || normStatus === 'refused';
+  const isReturned = Boolean(returnedEvent) || normStatus === 'returned';
   const isCanceled = normStatus === 'canceled';
-  const isShipped = ['shipped', 'delivered', 'refused', 'returned'].includes(normStatus);
-  const isPrepared = ['processing', 'shipped', 'delivered', 'refused', 'returned'].includes(normStatus);
-  const isConfirmed = isPrepared || normStatus === 'confirmed';
 
-  // Helper to format short actor first name
-  const getFirstName = (fullName?: string) => {
-    if (!fullName) return '';
+  const isShipped = Boolean(shipEvent) || ['shipped', 'delivered', 'refused', 'returned'].includes(normStatus);
+  const isPrepared = Boolean(prepEvent) || ['processing', 'shipped', 'delivered', 'refused', 'returned'].includes(normStatus);
+  const isConfirmed = Boolean(confirmedEvent) || isPrepared || normStatus === 'confirmed';
+
+  // Helper to format clean actor first name / name
+  const getActorShortName = (fullName?: string) => {
+    if (!fullName || fullName.includes('Système') || fullName.includes('Client')) return null;
     const clean = fullName.replace(/\(Client\)/gi, '').trim();
-    return clean.split(' ')[0] || '';
+    return clean;
   };
 
   const steps = [
@@ -66,7 +70,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
       id: 'confirmed',
       label: 'Confirmée',
       sublabel: confirmedEvent?.createdAt ? formatTimelineTime(confirmedEvent.createdAt) : null,
-      actor: confirmedEvent?.actorName ? getFirstName(confirmedEvent.actorName) : null,
+      actor: confirmedEvent ? getActorShortName(confirmedEvent.actorName) : null,
       isDone: isConfirmed,
       isActive: normStatus === 'confirmed',
       icon: Phone,
@@ -76,7 +80,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
       id: 'prepared',
       label: 'Préparée',
       sublabel: prepEvent?.createdAt ? formatTimelineTime(prepEvent.createdAt) : null,
-      actor: prepEvent?.actorName ? getFirstName(prepEvent.actorName) : null,
+      actor: prepEvent ? getActorShortName(prepEvent.actorName) : null,
       isDone: isPrepared,
       isActive: normStatus === 'processing',
       icon: Package,
@@ -86,7 +90,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
       id: 'shipped',
       label: 'Expédiée',
       sublabel: shipEvent?.createdAt ? formatTimelineTime(shipEvent.createdAt) : null,
-      actor: shipEvent?.carrier ? shipEvent.carrier.split(' ')[0] : null,
+      actor: shipEvent?.carrier ? shipEvent.carrier : (shipEvent ? getActorShortName(shipEvent.actorName) : null),
       isDone: isShipped,
       isActive: normStatus === 'shipped',
       icon: Truck,
@@ -98,7 +102,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
       sublabel: deliveredEvent?.createdAt
         ? formatTimelineTime(deliveredEvent.createdAt)
         : (refusedEvent?.createdAt ? formatTimelineTime(refusedEvent.createdAt) : null),
-      actor: null,
+      actor: deliveredEvent ? getActorShortName(deliveredEvent.actorName) : null,
       isDone: isDelivered,
       isActive: isDelivered || isRefused || isReturned || isCanceled,
       icon: isRefused || isCanceled ? XCircle : isReturned ? RotateCcw : CheckCircle2,
@@ -130,7 +134,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
                   <span className="text-[10px] opacity-75 font-mono">({step.sublabel})</span>
                 )}
                 {step.actor && (
-                  <span className="text-[10px] font-bold underline decoration-dotted ml-0.5">
+                  <span className="text-[10px] font-bold underline decoration-dotted ml-0.5 text-gray-800">
                     {step.actor}
                   </span>
                 )}
@@ -149,7 +153,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
         {/* Connecting progress line */}
         <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-0.5 bg-gray-100 -z-0" />
 
-        {steps.map((step, idx) => {
+        {steps.map((step) => {
           const StepIcon = step.icon;
           const isDone = step.isDone;
           const isActive = step.isActive;
@@ -186,7 +190,7 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
                 )}
 
                 {step.actor && (
-                  <div className="inline-block mt-0.5 px-1.5 py-0.2 rounded bg-gray-100 text-[10px] font-medium text-gray-700">
+                  <div className="inline-block mt-0.5 px-1.5 py-0.2 rounded bg-gray-100 text-[10px] font-medium text-gray-800 border border-gray-200">
                     par <span className="font-bold">{step.actor}</span>
                   </div>
                 )}

@@ -149,16 +149,39 @@ export default function OrdersPage() {
           status: type,
           title: type === 'CALL_ATTEMPT' ? 'Tentative d\'appel' : 'Note interne',
           description: note,
-          actorNameOverride: currentUser?.name,
+          actorNameOverride: currentUser?.name || 'Nouamane Ait Yahya',
         }),
       });
 
       if (res.ok) {
         // Refresh orders to fetch latest timeline
-        fetchOrders();
+        await fetchOrders();
       }
     } catch (e) {
       console.error('Failed to add timeline note:', e);
+    }
+  };
+
+  const handleAddAttachment = async (data: { attachmentUrl: string; attachmentName: string; attachmentType: string; description?: string }) => {
+    if (!editingOrder) return;
+    try {
+      const res = await fetch(`/api/admin/orders/${editingOrder.id}/attachment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          attachmentUrl: data.attachmentUrl,
+          attachmentName: data.attachmentName,
+          attachmentType: data.attachmentType,
+          description: data.description,
+          actorNameOverride: currentUser?.name || 'Nouamane Ait Yahya',
+        }),
+      });
+
+      if (res.ok) {
+        await fetchOrders();
+      }
+    } catch (e) {
+      console.error('Failed to add attachment:', e);
     }
   };
 
@@ -469,6 +492,7 @@ export default function OrdersPage() {
                   await handleStatusChange(editingOrder.id, newStatus, options);
                 }}
                 onAddNote={handleAddTimelineNote}
+                onAddAttachment={handleAddAttachment}
               />
 
               {/* Customer & Shipping Cards */}

@@ -1049,6 +1049,9 @@ model OrderTimelineEvent {
   actorAvatar    String?
   carrier        String?    // e.g. "Amana Express", "Cathedis", "Ozon Express", "Livreur Interne"
   trackingNumber String?    // e.g. "AMN-98472"
+  attachmentUrl  String?    // Uploaded proof/slip/invoice URL
+  attachmentName String?    // File name
+  attachmentType String?    // IMAGE, PDF, DOCUMENT
   metadata       String?    // JSON extra data (phone, call result, packaging notes)
   createdAt      DateTime   @default(now())
 
