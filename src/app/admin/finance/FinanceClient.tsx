@@ -304,8 +304,9 @@ export default function FinanceClient({
   const topCities = useMemo(() => {
     const citySales: Record<string, number> = {};
     validOrders.forEach((o) => {
-      const city = o.shippingCity.trim().toUpperCase() || 'INCONNU';
-      citySales[city] = (citySales[city] || 0) + o.total;
+      const rawCity = (o.shippingCity || '').trim();
+      const city = rawCity ? rawCity.toUpperCase() : 'NON RENSEIGNÉ';
+      citySales[city] = (citySales[city] || 0) + (o.total || 0);
     });
     return Object.entries(citySales)
       .sort((a, b) => b[1] - a[1])
@@ -531,12 +532,16 @@ export default function FinanceClient({
                 Villes les plus actives
               </h3>
               <div className="space-y-3">
-                {topCities.map(([city, total]: any, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-[13px]">
-                    <span className="font-medium text-neutral-800">{city}</span>
-                    <span className="font-semibold text-neutral-900">{formatMAD(total)}</span>
-                  </div>
-                ))}
+                {topCities.length === 0 ? (
+                  <p className="text-xs text-neutral-400">Aucune ville enregistrée pour le moment.</p>
+                ) : (
+                  topCities.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-[13px]">
+                      <span className="font-medium text-neutral-800">{item.name}</span>
+                      <span className="font-semibold text-neutral-900">{formatMAD(item.value)}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
