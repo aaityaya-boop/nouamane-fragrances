@@ -507,9 +507,8 @@ export default function AdminArabicPage() {
                         onChange={(val) => setFormData({ ...formData, perfectSeason: val })}
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
+                    <div className="grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
                       <div>
                         <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Tête</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
@@ -518,7 +517,7 @@ export default function AdminArabicPage() {
                           onChange={e => setFormData({...formData, notes: {...formData.notes, top: e.target.value.split(',').map(s => s.trim()).filter(Boolean)}})} />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de C�ur</label>
+                        <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Cœur</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
                           placeholder="Séparées par des virgules..."
                           value={(formData.notes?.heart || []).join(', ')} 
@@ -533,11 +532,11 @@ export default function AdminArabicPage() {
                       </div>
                     </div>
 
-                    <div className="col-span-2">
+                    <div>
                       <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">L'Histoire du Parfum (Longue Description)</label>
                       <textarea className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-4 text-[14px] leading-relaxed min-h-[200px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
                         value={formData.longDescription} onChange={e => setFormData({...formData, longDescription: e.target.value})} 
-                        placeholder="R�digez l'histoire et les �motions de ce parfum..." />
+                        placeholder="Rédigez l'histoire et les émotions de ce parfum..." />
                     </div>
                   </div>
                 </div>
