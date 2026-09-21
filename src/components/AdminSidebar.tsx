@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
@@ -32,7 +33,10 @@ import {
   History,
   Bell,
   Film,
-  Banknote
+  Banknote,
+  Package,
+  Layers,
+  ChevronRight
 } from 'lucide-react';
 
 interface MenuItem {
@@ -40,55 +44,56 @@ interface MenuItem {
   label: string;
   icon: React.ReactNode;
   permission?: string;
+  badge?: string;
 }
 
-const TEAM_ITEMS: MenuItem[] = [
-  { href: '/admin/team', label: 'Gestion Équipe (RBAC)', icon: <ShieldCheck size={18} />, permission: 'team.view' },
-  { href: '/admin/team/roles', label: 'Annuaire des 26 Rôles', icon: <Users size={18} />, permission: 'team.view' },
-  { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={18} />, permission: 'tasks.view' },
-  { href: '/admin/chat', label: 'NAY Chat (WhatsApp)', icon: <MessageSquare size={18} /> },
-  { href: '/admin/notifications', label: 'Notifications & Alertes', icon: <Bell size={18} /> },
-  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={18} />, permission: 'activity.view_own' },
+const MENU_ITEMS: MenuItem[] = [
+  { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={16} />, permission: 'dashboard.view' },
+  { href: '/admin/finance', label: 'Finance & CA Net', icon: <TrendingUp size={16} />, permission: 'finance.view_revenue' },
+  { href: '/admin/finance?tab=EXPENSES', label: 'Charges & Dépenses', icon: <Banknote size={16} />, permission: 'finance.view_costs' },
+  { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={16} />, permission: 'orders.view' },
+  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={16} />, permission: 'reviews.view' },
+  { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={16} />, permission: 'products.view' },
+  { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={16} />, permission: 'products.view' },
+  { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={16} />, permission: 'products.view' },
+  { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={16} />, permission: 'products.edit' },
+  { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={16} />, permission: 'inventory.view' },
+  { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={16} />, permission: 'products.view' },
 ];
 
-const MENU_ITEMS: MenuItem[] = [
-  { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={18} />, permission: 'dashboard.view' },
-  { href: '/admin/finance', label: 'Finance & CA Net', icon: <TrendingUp size={18} />, permission: 'finance.view_revenue' },
-  { href: '/admin/finance?tab=EXPENSES', label: 'Charges & Dépenses', icon: <Banknote size={18} />, permission: 'finance.view_costs' },
-  { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={18} />, permission: 'orders.view' },
-  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={18} />, permission: 'reviews.view' },
-  { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={18} />, permission: 'products.view' },
-  { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={18} />, permission: 'products.view' },
-  { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={18} />, permission: 'products.view' },
-  { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={18} />, permission: 'products.edit' },
-  { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={18} />, permission: 'inventory.view' },
-  { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={18} />, permission: 'products.view' },
+const TEAM_ITEMS: MenuItem[] = [
+  { href: '/admin/team', label: 'Gestion Équipe', icon: <ShieldCheck size={16} />, permission: 'team.view' },
+  { href: '/admin/team/roles', label: 'Annuaire des Rôles', icon: <Users size={16} />, permission: 'team.view' },
+  { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={16} />, permission: 'tasks.view' },
+  { href: '/admin/chat', label: 'NAY Chat', icon: <MessageSquare size={16} /> },
+  { href: '/admin/notifications', label: 'Notifications', icon: <Bell size={16} /> },
+  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={16} />, permission: 'activity.view_own' },
 ];
 
 const CRM_ITEMS: MenuItem[] = [
-  { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={18} />, permission: 'customers.view' },
-  { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={18} />, permission: 'customers.view_vip' },
-  { href: '/admin/reviews', label: 'Avis Clients', icon: <MessageSquare size={18} />, permission: 'reviews.view' },
+  { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={16} />, permission: 'customers.view' },
+  { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={16} />, permission: 'customers.view_vip' },
+  { href: '/admin/reviews', label: 'Avis & Témoignages', icon: <MessageSquare size={16} />, permission: 'reviews.view' },
 ];
 
 const MARKETING_ITEMS: MenuItem[] = [
-  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads Hub)', icon: <Film size={18} />, permission: 'marketing.manage_creatives' },
-  { href: '/admin/marketing', label: 'Retention & Marketing', icon: <TrendingUp size={18} />, permission: 'marketing.view' },
-  { href: '/admin/marketing/campaigns', label: 'Campagnes', icon: <Mail size={18} />, permission: 'marketing.manage_campaigns' },
-  { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={18} />, permission: 'marketing.view_analytics' },
-  { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={18} />, permission: 'marketing.manage_landing_pages' },
-  { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={18} />, permission: 'marketing.manage_promotions' },
-  { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={18} />, permission: 'marketing.manage_affiliates' },
-  { href: '/admin/analytics', label: 'Audience', icon: <TrendingUp size={18} />, permission: 'marketing.view_analytics' },
-  { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={18} />, permission: 'marketing.manage_newsletter' },
-  { href: '/admin/blog', label: 'Blog & SEO', icon: <BookOpen size={18} />, permission: 'marketing.manage_seo' },
+  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads)', icon: <Film size={16} />, permission: 'marketing.manage_creatives' },
+  { href: '/admin/marketing', label: 'Marketing & Rétention', icon: <TrendingUp size={16} />, permission: 'marketing.view' },
+  { href: '/admin/marketing/campaigns', label: 'Campagnes & SMS', icon: <Mail size={16} />, permission: 'marketing.manage_campaigns' },
+  { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={16} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={16} />, permission: 'marketing.manage_landing_pages' },
+  { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={16} />, permission: 'marketing.manage_promotions' },
+  { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={16} />, permission: 'marketing.manage_affiliates' },
+  { href: '/admin/analytics', label: 'Audience & Trafic', icon: <TrendingUp size={16} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={16} />, permission: 'marketing.manage_newsletter' },
+  { href: '/admin/blog', label: 'Blog & Articles SEO', icon: <BookOpen size={16} />, permission: 'marketing.manage_seo' },
 ];
 
 const SYSTEM_ITEMS: MenuItem[] = [
-  { href: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} />, permission: 'messages.view' },
-  { href: '/admin/vitrine', label: 'Vitrine & Recommandés', icon: <Sparkles size={18} />, permission: 'products.edit' },
-  { href: '/admin/profile', label: 'Mon Compte Utilisateur', icon: <User size={18} /> },
-  { href: '/admin/settings', label: 'Paramètres', icon: <Settings size={18} />, permission: 'settings.view' },
+  { href: '/admin/messages', label: 'Messages Reçus', icon: <MessageSquare size={16} />, permission: 'messages.view' },
+  { href: '/admin/vitrine', label: 'Vitrine Recommandée', icon: <Sparkles size={16} />, permission: 'products.edit' },
+  { href: '/admin/profile', label: 'Mon Compte', icon: <User size={16} /> },
+  { href: '/admin/settings', label: 'Paramètres Système', icon: <Settings size={16} />, permission: 'settings.view' },
 ];
 
 interface AdminUser {
@@ -152,7 +157,7 @@ export default function AdminSidebar() {
 
   // Check if item is permitted for current user
   const isItemVisible = (item: MenuItem) => {
-    if (!user) return true; // optimistic render before auth loads
+    if (!user) return true;
     if (user.isOwner) return true;
     if (!item.permission) return true;
     return (user.effectivePermissions || []).includes(item.permission);
@@ -171,19 +176,21 @@ export default function AdminSidebar() {
           key={`${item.href}-${item.label}`}
           href={item.href}
           onClick={() => setIsOpen(false)}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 group relative overflow-hidden ${
+          className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 group relative ${
             isActive 
-              ? 'bg-[#1e1e1e] text-white shadow-sm ring-1 ring-white/10' 
-              : 'text-[#888888] hover:bg-[#151515] hover:text-white'
+              ? 'bg-sky-50 text-[#1D9BF0] font-semibold border border-sky-100/90 shadow-2xs' 
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-transparent'
           }`}
         >
-          <div className={`transition-colors ${isActive ? 'text-[#0ea5e9]' : 'text-[#666] group-hover:text-white'}`}>
-            {item.icon}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={`shrink-0 transition-colors ${isActive ? 'text-[#1D9BF0]' : 'text-slate-400 group-hover:text-slate-700'}`}>
+              {item.icon}
+            </div>
+            <span className="truncate">{item.label}</span>
           </div>
-          <span className="relative z-10">{item.label}</span>
-          
+
           {isActive && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-[#0ea5e9] rounded-r-full shadow-[0_0_10px_#0ea5e9]"></div>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1D9BF0] shrink-0" />
           )}
         </Link>
       );
@@ -198,77 +205,83 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0A0A0A] text-white flex items-center justify-between px-4 z-40 border-b border-[#1e1e1e]">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-500/20">
-            <div
-              className="w-5 h-5 bg-white"
-              style={{
-                maskImage: 'url("/images/nay/Artboard%202.png")',
-                WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
-                maskSize: 'contain',
-                WebkitMaskSize: 'contain',
-                maskRepeat: 'no-repeat',
-                WebkitMaskRepeat: 'no-repeat',
-                maskPosition: 'center',
-                WebkitMaskPosition: 'center',
-              }}
+      {/* Mobile Top Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white text-slate-900 flex items-center justify-between px-4 z-40 border-b border-slate-200/80 shadow-xs">
+        <Link href="/admin" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-white border border-sky-200 p-1 flex items-center justify-center shadow-2xs">
+            <Image 
+              src="/images/nay/nay-logo-blue.png" 
+              alt="NAY" 
+              width={22} 
+              height={22}
+              className="w-full h-full object-contain"
             />
           </div>
-          <div className="text-[15px] font-bold text-white tracking-wide">NAY Admin</div>
+          <div>
+            <div className="text-xs font-bold text-slate-900 tracking-wider">NAY PARFUMS</div>
+            <div className="text-[10px] text-slate-400 font-medium">Administration</div>
+          </div>
         </Link>
-        <button onClick={() => setIsOpen(true)} className="p-2 -mr-2 text-white">
-          <Menu size={24} />
+        <button 
+          onClick={() => setIsOpen(true)} 
+          className="p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+          aria-label="Ouvrir le menu"
+        >
+          <Menu size={20} />
         </button>
       </div>
 
-      {/* Mobile Overlay */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" 
+          className="lg:hidden fixed inset-0 bg-slate-900/30 z-40 backdrop-blur-xs" 
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`w-[260px] bg-[#0A0A0A] border-r border-[#1e1e1e] h-screen flex flex-col fixed left-0 top-0 z-50 text-gray-300 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+      {/* Sidebar Desktop & Mobile Drawer */}
+      <aside className={`w-[260px] bg-white border-r border-slate-200/80 h-screen flex flex-col fixed left-0 top-0 z-50 text-slate-700 transition-transform duration-200 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'} lg:translate-x-0`}>
         
-        {/* Brand Header */}
-        <div className="p-6 pb-4 flex justify-between items-center">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-500/20">
-              <div
-                className="w-5 h-5 bg-white"
-                style={{
-                  maskImage: 'url("/images/nay/Artboard%202.png")',
-                  WebkitMaskImage: 'url("/images/nay/Artboard%202.png")',
-                  maskSize: 'contain',
-                  WebkitMaskSize: 'contain',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskPosition: 'center',
-                  WebkitMaskPosition: 'center',
-                }}
+        {/* Brand Top Header */}
+        <div className="p-4 pb-3 flex justify-between items-center border-b border-slate-100 bg-gradient-to-b from-sky-50/30 to-white">
+          <Link href="/admin" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-white border border-sky-200 p-1.5 flex items-center justify-center shadow-2xs group-hover:border-[#1D9BF0] transition-colors">
+              <Image 
+                src="/images/nay/nay-logo-blue.png" 
+                alt="NAY Logo" 
+                width={26} 
+                height={26}
+                className="w-full h-full object-contain"
+                priority
               />
             </div>
             <div>
-              <div className="text-[15px] font-bold text-white tracking-wide">NAY</div>
-              <div className="text-[10px] uppercase tracking-widest text-[#666] font-semibold">Workspace</div>
+              <div className="text-xs font-bold tracking-wider text-slate-900 group-hover:text-[#1D9BF0] transition-colors">
+                NAY PARFUMS
+              </div>
+              <div className="text-[10px] text-slate-600 font-medium">
+                Maison de Luxe
+              </div>
             </div>
           </Link>
 
           {isOpen && (
-            <button onClick={() => setIsOpen(false)} className="lg:hidden text-gray-400 hover:text-white p-1">
-              <X size={20} />
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="lg:hidden text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100"
+            >
+              <X size={18} />
             </button>
           )}
         </div>
 
-        <nav className="flex-1 px-4 space-y-6 overflow-y-auto mt-2 custom-scrollbar">
+        {/* Navigation Categories */}
+        <nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto custom-scrollbar">
           {hasGeneralItems && (
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Général</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-3">
+                Général
+              </div>
               <div className="space-y-0.5">
                 {renderLinks(MENU_ITEMS)}
               </div>
@@ -277,8 +290,8 @@ export default function AdminSidebar() {
 
           {hasTeamItems && (
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#0ea5e9] mb-2 px-3 flex items-center gap-1.5">
-                <span>Équipe & Collaboration</span>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-3 flex items-center justify-between">
+                <span>Équipe & Rôles</span>
               </div>
               <div className="space-y-0.5">
                 {renderLinks(TEAM_ITEMS)}
@@ -288,7 +301,9 @@ export default function AdminSidebar() {
 
           {hasCrmItems && (
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">CRM & Clients</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-3">
+                Clients & CRM
+              </div>
               <div className="space-y-0.5">
                 {renderLinks(CRM_ITEMS)}
               </div>
@@ -297,7 +312,9 @@ export default function AdminSidebar() {
 
           {hasMarketingItems && (
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Marketing & Ventes</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-3">
+                Marketing & Ventes
+              </div>
               <div className="space-y-0.5">
                 {renderLinks(MARKETING_ITEMS)}
               </div>
@@ -306,7 +323,9 @@ export default function AdminSidebar() {
 
           {hasSystemItems && (
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#555] mb-2 px-3">Système</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-3">
+                Système
+              </div>
               <div className="space-y-0.5">
                 {renderLinks(SYSTEM_ITEMS)}
               </div>
@@ -314,55 +333,56 @@ export default function AdminSidebar() {
           )}
         </nav>
 
-        {/* Current Connected User Card & Footer */}
-        <div className="p-3 border-t border-[#1e1e1e] bg-[#0A0A0A] mt-auto space-y-2">
-          {/* User Card */}
+        {/* Current Connected User Footer Card */}
+        <div className="p-3 border-t border-slate-100 bg-slate-50/50 mt-auto space-y-2">
+          {/* User Profile Card */}
           <Link
             href="/admin/profile"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-2 rounded-xl bg-[#141414] hover:bg-[#1c1c1c] border border-white/5 transition-all group"
+            className="flex items-center gap-2.5 p-2 rounded-xl bg-white hover:bg-slate-100/80 border border-slate-200/90 shadow-2xs transition-all group"
           >
-            <div className="relative">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-md shadow-sky-500/10">
+            <div className="relative shrink-0">
+              <div className="w-8 h-8 rounded-full bg-sky-100 border border-sky-200 text-[#0284c7] flex items-center justify-center text-xs font-bold">
                 {user?.avatar ? (
                   <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-full" />
                 ) : (
                   <span>{getInitials(user?.name)}</span>
                 )}
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#141414] rounded-full"></span>
+              <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border-2 border-white rounded-full"></span>
             </div>
             
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-[12px] font-semibold text-white truncate group-hover:text-[#0ea5e9] transition-colors">
-                {user?.name || 'Chargement...'}
+              <p className="text-xs font-semibold text-slate-900 truncate group-hover:text-[#1D9BF0] transition-colors">
+                {user?.name || 'Administrateur'}
               </p>
-              <div className="flex items-center gap-1">
-                <span className="text-[9px] uppercase font-bold tracking-wider text-[#0ea5e9] bg-[#0ea5e9]/10 px-1.5 py-0.2 rounded">
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="text-[9px] uppercase font-bold tracking-wider text-[#0284c7] bg-sky-100/70 border border-sky-200/60 px-1.5 py-0.2 rounded">
                   {user?.isOwner ? 'Propriétaire' : (user?.role || 'Membre')}
                 </span>
               </div>
             </div>
           </Link>
 
-          <div className="flex items-center gap-1 pt-1">
+          {/* Quick Action Links */}
+          <div className="flex items-center gap-1.5 pt-0.5">
             <Link 
               href="/" 
               target="_blank"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-medium text-[#888888] hover:bg-[#151515] hover:text-white transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 transition-all"
               title="Voir la boutique publique"
             >
-              <ExternalLink size={13} />
+              <ExternalLink size={12} className="text-slate-400" />
               <span>Boutique</span>
             </Link>
             
             <button 
               onClick={handleLogout}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-medium text-red-500/80 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50/80 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
               title="Déconnexion sécurisée"
             >
-              <LogOut size={13} />
-              <span>Déconnexion</span>
+              <LogOut size={12} />
+              <span>Quitter</span>
             </button>
           </div>
         </div>
