@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight, LineChart, Link as LinkIcon, Smartphone, Monitor, Clock } from 'lucide-react';
+import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight, LineChart, Link as LinkIcon, Smartphone, Monitor, Clock, CheckCircle2, Phone, Truck, RotateCcw } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import TrafficChart from './components/TrafficChart';
@@ -97,20 +97,34 @@ export default async function AdminDashboard() {
     _count: { id: true },
     where: { createdAt: { gte: sevenDaysAgo }, referrer: { not: null } },
     orderBy: { _count: { id: 'desc' } },
-    take: 5
-  });
+  // Operational Performance Rates for Confirmation & Operations
+  const confirmedCount = orders.filter(o => o.status === 'processing' || o.status === 'confirmed' || o.status === 'shipped' || o.status === 'delivered').length;
+  const unconfirmedCount = orders.filter(o => o.status === 'unconfirmed').length;
+  const deliveredCount = orders.filter(o => o.status === 'delivered').length;
+  const returnedCount = orders.filter(o => o.status === 'refused' || o.status === 'returned').length;
+
+  const tauxConfirmation = totalOrders > 0 ? ((confirmedCount / totalOrders) * 100).toFixed(1) : '0';
+  const tauxNonConfirmation = totalOrders > 0 ? ((unconfirmedCount / totalOrders) * 100).toFixed(1) : '0';
+  const tauxLivraison = totalOrders > 0 ? ((deliveredCount / totalOrders) * 100).toFixed(1) : '0';
+  const tauxRetour = totalOrders > 0 ? ((returnedCount / totalOrders) * 100).toFixed(1) : '0';
 
   return (
     <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Tableau de bord</h1>
-          <p className="text-[13px] text-neutral-500 mt-1">Aperçu en temps réel de l&apos;activité de la maison NAY.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            {canViewRevenue ? 'Tableau de bord' : 'Espace Confirmation & Suivi des Commandes'}
+          </h1>
+          <p className="text-[13px] text-neutral-500 mt-1">
+            {canViewRevenue
+              ? "Aperçu en temps réel de l'activité de la maison NAY."
+              : "Suivi opérationnel des confirmations, taux de transformation, livraisons et retours."}
+          </p>
         </div>
         <div className="flex gap-2.5">
-          <Link href="/admin/products" className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors">
-            Gérer les produits
+          <Link href="/admin/orders" className="bg-[#1D9BF0] hover:bg-[#0284c7] text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <Clock size={14} /> Gérer les Commandes ({pendingOrders} en attente)
           </Link>
           <Link href="/" target="_blank" className="bg-neutral-900 hover:bg-black text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
             Boutique en ligne <ArrowUpRight size={14} className="text-neutral-400" />
@@ -121,41 +135,93 @@ export default async function AdminDashboard() {
       {/* Analytics Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {canViewRevenue ? (
-          <StatCard 
-            icon={<DollarSign size={18} className="text-neutral-900" />}
-            label="Chiffre d'affaires"
-            value={formatMAD(totalRevenue)}
-            trend="+12%"
-            trendUp={true}
-          />
+          <>
+            <StatCard 
+              icon={<DollarSign size={18} className="text-neutral-900" />}
+              label="Chiffre d'affaires"
+              value={formatMAD(totalRevenue)}
+              trend="+12%"
+              trendUp={true}
+            />
+            <StatCard 
+              icon={<Package size={18} className="text-neutral-900" />}
+              label="Total Commandes"
+              value={totalOrders.toString()}
+              subtitle={`${pendingOrders} en attente`}
+            />
+            <StatCard 
+              icon={<Users size={18} className="text-neutral-900" />}
+              label="Visiteurs Aujourd'hui"
+              value={todayVisitorsCount.toString()}
+              trend="+5%"
+              trendUp={true}
+            />
+            <StatCard 
+              icon={<Activity size={18} className="text-neutral-900" />}
+              label="En Ligne (Live)"
+              value={activeVisitorsCount.toString()}
+              pulsing={true}
+            />
+          </>
         ) : (
-          <StatCard 
-            icon={<Clock size={18} className="text-[#1D9BF0]" />}
-            label="Commandes à Confirmer"
-            value={pendingOrders.toString()}
-            subtitle={`${orders.filter(o => o.status === 'processing').length} confirmées / en atelier`}
-          />
+          <>
+            <StatCard 
+              icon={<CheckCircle2 size={18} className="text-emerald-600" />}
+              label="Taux de Confirmation"
+              value={`${tauxConfirmation}%`}
+              subtitle={`${confirmedCount} confirmées sur ${totalOrders} commandes`}
+              badge="Succès appels"
+              badgeColor="bg-emerald-50 text-emerald-700 border-emerald-200"
+            />
+            <StatCard 
+              icon={<Phone size={18} className="text-rose-600" />}
+              label="Taux de Non-Confirmation"
+              value={`${tauxNonConfirmation}%`}
+              subtitle={`${unconfirmedCount} non confirmées / injoignables`}
+              badge="Injoignables / Relances"
+              badgeColor="bg-rose-50 text-rose-700 border-rose-200"
+            />
+            <StatCard 
+              icon={<Truck size={18} className="text-indigo-600" />}
+              label="Taux de Livraison"
+              value={`${tauxLivraison}%`}
+              subtitle={`${deliveredCount} livrées avec succès`}
+              badge="Succès transport"
+              badgeColor="bg-indigo-50 text-indigo-700 border-indigo-200"
+            />
+            <StatCard 
+              icon={<RotateCcw size={18} className="text-amber-600" />}
+              label="Taux de Retour"
+              value={`${tauxRetour}%`}
+              subtitle={`${returnedCount} refus & retours atelier`}
+              badge="Retours & Refus"
+              badgeColor="bg-amber-50 text-amber-700 border-amber-200"
+            />
+          </>
         )}
-        <StatCard 
-          icon={<Package size={18} className="text-neutral-900" />}
-          label="Total Commandes"
-          value={totalOrders.toString()}
-          subtitle={`${pendingOrders} en attente`}
-        />
-        <StatCard 
-          icon={<Users size={18} className="text-neutral-900" />}
-          label="Visiteurs Aujourd'hui"
-          value={todayVisitorsCount.toString()}
-          trend="+5%"
-          trendUp={true}
-        />
-        <StatCard 
-          icon={<Activity size={18} className="text-neutral-900" />}
-          label="En Ligne (Live)"
-          value={activeVisitorsCount.toString()}
-          pulsing={true}
-        />
       </div>
+
+      {!canViewRevenue && (
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="font-semibold text-slate-900">Synthèse d&apos;Activité Confirmation :</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-slate-600 font-medium">
+            <span>Total : <strong className="text-slate-900">{totalOrders}</strong></span>
+            <span>•</span>
+            <span>En attente d&apos;appel : <strong className="text-amber-600">{pendingOrders}</strong></span>
+            <span>•</span>
+            <span>Confirmées : <strong className="text-emerald-600">{confirmedCount}</strong></span>
+            <span>•</span>
+            <span>Non confirmées : <strong className="text-rose-600">{unconfirmedCount}</strong></span>
+            <span>•</span>
+            <span>Livrées : <strong className="text-indigo-600">{deliveredCount}</strong></span>
+            <span>•</span>
+            <span>Retours : <strong className="text-amber-600">{returnedCount}</strong></span>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Column (Orders & Traffic) */}
@@ -291,21 +357,31 @@ interface StatCardProps {
   trend?: string;
   trendUp?: boolean;
   pulsing?: boolean;
+  badge?: string;
+  badgeColor?: string;
 }
 
-function StatCard({ icon, label, value, subtitle, trend, trendUp, pulsing }: StatCardProps) {
+function StatCard({ icon, label, value, subtitle, trend, trendUp, pulsing, badge, badgeColor }: StatCardProps) {
   return (
-    <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs">
+    <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs hover:border-slate-300 transition-all">
       <div className="flex items-start justify-between mb-2">
-        <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{label}</span>
+        <div className="flex items-center gap-2">
+          {icon && <div className="p-1.5 rounded-lg bg-slate-50 border border-slate-100">{icon}</div>}
+          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{label}</span>
+        </div>
         {trend && (
           <span className={`text-[11px] font-mono font-semibold ${trendUp ? 'text-emerald-700' : 'text-rose-700'}`}>
             {trend}
           </span>
         )}
+        {badge && (
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${badgeColor || 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+            {badge}
+          </span>
+        )}
       </div>
       <div className="text-2xl font-bold text-neutral-900 tracking-tight">{value}</div>
-      {subtitle && <div className="text-[11px] text-neutral-400 mt-1">{subtitle}</div>}
+      {subtitle && <div className="text-[11px] text-neutral-500 mt-1 font-medium">{subtitle}</div>}
     </div>
   );
 }

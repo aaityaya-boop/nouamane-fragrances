@@ -283,7 +283,18 @@ export default function OrdersPage() {
     });
   }, [orders, search, activeTab, cityFilter, jobProfile]);
 
-  // Key Metrics
+  // Key Metrics & Rates
+  const totalOrdersCount = orders.length;
+  const confirmedCount = useMemo(() => orders.filter(o => o.status === 'processing' || o.status === 'confirmed' || o.status === 'shipped' || o.status === 'delivered').length, [orders]);
+  const unconfirmedCount = tabCounts.UNCONFIRMED;
+  const deliveredCount = tabCounts.DELIVERED;
+  const returnedCount = tabCounts.ISSUES;
+
+  const tauxConfirmation = totalOrdersCount > 0 ? ((confirmedCount / totalOrdersCount) * 100).toFixed(1) : '0';
+  const tauxNonConfirmation = totalOrdersCount > 0 ? ((unconfirmedCount / totalOrdersCount) * 100).toFixed(1) : '0';
+  const tauxLivraison = totalOrdersCount > 0 ? ((deliveredCount / totalOrdersCount) * 100).toFixed(1) : '0';
+  const tauxRetour = totalOrdersCount > 0 ? ((returnedCount / totalOrdersCount) * 100).toFixed(1) : '0';
+
   const totalRevenue = useMemo(() => orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders]);
   const deliveredRevenue = useMemo(() => orders.filter(o => o.status === 'delivered').reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders]);
   const deliverySuccessRate = tabCounts.ALL > 0 ? ((tabCounts.DELIVERED / tabCounts.ALL) * 100).toFixed(1) : '0';
@@ -444,50 +455,48 @@ export default function OrdersPage() {
         {/* PROFILE 1: CONFIRMATION */}
         {jobProfile === 'CONFIRMATION' && (
           <>
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Commandes</span>
-                <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
-                  <ShoppingBag size={16} />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.PENDING} en attente d'appel</div>
-            </div>
-
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Attente</span>
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                  <Clock size={16} />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING}</div>
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">À appeler immédiatement</div>
-            </div>
-
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Non Confirmées</span>
-                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                  <Phone size={16} />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-rose-600 mt-2">{tabCounts.UNCONFIRMED}</div>
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">Injoignables / À relancer</div>
-            </div>
-
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Confirmées</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Taux de Confirmation</span>
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                   <CheckCircle2 size={16} />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.PROCESSING}</div>
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">
-                {orders.length > 0 ? ((tabCounts.PROCESSING / orders.length) * 100).toFixed(0) : 0}% taux de confirmation
+              <div className="text-2xl font-bold text-emerald-600 mt-2">{tauxConfirmation}%</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{confirmedCount} confirmées sur {totalOrdersCount} commandes</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Taux de Non-Confirmation</span>
+                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <Phone size={16} />
+                </div>
               </div>
+              <div className="text-2xl font-bold text-rose-600 mt-2">{tauxNonConfirmation}%</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{unconfirmedCount} non confirmées / injoignables</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Taux de Livraison</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Truck size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-indigo-600 mt-2">{tauxLivraison}%</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{deliveredCount} livrées avec succès</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Taux de Retour</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <RotateCcw size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-amber-600 mt-2">{tauxRetour}%</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{returnedCount} refus & retours atelier</div>
             </div>
           </>
         )}
@@ -689,6 +698,36 @@ export default function OrdersPage() {
         )}
 
       </div>
+
+      {/* Confirmation Agent Real-time Performance & Activity Summary */}
+      {jobProfile === 'CONFIRMATION' && (
+        <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#1D9BF0] animate-pulse"></span>
+            <span className="font-bold text-slate-900">Activité & Suivi des Appels :</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5 text-slate-600 font-medium">
+            <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800">
+              Total : <strong className="font-bold text-slate-900">{totalOrdersCount}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+              À appeler immédiatement : <strong className="font-bold text-amber-900">{tabCounts.PENDING}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Confirmées : <strong className="font-bold text-emerald-900">{confirmedCount}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 border border-rose-200">
+              Non confirmées : <strong className="font-bold text-rose-900">{unconfirmedCount}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200">
+              Livrées : <strong className="font-bold text-indigo-900">{deliveredCount}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+              Retours : <strong className="font-bold text-amber-900">{returnedCount}</strong>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Filter Tabs Bar with Status Colors */}
       <div className="bg-white p-1.5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center gap-1 overflow-x-auto custom-scrollbar">
