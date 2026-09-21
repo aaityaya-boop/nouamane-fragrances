@@ -1078,28 +1078,27 @@ function TeamManagementContent() {
                 <input
                   type="text"
                   required
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  value={editMemberForm.name}
+                  onChange={(e) => setEditMemberForm({ ...editMemberForm, name: e.target.value })}
                   className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-700 font-medium mb-1">Email Professionnel</label>
+                <label className="block text-neutral-700 font-medium mb-1">Email</label>
                 <input
                   type="email"
-                  required
-                  value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                  disabled
+                  value={selectedMember.email}
+                  className="w-full bg-neutral-100 border border-neutral-300 rounded-lg px-3 py-2 text-neutral-500 cursor-not-allowed"
                 />
               </div>
 
               <div>
                 <label className="block text-neutral-700 font-medium mb-1">Rôle Assigné</label>
                 <select
-                  value={editForm.role}
-                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  value={editMemberForm.role}
+                  onChange={(e) => setEditMemberForm({ ...editMemberForm, role: e.target.value })}
                   className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                 >
                   {ROLE_DEPARTMENTS.map((dept) => {
@@ -1122,8 +1121,8 @@ function TeamManagementContent() {
                   <label className="block text-neutral-700 font-medium mb-1">Poste</label>
                   <input
                     type="text"
-                    value={editForm.jobTitle}
-                    onChange={(e) => setEditForm({ ...editForm, jobTitle: e.target.value })}
+                    value={editMemberForm.jobTitle}
+                    onChange={(e) => setEditMemberForm({ ...editMemberForm, jobTitle: e.target.value })}
                     className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
@@ -1131,8 +1130,8 @@ function TeamManagementContent() {
                   <label className="block text-neutral-700 font-medium mb-1">Téléphone</label>
                   <input
                     type="text"
-                    value={editForm.phone}
-                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    value={editMemberForm.phone}
+                    onChange={(e) => setEditMemberForm({ ...editMemberForm, phone: e.target.value })}
                     className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
@@ -1150,16 +1149,16 @@ function TeamManagementContent() {
                       type="number"
                       min="0"
                       step="100"
-                      value={editForm.salary}
-                      onChange={(e) => setEditForm({ ...editForm, salary: e.target.value })}
+                      value={editMemberForm.salary}
+                      onChange={(e) => setEditMemberForm({ ...editMemberForm, salary: Number(e.target.value) || 0 })}
                       className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 font-semibold focus:outline-none focus:border-neutral-900"
                     />
                   </div>
                   <div>
                     <label className="block text-neutral-700 font-medium mb-1">Type</label>
                     <select
-                      value={editForm.salaryType}
-                      onChange={(e) => setEditForm({ ...editForm, salaryType: e.target.value })}
+                      value={editMemberForm.salaryType}
+                      onChange={(e) => setEditMemberForm({ ...editMemberForm, salaryType: e.target.value })}
                       className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                     >
                       <option value="MONTHLY">Mensuel Fixe</option>
@@ -1175,8 +1174,8 @@ function TeamManagementContent() {
                 <input
                   type="text"
                   placeholder="Laisser vide pour ne pas modifier"
-                  value={editForm.password}
-                  onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                  value={editMemberForm.newPassword}
+                  onChange={(e) => setEditMemberForm({ ...editMemberForm, newPassword: e.target.value })}
                   className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 font-mono text-neutral-900 focus:outline-none focus:border-neutral-900"
                 />
               </div>

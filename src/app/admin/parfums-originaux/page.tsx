@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
-import { OLFACTIVE_FAMILIES } from '@/lib/olfactiveFamilies';
+import { OLFACTIVE_FAMILIES, getBaseSubcategoryFromFamily } from '@/lib/olfactiveFamilies';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
 import SeasonSelector from '@/components/admin/SeasonSelector';
