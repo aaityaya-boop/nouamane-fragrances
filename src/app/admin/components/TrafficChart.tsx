@@ -1,9 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function TrafficChart({ data }: { data: any[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-[300px] w-full mt-4 bg-neutral-50/50 rounded-xl animate-pulse" />;
+  }
+
   return (
     <div className="h-[300px] w-full mt-4">
       <ResponsiveContainer width="100%" height="100%">
