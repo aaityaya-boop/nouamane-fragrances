@@ -16,7 +16,10 @@ import {
   LockKeyhole,
   ExternalLink,
   Clock,
-  Sparkles
+  Sparkles,
+  Package,
+  BarChart2,
+  KeyRound
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +34,7 @@ export default function AdminLogin() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loginSuccess, setLoginSuccess] = useState(false);
   
-  // Security & Stability: Brute-Force cooldown protection
+  // Security cooldown protection
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
@@ -49,7 +52,7 @@ export default function AdminLogin() {
     e.preventDefault();
     
     if (cooldownSeconds > 0) {
-      setErrorMessage(`Trop de tentatives. Veuillez patienter ${cooldownSeconds}s avant de réessayer.`);
+      setErrorMessage(`Protection active : veuillez patienter ${cooldownSeconds}s.`);
       return;
     }
 
@@ -94,150 +97,139 @@ export default function AdminLogin() {
         if (attempts >= 4) {
           const timeout = attempts * 5;
           setCooldownSeconds(timeout);
-          setErrorMessage(`Compte temporairement protégé : réessayez dans ${timeout} secondes.`);
+          setErrorMessage(`Compte protégé : réessayez dans ${timeout} secondes.`);
         } else {
           setErrorMessage(data?.error || 'Identifiant ou mot de passe incorrect.');
         }
         setIsLoading(false);
       }
     } catch (err) {
-      setErrorMessage('Erreur de connexion. Veuillez vérifier votre réseau et réessayer.');
+      setErrorMessage('Erreur de connexion réseau. Veuillez réessayer.');
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full min-h-screen bg-white text-slate-800 flex flex-col lg:flex-row relative overflow-x-hidden selection:bg-[#1D9BF0]/15 selection:text-[#1D9BF0]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col justify-between items-center p-4 sm:p-6 lg:p-8 relative selection:bg-[#1D9BF0]/15 selection:text-[#1D9BF0]">
       
-      {/* Subtle Sky-Blue Ambient Atmospheric Glow */}
-      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#1D9BF0]/[0.06] blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#1D9BF0]/[0.05] blur-[140px] pointer-events-none" />
+      {/* Background Subtle Ambient Glow in Twitter Sky Blue */}
+      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] rounded-full bg-gradient-to-b from-[#1D9BF0]/[0.08] to-transparent blur-[130px] pointer-events-none" />
 
-      {/* ================= LEFT SHOWCASE PANEL ================= */}
-      <div className="relative w-full lg:w-[52%] xl:w-[54%] p-8 sm:p-12 lg:p-16 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200/80 bg-slate-50/50 z-10">
-        
-        {/* Top Header */}
-        <div className="flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 p-2 shadow-xs flex items-center justify-center group-hover:border-[#1D9BF0] transition-colors">
-              <Image 
-                src="/images/nay/nay-logo-blue.png" 
-                alt="NAY Parfums" 
-                width={32} 
-                height={32}
-                className="w-full h-full object-contain"
-                priority
-              />
-            </div>
-            <div>
-              <div className="text-sm font-semibold tracking-wide text-slate-900 group-hover:text-[#1D9BF0] transition-colors">
-                NAY PARFUMS
-              </div>
-              <div className="text-[11px] text-slate-500 font-normal">
-                Maison de Haute Parfumerie
-              </div>
-            </div>
-          </Link>
-
-          <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs text-slate-600 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] font-medium text-slate-600">Système opérationnel</span>
+      {/* Top Header Bar */}
+      <header className="w-full max-w-4xl flex items-center justify-between py-2 z-10">
+        <Link href="/" className="inline-flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1.5 shadow-2xs flex items-center justify-center group-hover:border-[#1D9BF0] transition-colors">
+            <Image 
+              src="/images/nay/nay-logo-blue.png" 
+              alt="NAY Parfums" 
+              width={26} 
+              height={26}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
-        </div>
-
-        {/* Center Editorial Info */}
-        <div className="my-10 lg:my-auto max-w-lg">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sky-50 border border-sky-100 text-[#0284c7] text-xs font-medium mb-5">
-            <Sparkles size={12} className="text-[#1D9BF0]" />
-            <span>Portail Administrateur</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-slate-900 tracking-tight leading-snug">
-            Gestion centralisée de la Maison NAY Parfums.
-          </h1>
-
-          <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-            Consultez les commandes en direct, administrez le catalogue des créations olfactives, et suivez la performance de vos ventes à travers le Maroc.
-          </p>
-
-          {/* Clean Information Highlights */}
-          <div className="mt-8 space-y-3 pt-6 border-t border-slate-200/70">
-            <div className="flex items-start gap-3 text-xs">
-              <div className="w-5 h-5 rounded-md bg-sky-50 border border-sky-100 flex items-center justify-center text-[#1D9BF0] shrink-0 mt-0.5">
-                <CheckCircle2 size={13} />
-              </div>
-              <div>
-                <span className="font-medium text-slate-900">Synchronisation des stocks en temps réel</span>
-                <p className="text-slate-500 text-[11px] mt-0.5">Suivi continu des flacons et réapprovisionnements.</p>
-              </div>
+          <div>
+            <div className="text-xs font-bold tracking-wider text-slate-900 group-hover:text-[#1D9BF0] transition-colors">
+              NAY PARFUMS
             </div>
-
-            <div className="flex items-start gap-3 text-xs">
-              <div className="w-5 h-5 rounded-md bg-sky-50 border border-sky-100 flex items-center justify-center text-[#1D9BF0] shrink-0 mt-0.5">
-                <CheckCircle2 size={13} />
-              </div>
-              <div>
-                <span className="font-medium text-slate-900">Traitement logistique & expéditions</span>
-                <p className="text-slate-500 text-[11px] mt-0.5">Bordereaux AWB et livraisons partout au Maroc.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 text-xs">
-              <div className="w-5 h-5 rounded-md bg-sky-50 border border-sky-100 flex items-center justify-center text-[#1D9BF0] shrink-0 mt-0.5">
-                <CheckCircle2 size={13} />
-              </div>
-              <div>
-                <span className="font-medium text-slate-900">Authentification & sécurité bancaire</span>
-                <p className="text-slate-500 text-[11px] mt-0.5">Chiffrement AES-256 et sessions cryptées.</p>
-              </div>
+            <div className="text-[10px] text-slate-600 font-medium">
+              Maison de Haute Parfumerie
             </div>
           </div>
-        </div>
+        </Link>
 
-        {/* Bottom Footer */}
-        <div className="pt-6 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500">
-          <span>Casablanca, Maroc</span>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-[11px] text-slate-700 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-medium text-slate-700">Système opérationnel</span>
+          </div>
+
           <Link 
             href="/" 
-            className="inline-flex items-center gap-1 text-slate-700 hover:text-[#1D9BF0] font-medium transition-colors group"
+            className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] text-slate-700 hover:text-[#1D9BF0] hover:border-[#1D9BF0]/40 transition-colors shadow-2xs"
           >
             <span>Boutique publique</span>
-            <ExternalLink size={12} className="group-hover:translate-x-0.5 transition-transform text-slate-400 group-hover:text-[#1D9BF0]" />
+            <ExternalLink size={11} className="text-slate-600" />
           </Link>
         </div>
-      </div>
+      </header>
 
-      {/* ================= RIGHT LOGIN FORM PANEL ================= */}
-      <div className="w-full lg:w-[48%] xl:w-[46%] p-6 sm:p-12 lg:p-16 flex flex-col justify-center items-center relative z-10 bg-white">
-        
-        <div className="w-full max-w-sm">
+      {/* Main Centered Compact Luxury Card (No awkward empty spaces) */}
+      <main className="w-full max-w-4xl my-auto py-4 sm:py-6 z-10">
+        <div className="bg-white border border-slate-200/90 rounded-3xl shadow-[0_10px_35px_rgba(0,0,0,0.04)] overflow-hidden grid grid-cols-1 md:grid-cols-12">
           
-          {/* Brand Logo & Title */}
-          <div className="text-center mb-8">
-            <div className="inline-flex mb-4">
-              <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 p-2.5 shadow-sm flex items-center justify-center relative">
-                <Image 
-                  src="/images/nay/nay-logo-blue.png" 
-                  alt="NAY Logo" 
-                  width={48} 
-                  height={48}
-                  className="w-full h-full object-contain"
-                  priority
-                />
+          {/* Left Column: Brand Context (5 cols) */}
+          <div className="md:col-span-5 bg-gradient-to-br from-sky-50/60 via-slate-50 to-white p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-100">
+            <div>
+              {/* Brand Tag */}
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-100/70 border border-sky-200 text-[#0284c7] text-[11px] font-semibold mb-4">
+                <Sparkles size={12} className="text-[#1D9BF0]" />
+                <span>Portail Administrateur</span>
+              </div>
+
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
+                Console de Gestion NAY Parfums
+              </h1>
+
+              <p className="mt-2.5 text-xs text-slate-600 leading-relaxed font-normal">
+                Accès sécurisé pour la gestion des commandes, l'administration du catalogue de fragrances et le suivi des stocks.
+              </p>
+
+              {/* Feature Points */}
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-6 h-6 rounded-lg bg-sky-100/60 border border-sky-200/60 text-[#1D9BF0] flex items-center justify-center shrink-0">
+                    <Package size={13} />
+                  </div>
+                  <span className="font-medium text-slate-700">Catalogue & Inventaire en direct</span>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-6 h-6 rounded-lg bg-sky-100/60 border border-sky-200/60 text-[#1D9BF0] flex items-center justify-center shrink-0">
+                    <BarChart2 size={13} />
+                  </div>
+                  <span className="font-medium text-slate-700">Suivi des commandes & livraisons</span>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-6 h-6 rounded-lg bg-sky-100/60 border border-sky-200/60 text-[#1D9BF0] flex items-center justify-center shrink-0">
+                    <ShieldCheck size={13} />
+                  </div>
+                  <span className="font-medium text-slate-700">Sécurité & Chiffrement AES-256</span>
+                </div>
               </div>
             </div>
 
-            <h2 className="text-xl font-semibold text-slate-900 tracking-tight">
-              Espace Administrateur
-            </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Connectez-vous pour accéder à votre espace
-            </p>
+            {/* Bottom info */}
+            <div className="pt-6 mt-6 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-600">
+              <span>Casablanca, Maroc</span>
+              <span className="font-mono text-slate-600">v2.4.0</span>
+            </div>
           </div>
 
-          {/* Card Form */}
-          <div className="p-6 sm:p-7 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
+          {/* Right Column: Clean Login Form (7 cols) */}
+          <div className="md:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-center bg-white">
             
+            <div className="mb-6">
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="w-8 h-8 rounded-lg bg-sky-50 border border-sky-100 p-1 flex items-center justify-center">
+                  <Image 
+                    src="/images/nay/nay-logo-blue.png" 
+                    alt="NAY Logo" 
+                    width={22} 
+                    height={22}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                  Authentification
+                </h2>
+              </div>
+              <p className="text-xs text-slate-600 font-normal">
+                Saisissez vos identifiants pour vous connecter à votre compte
+              </p>
+            </div>
+
             {/* Success Notification */}
             {loginSuccess && (
               <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5 animate-in fade-in">
@@ -254,8 +246,8 @@ export default function AdminLogin() {
               <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 animate-in fade-in">
                 <AlertCircle size={16} className="shrink-0 text-rose-600 mt-0.5" />
                 <div className="flex-1">
-                  <p className="font-semibold text-rose-900">Erreur d'authentification</p>
-                  <p className="text-[11px] text-rose-700 mt-0.5">{errorMessage}</p>
+                  <p className="font-semibold text-rose-900">Erreur de connexion</p>
+                  <p className="text-[11px] text-rose-700 mt-0.5 font-medium">{errorMessage}</p>
                 </div>
               </div>
             )}
@@ -264,7 +256,7 @@ export default function AdminLogin() {
             {cooldownSeconds > 0 && (
               <div className="mb-4 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
                 <Clock size={14} className="text-amber-600 shrink-0" />
-                <span>Veuillez patienter <strong>{cooldownSeconds}s</strong> avant de réessayer.</span>
+                <span>Sécurité active : patientez <strong>{cooldownSeconds}s</strong> avant de réessayer.</span>
               </div>
             )}
 
@@ -272,11 +264,11 @@ export default function AdminLogin() {
               
               {/* Identifier Input */}
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Email ou Identifiant
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Mail size={15} />
                   </div>
                   <input
@@ -290,7 +282,7 @@ export default function AdminLogin() {
                       setErrorMessage(null);
                     }}
                     placeholder="admin@nayparfum.ma"
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15 transition-colors disabled:opacity-60"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1D9BF0] focus:ring-3 focus:ring-[#1D9BF0]/15 transition-all font-medium disabled:opacity-60"
                   />
                 </div>
               </div>
@@ -298,12 +290,12 @@ export default function AdminLogin() {
               {/* Password Input */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-medium text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700">
                     Mot de passe
                   </label>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Lock size={15} />
                   </div>
                   <input
@@ -316,12 +308,12 @@ export default function AdminLogin() {
                       setErrorMessage(null);
                     }}
                     placeholder="••••••••••••"
-                    className="w-full pl-9 pr-9 py-2.5 bg-slate-50/50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15 transition-colors disabled:opacity-60"
+                    className="w-full pl-9 pr-9 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-[#1D9BF0] focus:ring-3 focus:ring-[#1D9BF0]/15 transition-all font-mono tracking-wider disabled:opacity-60"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                     tabIndex={-1}
                     aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                   >
@@ -330,7 +322,7 @@ export default function AdminLogin() {
                 </div>
               </div>
 
-              {/* Remember Me */}
+              {/* Remember Me Checkbox */}
               <div className="flex items-center justify-between pt-0.5">
                 <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-600 hover:text-slate-900 transition-colors select-none">
                   <input
@@ -347,7 +339,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={isLoading || loginSuccess || cooldownSeconds > 0}
-                className="w-full mt-2 py-2.5 px-4 bg-[#1D9BF0] hover:bg-[#1a8cd8] active:bg-[#177cc0] text-white rounded-lg text-xs font-semibold tracking-normal shadow-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full mt-2 py-3 px-4 bg-[#1D9BF0] hover:bg-[#1a8cd8] active:bg-[#177cc0] text-white rounded-xl text-xs font-bold tracking-wide shadow-md shadow-sky-500/20 hover:shadow-sky-500/30 active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -368,20 +360,20 @@ export default function AdminLogin() {
               </button>
             </form>
 
-            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-600">
               <ShieldCheck size={13} className="text-[#1D9BF0]" />
-              <span>Session sécurisée par chiffrement de bout en bout</span>
+              <span>Session sécurisée par chiffrement AES-256</span>
             </div>
 
           </div>
 
-          <div className="mt-6 text-center text-xs text-slate-400">
-            NAY Parfums Maroc © {new Date().getFullYear()} • Accès réservé
-          </div>
-
         </div>
+      </main>
 
-      </div>
+      {/* Footer */}
+      <footer className="w-full max-w-4xl text-center py-2 text-xs text-slate-600 z-10">
+        NAY Parfums Maroc © {new Date().getFullYear()} • Accès réservé aux collaborateurs
+      </footer>
 
     </div>
   );
