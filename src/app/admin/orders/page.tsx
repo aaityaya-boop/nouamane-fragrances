@@ -737,6 +737,9 @@ export default function OrdersPage() {
                 ? 'bg-white/20 text-white'
                 : 'bg-slate-100 text-slate-600'
             }`}>
+              {tab.count}
+            </span>
+          </button>
         ))}
       </div>
 
