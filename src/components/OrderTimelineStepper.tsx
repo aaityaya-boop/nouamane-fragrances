@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { formatTimelineTime } from '@/lib/orders/timeline';
+import { Check, Truck, Package, Clock, XCircle, RotateCcw } from 'lucide-react';
 
 export interface TimelineEvent {
   id: string;
@@ -53,62 +54,68 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
 
   // Build the most relevant recent event label for compact view
   const getLatestSummary = () => {
-    if (isRefused) return { text: 'Colis refusé', sub: refusedEvent?.createdAt ? formatTimelineTime(refusedEvent.createdAt) : '' };
-    if (isReturned) return { text: 'Colis retourné', sub: returnedEvent?.createdAt ? formatTimelineTime(returnedEvent.createdAt) : '' };
-    if (isDelivered) return { text: 'Livrée & Encaissée', sub: deliveredEvent?.createdAt ? formatTimelineTime(deliveredEvent.createdAt) : '' };
+    if (isRefused) return { text: 'Colis refusé', sub: refusedEvent?.createdAt ? formatTimelineTime(refusedEvent.createdAt) : '', color: 'text-rose-600' };
+    if (isReturned) return { text: 'Colis retourné', sub: returnedEvent?.createdAt ? formatTimelineTime(returnedEvent.createdAt) : '', color: 'text-rose-600' };
+    if (isDelivered) return { text: 'Livrée & Encaissée', sub: deliveredEvent?.createdAt ? formatTimelineTime(deliveredEvent.createdAt) : '', color: 'text-emerald-600' };
     if (isShipped) {
-      const carrierText = shipEvent?.carrier || 'Expédiée';
+      const carrierText = shipEvent?.carrier ? `Expédiée via ${shipEvent.carrier}` : 'En cours de livraison';
       const time = shipEvent?.createdAt ? formatTimelineTime(shipEvent.createdAt) : '';
-      return { text: carrierText, sub: time };
+      return { text: carrierText, sub: time, color: 'text-indigo-600' };
     }
     if (isPrepared) {
       const actor = prepEvent?.actorName ? prepEvent.actorName.replace(/\(Client\)/g, '').trim() : '';
       const time = prepEvent?.createdAt ? formatTimelineTime(prepEvent.createdAt) : '';
-      return { text: actor ? `Préparée (${actor})` : 'En préparation', sub: time };
+      return { text: actor ? `Colis préparé (${actor})` : 'En préparation', sub: time, color: 'text-sky-600' };
     }
     if (isConfirmed) {
       const actor = confirmedEvent?.actorName ? confirmedEvent.actorName.replace(/\(Client\)/g, '').trim() : '';
       const time = confirmedEvent?.createdAt ? formatTimelineTime(confirmedEvent.createdAt) : '';
-      return { text: actor ? `Confirmée (${actor})` : 'Confirmée', sub: time };
+      return { text: actor ? `Confirmée (${actor})` : 'Commande confirmée', sub: time, color: 'text-amber-600' };
     }
     return {
       text: 'Créée en ligne',
       sub: createdEvent?.createdAt ? formatTimelineTime(createdEvent.createdAt) : '',
+      color: 'text-slate-700',
     };
   };
 
   const latest = getLatestSummary();
 
-  // In compact table mode: clean, elegant, hand-crafted minimal bar + crisp summary line
+  // In compact table mode: clean, creative progress bar with subtle brand glow
   if (compact) {
+    const getFillColor = (idx: number) => {
+      if (isRefused || isReturned) return 'bg-rose-500 shadow-rose-500/20';
+      if (isDelivered) return 'bg-emerald-500 shadow-emerald-500/20';
+      if (isShipped) return 'bg-indigo-500 shadow-indigo-500/20';
+      if (isPrepared) return 'bg-[#1D9BF0] shadow-sky-500/20';
+      return 'bg-amber-500 shadow-amber-500/20';
+    };
+
     return (
-      <div className="space-y-1.5 py-1">
-        {/* Minimal 4-segment progress bar */}
-        <div className="flex items-center gap-1 w-36">
+      <div className="space-y-1.5 py-0.5">
+        {/* Creative Segmented Progress Indicator */}
+        <div className="flex items-center gap-1 w-32">
           {[0, 1, 2, 3].map((stepIdx) => {
             const isFilled = currentStageIndex >= stepIdx + 1 || (stepIdx === 0 && currentStageIndex >= 0);
-            const isCurrent = currentStageIndex === stepIdx;
 
             return (
               <div
                 key={stepIdx}
                 className={`h-1.5 flex-1 rounded-full transition-all ${
-                  isRefused
-                    ? isFilled ? 'bg-rose-500' : 'bg-neutral-200'
-                    : isFilled
-                    ? 'bg-neutral-900'
-                    : 'bg-neutral-200'
+                  isFilled
+                    ? `${getFillColor(stepIdx)} shadow-2xs`
+                    : 'bg-slate-200'
                 }`}
               />
             );
           })}
         </div>
 
-        {/* Crisp text status & real time */}
-        <div className="flex items-center gap-1.5 text-[12px] text-neutral-700 font-medium">
-          <span className="text-neutral-900 font-semibold">{latest.text}</span>
+        {/* Text Status & Time */}
+        <div className="flex items-center gap-1.5 text-[11px]">
+          <span className={`font-semibold ${latest.color}`}>{latest.text}</span>
           {latest.sub && (
-            <span className="text-neutral-400 font-mono text-[11px]">
+            <span className="text-slate-400 font-mono text-[10px]">
               • {latest.sub}
             </span>
           )}
@@ -117,46 +124,46 @@ export default function OrderTimelineStepper({ status, timeline = [], compact = 
     );
   }
 
-  // Full view (inside drawer / modal): simple, classic 5-step horizontal tracker
+  // Full view (inside drawer / modal): sleek 5-step horizontal tracker with icons
   const steps = [
-    { label: 'Créée', time: createdEvent?.createdAt ? formatTimelineTime(createdEvent.createdAt) : null, actor: null, isDone: true },
-    { label: 'Confirmée', time: confirmedEvent?.createdAt ? formatTimelineTime(confirmedEvent.createdAt) : null, actor: confirmedEvent?.actorName, isDone: isConfirmed },
-    { label: 'Préparée', time: prepEvent?.createdAt ? formatTimelineTime(prepEvent.createdAt) : null, actor: prepEvent?.actorName, isDone: isPrepared },
-    { label: 'Expédiée', time: shipEvent?.createdAt ? formatTimelineTime(shipEvent.createdAt) : null, actor: shipEvent?.carrier || shipEvent?.actorName, isDone: isShipped },
-    { label: isRefused ? 'Refusée' : isReturned ? 'Retour' : 'Livrée', time: deliveredEvent?.createdAt ? formatTimelineTime(deliveredEvent.createdAt) : null, actor: null, isDone: isDelivered || isRefused || isReturned },
+    { label: 'Créée', icon: <Clock size={12} />, time: createdEvent?.createdAt ? formatTimelineTime(createdEvent.createdAt) : null, actor: null, isDone: true, color: 'sky' },
+    { label: 'Confirmée', icon: <Check size={12} />, time: confirmedEvent?.createdAt ? formatTimelineTime(confirmedEvent.createdAt) : null, actor: confirmedEvent?.actorName, isDone: isConfirmed, color: 'amber' },
+    { label: 'Préparée', icon: <Package size={12} />, time: prepEvent?.createdAt ? formatTimelineTime(prepEvent.createdAt) : null, actor: prepEvent?.actorName, isDone: isPrepared, color: 'sky' },
+    { label: 'Expédiée', icon: <Truck size={12} />, time: shipEvent?.createdAt ? formatTimelineTime(shipEvent.createdAt) : null, actor: shipEvent?.carrier || shipEvent?.actorName, isDone: isShipped, color: 'indigo' },
+    { label: isRefused ? 'Refusée' : isReturned ? 'Retour' : 'Livrée', icon: isRefused ? <XCircle size={12} /> : isReturned ? <RotateCcw size={12} /> : <Check size={12} />, time: deliveredEvent?.createdAt ? formatTimelineTime(deliveredEvent.createdAt) : null, actor: null, isDone: isDelivered || isRefused || isReturned, color: isRefused || isReturned ? 'rose' : 'emerald' },
   ];
 
   return (
-    <div className="bg-neutral-50/80 border border-neutral-200 rounded-xl p-4">
+    <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
       <div className="grid grid-cols-5 gap-2 relative">
         {steps.map((step, idx) => (
           <div key={idx} className="flex flex-col items-center text-center">
-            {/* Step dot */}
+            {/* Step dot with icon */}
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-mono font-bold transition-all ${
+              className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold transition-all shadow-2xs ${
                 step.isDone
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-white border border-neutral-300 text-neutral-400'
+                  ? 'bg-[#1D9BF0] text-white'
+                  : 'bg-white border border-slate-200 text-slate-400'
               }`}
             >
-              {idx + 1}
+              {step.icon}
             </div>
 
             {/* Label */}
-            <div className={`text-[12px] font-medium mt-1.5 ${step.isDone ? 'text-neutral-900 font-semibold' : 'text-neutral-400'}`}>
+            <div className={`text-[11px] font-semibold mt-1.5 ${step.isDone ? 'text-slate-900' : 'text-slate-400'}`}>
               {step.label}
             </div>
 
             {/* Timestamp */}
             {step.time && (
-              <div className="text-[10px] font-mono text-neutral-500 mt-0.5">
+              <div className="text-[10px] font-mono text-slate-500 mt-0.5">
                 {step.time}
               </div>
             )}
 
             {/* Actor */}
             {step.actor && (
-              <div className="text-[10px] text-neutral-600 truncate max-w-[85px] mt-0.5">
+              <div className="text-[10px] text-slate-500 truncate max-w-[80px] mt-0.5 font-medium">
                 {step.actor.replace(/\(Client\)/g, '').trim()}
               </div>
             )}
