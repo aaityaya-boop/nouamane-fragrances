@@ -616,29 +616,6 @@ export default function AdminCreativesPage() {
 
       {/* UPLOAD & EDIT CREATIVE MODAL */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-150 custom-scrollbar">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#0ea5e9]/10 text-[#0ea5e9] flex items-center justify-center">
-                  <UploadCloud size={20} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-base">
-                    {isEditingCreative ? 'Modifier le créatif publicitaire' : 'Téléverser un nouveau créatif publicitaire'}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Importez vos vidéos TikTok, Reels, UGC et visuels publicitaires.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setIsUploadModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-      {/* UPLOAD & EDIT CREATIVE MODAL */}
-      {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-neutral-200 space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3.5">

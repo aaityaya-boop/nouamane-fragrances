@@ -223,6 +223,7 @@ export default async function LiveCartsPage() {
                 ))}
               </div>
             )}
+          </div>
         </div>
 
       </div>
