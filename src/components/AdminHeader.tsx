@@ -27,6 +27,7 @@ interface AdminUser {
   name: string;
   email: string;
   role: string;
+  isOwner?: boolean;
   avatar?: string | null;
   lastLoginAt?: string | null;
   lastActivityAt?: string | null;
@@ -404,8 +405,8 @@ export default function AdminHeader() {
               <div className="text-xs font-bold text-slate-900 leading-tight">
                 {isLoading ? 'Chargement...' : currentUser?.name || 'Administrateur'}
               </div>
-              <div className="text-[10px] uppercase font-bold tracking-wider text-[#0ea5e9] leading-tight">
-                Propriétaire NAY
+              <div className="text-[10px] uppercase font-bold tracking-wider text-[#0284c7] leading-tight">
+                {currentUser?.isOwner ? 'Propriétaire NAY' : (currentUser?.role || 'Membre')}
               </div>
             </div>
 
