@@ -20,23 +20,22 @@ export async function POST(request: Request) {
     const filename = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
     const savedName = `${uniqueSuffix}-${filename}`;
     
-    // Check if we have Vercel Blob configured
-    if (process.env.BLOB_READ_WRITE_TOKEN || true) {
+    // 1. Try Vercel Blob upload if token exists
+    const token = process.env.BLOB_READ_WRITE_TOKEN || "vercel_blob_rw_l3qgCdAjFT9wDKXz_xmbnlKdFScoUNvmLxeDQ7FELLtjtDo";
+    if (token) {
       try {
-        const cleanToken = "vercel_blob_rw_l3qgCdAjFT9wDKXz_xmbnlKdFScoUNvmLxeDQ7FELLtjtDo";
         const blob = await put(savedName, buffer, { 
           access: 'public',
-          contentType: file.type || 'image/jpeg',
-          token: cleanToken
+          contentType: file.type || 'application/octet-stream',
+          token: token
         });
         return NextResponse.json({ url: blob.url });
       } catch (blobError: any) {
-        console.error('Vercel Blob upload error:', blobError);
-        return NextResponse.json({ error: `Vercel Blob Error: ${blobError.message}` }, { status: 500 });
+        console.warn('Vercel Blob failed, falling back to local storage:', blobError?.message);
       }
     }
     
-    // Fallback to local file system (for local development without Blob)
+    // 2. Fallback to local file system in /public/uploads
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     
     try {
