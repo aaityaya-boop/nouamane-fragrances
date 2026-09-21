@@ -175,6 +175,8 @@ export default function OrderTimelineFull({
     }
   };
 
+  const isConfirmationAgent = currentUser?.role === 'ORDER_CONFIRMATION_AGENT' || (!currentUser?.isOwner && !currentUser?.effectivePermissions?.includes('finance.view_revenue'));
+
   return (
     <div className="space-y-6">
       {/* 1. Simple Step Tracker */}
@@ -196,71 +198,130 @@ export default function OrderTimelineFull({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {currentStatus === 'pending' && (
-            <button
-              onClick={() => handleQuickAdvance('confirmed', 'Confirmée par téléphone')}
-              disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
-            >
-              Confirmer
-            </button>
-          )}
+          {isConfirmationAgent ? (
+            <>
+              {/* Confirmer button */}
+              {(currentStatus === 'pending' || currentStatus === 'unconfirmed') && (
+                <button
+                  onClick={() => handleQuickAdvance('processing', 'Confirmée par téléphone')}
+                  disabled={isSubmitting}
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[12px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                >
+                  <Check size={13} />
+                  <span>Confirmer</span>
+                </button>
+              )}
 
-          {(currentStatus === 'pending' || currentStatus === 'confirmed') && (
-            <button
-              onClick={() => handleQuickAdvance('processing', 'Colis prêt et emballé')}
-              disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
-            >
-              Marquer préparée
-            </button>
-          )}
+              {/* Non confirmé button */}
+              {(currentStatus === 'pending' || currentStatus === 'processing' || currentStatus === 'confirmed') && (
+                <button
+                  onClick={() => handleQuickAdvance('unconfirmed', 'Non confirmée / Appel sans réponse')}
+                  disabled={isSubmitting}
+                  className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-lg text-[12px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Phone size={13} />
+                  <span>Non confirmé</span>
+                </button>
+              )}
 
-          {(currentStatus === 'pending' || currentStatus === 'confirmed' || currentStatus === 'processing') && (
-            <button
-              onClick={() => setShowShipModal(true)}
-              disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
-            >
-              Expédier...
-            </button>
-          )}
+              {/* Remettre en attente button */}
+              {(currentStatus === 'processing' || currentStatus === 'confirmed' || currentStatus === 'unconfirmed') && (
+                <button
+                  onClick={() => handleQuickAdvance('pending', 'Remise en attente')}
+                  disabled={isSubmitting}
+                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Clock size={13} />
+                  <span>En attente</span>
+                </button>
+              )}
 
-          {currentStatus === 'shipped' && (
-            <button
-              onClick={() => handleQuickAdvance('delivered', `Colis livré et montant de ${order.total} MAD encaissé`)}
-              disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
-            >
-              Marquer livrée
-            </button>
-          )}
+              <button
+                onClick={() => {
+                  setNoteType('CALL_ATTEMPT');
+                  setNewNote('Tentative d\'appel sans réponse');
+                }}
+                className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium transition-colors cursor-pointer"
+              >
+                Appel sans réponse
+              </button>
 
-          <button
-            onClick={() => setShowAttachModal(true)}
-            className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-colors"
-          >
-            <Paperclip size={13} /> Joindre un document
-          </button>
+              <button
+                onClick={() => setShowAttachModal(true)}
+                className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Paperclip size={13} /> Joindre un document
+              </button>
+            </>
+          ) : (
+            <>
+              {currentStatus === 'pending' && (
+                <button
+                  onClick={() => handleQuickAdvance('confirmed', 'Confirmée par téléphone')}
+                  disabled={isSubmitting}
+                  className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Confirmer
+                </button>
+              )}
 
-          <button
-            onClick={() => {
-              setNoteType('CALL_ATTEMPT');
-              setNewNote('Appel sans réponse');
-            }}
-            className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium transition-colors"
-          >
-            Appel sans réponse
-          </button>
+              {(currentStatus === 'pending' || currentStatus === 'confirmed') && (
+                <button
+                  onClick={() => handleQuickAdvance('processing', 'Colis prêt et emballé')}
+                  disabled={isSubmitting}
+                  className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Marquer préparée
+                </button>
+              )}
 
-          {['shipped', 'delivered'].includes(currentStatus) && (
-            <button
-              onClick={() => handleQuickAdvance('refused', 'Colis refusé')}
-              disabled={isSubmitting}
-              className="px-3 py-1.5 bg-white hover:bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
-            >
-              Refus client
-            </button>
+              {(currentStatus === 'pending' || currentStatus === 'confirmed' || currentStatus === 'processing') && (
+                <button
+                  onClick={() => setShowShipModal(true)}
+                  disabled={isSubmitting}
+                  className="px-3.5 py-1.5 bg-neutral-900 hover:bg-black text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Expédier...
+                </button>
+              )}
+
+              {currentStatus === 'shipped' && (
+                <button
+                  onClick={() => handleQuickAdvance('delivered', `Colis livré et montant de ${order.total} MAD encaissé`)}
+                  disabled={isSubmitting}
+                  className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Marquer livrée
+                </button>
+              )}
+
+              <button
+                onClick={() => setShowAttachModal(true)}
+                className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Paperclip size={13} /> Joindre un document
+              </button>
+
+              <button
+                onClick={() => {
+                  setNoteType('CALL_ATTEMPT');
+                  setNewNote('Appel sans réponse');
+                }}
+                className="px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-700 rounded-lg text-[12px] font-medium transition-colors cursor-pointer"
+              >
+                Appel sans réponse
+              </button>
+
+              {['shipped', 'delivered'].includes(currentStatus) && (
+                <button
+                  onClick={() => handleQuickAdvance('refused', 'Colis refusé')}
+                  disabled={isSubmitting}
+                  className="px-3 py-1.5 bg-white hover:bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Refus client
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

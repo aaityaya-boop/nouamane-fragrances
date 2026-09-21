@@ -1,12 +1,17 @@
 import React from 'react';
-import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight, LineChart, Link as LinkIcon, Smartphone, Monitor } from 'lucide-react';
+import { Package, TrendingUp, Users, DollarSign, Activity, MapPin, MousePointerClick, ArrowRight, ArrowUpRight, LineChart, Link as LinkIcon, Smartphone, Monitor, Clock } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import TrafficChart from './components/TrafficChart';
+import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
+import { hasPermission } from '@/lib/auth/rbac/accessControl';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
+  const admin = await getAuthenticatedAdmin();
+  const canViewRevenue = admin ? hasPermission(admin, 'finance.view_revenue') : false;
+
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: 'desc' },
   });
@@ -115,13 +120,22 @@ export default async function AdminDashboard() {
 
       {/* Analytics Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          icon={<DollarSign size={18} className="text-neutral-900" />}
-          label="Chiffre d'affaires"
-          value={formatMAD(totalRevenue)}
-          trend="+12%"
-          trendUp={true}
-        />
+        {canViewRevenue ? (
+          <StatCard 
+            icon={<DollarSign size={18} className="text-neutral-900" />}
+            label="Chiffre d'affaires"
+            value={formatMAD(totalRevenue)}
+            trend="+12%"
+            trendUp={true}
+          />
+        ) : (
+          <StatCard 
+            icon={<Clock size={18} className="text-[#1D9BF0]" />}
+            label="Commandes à Confirmer"
+            value={pendingOrders.toString()}
+            subtitle={`${orders.filter(o => o.status === 'processing').length} confirmées / en atelier`}
+          />
+        )}
         <StatCard 
           icon={<Package size={18} className="text-neutral-900" />}
           label="Total Commandes"
@@ -161,7 +175,7 @@ export default async function AdminDashboard() {
                   <tr>
                     <th className="px-5 py-3">Client</th>
                     <th className="px-5 py-3">Date</th>
-                    <th className="px-5 py-3">Montant</th>
+                    <th className="px-5 py-3">{canViewRevenue ? 'Montant' : 'Ville'}</th>
                     <th className="px-5 py-3">Statut</th>
                   </tr>
                 </thead>
@@ -175,12 +189,21 @@ export default async function AdminDashboard() {
                       <td className="px-5 py-3 text-neutral-500 text-xs">
                         {new Date(order.createdAt).toLocaleDateString('fr-MA', { day: 'numeric', month: 'short' })}
                       </td>
-                      <td className="px-5 py-3 font-semibold text-neutral-900">
-                        {formatMAD(order.total)}
-                      </td>
+                      {canViewRevenue ? (
+                        <td className="px-5 py-3 font-semibold text-neutral-900">
+                          {formatMAD(order.total)}
+                        </td>
+                      ) : (
+                        <td className="px-5 py-3 font-medium text-neutral-700">
+                          <span className="inline-flex items-center gap-1 text-xs">
+                            <MapPin size={12} className="text-[#1D9BF0]" />
+                            {order.shippingCity || 'Casablanca'}
+                          </span>
+                        </td>
+                      )}
                       <td className="px-5 py-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border bg-neutral-100 text-neutral-700 border-neutral-200">
-                          {order.status}
+                          {order.status === 'processing' ? 'Confirmée' : order.status === 'unconfirmed' ? 'Non confirmée' : order.status === 'pending' ? 'En attente' : order.status}
                         </span>
                       </td>
                     </tr>

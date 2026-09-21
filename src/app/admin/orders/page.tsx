@@ -214,6 +214,8 @@ export default function OrdersPage() {
     setTimeout(() => setCopiedRef(null), 2000);
   };
 
+  const isConfirmationAgent = currentUser?.role === 'ORDER_CONFIRMATION_AGENT' || (!currentUser?.isOwner && !currentUser?.effectivePermissions?.includes('finance.view_revenue'));
+
   // Extract unique cities
   const uniqueCities = useMemo(() => {
     const set = new Set<string>();
@@ -223,6 +225,20 @@ export default function OrdersPage() {
       }
     });
     return Array.from(set).sort();
+  }, [orders]);
+
+  // Tab counts
+  const tabCounts = useMemo(() => {
+    return {
+      ALL: orders.length,
+      PENDING: orders.filter((o) => o.status === 'pending').length,
+      UNCONFIRMED: orders.filter((o) => o.status === 'unconfirmed').length,
+      PROCESSING: orders.filter((o) => o.status === 'processing' || o.status === 'confirmed').length,
+      SHIPPED: orders.filter((o) => o.status === 'shipped').length,
+      DELIVERED: orders.filter((o) => o.status === 'delivered').length,
+      ISSUES: orders.filter((o) => o.status === 'refused' || o.status === 'returned').length,
+      TO_CONFIRM_COMBINED: orders.filter((o) => o.status === 'pending' || o.status === 'unconfirmed').length,
+    };
   }, [orders]);
 
   // Filtered orders
@@ -241,27 +257,18 @@ export default function OrdersPage() {
       }
 
       if (activeTab === 'ALL') return true;
-      if (activeTab === 'PENDING') return o.status === 'pending' || o.status === 'unconfirmed';
-      if (activeTab === 'PROCESSING') return o.status === 'processing';
+      if (activeTab === 'PENDING') {
+        return isConfirmationAgent ? o.status === 'pending' : (o.status === 'pending' || o.status === 'unconfirmed');
+      }
+      if (activeTab === 'UNCONFIRMED') return o.status === 'unconfirmed';
+      if (activeTab === 'PROCESSING') return o.status === 'processing' || o.status === 'confirmed';
       if (activeTab === 'SHIPPED') return o.status === 'shipped';
       if (activeTab === 'DELIVERED') return o.status === 'delivered';
       if (activeTab === 'ISSUES') return o.status === 'refused' || o.status === 'returned';
 
       return true;
     });
-  }, [orders, search, activeTab, cityFilter]);
-
-  // Tab counts
-  const tabCounts = useMemo(() => {
-    return {
-      ALL: orders.length,
-      PENDING: orders.filter((o) => o.status === 'pending' || o.status === 'unconfirmed').length,
-      PROCESSING: orders.filter((o) => o.status === 'processing').length,
-      SHIPPED: orders.filter((o) => o.status === 'shipped').length,
-      DELIVERED: orders.filter((o) => o.status === 'delivered').length,
-      ISSUES: orders.filter((o) => o.status === 'refused' || o.status === 'returned').length,
-    };
-  }, [orders]);
+  }, [orders, search, activeTab, cityFilter, isConfirmationAgent]);
 
   // Key Metrics
   const totalRevenue = useMemo(() => orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders]);
@@ -286,16 +293,18 @@ export default function OrdersPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-100/70 text-[#0284c7] border border-sky-200">
-              Logistique & Ventes
+              {isConfirmationAgent ? 'Confirmation Téléphonique' : 'Logistique & Ventes'}
             </span>
             <span className="text-xs text-slate-400 font-medium">Maison NAY</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <ShoppingBag size={22} className="text-[#1D9BF0]" />
-            <span>Gestion des Commandes & Expéditions</span>
+            <span>{isConfirmationAgent ? 'Validation & Confirmation des Commandes' : 'Gestion des Commandes & Expéditions'}</span>
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Suivi en direct des confirmations, de l'emballage, des livraisons et des encaissements.
+            {isConfirmationAgent
+              ? 'Appels de confirmation des clients, validation des adresses et suivi des commandes.'
+              : 'Suivi en direct des confirmations, de l\'emballage, des livraisons et des encaissements.'}
           </p>
         </div>
 
@@ -312,67 +321,127 @@ export default function OrdersPage() {
 
       {/* Real-time KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* Total Orders */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Volume Global</span>
-            <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
-              <ShoppingBag size={16} />
+        {isConfirmationAgent ? (
+          <>
+            {/* Total Orders */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Commandes</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
+                  <ShoppingBag size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.PENDING} en attente d'appel</div>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
-          <div className="text-[11px] text-slate-500 mt-1 font-medium">Total: {formatMAD(totalRevenue)}</div>
-        </div>
 
-        {/* To Confirm / Pending */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">À Confirmer & Préparer</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Clock size={16} />
+            {/* To Confirm / Pending */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Attente</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Clock size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">À contacter par téléphone</div>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING + tabCounts.PROCESSING}</div>
-          <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.PENDING} en attente • {tabCounts.PROCESSING} en atelier</div>
-        </div>
 
-        {/* In Delivery */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Cours de Livraison</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <Truck size={16} />
+            {/* Unconfirmed / Need Recall */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Non Confirmées</span>
+                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <Phone size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-rose-600 mt-2">{tabCounts.UNCONFIRMED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Injoignables / À relancer</div>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-indigo-600 mt-2">{tabCounts.SHIPPED}</div>
-          <div className="text-[11px] text-slate-500 mt-1 font-medium">Colis avec transporteurs (Amana...)</div>
-        </div>
 
-        {/* Delivered Success Rate */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Livrées & Encaissées</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <CheckCircle2 size={16} />
+            {/* Confirmed Orders */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Confirmées</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle2 size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.PROCESSING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">
+                {orders.length > 0 ? ((tabCounts.PROCESSING / orders.length) * 100).toFixed(0) : 0}% validées
+              </div>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.DELIVERED}</div>
-          <div className="text-[11px] text-slate-500 mt-1 font-medium">CA Livré: {formatMAD(deliveredRevenue)} ({deliverySuccessRate}%)</div>
-        </div>
+          </>
+        ) : (
+          <>
+            {/* Total Orders */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Volume Global</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
+                  <ShoppingBag size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Total: {formatMAD(totalRevenue)}</div>
+            </div>
+
+            {/* To Confirm / Pending */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">À Confirmer & Préparer</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Clock size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.TO_CONFIRM_COMBINED + tabCounts.PROCESSING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.TO_CONFIRM_COMBINED} en attente • {tabCounts.PROCESSING} en atelier</div>
+            </div>
+
+            {/* In Delivery */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Cours de Livraison</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Truck size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-indigo-600 mt-2">{tabCounts.SHIPPED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Colis avec transporteurs (Amana...)</div>
+            </div>
+
+            {/* Delivered Success Rate */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Livrées & Encaissées</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle2 size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.DELIVERED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">CA Livré: {formatMAD(deliveredRevenue)} ({deliverySuccessRate}%)</div>
+            </div>
+          </>
+        )}
 
       </div>
 
       {/* Filter Tabs Bar with Status Colors */}
       <div className="bg-white p-1.5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center gap-1 overflow-x-auto custom-scrollbar">
-        {[
-          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, color: 'text-slate-700', activeBg: 'bg-slate-900 text-white' },
-          { id: 'PENDING', label: 'À Confirmer', count: tabCounts.PENDING, color: 'text-amber-600', activeBg: 'bg-amber-500 text-white' },
-          { id: 'PROCESSING', label: 'En Préparation', count: tabCounts.PROCESSING, color: 'text-[#1D9BF0]', activeBg: 'bg-[#1D9BF0] text-white' },
-          { id: 'SHIPPED', label: 'En Livraison', count: tabCounts.SHIPPED, color: 'text-indigo-600', activeBg: 'bg-indigo-600 text-white' },
-          { id: 'DELIVERED', label: 'Livrées & Encaissées', count: tabCounts.DELIVERED, color: 'text-emerald-600', activeBg: 'bg-emerald-600 text-white' },
-          { id: 'ISSUES', label: 'Refus & Retours', count: tabCounts.ISSUES, color: 'text-rose-600', activeBg: 'bg-rose-600 text-white' },
-        ].map((tab) => (
+        {(isConfirmationAgent ? [
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
+          { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING, activeBg: 'bg-amber-500 text-white' },
+          { id: 'UNCONFIRMED', label: 'Non confirmées', count: tabCounts.UNCONFIRMED, activeBg: 'bg-rose-500 text-white' },
+          { id: 'PROCESSING', label: 'Confirmées', count: tabCounts.PROCESSING, activeBg: 'bg-[#1D9BF0] text-white' },
+        ] : [
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
+          { id: 'PENDING', label: 'À Confirmer', count: tabCounts.TO_CONFIRM_COMBINED, activeBg: 'bg-amber-500 text-white' },
+          { id: 'PROCESSING', label: 'En Préparation', count: tabCounts.PROCESSING, activeBg: 'bg-[#1D9BF0] text-white' },
+          { id: 'SHIPPED', label: 'En Livraison', count: tabCounts.SHIPPED, activeBg: 'bg-indigo-600 text-white' },
+          { id: 'DELIVERED', label: 'Livrées & Encaissées', count: tabCounts.DELIVERED, activeBg: 'bg-emerald-600 text-white' },
+          { id: 'ISSUES', label: 'Refus & Retours', count: tabCounts.ISSUES, activeBg: 'bg-rose-600 text-white' },
+        ]).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -585,13 +654,25 @@ export default function OrdersPage() {
                       <td className="px-5 py-3.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="relative inline-block w-[140px]">
                           <select
-                            value={order.status}
+                            value={order.status === 'confirmed' ? 'processing' : order.status}
                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                             className={`w-full appearance-none pl-2.5 pr-6 py-1.5 rounded-xl text-[11px] font-bold border cursor-pointer focus:outline-none transition-all ${stConfig.bg} ${stConfig.text} ${stConfig.border}`}
                           >
-                            {Object.keys(STATUS_LABELS).map((status) => (
-                              <option key={status} value={status}>
-                                {STATUS_LABELS[status]}
+                            {(isConfirmationAgent ? [
+                              { value: 'pending', label: 'En attente' },
+                              { value: 'unconfirmed', label: 'Non confirmé' },
+                              { value: 'processing', label: 'Confirmée' },
+                            ] : [
+                              { value: 'pending', label: 'En attente' },
+                              { value: 'unconfirmed', label: 'Non confirmé' },
+                              { value: 'processing', label: 'En préparation' },
+                              { value: 'shipped', label: 'En livraison' },
+                              { value: 'delivered', label: 'Livrée & Encaissée' },
+                              { value: 'refused', label: 'Refusée' },
+                              { value: 'returned', label: 'Retour' },
+                            ]).map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
                               </option>
                             ))}
                           </select>
@@ -644,7 +725,15 @@ export default function OrdersPage() {
                   } ${STATUS_CLASSES[editingOrder.status]?.text || 'text-slate-700'} ${
                     STATUS_CLASSES[editingOrder.status]?.border || 'border-slate-200'
                   }`}>
-                    {STATUS_LABELS[editingOrder.status] || editingOrder.status}
+                    {isConfirmationAgent
+                      ? (editingOrder.status === 'processing' || editingOrder.status === 'confirmed'
+                          ? 'Confirmée'
+                          : editingOrder.status === 'unconfirmed'
+                          ? 'Non confirmé'
+                          : editingOrder.status === 'pending'
+                          ? 'En attente'
+                          : STATUS_LABELS[editingOrder.status] || editingOrder.status)
+                      : (STATUS_LABELS[editingOrder.status] || editingOrder.status)}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-400 font-medium mt-0.5">

@@ -1,10 +1,18 @@
 import React from 'react';
 import prisma from '@/lib/prisma';
 import FinanceClient from './FinanceClient';
+import { redirect } from 'next/navigation';
+import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
+import { hasPermission } from '@/lib/auth/rbac/accessControl';
 
 export const dynamic = 'force-dynamic';
 
 export default async function FinancePage() {
+  const admin = await getAuthenticatedAdmin();
+  if (!admin || !hasPermission(admin, 'finance.view_revenue')) {
+    redirect('/admin');
+  }
+
   // Fetch all orders
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: 'asc' },
