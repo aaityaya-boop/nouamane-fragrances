@@ -883,24 +883,6 @@ function TeamManagementContent() {
                   </div>
                 </div>
               </div>
-                    className="w-12 h-12 rounded-full object-cover border-2 border-sky-500 shadow-md"
-                  />
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {AVATAR_PRESETS.map((av, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setNewMemberForm({ ...newMemberForm, avatar: av })}
-                        className={`w-8 h-8 rounded-full overflow-hidden border-2 transition-all ${
-                          newMemberForm.avatar === av ? 'border-sky-400 scale-110' : 'border-transparent opacity-60 hover:opacity-100'
-                        }`}
-                      >
-                        <img src={av} alt="avatar" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
               {/* Name & Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
