@@ -36,7 +36,11 @@ import {
   Banknote,
   Package,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Globe,
+  Bot,
+  HeartPulse,
+  PieChart
 } from 'lucide-react';
 
 interface MenuItem {
@@ -49,51 +53,55 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   { href: '/admin', label: 'Tableau de bord', icon: <LayoutDashboard size={16} />, permission: 'dashboard.view' },
-  { href: '/admin/finance', label: 'Finance & CA Net', icon: <TrendingUp size={16} />, permission: 'finance.view_revenue' },
-  { href: '/admin/finance?tab=EXPENSES', label: 'Charges & Dépenses', icon: <Banknote size={16} />, permission: 'finance.view_costs' },
   { href: '/admin/orders', label: 'Commandes', icon: <ShoppingBag size={16} />, permission: 'orders.view' },
-  { href: '/admin/reviews', label: 'Avis Clients', icon: <Star size={16} />, permission: 'reviews.view' },
   { href: '/admin/products', label: 'Testeurs', icon: <PackageSearch size={16} />, permission: 'products.view' },
   { href: '/admin/coffrets', label: 'Coffrets Cadeaux', icon: <Gift size={16} />, permission: 'products.view' },
   { href: '/admin/parfums-originaux', label: 'Parfums Originaux', icon: <Sparkles size={16} />, permission: 'products.view' },
   { href: '/admin/master-copier', label: 'Master Copy', icon: <Sparkles size={16} />, permission: 'products.edit' },
-  { href: '/admin/inventory', label: 'Inventaire', icon: <Archive size={16} />, permission: 'inventory.view' },
-  { href: '/admin/brands', label: 'Marques', icon: <Bookmark size={16} />, permission: 'products.view' },
+  { href: '/admin/inventory', label: 'Inventaire & Stock', icon: <Archive size={16} />, permission: 'inventory.view' },
+  { href: '/admin/brands', label: 'Marques de Luxe', icon: <Bookmark size={16} />, permission: 'products.view' },
+  { href: '/admin/finance', label: 'Finance & CA Net', icon: <TrendingUp size={16} />, permission: 'finance.view_revenue' },
+  { href: '/admin/finance?tab=EXPENSES', label: 'Charges & Dépenses', icon: <Banknote size={16} />, permission: 'finance.view_costs' },
 ];
 
 const TEAM_ITEMS: MenuItem[] = [
-  { href: '/admin/team', label: 'Gestion Équipe', icon: <ShieldCheck size={16} />, permission: 'team.view' },
+  { href: '/admin/team', label: 'Gestion Équipe & Salaires', icon: <ShieldCheck size={16} />, permission: 'team.view' },
   { href: '/admin/team/roles', label: 'Annuaire des Rôles', icon: <Users size={16} />, permission: 'team.view' },
   { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={16} />, permission: 'tasks.view' },
   { href: '/admin/chat', label: 'NAY Chat', icon: <MessageSquare size={16} /> },
-  { href: '/admin/notifications', label: 'Notifications', icon: <Bell size={16} /> },
+  { href: '/admin/notifications', label: 'Centre Notifications', icon: <Bell size={16} /> },
   { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={16} />, permission: 'activity.view_all' },
 ];
 
 const CRM_ITEMS: MenuItem[] = [
   { href: '/admin/customers', label: 'Tous les Clients', icon: <Users size={16} />, permission: 'customers.view' },
-  { href: '/admin/customers/vip', label: 'Clients VIP', icon: <Star size={16} />, permission: 'customers.view_vip' },
+  { href: '/admin/customers/vip', label: 'Clients VIP & Fidélité', icon: <Star size={16} />, permission: 'customers.view_vip' },
+  { href: '/admin/customers/segments', label: 'Segmentation Clients', icon: <PieChart size={16} />, permission: 'customers.view' },
+  { href: '/admin/customers/at-risk', label: 'Clients à Risque', icon: <UserCheck size={16} />, permission: 'customers.view' },
   { href: '/admin/reviews', label: 'Avis & Témoignages', icon: <MessageSquare size={16} />, permission: 'reviews.view' },
 ];
 
 const MARKETING_ITEMS: MenuItem[] = [
-  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads)', icon: <Film size={16} />, permission: 'marketing.manage_creatives' },
+  { href: '/admin/creatives', label: 'Créatifs Pubs (Ads UGC)', icon: <Film size={16} />, permission: 'marketing.manage_creatives' },
   { href: '/admin/marketing', label: 'Marketing & Rétention', icon: <TrendingUp size={16} />, permission: 'marketing.view' },
   { href: '/admin/marketing/campaigns', label: 'Campagnes & SMS', icon: <Mail size={16} />, permission: 'marketing.manage_campaigns' },
-  { href: '/admin/marketing/live-carts', label: 'Paniers en direct', icon: <Activity size={16} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/marketing/live-carts', label: 'Paniers en direct (Live)', icon: <Activity size={16} />, permission: 'marketing.view_analytics' },
   { href: '/admin/landing-pages', label: 'Landing Pages', icon: <LayoutTemplate size={16} />, permission: 'marketing.manage_landing_pages' },
   { href: '/admin/promos', label: 'Codes Promo', icon: <Ticket size={16} />, permission: 'marketing.manage_promotions' },
   { href: '/admin/affiliates', label: 'Ambassadeurs', icon: <UserCheck size={16} />, permission: 'marketing.manage_affiliates' },
   { href: '/admin/analytics', label: 'Audience & Trafic', icon: <TrendingUp size={16} />, permission: 'marketing.view_analytics' },
+  { href: '/admin/seo', label: 'Moteur SEO Maroc', icon: <Globe size={16} />, permission: 'marketing.manage_seo' },
+  { href: '/admin/seo/ai', label: 'Visibilité IA Engine', icon: <Bot size={16} />, permission: 'marketing.manage_seo' },
   { href: '/admin/newsletter', label: 'Newsletter', icon: <Mail size={16} />, permission: 'marketing.manage_newsletter' },
   { href: '/admin/blog', label: 'Blog & Articles SEO', icon: <BookOpen size={16} />, permission: 'marketing.manage_seo' },
 ];
 
 const SYSTEM_ITEMS: MenuItem[] = [
-  { href: '/admin/messages', label: 'Messages Reçus', icon: <MessageSquare size={16} />, permission: 'messages.view' },
+  { href: '/admin/messages', label: 'Messages Formulaire', icon: <MessageSquare size={16} />, permission: 'messages.view' },
   { href: '/admin/vitrine', label: 'Vitrine Recommandée', icon: <Sparkles size={16} />, permission: 'products.edit' },
-  { href: '/admin/profile', label: 'Mon Compte', icon: <User size={16} /> },
-  { href: '/admin/settings', label: 'Paramètres Système', icon: <Settings size={16} />, permission: 'settings.view' },
+  { href: '/admin/system/health', label: 'Santé & Intégrations', icon: <HeartPulse size={16} />, permission: 'settings.view' },
+  { href: '/admin/profile', label: 'Mon Compte & Sécurité', icon: <User size={16} /> },
+  { href: '/admin/settings', label: 'Paramètres Boutique', icon: <Settings size={16} />, permission: 'settings.view' },
 ];
 
 interface AdminUser {

@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { Plus, Search, Filter } from "lucide-react";
 import Link from "next/link";
-
-const prisma = new PrismaClient();
 
 export default async function AiQueriesPage() {
   const queries = await prisma.seoAiQuery.findMany({

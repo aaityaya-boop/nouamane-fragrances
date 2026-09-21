@@ -1,5 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export async function GET() {
+  const mockBrandAudit = {
+    brandName: 'NAY Parfum',
+    consistencyScore: 92,
+    sentimentScore: 88,
+    hallucinationRisk: 'LOW',
+    findings: [
+      { aspect: 'Tone of Voice', status: 'PASS', details: 'Consistent luxury French-Moroccan perfume tone detected.' },
+      { aspect: 'Key Messaging', status: 'PASS', details: 'Parfums de luxe, testeurs authentiques 100ml, livraison express Maroc.' },
+      { aspect: 'Value Proposition', status: 'PASS', details: 'Longue tenue, prix accessibles, qualité irréprochable.' }
+    ],
+    auditedAt: new Date().toISOString(),
+  };
+
+  return NextResponse.json({ success: true, data: mockBrandAudit });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));

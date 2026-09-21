@@ -1,4 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    const audit = await prisma.seoAiVisibilityAudit.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+    return NextResponse.json({ success: true, audit });
+  } catch (error) {
+    console.error('Error fetching AI audit:', error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

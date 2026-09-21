@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export async function GET() {
+  const mockCrawlAudit = {
+    url: 'https://nayparfum.ma',
+    accessibleToAI: true,
+    robotsTxtOptimized: true,
+    metadataQuality: 'EXCELLENT',
+    schemaMarkupFound: ['Product', 'Organization', 'WebSite', 'Offer', 'BreadcrumbList'],
+    issues: [],
+    crawlDate: new Date().toISOString(),
+  };
+
+  return NextResponse.json({ success: true, data: mockCrawlAudit });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));

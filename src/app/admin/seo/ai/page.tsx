@@ -1,19 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { 
   CheckCircle2, 
   AlertTriangle, 
-  XCircle,
-  Activity,
-  Database,
-  Link as LinkIcon,
-  FileText,
-  ShoppingBag,
-  HelpCircle,
-  MapPin,
-  Settings
+  XCircle, 
+  Activity, 
+  Database, 
+  Link as LinkIcon, 
+  FileText, 
+  ShoppingBag, 
+  HelpCircle, 
+  MapPin, 
+  Settings 
 } from "lucide-react";
-
-const prisma = new PrismaClient();
 
 // Helper to get status color and icon
 const getStatusDisplay = (score: number) => {

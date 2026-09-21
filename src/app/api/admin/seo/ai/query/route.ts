@@ -1,4 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    const queries = await prisma.seoAiQuery.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+    return NextResponse.json({ success: true, queries });
+  } catch (error) {
+    console.error('Error fetching AI queries:', error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

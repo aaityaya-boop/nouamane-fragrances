@@ -197,27 +197,76 @@ export default function AdminHeader() {
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   };
 
+  const getPageContextLabel = (path: string) => {
+    if (path === '/admin') return 'Tableau de Bord Global';
+    if (path.startsWith('/admin/orders')) return 'Gestion des Commandes';
+    if (path.startsWith('/admin/products')) return 'Catalogue des Testeurs (199)';
+    if (path.startsWith('/admin/coffrets')) return 'Coffrets Cadeaux';
+    if (path.startsWith('/admin/parfums-originaux')) return 'Parfums Originaux';
+    if (path.startsWith('/admin/master-copier')) return 'Master Copy 1:1';
+    if (path.startsWith('/admin/inventory')) return 'Inventaire & Stocks';
+    if (path.startsWith('/admin/brands')) return 'Marques de Luxe';
+    if (path.startsWith('/admin/finance')) return 'Finance & Rémunérations';
+    if (path.startsWith('/admin/team/roles')) return 'Matrice des 26 Rôles';
+    if (path.startsWith('/admin/team')) return 'Équipe, Salaires & RBAC';
+    if (path.startsWith('/admin/tasks')) return 'Missions & Tâches (Kanban)';
+    if (path.startsWith('/admin/chat')) return 'NAY Chat Interne';
+    if (path.startsWith('/admin/notifications')) return 'Centre de Notifications';
+    if (path.startsWith('/admin/activity')) return 'Journal d\'Activité & Audit';
+    if (path.startsWith('/admin/customers/vip')) return 'Clients VIP & Fidélité';
+    if (path.startsWith('/admin/customers/segments')) return 'Segmentation Clients';
+    if (path.startsWith('/admin/customers/at-risk')) return 'Clients à Risque';
+    if (path.startsWith('/admin/customers')) return 'Fichier Clients & CRM';
+    if (path.startsWith('/admin/reviews')) return 'Avis & Témoignages';
+    if (path.startsWith('/admin/creatives')) return 'Créatifs Publicitaires (Ads UGC)';
+    if (path.startsWith('/admin/marketing/campaigns')) return 'Campagnes SMS & Emailing';
+    if (path.startsWith('/admin/marketing/live-carts')) return 'Paniers en Direct (Live)';
+    if (path.startsWith('/admin/marketing')) return 'Marketing & Rétention';
+    if (path.startsWith('/admin/landing-pages')) return 'Landing Pages Promos';
+    if (path.startsWith('/admin/promos')) return 'Codes Promo & Réductions';
+    if (path.startsWith('/admin/affiliates')) return 'Ambassadeurs & Influenceurs';
+    if (path.startsWith('/admin/analytics')) return 'Audience & Trafic';
+    if (path.startsWith('/admin/seo/ai')) return 'Command Center Visibilité IA';
+    if (path.startsWith('/admin/seo')) return 'Moteur SEO Maroc';
+    if (path.startsWith('/admin/newsletter')) return 'Abonnés Newsletter';
+    if (path.startsWith('/admin/blog')) return 'Blog & Rédaction SEO';
+    if (path.startsWith('/admin/messages')) return 'Messages Clients';
+    if (path.startsWith('/admin/vitrine')) return 'Configuration Vitrine';
+    if (path.startsWith('/admin/system/health')) return 'Santé Système & APIs';
+    if (path.startsWith('/admin/system/deployment')) return 'Checklist Déploiement';
+    if (path.startsWith('/admin/profile')) return 'Mon Profil & Sécurité';
+    if (path.startsWith('/admin/settings')) return 'Paramètres Boutique';
+    return 'Administration NAY';
+  };
+
   return (
     <header className="w-full bg-white border-b border-[#e2e8f0] px-4 lg:px-8 py-3 mb-6 rounded-2xl shadow-sm flex items-center justify-between transition-all">
-      {/* Left: Quick Workspace Badge / Context */}
+      {/* Left: Breadcrumb / Active Route Context */}
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider hidden md:inline">
+            Admin /
           </span>
-          <span>Boutique en ligne</span>
+          <span className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+            {getPageContextLabel(pathname)}
+          </span>
         </div>
 
-        <Link
-          href="/"
-          target="_blank"
-          className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-[#0ea5e9] transition-colors"
-          title="Voir la boutique publique"
-        >
-          <span>nayparfum.ma</span>
-          <ExternalLink size={13} />
-        </Link>
+        <div className="hidden lg:flex items-center gap-1.5 pl-3 border-l border-slate-200">
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 hover:text-[#0ea5e9] bg-slate-50 hover:bg-sky-50 px-2.5 py-1 rounded-lg border border-slate-200 hover:border-sky-200 transition-all"
+            title="Ouvrir la boutique publique dans un nouvel onglet"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            <span>nayparfum.ma</span>
+            <ExternalLink size={11} className="text-slate-400" />
+          </Link>
+        </div>
       </div>
 
       {/* Right Controls: Chat, Notifications, Profile */}

@@ -1,6 +1,53 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+export async function GET() {
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: { stock: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        brand: true,
+        brandLabel: true,
+        subcategory: true,
+        subcategoryLabel: true,
+        price: true,
+        originalPrice: true,
+        testerPrice: true,
+        stock: true,
+        inStock: true,
+        images: true,
+        sku: true,
+        updatedAt: true,
+      },
+    });
+
+    const totalStockUnits = products.reduce((acc, p) => acc + (p.stock || 0), 0);
+    const lowStockCount = products.filter((p) => (p.stock || 0) > 0 && (p.stock || 0) <= 5).length;
+    const outOfStockCount = products.filter((p) => (p.stock || 0) <= 0).length;
+    const inStockCount = products.filter((p) => (p.stock || 0) > 5).length;
+    const totalValuationMAD = products.reduce((acc, p) => acc + (p.stock || 0) * (p.price || 0), 0);
+
+    return NextResponse.json({
+      success: true,
+      products,
+      stats: {
+        totalProducts: products.length,
+        totalStockUnits,
+        inStockCount,
+        lowStockCount,
+        outOfStockCount,
+        totalValuationMAD,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching inventory:', error);
+    return NextResponse.json({ error: 'Failed to fetch inventory' }, { status: 500 });
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     const { id, stock } = await request.json();

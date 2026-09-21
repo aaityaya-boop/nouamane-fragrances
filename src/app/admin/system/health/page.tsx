@@ -87,7 +87,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.GTM)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.GTM)}`}>
             {envStatus.GTM}
           </div>
         </div>
@@ -101,7 +101,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.GA4)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.GA4)}`}>
             {envStatus.GA4}
           </div>
         </div>
@@ -115,7 +115,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.PIXEL)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.PIXEL)}`}>
             {envStatus.PIXEL}
           </div>
         </div>
@@ -129,7 +129,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.GSC)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.GSC)}`}>
             {envStatus.GSC}
           </div>
         </div>
@@ -143,7 +143,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.EMAIL)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.EMAIL)}`}>
             {envStatus.EMAIL}
           </div>
         </div>
@@ -157,7 +157,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.WHATSAPP)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.WHATSAPP)}`}>
             {envStatus.WHATSAPP}
           </div>
         </div>
@@ -171,7 +171,7 @@ export default async function SystemHealthPage() {
             </div>
             {getStatusIcon(envStatus.AI)}
           </div>
-          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(dbStatus)}`}>
+          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(envStatus.AI)}`}>
             {envStatus.AI}
           </div>
         </div>

@@ -1,4 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    const opportunities = await prisma.seoOpportunity.findMany({
+      where: { type: 'AI_CONTENT_GAP' },
+      orderBy: { priority: 'desc' },
+      take: 50,
+    });
+    return NextResponse.json({ success: true, opportunities });
+  } catch (error) {
+    console.error('Error fetching content gap opportunities:', error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

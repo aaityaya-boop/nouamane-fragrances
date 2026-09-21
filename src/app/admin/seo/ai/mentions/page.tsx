@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { Search, Filter, RefreshCw, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-
-const prisma = new PrismaClient();
 
 const getStatusBadge = (status: string) => {
   switch (status.toUpperCase()) {
