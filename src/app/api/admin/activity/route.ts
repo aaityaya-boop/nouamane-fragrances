@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     }
 
     // RBAC: Only Owners and users with 'activity.view_all' can access the global activity audit log
-    const canViewAll = admin.isOwner || hasPermission(admin, 'activity.view_all');
+    const canViewAll = admin.role === 'OWNER' || admin.role === 'CO_OWNER' || hasPermission(admin, 'activity.view_all');
     if (!canViewAll) {
       return NextResponse.json({
         success: false,

@@ -30,6 +30,8 @@ interface OrderTimelineFullProps {
     role?: string;
     jobTitle?: string;
     avatar?: string | null;
+    isOwner?: boolean;
+    effectivePermissions?: string[];
   } | null;
   onUpdateStatus: (newStatus: string, options?: { carrier?: string; trackingNumber?: string; customNote?: string; actorNameOverride?: string }) => Promise<void>;
   onAddNote: (note: string, type?: string) => Promise<void>;
