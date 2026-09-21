@@ -5,6 +5,7 @@ import { Product } from '@/lib/products';
 import { OLFACTIVE_FAMILIES } from '@/lib/olfactiveFamilies';
 import { Plus, Edit2, Trash2, Search, X, Upload } from 'lucide-react';
 import Image from 'next/image';
+import SeasonSelector from '@/components/admin/SeasonSelector';
 
 export default function AdminCoffretsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -499,14 +500,16 @@ export default function AdminCoffretsPage() {
                         </div>
                       )}
                     </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#6B6B6B] uppercase mb-2">Saison Idéale</label>
-                      <input type="text" className="w-full bg-[#f8fafc] border border-[#e0ddd4] rounded-xl p-3 text-[14px] focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
-                        value={formData.perfectSeason || ''} onChange={e => setFormData({...formData, perfectSeason: e.target.value})} 
-                        placeholder="Ex: Automne, Hiver" />
-                    </div>
 
-                    <div className="col-span-2 grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
+                    <div className="pt-2 border-t border-neutral-100">
+                      <SeasonSelector
+                        value={formData.perfectSeason || ''}
+                        onChange={(val) => setFormData({ ...formData, perfectSeason: val })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 p-5 bg-[#fafaf7] rounded-xl border border-[#e0ddd4]">
                       <div>
                         <label className="block text-[10px] font-bold text-[#0ea5e9] tracking-widest uppercase mb-2">Notes de Tête</label>
                         <textarea className="w-full border border-[#e0ddd4] rounded-lg p-2.5 text-[12px] min-h-[80px] focus:outline-none focus:border-[#0ea5e9]"
