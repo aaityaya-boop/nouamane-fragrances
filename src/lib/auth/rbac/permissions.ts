@@ -142,6 +142,12 @@ export const ALL_PERMISSIONS: PermissionDefinition[] = [
     module: 'orders',
     isSensitive: true,
   },
+  {
+    key: 'orders.manage_attachments',
+    label: 'Gérer les Pièces Jointes des Commandes',
+    description: 'Téléverser et consulter les bordereaux de transport, justificatifs et photos de colis',
+    module: 'orders',
+  },
 
   // --- PRODUCTS ---
   {

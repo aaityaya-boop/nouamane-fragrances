@@ -214,7 +214,20 @@ export default function OrdersPage() {
     setTimeout(() => setCopiedRef(null), 2000);
   };
 
-  const isConfirmationAgent = currentUser?.role === 'ORDER_CONFIRMATION_AGENT' || (!currentUser?.isOwner && !currentUser?.effectivePermissions?.includes('finance.view_revenue'));
+  // Multi-job profile determination
+  const jobProfile: 'CONFIRMATION' | 'PREPARATION' | 'LOGISTICS' | 'SUPPORT' | 'ADMIN_FULL' = useMemo(() => {
+    if (!currentUser) return 'CONFIRMATION';
+    if (currentUser.isOwner || currentUser.role === 'OWNER' || currentUser.role === 'CO_OWNER' || currentUser.role === 'GENERAL_MANAGER' || currentUser.role === 'FINANCE_DIRECTOR' || currentUser.role === 'ACCOUNTANT' || currentUser.role === 'AUDITOR_CONSULTANT') {
+      return 'ADMIN_FULL';
+    }
+    const role = (currentUser.role || '').toUpperCase();
+    if (role.includes('CONFIRMATION')) return 'CONFIRMATION';
+    if (role.includes('PREPARATION') || role.includes('STOCK') || role.includes('INVENTORY')) return 'PREPARATION';
+    if (role.includes('SHIPPING') || role.includes('LOGISTICS') || role.includes('OPERATIONS')) return 'LOGISTICS';
+    if (role.includes('SUPPORT') || role.includes('CRM') || role.includes('CUSTOMER')) return 'SUPPORT';
+    if (currentUser.effectivePermissions?.includes('finance.view_revenue')) return 'ADMIN_FULL';
+    return 'CONFIRMATION';
+  }, [currentUser]);
 
   // Extract unique cities
   const uniqueCities = useMemo(() => {
@@ -258,7 +271,7 @@ export default function OrdersPage() {
 
       if (activeTab === 'ALL') return true;
       if (activeTab === 'PENDING') {
-        return isConfirmationAgent ? o.status === 'pending' : (o.status === 'pending' || o.status === 'unconfirmed');
+        return jobProfile === 'CONFIRMATION' ? o.status === 'pending' : (o.status === 'pending' || o.status === 'unconfirmed');
       }
       if (activeTab === 'UNCONFIRMED') return o.status === 'unconfirmed';
       if (activeTab === 'PROCESSING') return o.status === 'processing' || o.status === 'confirmed';
@@ -268,7 +281,7 @@ export default function OrdersPage() {
 
       return true;
     });
-  }, [orders, search, activeTab, cityFilter, isConfirmationAgent]);
+  }, [orders, search, activeTab, cityFilter, jobProfile]);
 
   // Key Metrics
   const totalRevenue = useMemo(() => orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0), [orders]);
@@ -285,6 +298,114 @@ export default function OrdersPage() {
     return `https://wa.me/${cleanPhone}?text=${message}`;
   };
 
+  // Profile-specific headers
+  const getHeaderInfo = () => {
+    switch (jobProfile) {
+      case 'CONFIRMATION':
+        return {
+          badge: 'Confirmation Téléphonique',
+          title: 'Validation & Confirmation des Commandes',
+          subtitle: 'Appels de confirmation des clients, validation des adresses et suivi des commandes.',
+        };
+      case 'PREPARATION':
+        return {
+          badge: 'Atelier & Emballage',
+          title: 'Préparation & Packaging des Commandes',
+          subtitle: 'Conditionnement soigné des flacons de parfum, emballage et préparation des colis.',
+        };
+      case 'LOGISTICS':
+        return {
+          badge: 'Logistique & Transport',
+          title: 'Expéditions & Suivi des Livraisons',
+          subtitle: 'Remise aux transporteurs (Amana, Cathedis...), bordereaux de livraison et encaissements.',
+        };
+      case 'SUPPORT':
+        return {
+          badge: 'Service Client & Support',
+          title: 'Suivi des Commandes & Assistance Client',
+          subtitle: 'Assistance après-vente, suivi des livraisons et résolutions d\'incidents.',
+        };
+      default:
+        return {
+          badge: 'Direction & Logistique',
+          title: 'Gestion des Commandes & Expéditions',
+          subtitle: 'Suivi en direct des confirmations, de l\'emballage, des livraisons et du chiffre d\'affaires.',
+        };
+    }
+  };
+
+  // Profile-specific status dropdown options
+  const getStatusOptions = (profile: string) => {
+    switch (profile) {
+      case 'CONFIRMATION':
+        return [
+          { value: 'pending', label: 'En attente' },
+          { value: 'unconfirmed', label: 'Non confirmé' },
+          { value: 'processing', label: 'Confirmée' },
+        ];
+      case 'PREPARATION':
+        return [
+          { value: 'pending', label: 'En attente' },
+          { value: 'processing', label: 'À préparer' },
+          { value: 'shipped', label: 'Colis prêt / Expédié' },
+        ];
+      case 'LOGISTICS':
+        return [
+          { value: 'processing', label: 'À expédier' },
+          { value: 'shipped', label: 'En livraison' },
+          { value: 'delivered', label: 'Livrée & Encaissée' },
+          { value: 'refused', label: 'Refusée' },
+          { value: 'returned', label: 'Retour atelier' },
+        ];
+      case 'SUPPORT':
+        return [
+          { value: 'pending', label: 'En attente' },
+          { value: 'unconfirmed', label: 'Non confirmé' },
+          { value: 'processing', label: 'En préparation' },
+          { value: 'shipped', label: 'En livraison' },
+          { value: 'delivered', label: 'Livrée' },
+          { value: 'refused', label: 'Refusée' },
+          { value: 'returned', label: 'Retour SAV' },
+        ];
+      default:
+        return [
+          { value: 'pending', label: 'En attente' },
+          { value: 'unconfirmed', label: 'Non confirmé' },
+          { value: 'processing', label: 'En préparation' },
+          { value: 'shipped', label: 'En livraison' },
+          { value: 'delivered', label: 'Livrée & Encaissée' },
+          { value: 'refused', label: 'Refusée' },
+          { value: 'returned', label: 'Retour' },
+        ];
+    }
+  };
+
+  const getDisplayStatusBadgeLabel = (status: string, profile: string) => {
+    if (profile === 'CONFIRMATION') {
+      if (status === 'processing' || status === 'confirmed') return 'Confirmée';
+      if (status === 'unconfirmed') return 'Non confirmé';
+      if (status === 'pending') return 'En attente';
+      return STATUS_LABELS[status] || status;
+    }
+    if (profile === 'PREPARATION') {
+      if (status === 'processing' || status === 'confirmed') return 'À préparer / Emballage';
+      if (status === 'shipped') return 'Colis prêt / Expédié';
+      if (status === 'pending') return 'En attente';
+      return STATUS_LABELS[status] || status;
+    }
+    if (profile === 'LOGISTICS') {
+      if (status === 'processing' || status === 'confirmed') return 'À expédier';
+      if (status === 'shipped') return 'En cours de livraison';
+      if (status === 'delivered') return 'Livrée & Encaissée';
+      if (status === 'refused') return 'Refusée';
+      if (status === 'returned') return 'Retour atelier';
+      return STATUS_LABELS[status] || status;
+    }
+    return STATUS_LABELS[status] || status;
+  };
+
+  const headerInfo = getHeaderInfo();
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
@@ -293,18 +414,16 @@ export default function OrdersPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-100/70 text-[#0284c7] border border-sky-200">
-              {isConfirmationAgent ? 'Confirmation Téléphonique' : 'Logistique & Ventes'}
+              {headerInfo.badge}
             </span>
             <span className="text-xs text-slate-400 font-medium">Maison NAY</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <ShoppingBag size={22} className="text-[#1D9BF0]" />
-            <span>{isConfirmationAgent ? 'Validation & Confirmation des Commandes' : 'Gestion des Commandes & Expéditions'}</span>
+            <span>{headerInfo.title}</span>
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            {isConfirmationAgent
-              ? 'Appels de confirmation des clients, validation des adresses et suivi des commandes.'
-              : 'Suivi en direct des confirmations, de l\'emballage, des livraisons et des encaissements.'}
+            {headerInfo.subtitle}
           </p>
         </div>
 
@@ -319,11 +438,12 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Real-time KPI Cards */}
+      {/* Real-time KPI Cards Tailored to Every Job */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {isConfirmationAgent ? (
+        
+        {/* PROFILE 1: CONFIRMATION */}
+        {jobProfile === 'CONFIRMATION' && (
           <>
-            {/* Total Orders */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Commandes</span>
@@ -335,7 +455,6 @@ export default function OrdersPage() {
               <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.PENDING} en attente d'appel</div>
             </div>
 
-            {/* To Confirm / Pending */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Attente</span>
@@ -344,10 +463,9 @@ export default function OrdersPage() {
                 </div>
               </div>
               <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING}</div>
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">À contacter par téléphone</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">À appeler immédiatement</div>
             </div>
 
-            {/* Unconfirmed / Need Recall */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Non Confirmées</span>
@@ -359,7 +477,6 @@ export default function OrdersPage() {
               <div className="text-[11px] text-slate-500 mt-1 font-medium">Injoignables / À relancer</div>
             </div>
 
-            {/* Confirmed Orders */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Confirmées</span>
@@ -369,13 +486,162 @@ export default function OrdersPage() {
               </div>
               <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.PROCESSING}</div>
               <div className="text-[11px] text-slate-500 mt-1 font-medium">
-                {orders.length > 0 ? ((tabCounts.PROCESSING / orders.length) * 100).toFixed(0) : 0}% validées
+                {orders.length > 0 ? ((tabCounts.PROCESSING / orders.length) * 100).toFixed(0) : 0}% taux de confirmation
               </div>
             </div>
           </>
-        ) : (
+        )}
+
+        {/* PROFILE 2: PREPARATION & PACKAGING */}
+        {jobProfile === 'PREPARATION' && (
           <>
-            {/* Total Orders */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-teal-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Commandes Totales</span>
+                <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                  <ShoppingBag size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.PROCESSING} à emballer</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">À Préparer & Emballer</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
+                  <Package size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-[#0284c7] mt-2">{tabCounts.PROCESSING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Commandes confirmées prêtes pour atelier</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Colis Prêts (Expédiés)</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Truck size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-indigo-600 mt-2">{tabCounts.SHIPPED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Remis aux transporteurs</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Attente Confirmation</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Clock size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">En attente d'appel client</div>
+            </div>
+          </>
+        )}
+
+        {/* PROFILE 3: SHIPPING & LOGISTICS */}
+        {jobProfile === 'LOGISTICS' && (
+          <>
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Flux Global</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
+                  <ShoppingBag size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.SHIPPED} colis en transit</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-teal-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Prêtes pour Expédition</span>
+                <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                  <Package size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-teal-600 mt-2">{tabCounts.PROCESSING}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">À confier au transporteur</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Cours de Livraison</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Truck size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-indigo-600 mt-2">{tabCounts.SHIPPED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Amana, Cathedis, Livreur</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Livrées avec Succès</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle2 size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.DELIVERED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{deliverySuccessRate}% taux de livraison</div>
+            </div>
+          </>
+        )}
+
+        {/* PROFILE 4: CUSTOMER SUPPORT & CRM */}
+        {jobProfile === 'SUPPORT' && (
+          <>
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Dossiers Clients</span>
+                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <User size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 mt-2">{orders.length}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.ISSUES} litiges / retours</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Attente de Contact</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Clock size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-amber-600 mt-2">{tabCounts.PENDING + tabCounts.UNCONFIRMED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">À relancer par WhatsApp / Appel</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Livraison</span>
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Truck size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-indigo-600 mt-2">{tabCounts.SHIPPED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Suivi transporteur</div>
+            </div>
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Livrées</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle2 size={16} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-emerald-600 mt-2">{tabCounts.DELIVERED}</div>
+              <div className="text-[11px] text-slate-500 mt-1 font-medium">Clients satisfaits</div>
+            </div>
+          </>
+        )}
+
+        {/* PROFILE 5: ADMIN FULL (OWNERS / GM / FINANCE) */}
+        {jobProfile === 'ADMIN_FULL' && (
+          <>
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-sky-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Volume Global</span>
@@ -387,7 +653,6 @@ export default function OrdersPage() {
               <div className="text-[11px] text-slate-500 mt-1 font-medium">Total: {formatMAD(totalRevenue)}</div>
             </div>
 
-            {/* To Confirm / Pending */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">À Confirmer & Préparer</span>
@@ -399,7 +664,6 @@ export default function OrdersPage() {
               <div className="text-[11px] text-slate-500 mt-1 font-medium">{tabCounts.TO_CONFIRM_COMBINED} en attente • {tabCounts.PROCESSING} en atelier</div>
             </div>
 
-            {/* In Delivery */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">En Cours de Livraison</span>
@@ -411,7 +675,6 @@ export default function OrdersPage() {
               <div className="text-[11px] text-slate-500 mt-1 font-medium">Colis avec transporteurs (Amana...)</div>
             </div>
 
-            {/* Delivered Success Rate */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Livrées & Encaissées</span>
@@ -429,11 +692,28 @@ export default function OrdersPage() {
 
       {/* Filter Tabs Bar with Status Colors */}
       <div className="bg-white p-1.5 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center gap-1 overflow-x-auto custom-scrollbar">
-        {(isConfirmationAgent ? [
+        {(jobProfile === 'CONFIRMATION' ? [
           { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
           { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING, activeBg: 'bg-amber-500 text-white' },
           { id: 'UNCONFIRMED', label: 'Non confirmées', count: tabCounts.UNCONFIRMED, activeBg: 'bg-rose-500 text-white' },
           { id: 'PROCESSING', label: 'Confirmées', count: tabCounts.PROCESSING, activeBg: 'bg-[#1D9BF0] text-white' },
+        ] : jobProfile === 'PREPARATION' ? [
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
+          { id: 'PROCESSING', label: 'À Préparer', count: tabCounts.PROCESSING, activeBg: 'bg-teal-600 text-white' },
+          { id: 'SHIPPED', label: 'Colis Prêts', count: tabCounts.SHIPPED, activeBg: 'bg-indigo-600 text-white' },
+          { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING, activeBg: 'bg-amber-500 text-white' },
+        ] : jobProfile === 'LOGISTICS' ? [
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
+          { id: 'PROCESSING', label: 'À Expédier', count: tabCounts.PROCESSING, activeBg: 'bg-teal-600 text-white' },
+          { id: 'SHIPPED', label: 'En Livraison', count: tabCounts.SHIPPED, activeBg: 'bg-indigo-600 text-white' },
+          { id: 'DELIVERED', label: 'Livrées', count: tabCounts.DELIVERED, activeBg: 'bg-emerald-600 text-white' },
+          { id: 'ISSUES', label: 'Refus & Retours', count: tabCounts.ISSUES, activeBg: 'bg-rose-600 text-white' },
+        ] : jobProfile === 'SUPPORT' ? [
+          { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
+          { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING, activeBg: 'bg-amber-500 text-white' },
+          { id: 'SHIPPED', label: 'En Livraison', count: tabCounts.SHIPPED, activeBg: 'bg-indigo-600 text-white' },
+          { id: 'DELIVERED', label: 'Livrées', count: tabCounts.DELIVERED, activeBg: 'bg-emerald-600 text-white' },
+          { id: 'ISSUES', label: 'Réclamations & Retours', count: tabCounts.ISSUES, activeBg: 'bg-rose-600 text-white' },
         ] : [
           { id: 'ALL', label: 'Toutes', count: tabCounts.ALL, activeBg: 'bg-slate-900 text-white' },
           { id: 'PENDING', label: 'À Confirmer', count: tabCounts.TO_CONFIRM_COMBINED, activeBg: 'bg-amber-500 text-white' },
@@ -457,9 +737,6 @@ export default function OrdersPage() {
                 ? 'bg-white/20 text-white'
                 : 'bg-slate-100 text-slate-600'
             }`}>
-              {tab.count}
-            </span>
-          </button>
         ))}
       </div>
 
@@ -658,19 +935,7 @@ export default function OrdersPage() {
                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                             className={`w-full appearance-none pl-2.5 pr-6 py-1.5 rounded-xl text-[11px] font-bold border cursor-pointer focus:outline-none transition-all ${stConfig.bg} ${stConfig.text} ${stConfig.border}`}
                           >
-                            {(isConfirmationAgent ? [
-                              { value: 'pending', label: 'En attente' },
-                              { value: 'unconfirmed', label: 'Non confirmé' },
-                              { value: 'processing', label: 'Confirmée' },
-                            ] : [
-                              { value: 'pending', label: 'En attente' },
-                              { value: 'unconfirmed', label: 'Non confirmé' },
-                              { value: 'processing', label: 'En préparation' },
-                              { value: 'shipped', label: 'En livraison' },
-                              { value: 'delivered', label: 'Livrée & Encaissée' },
-                              { value: 'refused', label: 'Refusée' },
-                              { value: 'returned', label: 'Retour' },
-                            ]).map((opt) => (
+                            {getStatusOptions(jobProfile).map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
                               </option>
@@ -725,15 +990,7 @@ export default function OrdersPage() {
                   } ${STATUS_CLASSES[editingOrder.status]?.text || 'text-slate-700'} ${
                     STATUS_CLASSES[editingOrder.status]?.border || 'border-slate-200'
                   }`}>
-                    {isConfirmationAgent
-                      ? (editingOrder.status === 'processing' || editingOrder.status === 'confirmed'
-                          ? 'Confirmée'
-                          : editingOrder.status === 'unconfirmed'
-                          ? 'Non confirmé'
-                          : editingOrder.status === 'pending'
-                          ? 'En attente'
-                          : STATUS_LABELS[editingOrder.status] || editingOrder.status)
-                      : (STATUS_LABELS[editingOrder.status] || editingOrder.status)}
+                    {getDisplayStatusBadgeLabel(editingOrder.status, jobProfile)}
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-400 font-medium mt-0.5">
