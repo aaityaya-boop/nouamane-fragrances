@@ -424,6 +424,13 @@ export const ALL_PERMISSIONS: PermissionDefinition[] = [
     module: 'team',
     isSensitive: true,
   },
+  {
+    key: 'team.delete',
+    label: 'Supprimer Définitivement un Employé',
+    description: 'Supprimer complètement un compte collaborateur de la base de données',
+    module: 'team',
+    isSensitive: true,
+  },
 
   // --- TASKS & MISSIONS ---
   {

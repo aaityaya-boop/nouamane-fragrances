@@ -222,10 +222,14 @@ export async function PATCH(req: Request, context: RouteContext) {
   }
 }
 
-// DELETE /api/admin/team/[id] - Soft-delete or delete member
+// DELETE /api/admin/team/[id] - Permanent delete or soft-disable member
 export async function DELETE(req: Request, context: RouteContext) {
   try {
-    const { user: currentAdmin, errorResponse } = await requirePermission(req, 'team.disable');
+    const { searchParams } = new URL(req.url);
+    const isPermanent = searchParams.get('permanent') === 'true' || searchParams.get('action') === 'delete';
+
+    const requiredPerm = isPermanent ? 'team.delete' : 'team.disable';
+    const { user: currentAdmin, errorResponse } = await requirePermission(req, requiredPerm);
     if (errorResponse) return errorResponse;
 
     const { id } = await context.params;
@@ -256,6 +260,29 @@ export async function DELETE(req: Request, context: RouteContext) {
       );
     }
 
+    // Permanent deletion
+    if (isPermanent) {
+      await prisma.adminUser.delete({
+        where: { id },
+      });
+
+      await logAdminActivity({
+        req,
+        userId: currentAdmin?.id,
+        userName: currentAdmin?.name,
+        userEmail: currentAdmin?.email,
+        action: 'DELETE_TEAM_MEMBER',
+        entityType: 'USER',
+        entityId: id,
+        description: `Suppression définitive du compte collaborateur de "${targetUser.name}" (${targetUser.email}, Rôle: ${targetUser.role})`,
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `Le compte de ${targetUser.name} a été supprimé définitivement`,
+      });
+    }
+
     // Default to soft-disabling
     await prisma.adminUser.update({
       where: { id },
@@ -278,9 +305,9 @@ export async function DELETE(req: Request, context: RouteContext) {
       message: 'Compte collaborateur désactivé avec succès',
     });
   } catch (error) {
-    console.error('Error disabling member:', error);
+    console.error('Error in DELETE member:', error);
     return NextResponse.json(
-      { error: 'Une erreur est survenue lors de la désactivation du compte' },
+      { error: 'Une erreur est survenue lors de la suppression du compte' },
       { status: 500 }
     );
   }
