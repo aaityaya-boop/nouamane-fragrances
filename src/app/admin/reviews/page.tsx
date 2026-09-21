@@ -333,184 +333,171 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto min-h-screen text-[#111827] pb-24">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8 pb-24">
       
       {/* NOTIFICATION TOAST */}
       {notification && (
-        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border transition-all ${
+        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border transition-all ${
           notification.type === 'success' 
-            ? 'bg-[#0f172a] text-white border-emerald-500/50' 
-            : 'bg-red-900 text-white border-red-500/50'
+            ? 'bg-neutral-900 text-white border-neutral-700' 
+            : 'bg-rose-900 text-white border-rose-700'
         }`}>
-          {notification.type === 'success' ? <CheckCircle2 size={18} className="text-emerald-400" /> : <AlertCircle size={18} className="text-red-400" />}
-          <span className="text-sm font-medium">{notification.message}</span>
+          {notification.type === 'success' ? <CheckCircle2 size={16} className="text-emerald-400" /> : <AlertCircle size={16} className="text-rose-400" />}
+          <span className="text-xs font-medium">{notification.message}</span>
         </div>
       )}
 
-      {/* LUXURY HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 lg:p-8 rounded-3xl border border-[#e5e7eb] shadow-sm">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] text-[#9ca3af] uppercase mb-1.5">
-            <span>Maison de Parfum</span>
-            <span>·</span>
-            <span className="text-[#0284c7]">Satisfaction Client & E-Réputation</span>
-          </div>
-          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0f172a] flex items-center gap-3">
-            Avis & Témoignages
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              {stats.totalReviews.toLocaleString('fr-FR')} avis certifiés
-            </span>
-          </h1>
-          <p className="text-xs lg:text-sm text-[#64748b] mt-1.5 max-w-2xl leading-relaxed">
-            Supervisez la réputation olfactive de vos fragrances, modérez les retours clients et valorisez les meilleurs témoignages en direct.
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Avis & Témoignages</h1>
+          <p className="text-[13px] text-neutral-500 mt-1">
+            Supervisez et modérez les retours et évaluations de vos clients ({stats.totalReviews.toLocaleString('fr-FR')} avis).
           </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => fetchReviews(currentPage)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-semibold text-[#475569] hover:text-[#0f172a] transition-all shadow-sm"
+            className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-2xs inline-flex items-center gap-1.5"
             title="Rafraîchir"
           >
-            <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
+            <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
             <span>Actualiser</span>
           </button>
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] text-xs font-semibold text-[#475569] hover:text-[#0f172a] transition-all shadow-sm"
+            className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-2xs inline-flex items-center gap-1.5"
           >
-            <Download size={14} />
+            <Download size={13} />
             <span>Exporter CSV</span>
           </button>
 
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs font-bold tracking-wide transition-all shadow-md hover:shadow-lg active:scale-95"
+            className="bg-neutral-900 hover:bg-black text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1.5"
           >
-            <Plus size={16} />
-            <span>+ Ajouter un Avis</span>
+            <Plus size={14} />
+            <span>Nouvel avis</span>
           </button>
         </div>
       </div>
 
-      {/* KPI METRIC CARDS (HAUTE PARFUMERIE STYLE) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* KPI METRIC CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* CSAT / Satisfaction Index */}
-        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Indice de Satisfaction</span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/60">
-              <Award size={20} />
+        {/* CSAT */}
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-neutral-500">Indice Satisfaction</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200">
+              <Award size={16} />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">{stats.csatPercentage}%</span>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{stats.csatPercentage}%</span>
+            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
               Excellence
             </span>
           </div>
-          <p className="text-xs text-[#64748b] mt-3 flex items-center gap-1.5">
-            <CheckCircle2 size={13} className="text-emerald-500" />
+          <p className="text-[11px] text-neutral-500 mt-2 flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-500" />
             <span>Basé sur les avis 4★ et 5★</span>
           </p>
         </div>
 
-        {/* Note Moyenne Globale */}
-        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Note Moyenne</span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-200/60">
-              <Star size={20} className="fill-amber-400" />
+        {/* Note Moyenne */}
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-neutral-500">Note Moyenne</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-200">
+              <Star size={16} className="fill-amber-400" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">{stats.avgRating}</span>
-            <span className="text-sm font-semibold text-[#94a3b8]">/ 5.0</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{stats.avgRating}</span>
+            <span className="text-xs text-neutral-400">/ 5.0</span>
           </div>
-          <div className="flex items-center gap-1 mt-3">
+          <div className="flex items-center gap-1 mt-2">
             {[1, 2, 3, 4, 5].map((s) => (
               <Star 
                 key={s} 
-                size={14} 
-                className={s <= Math.round(stats.avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'} 
+                size={12} 
+                className={s <= Math.round(stats.avgRating) ? 'fill-amber-400 text-amber-400' : 'text-neutral-200'} 
               />
             ))}
-            <span className="text-xs font-semibold text-[#64748b] ml-1.5">1 779 évaluations</span>
+            <span className="text-[11px] font-medium text-neutral-500 ml-1">({stats.totalReviews} avis)</span>
           </div>
         </div>
 
-        {/* Avis Vérifiés */}
-        <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-[#64748b]">Avis Certifiés</span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/60">
-              <ShieldCheck size={20} />
+        {/* Avis Certifiés */}
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold tracking-wider uppercase text-neutral-500">Avis Certifiés</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
+              <ShieldCheck size={16} />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">
               {stats.verifiedCount.toLocaleString('fr-FR')}
             </span>
-            <span className="text-xs font-semibold text-[#64748b]">
+            <span className="text-[11px] font-medium text-neutral-500">
               ({stats.totalReviews > 0 ? Math.round((stats.verifiedCount / stats.totalReviews) * 100) : 0}%)
             </span>
           </div>
-          <p className="text-xs text-[#64748b] mt-3 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Badge de confiance visible en boutique</span>
+          <p className="text-[11px] text-neutral-500 mt-2 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>Badge de confiance actif</span>
           </p>
         </div>
 
-        {/* Nouveaux Avis Récents (Always highlighted) */}
+        {/* Nouveaux Avis Récents */}
         <div 
           onClick={() => setRecentOnly(!recentOnly)}
-          className={`cursor-pointer rounded-3xl p-6 border transition-all relative overflow-hidden group ${
+          className={`cursor-pointer rounded-2xl p-5 border transition-all ${
             recentOnly 
-              ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-lg' 
-              : 'bg-white border-[#e5e7eb] text-[#0f172a] shadow-sm hover:border-[#0f172a]/30'
+              ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm' 
+              : 'bg-white border-neutral-200 text-neutral-900 shadow-2xs hover:border-neutral-300'
           }`}
         >
-          <div className="flex items-center justify-between mb-4">
-            <span className={`text-[11px] font-bold tracking-[0.15em] uppercase ${recentOnly ? 'text-blue-300' : 'text-[#64748b]'}`}>
-              {recentOnly ? '⚡ Filtre Nouveaux Actif' : 'Nouveaux Avis Récents'}
+          <div className="flex items-center justify-between mb-3">
+            <span className={`text-[11px] font-semibold tracking-wider uppercase ${recentOnly ? 'text-sky-300' : 'text-neutral-500'}`}>
+              {recentOnly ? 'Filtre Actif' : 'Nouveaux Récents'}
             </span>
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border ${
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
               recentOnly 
-                ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' 
-                : 'bg-blue-50 text-blue-600 border-blue-200/60'
+                ? 'bg-sky-500/20 text-sky-300 border-sky-400/30' 
+                : 'bg-sky-50 text-sky-600 border-sky-200'
             }`}>
-              <Clock size={20} />
+              <Clock size={16} />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl lg:text-4xl font-black tracking-tight">
+            <span className="text-2xl font-bold tracking-tight">
               {stats.recentCount > 0 ? `+${stats.recentCount}` : stats.totalReviews}
             </span>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-              recentOnly ? 'bg-blue-400/20 text-blue-300' : 'bg-blue-50 text-blue-700'
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
+              recentOnly ? 'bg-sky-400/20 text-sky-200' : 'bg-sky-50 text-sky-700'
             }`}>
-              {recentOnly ? 'Désactiver' : 'Cliquez pour filtrer'}
+              {recentOnly ? 'Désactiver' : 'Filtrer'}
             </span>
           </div>
-          <p className={`text-xs mt-3 ${recentOnly ? 'text-blue-200' : 'text-[#64748b]'}`}>
-            {recentOnly ? 'Affichage exclusif des récents' : 'Toujours affichés en tête de page 1'}
+          <p className={`text-[11px] mt-2 ${recentOnly ? 'text-neutral-300' : 'text-neutral-500'}`}>
+            {recentOnly ? 'Avis récents uniquement' : 'Derniers 7 jours'}
           </p>
         </div>
 
       </div>
 
-      {/* RATING BREAKDOWN (CLEAN LUXURY ACCORDION) */}
-      <div className="bg-white border border-[#e5e7eb] rounded-3xl p-6 lg:p-7 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+      {/* RATING BREAKDOWN */}
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-[#0f172a] flex items-center gap-2">
-              <Sparkles size={16} className="text-amber-500" /> Structure Olfactive des Évaluations
+            <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 flex items-center gap-1.5">
+              <Sparkles size={14} className="text-amber-500" /> Structure des Évaluations
             </h2>
-            <p className="text-xs text-[#64748b] mt-0.5">
-              Cliquez sur un nombre d'étoiles pour filtrer instantanément les avis clients.
-            </p>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             {[5, 4, 3, 2, 1].map((starNum) => {
@@ -520,22 +507,22 @@ export default function AdminReviewsPage() {
                 <button
                   key={starNum}
                   onClick={() => setRatingFilter(isSelected ? 'all' : String(starNum))}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1 transition-all border ${
                     isSelected 
-                      ? 'bg-amber-50 border-amber-300 text-amber-800 shadow-sm ring-2 ring-amber-400/30' 
-                      : 'bg-[#f8fafc] border-[#e2e8f0] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#0f172a]'
+                      ? 'bg-neutral-900 border-neutral-900 text-white shadow-2xs' 
+                      : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                   }`}
                 >
                   <span>{starNum}</span>
-                  <Star size={12} className="fill-amber-400 text-amber-400" />
-                  <span className="text-[11px] font-normal text-[#94a3b8]">({count})</span>
+                  <Star size={11} className={isSelected ? 'fill-amber-300 text-amber-300' : 'fill-amber-400 text-amber-400'} />
+                  <span className={`text-[10px] ${isSelected ? 'text-neutral-300' : 'text-neutral-500'}`}>({count})</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           {[5, 4, 3, 2, 1].map((star) => {
             const count = stats.ratingDist[star] || 0;
             const pct = stats.totalReviews > 0 ? Math.round((count / stats.totalReviews) * 100) : 0;
@@ -545,21 +532,21 @@ export default function AdminReviewsPage() {
               <div 
                 key={star} 
                 onClick={() => setRatingFilter(isSelected ? 'all' : String(star))}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
                   isSelected 
-                    ? 'bg-amber-50/50 border-amber-300 shadow-sm' 
-                    : 'bg-[#f8fafc] border-[#e2e8f0] hover:border-amber-300 hover:bg-white'
+                    ? 'bg-amber-50/60 border-amber-300 shadow-2xs' 
+                    : 'bg-neutral-50/50 border-neutral-200 hover:bg-neutral-50'
                 }`}
               >
-                <div className="flex items-center justify-between text-xs font-bold mb-2">
-                  <span className="flex items-center gap-1 text-[#0f172a]">
-                    {star} <Star size={13} className="fill-amber-400 text-amber-400" />
+                <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
+                  <span className="flex items-center gap-1 text-neutral-900">
+                    {star} <Star size={11} className="fill-amber-400 text-amber-400" />
                   </span>
-                  <span className="text-[#64748b] font-medium">{count} ({pct}%)</span>
+                  <span className="text-neutral-500 text-[11px]">{count} ({pct}%)</span>
                 </div>
-                <div className="w-full bg-[#e2e8f0] h-2.5 rounded-full overflow-hidden">
+                <div className="w-full bg-neutral-200 h-1.5 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-500" 
+                    className="h-full bg-amber-400 rounded-full transition-all duration-500" 
                     style={{ width: `${pct}%` }} 
                   />
                 </div>
@@ -570,32 +557,32 @@ export default function AdminReviewsPage() {
       </div>
 
       {/* FILTER AND SEARCH TOOLBAR */}
-      <div className="bg-white border border-[#e5e7eb] rounded-3xl p-5 lg:p-6 shadow-sm space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
           
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8]" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" size={15} />
             <input
               type="text"
-              placeholder="Rechercher par client, ville (Casablanca, Marrakech...), extrait de commentaire, parfum..."
+              placeholder="Rechercher par client, ville, extrait de commentaire, parfum..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl pl-11 pr-10 py-3 text-xs lg:text-sm text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#0f172a] focus:bg-white transition-all shadow-inner"
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#0f172a]">
-                <X size={15} />
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700">
+                <X size={14} />
               </button>
             )}
           </div>
 
           {/* Product Select */}
-          <div className="w-full lg:w-72">
+          <div className="w-full lg:w-64">
             <select
               value={productFilter}
               onChange={(e) => setProductFilter(e.target.value)}
-              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all cursor-pointer"
             >
               <option value="all">Tous les Parfums ({productsList.length})</option>
               {productsList.map((p) => (
@@ -607,15 +594,15 @@ export default function AdminReviewsPage() {
           </div>
 
           {/* Verification Status */}
-          <div className="w-full lg:w-48">
+          <div className="w-full lg:w-44">
             <select
               value={verifiedFilter}
               onChange={(e) => setVerifiedFilter(e.target.value)}
-              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all cursor-pointer"
             >
               <option value="all">Tous les Statuts</option>
-              <option value="true">✅ Achat Vérifié</option>
-              <option value="false">⏳ En Attente</option>
+              <option value="true">Achat Vérifié</option>
+              <option value="false">En Attente</option>
             </select>
           </div>
 
@@ -624,9 +611,9 @@ export default function AdminReviewsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl px-4 py-3 text-xs font-medium text-[#0f172a] focus:outline-none focus:border-[#0f172a] transition-all cursor-pointer"
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3 py-2 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900 transition-all cursor-pointer"
             >
-              <option value="newest">✨ Plus récents (Tête de liste)</option>
+              <option value="newest">Plus récents</option>
               <option value="oldest">Plus anciens</option>
               <option value="rating-high">Meilleures notes (5★ &rarr; 1★)</option>
               <option value="rating-low">Moins bonnes notes (1★ &rarr; 5★)</option>
@@ -634,28 +621,28 @@ export default function AdminReviewsPage() {
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 bg-[#f8fafc] border border-[#e2e8f0] p-1 rounded-2xl self-end lg:self-auto">
+          <div className="flex items-center gap-1 bg-neutral-100 border border-neutral-200 p-0.5 rounded-xl self-end lg:self-auto">
             <button
               onClick={() => setViewMode('cards')}
-              className={`p-2 rounded-xl transition-all ${
+              className={`p-1.5 rounded-lg transition-all ${
                 viewMode === 'cards' 
-                  ? 'bg-white text-[#0f172a] shadow-sm font-bold' 
-                  : 'text-[#94a3b8] hover:text-[#0f172a]'
+                  ? 'bg-white text-neutral-900 shadow-2xs font-semibold' 
+                  : 'text-neutral-500 hover:text-neutral-900'
               }`}
-              title="Vue Cartes Prestige"
+              title="Vue Cartes"
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={15} />
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-2 rounded-xl transition-all ${
+              className={`p-1.5 rounded-lg transition-all ${
                 viewMode === 'table' 
-                  ? 'bg-white text-[#0f172a] shadow-sm font-bold' 
-                  : 'text-[#94a3b8] hover:text-[#0f172a]'
+                  ? 'bg-white text-neutral-900 shadow-2xs font-semibold' 
+                  : 'text-neutral-500 hover:text-neutral-900'
               }`}
-              title="Vue Tableau Détaillé"
+              title="Vue Tableau"
             >
-              <List size={16} />
+              <List size={15} />
             </button>
           </div>
 

@@ -430,7 +430,7 @@ export default function AdminProfilePage() {
 
       {/* TAB 1: Mon Profil & Photo */}
       {activeTab === 'profile' && (
-        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-6">
+        <div className="bg-white rounded-2xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-6">
           <div>
             <h2 className="text-base font-bold text-neutral-900">Détails de mon compte</h2>
             <p className="text-xs text-neutral-500 mt-0.5">
@@ -640,7 +640,7 @@ export default function AdminProfilePage() {
 
       {/* TAB 2: Sécurité & Mot de Passe */}
       {activeTab === 'security' && (
-        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs max-w-xl space-y-5">
+        <div className="bg-white rounded-2xl border border-neutral-200 p-5 sm:p-6 shadow-2xs max-w-xl space-y-5">
           <div>
             <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
               <Lock size={16} className="text-neutral-700" />
@@ -766,7 +766,7 @@ export default function AdminProfilePage() {
 
       {/* TAB 3: Mon Activité */}
       {activeTab === 'activity' && (
-        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-5">
+        <div className="bg-white rounded-2xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-bold text-neutral-900">Mon Journal d'Activité Personnel</h2>

@@ -17,7 +17,6 @@ import {
   Users, 
   Gift, 
   ShoppingBag, 
-  Moon, 
   Copy,
   ExternalLink,
   Filter
@@ -65,7 +64,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedMen',
     label: 'Homme',
     group: 'shop',
-    icon: <User size={15} className="text-[#3b82f6]" />,
+    icon: <User size={14} className="text-neutral-600" />,
     pageUrl: '/fr/shop/men',
     pageLabel: '/shop/men',
     description: 'Parfums recommandés affichés en premier dans la catégorie Homme.',
@@ -75,7 +74,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedWomen',
     label: 'Femme',
     group: 'shop',
-    icon: <User size={15} className="text-[#ec4899]" />,
+    icon: <User size={14} className="text-neutral-600" />,
     pageUrl: '/fr/shop/women',
     pageLabel: '/shop/women',
     description: 'Parfums recommandés affichés en premier dans la catégorie Femme.',
@@ -85,7 +84,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedUnisex',
     label: 'Unisexe',
     group: 'shop',
-    icon: <Users size={15} className="text-[#8b5cf6]" />,
+    icon: <Users size={14} className="text-neutral-600" />,
     pageUrl: '/fr/shop/unisex',
     pageLabel: '/shop/unisex',
     description: 'Parfums recommandés affichés en premier dans la catégorie Unisexe.',
@@ -95,7 +94,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedOriental',
     label: 'Originaux',
     group: 'shop',
-    icon: <Sparkles size={15} className="text-[#0ea5e9]" />,
+    icon: <Sparkles size={14} className="text-neutral-600" />,
     pageUrl: '/fr/parfums-originaux',
     pageLabel: '/parfums-originaux',
     description: 'Parfums recommandés affichés en premier dans Parfums Originaux.',
@@ -105,7 +104,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedMaster',
     label: 'Master Copy',
     group: 'shop',
-    icon: <Copy size={15} className="text-[#6366f1]" />,
+    icon: <Copy size={14} className="text-neutral-600" />,
     pageUrl: '/fr/master-copier',
     pageLabel: '/master-copier',
     description: 'Parfums recommandés affichés en premier dans Master Copy.',
@@ -115,7 +114,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedCoffrets',
     label: 'Coffrets',
     group: 'shop',
-    icon: <Gift size={15} className="text-[#dc2626]" />,
+    icon: <Gift size={14} className="text-neutral-600" />,
     pageUrl: '/fr/coffrets',
     pageLabel: '/coffrets',
     description: 'Coffrets recommandés affichés en premier dans la page Coffrets Cadeaux.',
@@ -125,7 +124,7 @@ const TABS: TabConfig[] = [
     key: 'recommendedShop',
     label: 'Toute la Boutique',
     group: 'shop',
-    icon: <ShoppingBag size={15} className="text-[#0ea5e9]" />,
+    icon: <ShoppingBag size={14} className="text-neutral-600" />,
     pageUrl: '/fr/shop',
     pageLabel: '/shop',
     description: 'Parfums recommandés affichés en premier sur la Boutique Globale (Testeurs).'
@@ -135,7 +134,7 @@ const TABS: TabConfig[] = [
     key: 'bestsellers',
     label: 'Bestsellers Accueil',
     group: 'home',
-    icon: <Flame size={15} className="text-[#ea580c]" />,
+    icon: <Flame size={14} className="text-neutral-600" />,
     pageUrl: '/fr',
     pageLabel: 'Accueil',
     description: 'Section "Nos Bestsellers" sur la page d\'accueil.'
@@ -144,7 +143,7 @@ const TABS: TabConfig[] = [
     key: 'seasonal',
     label: 'Tendances Accueil',
     group: 'home',
-    icon: <Sparkles size={15} className="text-[#0ea5e9]" />,
+    icon: <Sparkles size={14} className="text-neutral-600" />,
     pageUrl: '/fr',
     pageLabel: 'Accueil',
     description: 'Section "Tendances Saisonnières" sur la page d\'accueil.'
@@ -153,7 +152,7 @@ const TABS: TabConfig[] = [
     key: 'latest',
     label: 'Nouveautés Accueil',
     group: 'home',
-    icon: <Sparkles size={15} className="text-[#10b981]" />,
+    icon: <Sparkles size={14} className="text-neutral-600" />,
     pageUrl: '/fr',
     pageLabel: 'Accueil',
     description: 'Section "Dernières Sorties" sur la page d\'accueil.'
@@ -352,36 +351,33 @@ export default function VitrinePage() {
   if (isLoading) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="animate-spin text-[#0ea5e9] mb-4" size={40} />
-        <p className="text-sm text-[#9A9A9A] font-medium tracking-widest uppercase">Chargement des recommandations...</p>
+        <Loader2 className="animate-spin text-neutral-800 mb-3" size={32} />
+        <p className="text-xs text-neutral-500 font-medium tracking-wide uppercase">Chargement des recommandations...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-[#fafaf7]">
+    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-[#f8fafc]">
       {/* Sticky Top Header */}
       <div className="flex-shrink-0 bg-white border-b border-neutral-200 px-6 lg:px-8 py-3.5 flex items-center justify-between z-20 shadow-2xs">
         <div>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-800 border border-neutral-200 flex items-center justify-center shrink-0">
-              <Sparkles size={18} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-neutral-900 tracking-tight">Vitrine & Parfums Recommandés</h1>
-              <p className="text-xs text-neutral-500 font-normal">Choisissez et ordonnez les parfums mis en avant pour chaque catégorie</p>
-            </div>
-          </div>
+          <h1 className="text-xl font-bold text-neutral-900 tracking-tight">Vitrine & Recommandations</h1>
+          <p className="text-xs text-neutral-500 font-normal">Choisissez et ordonnez les parfums mis en avant pour chaque catégorie</p>
         </div>
 
         <div className="flex items-center gap-3">
           <AnimatePresence>
             {saveMsg && (
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 15 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg shadow-2xs ${saveMsg.includes('succès') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}
+                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg shadow-2xs ${
+                  saveMsg.includes('succès') 
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}
               >
                 <Check size={13} />
                 {saveMsg}
@@ -391,10 +387,10 @@ export default function VitrinePage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-1.5 bg-neutral-900 text-white px-4 py-2 rounded-lg text-xs font-medium tracking-wide transition-all hover:bg-black shadow-xs disabled:opacity-60 cursor-pointer"
+            className="flex items-center gap-1.5 bg-neutral-900 text-white px-3.5 py-2 rounded-lg text-xs font-medium transition-all hover:bg-black shadow-xs disabled:opacity-60 cursor-pointer"
           >
-            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-            <span>Publier les recommandations</span>
+            {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+            <span>Enregistrer la vitrine</span>
           </button>
         </div>
       </div>
@@ -403,137 +399,134 @@ export default function VitrinePage() {
       <div className="flex-1 flex overflow-hidden">
         
         {/* LEFT PANEL: Library */}
-        <div className="w-full lg:w-[58%] flex flex-col bg-white border-r border-black/5 z-10">
+        <div className="w-full lg:w-[58%] flex flex-col bg-white border-r border-neutral-200 z-10">
           
           {/* Navigation Tabs */}
-          <div className="px-6 pt-5 pb-3 border-b border-black/5">
+          <div className="px-6 pt-4 pb-3 border-b border-neutral-200 space-y-3">
             {/* Category Groups Header */}
-            <div className="space-y-3">
-              {/* Boutique & Catégories Tabs */}
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9A9A9A] mb-2 block">
-                  Recommandés par Catégorie & Genre
-                </span>
-                <div className="flex flex-wrap gap-1.5 p-1 bg-[#f8fafc] rounded-2xl border border-black/5">
-                  {TABS.filter(t => t.group === 'shop').map((tab) => {
-                    const count = tab.key === 'recommendedMen' ? recommendedMen.length
-                      : tab.key === 'recommendedWomen' ? recommendedWomen.length
-                      : tab.key === 'recommendedUnisex' ? recommendedUnisex.length
-                      : tab.key === 'recommendedOriental' ? recommendedOriental.length
-                      : tab.key === 'recommendedMaster' ? recommendedMaster.length
-                      : tab.key === 'recommendedCoffrets' ? recommendedCoffrets.length
-                      : recommendedShop.length;
-                    
-                    const isActive = activeTab === tab.key;
-                    return (
-                      <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
-                          isActive ? 'text-[#1A1A1A]' : 'text-[#6B6B6B] hover:text-[#1A1A1A]'
-                        }`}
-                      >
-                        {isActive && (
-                          <motion.div layoutId="activeTabBadge" className="absolute inset-0 bg-white shadow-sm rounded-xl border border-black/5" />
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-1.5 block">
+                Catégories Boutique
+              </span>
+              <div className="flex flex-wrap gap-1 p-1 bg-neutral-100/80 rounded-xl border border-neutral-200/80">
+                {TABS.filter(t => t.group === 'shop').map((tab) => {
+                  const count = tab.key === 'recommendedMen' ? recommendedMen.length
+                    : tab.key === 'recommendedWomen' ? recommendedWomen.length
+                    : tab.key === 'recommendedUnisex' ? recommendedUnisex.length
+                    : tab.key === 'recommendedOriental' ? recommendedOriental.length
+                    : tab.key === 'recommendedMaster' ? recommendedMaster.length
+                    : tab.key === 'recommendedCoffrets' ? recommendedCoffrets.length
+                    : recommendedShop.length;
+                  
+                  const isActive = activeTab === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        isActive ? 'text-neutral-900 font-semibold' : 'text-neutral-600 hover:text-neutral-900'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div layoutId="activeTabBadge" className="absolute inset-0 bg-white shadow-2xs rounded-lg border border-neutral-200/80" />
+                      )}
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        {tab.icon}
+                        {tab.label}
+                        {count > 0 && (
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-200 text-neutral-700'}`}>
+                            {count}
+                          </span>
                         )}
-                        <span className="relative z-10 flex items-center gap-1.5">
-                          {tab.icon}
-                          {tab.label}
-                          {count > 0 && (
-                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${isActive ? 'bg-[#0ea5e9] text-white' : 'bg-gray-200 text-gray-700'}`}>
-                              {count}
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Homepage Tabs */}
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9A9A9A] mb-2 block">
-                  Sections Page d'Accueil
-                </span>
-                <div className="flex flex-wrap gap-1.5 p-1 bg-[#f8fafc] rounded-2xl border border-black/5 w-max">
-                  {TABS.filter(t => t.group === 'home').map((tab) => {
-                    const count = tab.key === 'bestsellers' ? bestsellersSlug.length
-                      : tab.key === 'seasonal' ? seasonalSlug.length
-                      : latestSlug.length;
-                    const isActive = activeTab === tab.key;
-                    return (
-                      <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
-                          isActive ? 'text-[#1A1A1A]' : 'text-[#6B6B6B] hover:text-[#1A1A1A]'
-                        }`}
-                      >
-                        {isActive && (
-                          <motion.div layoutId="activeTabBadge" className="absolute inset-0 bg-white shadow-sm rounded-xl border border-black/5" />
+            {/* Homepage Tabs */}
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-1.5 block">
+                Sections Page d'Accueil
+              </span>
+              <div className="flex flex-wrap gap-1 p-1 bg-neutral-100/80 rounded-xl border border-neutral-200/80 w-max">
+                {TABS.filter(t => t.group === 'home').map((tab) => {
+                  const count = tab.key === 'bestsellers' ? bestsellersSlug.length
+                    : tab.key === 'seasonal' ? seasonalSlug.length
+                    : latestSlug.length;
+                  const isActive = activeTab === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        isActive ? 'text-neutral-900 font-semibold' : 'text-neutral-600 hover:text-neutral-900'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div layoutId="activeTabBadge" className="absolute inset-0 bg-white shadow-2xs rounded-lg border border-neutral-200/80" />
+                      )}
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        {tab.icon}
+                        {tab.label}
+                        {count > 0 && (
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive ? 'bg-neutral-900 text-white' : 'bg-neutral-200 text-neutral-700'}`}>
+                            {count}
+                          </span>
                         )}
-                        <span className="relative z-10 flex items-center gap-1.5">
-                          {tab.icon}
-                          {tab.label}
-                          {count > 0 && (
-                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${isActive ? 'bg-[#0ea5e9] text-white' : 'bg-gray-200 text-gray-700'}`}>
-                              {count}
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Search Bar & Filter Toggle */}
-            <div className="flex items-center gap-3 mt-4">
-              <div className="relative group flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Search size={16} className="text-[#9A9A9A] group-focus-within:text-[#0ea5e9] transition-colors" />
+            <div className="flex items-center gap-2.5 pt-1">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
+                  <Search size={14} />
                 </div>
                 <input
                   type="text"
                   placeholder={`Rechercher un parfum dans ${currentTabConfig.label}...`}
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] border border-transparent rounded-xl text-[13px] font-medium text-[#1A1A1A] placeholder-[#9A9A9A] focus:bg-white focus:border-[#0ea5e9]/30 focus:ring-4 focus:ring-[#0ea5e9]/10 transition-all outline-none"
+                  className="block w-full pl-9 pr-3.5 py-2 bg-[#f8fafc] border border-neutral-200 rounded-xl text-xs text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all outline-none"
                 />
               </div>
 
               {(currentTabConfig.defaultGender || currentTabConfig.defaultSubcategory) && (
                 <button
                   onClick={() => setFilterByCategoryOnly(!filterByCategoryOnly)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
                     filterByCategoryOnly 
-                      ? 'bg-blue-50 border-blue-200 text-[#0ea5e9]' 
-                      : 'bg-white border-black/10 text-[#6B6B6B] hover:text-[#1A1A1A]'
+                      ? 'bg-neutral-900 border-neutral-900 text-white shadow-2xs' 
+                      : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50 shadow-2xs'
                   }`}
                   title={filterByCategoryOnly ? 'Afficher uniquement les parfums de cette catégorie' : 'Tous les parfums affichés'}
                 >
-                  <Filter size={14} />
-                  <span>{filterByCategoryOnly ? `Filtre ${currentTabConfig.label}` : 'Tous les parfums'}</span>
+                  <Filter size={13} />
+                  <span>{filterByCategoryOnly ? `Catégorie ${currentTabConfig.label}` : 'Tout le catalogue'}</span>
                 </button>
               )}
             </div>
           </div>
 
           {/* Product Grid */}
-          <div className="flex-1 overflow-y-auto px-6 py-4" style={{ scrollbarWidth: 'thin' }}>
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-3.5">
+          <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin' }}>
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">
               {filtered.map((p) => {
                 const isSelected = currentSlugs.includes(p.slug);
                 return (
                   <div
                     key={p.slug}
                     onClick={() => toggleProduct(p.slug)}
-                    className={`group relative flex flex-col p-3.5 rounded-2xl cursor-pointer transition-all duration-300 ${
+                    className={`group relative flex flex-col p-3 rounded-2xl cursor-pointer transition-all duration-200 ${
                       isSelected
-                        ? 'bg-[#f0f9ff] border-2 border-[#0ea5e9] shadow-sm'
-                        : 'bg-white border-2 border-transparent hover:border-black/5 hover:bg-[#f8fafc]'
+                        ? 'bg-neutral-50/80 border-2 border-neutral-900 shadow-2xs ring-1 ring-neutral-900/10'
+                        : 'bg-white border border-neutral-200 hover:border-neutral-300 shadow-2xs hover:shadow-xs'
                     }`}
                   >
                     {/* Checkmark Overlay */}
@@ -543,35 +536,35 @@ export default function VitrinePage() {
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0, opacity: 0 }}
-                          className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center z-10 shadow-md"
+                          className="absolute top-2 right-2 w-5 h-5 rounded-full bg-neutral-900 text-white flex items-center justify-center z-10 shadow-sm"
                         >
-                          <Check size={14} strokeWidth={3} />
+                          <Check size={12} strokeWidth={2.5} />
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-white mb-3 border border-black/5">
-                      <img src={getImage(p)} alt={p.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-neutral-50 mb-2.5 border border-neutral-100">
+                      <img src={getImage(p)} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     </div>
                     <div className="flex-1 flex flex-col justify-end">
-                      <div className="flex items-center justify-between text-[10px] font-bold text-[#0ea5e9] uppercase tracking-widest mb-1">
-                        <span>{p.brandLabel}</span>
-                        <span className="text-gray-400 font-normal capitalize">{p.gender}</span>
+                      <div className="flex items-center justify-between text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-0.5">
+                        <span className="truncate">{p.brandLabel}</span>
+                        <span className="text-neutral-400 capitalize shrink-0 ml-1">{p.gender}</span>
                       </div>
-                      <div className="text-[12px] font-bold text-[#1A1A1A] leading-snug line-clamp-2">{p.name}</div>
-                      <div className="text-[11px] font-semibold text-gray-500 mt-1">{p.price} MAD</div>
+                      <div className="text-xs font-semibold text-neutral-900 leading-snug line-clamp-2">{p.name}</div>
+                      <div className="text-xs font-medium text-neutral-600 mt-1">{p.price} MAD</div>
                     </div>
                   </div>
                 );
               })}
               {filtered.length === 0 && (
-                <div className="col-span-full py-16 flex flex-col items-center justify-center text-[#9A9A9A]">
-                  <Search size={32} className="mb-3 opacity-40" />
-                  <p className="text-[13px] font-medium">Aucun parfum ne correspond à vos filtres.</p>
+                <div className="col-span-full py-14 flex flex-col items-center justify-center text-neutral-400">
+                  <Search size={28} className="mb-2.5 opacity-40" />
+                  <p className="text-xs font-medium text-neutral-600">Aucun parfum ne correspond à vos filtres.</p>
                   {(currentTabConfig.defaultGender || currentTabConfig.defaultSubcategory) && filterByCategoryOnly && (
                     <button
                       onClick={() => setFilterByCategoryOnly(false)}
-                      className="mt-3 text-[12px] text-[#0ea5e9] font-bold hover:underline cursor-pointer"
+                      className="mt-2 text-xs text-neutral-900 font-semibold underline underline-offset-2 hover:text-black cursor-pointer"
                     >
                       Afficher tous les parfums du catalogue
                     </button>
@@ -583,21 +576,21 @@ export default function VitrinePage() {
         </div>
 
         {/* RIGHT PANEL: Curated Selection */}
-        <div className="w-full lg:w-[42%] bg-[#fafaf7] flex flex-col relative border-l border-white shadow-[-10px_0_30px_rgba(0,0,0,0.02)]">
+        <div className="w-full lg:w-[42%] bg-[#f8fafc] flex flex-col relative border-l border-neutral-200">
           
-          <div className="flex-1 overflow-y-auto px-6 py-6" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'none' }}>
             
             {/* Header info for active tab */}
-            <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-sm mb-6">
-              <div className="flex items-start justify-between">
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs mb-5">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     {currentTabConfig.icon}
-                    <h3 className="text-[15px] font-extrabold text-[#1A1A1A]">
+                    <h3 className="text-sm font-bold text-neutral-900">
                       {currentTabConfig.label} — Parfums Recommandés
                     </h3>
                   </div>
-                  <p className="text-[12px] text-[#6B6B6B] leading-relaxed">
+                  <p className="text-xs text-neutral-500 leading-relaxed">
                     {currentTabConfig.description}
                   </p>
                 </div>
@@ -605,28 +598,28 @@ export default function VitrinePage() {
                   href={currentTabConfig.pageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[11px] font-bold text-[#0ea5e9] bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
+                  className="flex items-center gap-1 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 px-2.5 py-1 rounded-lg transition-colors shrink-0"
                 >
                   <span>Voir page</span>
-                  <ExternalLink size={12} />
+                  <ExternalLink size={11} />
                 </a>
               </div>
-              <div className="flex items-center justify-between pt-3 mt-3 border-t border-black/5 text-[11px] text-[#9A9A9A]">
+              <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100 text-[11px] text-neutral-500 font-medium">
                 <span>{currentSlugs.length} parfum{currentSlugs.length > 1 ? 's' : ''} sélectionné{currentSlugs.length > 1 ? 's' : ''}</span>
-                <span className="italic">Triés du 1er au dernier affiché</span>
+                <span className="text-neutral-400">Ordre d'apparition dans la boutique</span>
               </div>
             </div>
 
             {/* Special Trend Titles for Seasonal tab */}
             {activeTab === 'seasonal' && (
-              <div className="mb-6 space-y-4 bg-white p-5 rounded-2xl border border-black/5">
-                <h4 className="text-[13px] font-bold text-[#1A1A1A]">Textes de la section (Page d'accueil)</h4>
+              <div className="mb-5 space-y-3.5 bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs">
+                <h4 className="text-xs font-bold text-neutral-900">Textes de la section (Page d'accueil)</h4>
                 <div>
-                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Saison(s) affichée(s)</label>
+                  <label className="block text-[11px] font-semibold text-neutral-500 mb-1 uppercase tracking-wider">Saison(s) affichée(s)</label>
                   <select 
                     value={seasonalTrendTitle}
                     onChange={(e) => setSeasonalTrendTitle(e.target.value)}
-                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9] appearance-none"
+                    className="w-full text-xs p-2.5 bg-[#f8fafc] border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 text-neutral-900"
                   >
                     <option value="Tendances Automne-Hiver">Automne-Hiver</option>
                     <option value="Tendances Printemps-Été">Printemps-Été</option>
@@ -638,11 +631,11 @@ export default function VitrinePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-[#9A9A9A] mb-1.5 uppercase tracking-wider">Sous-titre</label>
+                  <label className="block text-[11px] font-semibold text-neutral-500 mb-1 uppercase tracking-wider">Sous-titre</label>
                   <textarea 
                     value={seasonalTrendSubtitle}
                     onChange={(e) => setSeasonalTrendSubtitle(e.target.value)}
-                    className="w-full text-[13px] p-2.5 bg-[#f8fafc] border border-black/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9] resize-none h-20"
+                    className="w-full text-xs p-2.5 bg-[#f8fafc] border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 text-neutral-900 resize-none h-20"
                     placeholder="Ex: Nos fragrances fraîches..."
                   />
                 </div>
@@ -651,24 +644,24 @@ export default function VitrinePage() {
 
             {/* Curated list items with Smooth Drag & Drop (Glissement) */}
             {currentSlugs.length === 0 ? (
-              <div className="border-2 border-dashed border-[#e0ddd4] rounded-3xl p-10 flex flex-col items-center justify-center text-center bg-white/50">
-                <div className="w-14 h-14 bg-[#f8fafc] rounded-2xl flex items-center justify-center mb-3">
-                  <LayoutDashboard size={22} className="text-[#9A9A9A]" />
+              <div className="border border-dashed border-neutral-300 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-white shadow-2xs">
+                <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center mb-2.5 text-neutral-400">
+                  <LayoutDashboard size={20} />
                 </div>
-                <h4 className="text-[14px] font-bold text-[#1A1A1A] mb-1.5">Aucun parfum recommandé configuré</h4>
-                <p className="text-[12px] text-[#9A9A9A] max-w-xs leading-relaxed">
-                  Cliquez sur des parfums dans la bibliothèque à gauche pour les ajouter en tête de liste sur cette page.
+                <h4 className="text-xs font-bold text-neutral-900 mb-1">Aucun parfum recommandé configuré</h4>
+                <p className="text-xs text-neutral-500 max-w-xs leading-relaxed">
+                  Cliquez sur des parfums dans la liste de gauche pour les ajouter en tête de liste pour cette section.
                 </p>
               </div>
             ) : (
               <div>
                 {/* Visual Guidance Banner */}
-                <div className="flex items-center justify-between px-3 py-2 mb-3 text-[11px] font-semibold text-[#0ea5e9] bg-sky-50 border border-sky-100 rounded-xl">
-                  <span className="flex items-center gap-1.5">
-                    <GripVertical size={14} className="text-[#0ea5e9]" />
-                    Glissez & déposez les cartes de haut en bas pour réordonner
+                <div className="flex items-center justify-between px-3 py-2 mb-3 text-xs font-medium text-neutral-600 bg-white border border-neutral-200 rounded-xl shadow-2xs">
+                  <span className="flex items-center gap-1.5 text-neutral-800">
+                    <GripVertical size={14} className="text-neutral-400" />
+                    Glissez & déposez les cartes pour réordonner
                   </span>
-                  <span className="text-[10px] text-gray-500 font-normal">
+                  <span className="text-[11px] text-neutral-500">
                     {currentSlugs.length} sélectionné{currentSlugs.length > 1 ? 's' : ''}
                   </span>
                 </div>
@@ -677,7 +670,7 @@ export default function VitrinePage() {
                   axis="y" 
                   values={currentSlugs} 
                   onReorder={handleReorder} 
-                  className="space-y-2.5"
+                  className="space-y-2"
                 >
                   {currentSlugs.map((slug, index) => {
                     const p = allProducts.find(x => x.slug === slug);
@@ -686,44 +679,44 @@ export default function VitrinePage() {
                       <Reorder.Item
                         key={slug}
                         value={slug}
-                        className="group relative flex items-center gap-3 bg-white p-3 rounded-2xl border border-black/5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.07)] hover:border-[#0ea5e9]/40 transition-shadow select-none cursor-grab active:cursor-grabbing"
+                        className="group relative flex items-center gap-3 bg-white p-2.5 rounded-2xl border border-neutral-200 shadow-2xs hover:shadow-xs hover:border-neutral-300 transition-all select-none cursor-grab active:cursor-grabbing"
                         whileDrag={{
-                          scale: 1.025,
-                          boxShadow: "0 20px 30px -5px rgba(14, 165, 233, 0.18), 0 10px 15px -5px rgba(0, 0, 0, 0.08)",
-                          borderColor: "#0ea5e9",
-                          backgroundColor: "#f0f9ff",
+                          scale: 1.015,
+                          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+                          borderColor: "#171717",
+                          backgroundColor: "#ffffff",
                           zIndex: 50
                         }}
                       >
                         {/* Drag Handle Icon */}
                         <div 
-                          className="text-gray-300 group-hover:text-[#0ea5e9] transition-colors p-1 cursor-grab active:cursor-grabbing flex-shrink-0"
+                          className="text-neutral-300 group-hover:text-neutral-600 transition-colors p-1 cursor-grab active:cursor-grabbing flex-shrink-0"
                           title="Glisser pour déplacer"
                         >
-                          <GripVertical size={18} />
+                          <GripVertical size={16} />
                         </div>
 
                         {/* Order Position Badge */}
                         <div 
-                          className="flex flex-col items-center justify-center w-7 h-7 rounded-xl bg-gray-100 text-gray-700 font-extrabold text-[12px] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors flex-shrink-0"
-                          title={`Rang #${index + 1}`}
+                          className="flex items-center justify-center w-6 h-6 rounded-lg bg-neutral-100 text-neutral-700 font-bold text-[11px] flex-shrink-0"
+                          title={`Position #${index + 1}`}
                         >
                           #{index + 1}
                         </div>
 
                         {/* Image */}
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#f8fafc] flex-shrink-0 border border-black/5">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-neutral-50 flex-shrink-0 border border-neutral-100">
                           <img src={getImage(p)} alt={p.name} className="w-full h-full object-cover" />
                         </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0 pr-2">
-                          <div className="text-[12px] font-bold text-[#1A1A1A] truncate">{p.name}</div>
-                          <div className="text-[10px] text-[#0ea5e9] uppercase tracking-widest font-bold">{p.brandLabel}</div>
+                          <div className="text-xs font-semibold text-neutral-900 truncate">{p.name}</div>
+                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{p.brandLabel}</div>
                         </div>
 
                         {/* Quick Actions: Move to Top + Move buttons + Remove */}
-                        <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                        <div className="flex items-center gap-1 text-neutral-400 group-hover:text-neutral-600 transition-colors flex-shrink-0">
                           {index > 0 && (
                             <button
                               type="button"
@@ -731,10 +724,10 @@ export default function VitrinePage() {
                                 e.stopPropagation();
                                 moveToTop(index);
                               }}
-                              className="p-1.5 hover:bg-blue-50 hover:text-[#0ea5e9] rounded-lg text-gray-400 transition-colors cursor-pointer"
+                              className="p-1 hover:bg-neutral-100 hover:text-neutral-900 rounded-lg transition-colors cursor-pointer"
                               title="Placer tout en haut (Position #1)"
                             >
-                              <ChevronsUp size={15} strokeWidth={2.5} />
+                              <ChevronsUp size={14} />
                             </button>
                           )}
                           
@@ -746,10 +739,10 @@ export default function VitrinePage() {
                                 moveProduct(index, 'up');
                               }}
                               disabled={index === 0}
-                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-black disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                              className="p-0.5 hover:bg-neutral-100 rounded text-neutral-400 hover:text-neutral-900 disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
                               title="Monter d'une position"
                             >
-                              <ArrowUp size={11} strokeWidth={2.5} />
+                              <ArrowUp size={11} />
                             </button>
                             <button
                               type="button"
@@ -758,24 +751,24 @@ export default function VitrinePage() {
                                 moveProduct(index, 'down');
                               }}
                               disabled={index === currentSlugs.length - 1}
-                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-black disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                              className="p-0.5 hover:bg-neutral-100 rounded text-neutral-400 hover:text-neutral-900 disabled:opacity-20 disabled:hover:bg-transparent transition-colors cursor-pointer"
                               title="Descendre d'une position"
                             >
-                              <ArrowDown size={11} strokeWidth={2.5} />
+                              <ArrowDown size={11} />
                             </button>
                           </div>
 
-                          <div className="border-l border-gray-200 pl-1 ml-1">
+                          <div className="border-l border-neutral-200 pl-1 ml-1">
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleProduct(slug);
                               }}
-                              className="w-7 h-7 rounded-full flex items-center justify-center text-[#9A9A9A] hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                              className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                               title="Retirer des recommandés"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </div>

@@ -25,52 +25,76 @@ export default async function VipCustomersPage() {
     .slice(0, 50);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">VIP Customers</h1>
-        <p className="text-muted-foreground mt-2">Highest lifetime value and most frequent buyers.</p>
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2">
+            <span>Clients VIP</span>
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+              Top Acheteurs
+            </span>
+          </h1>
+          <p className="text-[13px] text-neutral-500 mt-1">Meilleurs acheteurs et plus forte valeur vie client ({vipCustomers.length} clients VIP).</p>
+        </div>
+        
+        <Link 
+          href="/admin/customers"
+          className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-2xs inline-flex items-center gap-1.5"
+        >
+          Tous les clients
+        </Link>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="border-b border-gray-200 bg-gray-50 px-6 py-4 flex items-center gap-2">
-          <Star size={18} className="text-yellow-500 fill-yellow-500" />
-          <h3 className="font-semibold text-gray-900">Top 50 Value Customers</h3>
+      <div className="bg-white border border-neutral-200 rounded-2xl shadow-2xs overflow-hidden">
+        <div className="border-b border-neutral-100 bg-neutral-50/50 px-5 py-3.5 flex items-center gap-2">
+          <Star size={16} className="text-amber-500 fill-amber-400" />
+          <h3 className="font-semibold text-neutral-900 text-xs uppercase tracking-wider">Classement des 50 Meilleurs Clients</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">Rank</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">Customer</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">Orders</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">LTV (Revenue)</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">AOV</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase">Last Order</th>
-                <th className="p-4 text-xs font-semibold text-gray-600 uppercase text-right">Action</th>
+          <table className="w-full text-left text-[13px]">
+            <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">
+              <tr>
+                <th className="px-5 py-3">Rang</th>
+                <th className="px-5 py-3">Client</th>
+                <th className="px-5 py-3">Commandes</th>
+                <th className="px-5 py-3">Total Dépensé (LTV)</th>
+                <th className="px-5 py-3">Panier Moyen</th>
+                <th className="px-5 py-3">Dernière Commande</th>
+                <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-neutral-100">
               {vipCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-gray-500">No VIP customers detected yet.</td>
+                  <td colSpan={7} className="px-5 py-12 text-center text-neutral-400 text-xs">Aucun client VIP détecté pour le moment.</td>
                 </tr>
               ) : (
                 vipCustomers.map((customer, idx) => (
-                  <tr key={customer.id} className="hover:bg-gray-50">
-                    <td className="p-4 text-sm font-bold text-gray-400">#{idx + 1}</td>
-                    <td className="p-4">
-                      <div className="font-medium text-gray-900">{customer.name}</div>
-                      <div className="text-xs text-gray-500">{customer.email}</div>
+                  <tr key={customer.id} className="hover:bg-neutral-50/70 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                        idx === 0 ? 'bg-amber-100 text-amber-900 border border-amber-300' :
+                        idx === 1 ? 'bg-neutral-200 text-neutral-800' :
+                        idx === 2 ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                        'text-neutral-400'
+                      }`}>
+                        #{idx + 1}
+                      </span>
                     </td>
-                    <td className="p-4 text-sm font-medium">{customer.count}</td>
-                    <td className="p-4 text-sm font-bold text-green-600">{customer.spent.toLocaleString()} MAD</td>
-                    <td className="p-4 text-sm text-gray-600">{customer.aov} MAD</td>
-                    <td className="p-4 text-sm text-gray-500">
-                      {customer.lastOrder ? new Date(customer.lastOrder.createdAt).toLocaleDateString() : '-'}
+                    <td className="px-5 py-3.5">
+                      <div className="font-semibold text-neutral-900">{customer.name}</div>
+                      <div className="text-[11px] text-neutral-500">{customer.email}</div>
                     </td>
-                    <td className="p-4 text-right">
-                      <Link href={`/admin/customers/${customer.id}`} className="text-indigo-600 hover:text-indigo-900 text-sm font-medium flex items-center justify-end gap-1">
-                        Profile <ArrowRight size={14} />
+                    <td className="px-5 py-3.5 font-semibold text-neutral-900">{customer.count}</td>
+                    <td className="px-5 py-3.5 font-bold text-neutral-900">{customer.spent.toLocaleString()} <span className="text-xs font-normal text-neutral-500">MAD</span></td>
+                    <td className="px-5 py-3.5 text-neutral-600 font-medium">{customer.aov} MAD</td>
+                    <td className="px-5 py-3.5 text-neutral-500 text-xs">
+                      {customer.lastOrder ? new Date(customer.lastOrder.createdAt).toLocaleDateString('fr-MA') : '-'}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <Link href={`/admin/customers/${customer.id}`} className="text-neutral-900 hover:underline text-xs font-semibold inline-flex items-center gap-1">
+                        Profil <ArrowRight size={12} />
                       </Link>
                     </td>
                   </tr>

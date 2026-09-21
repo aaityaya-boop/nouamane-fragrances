@@ -1,7 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Bell, CreditCard, LayoutTemplate, Phone, Save, Share2, Lock } from 'lucide-react';
+import { 
+  Settings, 
+  Shield, 
+  CreditCard, 
+  LayoutTemplate, 
+  Phone, 
+  Save, 
+  Share2, 
+  Lock, 
+  Check, 
+  Loader2,
+  Mail,
+  Truck,
+  Image as ImageIcon
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SettingsPage() {
   const [config, setConfig] = useState<any>(null);
@@ -43,7 +58,7 @@ export default function SettingsPage() {
       });
       if (res.ok) {
         setSaveMessage('Paramètres enregistrés avec succès !');
-        setTimeout(() => setSaveMessage(''), 3000);
+        setTimeout(() => setSaveMessage(''), 3500);
       } else {
         setSaveMessage('Erreur lors de la sauvegarde.');
       }
@@ -56,172 +71,237 @@ export default function SettingsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-8 lg:p-12 text-[#9A9A9A]">Chargement des paramètres...</div>;
+    return (
+      <div className="h-full w-full flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="animate-spin text-neutral-800 mb-3" size={32} />
+        <p className="text-xs text-neutral-500 font-medium tracking-wide uppercase">Chargement des paramètres...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="p-8 lg:p-12">
-      <div className="mb-10 flex items-center justify-between">
+    <div className="space-y-6 max-w-6xl mx-auto pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
         <div>
-          <h1 className="heading-font text-3xl font-medium text-[#1A1A1A] mb-2">Paramètres du Site</h1>
-          <p className="text-[14px] text-[#6B6B6B]">Gérez les configurations générales de votre boutique (Frais, Accueil, Contact...).</p>
-        </div>
-        {saveMessage && (
-          <div className="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-[13px] font-medium border border-green-100">
-            {saveMessage}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200">
+              Configuration
+            </span>
           </div>
-        )}
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2">
+            <Settings size={22} className="text-neutral-900" />
+            <span>Paramètres de la Boutique</span>
+          </h1>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Gérez les configurations générales de votre boutique (Frais, Accueil, Contact, Réseaux...).
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <AnimatePresence>
+            {saveMessage && (
+              <motion.div
+                initial={{ opacity: 0, x: 15 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg shadow-2xs ${
+                  saveMessage.includes('succès') 
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}
+              >
+                <Check size={13} />
+                {saveMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 bg-neutral-900 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all hover:bg-black shadow-xs disabled:opacity-60 cursor-pointer"
+          >
+            {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+            <span>Enregistrer les paramètres</span>
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSave} className="grid lg:grid-cols-2 gap-8">
+      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Sécurité */}
-        <div className="lg:col-span-2 bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-6">
-            <Lock size={20} className="text-sky-600" /> Sécurité
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="lg:col-span-2 bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Lock size={16} />
+            </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              <h3 className="text-sm font-bold text-neutral-900">Accès Administrateur Principal</h3>
+              <p className="text-xs text-neutral-500">Identifiants d&apos;accès par défaut au panneau d&apos;administration</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+            <div>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 Identifiant Admin
               </label>
               <input
                 type="text"
-                value={config.adminUsername || ''}
+                value={config?.adminUsername || ''}
                 onChange={e => updateConfig('adminUsername', e.target.value)}
-                className="w-full h-12 bg-gray-50 border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-sky-500 transition-colors"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
-              <p className="text-xs text-gray-400 mt-2">L'identifiant pour accéder à ce panneau (par défaut: admin).</p>
+              <p className="text-[11px] text-neutral-400 mt-1.5">Identifiant d&apos;accès par défaut (ex: admin).</p>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                 Mot de Passe Admin
               </label>
               <input
                 type="text"
-                value={config.adminPassword || ''}
+                value={config?.adminPassword || ''}
                 onChange={e => updateConfig('adminPassword', e.target.value)}
-                className="w-full h-12 bg-gray-50 border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-sky-500 transition-colors"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
-              <p className="text-xs text-gray-400 mt-2">Ce mot de passe est visible ici uniquement car vous êtes connecté.</p>
+              <p className="text-[11px] text-neutral-400 mt-1.5">Ce mot de passe est visible uniquement dans ce panneau connecté.</p>
             </div>
           </div>
         </div>
 
         {/* Livraison */}
-        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
-            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
-              <CreditCard size={24} />
+        <div className="bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Truck size={16} />
             </div>
             <div>
-              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Paiement & Livraison</h3>
-              <p className="text-[13px] text-[#6B6B6B]">Définir les frais de livraison appliqués au panier</p>
+              <h3 className="text-sm font-bold text-neutral-900">Paiement & Livraison</h3>
+              <p className="text-xs text-neutral-500">Définir les frais de livraison appliqués au panier</p>
             </div>
           </div>
-          <div className="space-y-4">
+
+          <div className="space-y-3 pt-1">
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Frais de livraison (MAD)</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Frais de livraison standard (MAD)
+              </label>
               <input 
                 type="number" 
                 name="shippingFee"
-                value={config.shippingFee || 0}
+                value={config?.shippingFee || 0}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
+              <p className="text-[11px] text-neutral-400 mt-1.5">Mettre 0 pour la livraison gratuite par défaut.</p>
             </div>
           </div>
         </div>
 
         {/* Contact */}
-        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
-            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
-              <Phone size={24} />
+        <div className="bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Phone size={16} />
             </div>
             <div>
-              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Informations de Contact</h3>
-              <p className="text-[13px] text-[#6B6B6B]">Affichées sur le site pour vos clients</p>
+              <h3 className="text-sm font-bold text-neutral-900">Informations de Contact</h3>
+              <p className="text-xs text-neutral-500">Coordonnées affichées aux clients sur la boutique</p>
             </div>
           </div>
-          <div className="space-y-4">
+
+          <div className="space-y-3 pt-1">
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Numéro de téléphone</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Numéro de téléphone
+              </label>
               <input 
                 type="text" 
                 name="contactPhone"
-                value={config.contactPhone || ''}
+                value={config?.contactPhone || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                placeholder="+212 6 XX XX XX XX"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Adresse Email</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Adresse Email Contact
+              </label>
               <input 
                 type="email" 
                 name="contactEmail"
-                value={config.contactEmail || ''}
+                value={config?.contactEmail || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                placeholder="contact@nouamane-fragrances.ma"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
             </div>
           </div>
         </div>
 
-        {/* Page d'accueil */}
-        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
-            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
-              <LayoutTemplate size={24} />
+        {/* Page d'accueil Hero */}
+        <div className="bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <LayoutTemplate size={16} />
             </div>
             <div>
-              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Page d'Accueil (Hero)</h3>
-              <p className="text-[13px] text-[#6B6B6B]">Textes affichés dans la bannière principale</p>
+              <h3 className="text-sm font-bold text-neutral-900">Bannière Accueil (Hero)</h3>
+              <p className="text-xs text-neutral-500">Textes mis en avant dans la section principale</p>
             </div>
           </div>
-          <div className="space-y-4">
+
+          <div className="space-y-3 pt-1">
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Titre Principal</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Titre Principal
+              </label>
               <input 
                 type="text" 
                 name="heroTitle"
-                value={config.heroTitle || ''}
+                value={config?.heroTitle || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Sous-titre</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Sous-titre
+              </label>
               <textarea 
                 name="heroSubtitle"
                 rows={3}
-                value={config.heroSubtitle || ''}
+                value={config?.heroSubtitle || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9] resize-none"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors resize-none"
               />
             </div>
           </div>
         </div>
 
         {/* Coffrets Cover */}
-        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
-            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
-              <LayoutTemplate size={24} />
+        <div className="bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <ImageIcon size={16} />
             </div>
             <div>
-              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Cover Coffrets (Accueil)</h3>
-              <p className="text-[13px] text-[#6B6B6B]">L'image de couverture du grand carrousel</p>
+              <h3 className="text-sm font-bold text-neutral-900">Cover Coffrets (Accueil)</h3>
+              <p className="text-xs text-neutral-500">Image de couverture du carrousel de coffrets</p>
             </div>
           </div>
-          <div className="space-y-4">
+
+          <div className="space-y-3 pt-1">
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">URL de l'image</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                URL de l&apos;image de couverture
+              </label>
               <input 
                 type="text" 
                 name="coffretsCoverImage"
-                value={config.coffretsCoverImage || ''}
+                value={config?.coffretsCoverImage || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
                 placeholder="/images/category/pack-decouverte-luxe.jpg"
               />
             </div>
@@ -229,73 +309,82 @@ export default function SettingsPage() {
         </div>
 
         {/* Réseaux Sociaux */}
-        <div className="bg-white border border-[#e0ddd4] p-8 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[#e0ddd4]">
-            <div className="w-12 h-12 rounded-xl bg-[#fafaf7] text-[#1A1A1A] flex items-center justify-center">
-              <Share2 size={24} />
+        <div className="lg:col-span-2 bg-white border border-neutral-200 p-6 rounded-2xl shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-4 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Share2 size={16} />
             </div>
             <div>
-              <h3 className="text-[16px] font-semibold text-[#1A1A1A]">Réseaux Sociaux</h3>
-              <p className="text-[13px] text-[#6B6B6B]">Liens vers vos pages sociales</p>
+              <h3 className="text-sm font-bold text-neutral-900">Réseaux Sociaux & Messagerie</h3>
+              <p className="text-xs text-neutral-500">Liens publics vers vos comptes sociaux et canal WhatsApp</p>
             </div>
           </div>
-          <div className="space-y-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Instagram (URL)</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Instagram (URL)
+              </label>
               <input 
                 type="text" 
                 name="instagramUrl"
-                value={config.instagramUrl || ''}
+                value={config?.instagramUrl || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
                 placeholder="https://instagram.com/..."
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">Facebook (URL)</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                Facebook (URL)
+              </label>
               <input 
                 type="text" 
                 name="facebookUrl"
-                value={config.facebookUrl || ''}
+                value={config?.facebookUrl || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
                 placeholder="https://facebook.com/..."
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">TikTok (URL)</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                TikTok (URL)
+              </label>
               <input 
                 type="text" 
                 name="tiktokUrl"
-                value={config.tiktokUrl || ''}
+                value={config?.tiktokUrl || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
                 placeholder="https://tiktok.com/@..."
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-[#9A9A9A] mb-2">WhatsApp (URL ou numéro)</label>
+              <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                WhatsApp (URL ou numéro)
+              </label>
               <input 
                 type="text" 
                 name="whatsappUrl"
-                value={config.whatsappUrl || ''}
+                value={config?.whatsappUrl || ''}
                 onChange={handleChange}
-                className="w-full bg-[#fafaf7] border border-[#e0ddd4] rounded-xl px-4 py-3 text-[13px] focus:outline-none focus:border-[#0ea5e9]"
+                className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-[13px] text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
                 placeholder="https://wa.me/212..."
               />
             </div>
           </div>
         </div>
 
-        {/* Bouton de Sauvegarde global */}
-        <div className="lg:col-span-2 flex justify-end pt-4">
+        {/* Action Button */}
+        <div className="lg:col-span-2 flex justify-end pt-2">
           <button 
             type="submit" 
             disabled={isSaving}
-            className="btn-blue flex items-center gap-2 px-8 py-4 rounded-xl text-[13px] font-bold tracking-[0.1em] uppercase disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 hover:bg-black text-white rounded-xl text-xs font-medium transition-all shadow-xs disabled:opacity-50 cursor-pointer"
           >
-            <Save size={18} />
-            {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            <span>Enregistrer toutes les modifications</span>
           </button>
         </div>
       </form>

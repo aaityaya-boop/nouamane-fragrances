@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import TrafficChart from '../components/TrafficChart';
 import WorldMap from '../components/WorldMap';
 import FunnelView from '../components/FunnelView';
-import { MapPin, Users, Globe, Clock, Smartphone, Monitor, LayoutDashboard, Filter } from 'lucide-react';
+import { MapPin, Users, Globe, Clock, Smartphone, Monitor, LayoutDashboard, Filter, Activity, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -85,7 +85,7 @@ export default async function AnalyticsPage() {
 
   const formatRelativeTime = (date: Date) => {
     const diffInMinutes = Math.floor((new Date().getTime() - date.getTime()) / 60000);
-    if (diffInMinutes < 1) return "� l'instant";
+    if (diffInMinutes < 1) return "À l'instant";
     if (diffInMinutes < 60) return `Il y a ${diffInMinutes} min`;
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `Il y a ${diffInHours}h`;
@@ -93,87 +93,111 @@ export default async function AnalyticsPage() {
   };
 
   return (
-    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-neutral-200 pb-5">
         <div>
-          <h1 className="text-3xl font-bold text-[#1A1A1A]">Audience & Analytics</h1>
-          <p className="text-[#6B6B6B] mt-1">Analyse d�taill�e du trafic et de la localisation des clients</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200">
+              Statistiques & Trafic
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2">
+            <TrendingUp size={22} className="text-neutral-900" />
+            <span>Audience & Analytics</span>
+          </h1>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Analyse détaillée du trafic, de la localisation géographique et du tunnel d&apos;achat.
+          </p>
         </div>
-        <Link href="/admin" className="flex items-center gap-2 px-4 py-2 bg-white border border-[#e0ddd4] rounded-xl hover:bg-[#fafaf7] transition-colors text-[14px] font-medium">
-          <LayoutDashboard size={18} />
-          Retour au Dashboard
+
+        <Link 
+          href="/admin" 
+          className="flex items-center gap-2 px-3.5 py-2 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-xs font-medium text-neutral-800 shadow-2xs cursor-pointer"
+        >
+          <LayoutDashboard size={14} />
+          <span>Retour au Dashboard</span>
         </Link>
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm mb-8">
-        <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">Trafic (7 derniers jours)</h2>
-        <p className="text-[14px] text-[#6B6B6B] mb-6">Évolution des visiteurs uniques et des pages vues.</p>
-        <TrafficChart data={chartData} />
+      <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-bold text-neutral-900">Trafic global (7 derniers jours)</h2>
+            <p className="text-xs text-neutral-500 mt-0.5">Évolution des visiteurs uniques et du volume de pages consultées.</p>
+          </div>
+        </div>
+        <div className="pt-2">
+          <TrafficChart data={chartData} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* World Map */}
-        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-              <Globe size={20} />
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Globe size={16} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1A1A1A]">Carte Mondiale des Visiteurs</h2>
-              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Origine géographique de votre trafic</p>
+              <h2 className="text-sm font-bold text-neutral-900">Carte Géographique des Visiteurs</h2>
+              <p className="text-xs text-neutral-500">Origine géographique de votre trafic en ligne</p>
             </div>
           </div>
           <WorldMap data={visitorsByCity} />
         </div>
 
         {/* Funnel */}
-        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-pink-50 text-pink-600 rounded-xl flex items-center justify-center">
-              <Filter size={20} />
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Filter size={16} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1A1A1A]">Entonnoir de Conversion (Funnel)</h2>
-              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Parcours d'achat des visiteurs depuis l'arrivée jusqu'à la commande</p>
+              <h2 className="text-sm font-bold text-neutral-900">Entonnoir de Conversion (Funnel)</h2>
+              <p className="text-xs text-neutral-500">Parcours d&apos;achat des visiteurs depuis l&apos;arrivée jusqu&apos;à la commande</p>
             </div>
           </div>
           <FunnelView data={funnelData} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Cities Table */}
-        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm lg:col-span-1">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-              <MapPin size={20} />
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-2xs lg:col-span-1 space-y-4">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <MapPin size={16} />
             </div>
-            <h2 className="text-xl font-bold text-[#1A1A1A]">Emplacement (Villes)</h2>
+            <div>
+              <h2 className="text-sm font-bold text-neutral-900">Top Villes Visiteurs</h2>
+              <p className="text-xs text-neutral-500">Répartition par ville</p>
+            </div>
           </div>
           
-          <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+          <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
             {visitorsByCity.length === 0 && (
-              <p className="text-[#6B6B6B] text-[14px]">Aucune donn�e de localisation disponible.</p>
+              <p className="text-neutral-400 text-xs py-8 text-center">Aucune donnée de localisation disponible.</p>
             )}
             {visitorsByCity.map((cityData, index) => (
-              <div key={index} className="flex items-center justify-between p-4 rounded-xl border border-[#e0ddd4]/50 hover:bg-[#fafaf7] transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#fafaf7] rounded-full flex items-center justify-center text-[12px] border border-[#e0ddd4]">
+              <div key={index} className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-[#f8fafc] hover:bg-neutral-100/70 transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center text-[11px] font-bold text-neutral-700 border border-neutral-200 shadow-2xs">
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-semibold text-[14px] text-[#1A1A1A]">
+                    <div className="font-semibold text-xs text-neutral-900">
                       {cityData.city === 'Inconnu' ? 'Ville Inconnue' : cityData.city}
                     </div>
-                    <div className="text-[12px] text-[#6B6B6B] flex items-center gap-1 mt-0.5">
+                    <div className="text-[10px] text-neutral-500 flex items-center gap-1 mt-0.5">
                       <Globe size={10} /> {cityData.country}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-[#1A1A1A]">{cityData._count.id}</div>
-                  <div className="text-[11px] text-[#6B6B6B] uppercase tracking-wider">Visiteurs</div>
+                  <div className="font-bold text-xs text-neutral-900">{cityData._count.id}</div>
+                  <div className="text-[10px] text-neutral-400 uppercase tracking-wider font-medium">Visites</div>
                 </div>
               </div>
             ))}
@@ -181,54 +205,53 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Activity Log */}
-        <div className="bg-white rounded-3xl p-8 border border-[#e0ddd4] shadow-sm lg:col-span-2">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-              <Users size={20} />
+        <div className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-2xs lg:col-span-2 space-y-4">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-100">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center border border-neutral-200">
+              <Activity size={16} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#1A1A1A]">Activit� en direct</h2>
-              <p className="text-[13px] text-[#6B6B6B] mt-0.5">Les 100 derni�res actions sur le site</p>
+              <h2 className="text-sm font-bold text-neutral-900">Activité en direct</h2>
+              <p className="text-xs text-neutral-500">Les 100 dernières actions enregistrées sur le site</p>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[480px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[#e0ddd4]">
-                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Visiteur (Ville)</th>
-                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Page visit�e</th>
-                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Source</th>
-                  <th className="pb-3 font-semibold text-[#6B6B6B] text-[13px]">Temps</th>
+                <tr className="border-b border-neutral-200 bg-neutral-50 text-[11px] font-semibold uppercase tracking-wider text-neutral-600">
+                  <th className="py-2.5 px-3">Visiteur</th>
+                  <th className="py-2.5 px-3">Page visitée</th>
+                  <th className="py-2.5 px-3">Source</th>
+                  <th className="py-2.5 px-3 text-right">Temps</th>
                 </tr>
               </thead>
-              <tbody className="text-[14px]">
+              <tbody className="text-xs divide-y divide-neutral-100 text-neutral-700">
                 {recentActivity.map((activity) => (
-                  <tr key={activity.id} className="border-b border-[#e0ddd4]/40 hover:bg-[#fafaf7]">
-                    <td className="py-4">
-                      <div className="flex items-center gap-2">
-                        {activity.device === 'Mobile' ? <Smartphone size={14} className="text-gray-400" /> : <Monitor size={14} className="text-gray-400" />}
-                        <span className="font-medium">
-                          {activity.visitor.city === 'Inconnu' ? 'Visiteur inconnu' : activity.visitor.city}
+                  <tr key={activity.id} className="hover:bg-neutral-50/70 transition-colors">
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center gap-1.5 font-medium text-neutral-900">
+                        {activity.device === 'Mobile' ? <Smartphone size={13} className="text-neutral-400" /> : <Monitor size={13} className="text-neutral-400" />}
+                        <span className="truncate max-w-[130px]">
+                          {activity.visitor.city === 'Inconnu' ? 'Inconnu' : activity.visitor.city}
                         </span>
                       </div>
                     </td>
-                    <td className="py-4 font-mono text-[13px] text-blue-600 truncate max-w-[200px]" title={activity.pathname}>
+                    <td className="py-2.5 px-3 font-mono text-[11px] text-neutral-800 truncate max-w-[200px]" title={activity.pathname}>
                       {activity.pathname}
                     </td>
-                    <td className="py-4">
-                      <span className={`inline-block px-2 py-1 rounded text-[11px] font-medium ${
-                        activity.referrer === 'Google' ? 'bg-orange-100 text-orange-700' :
-                        activity.referrer === 'Instagram' ? 'bg-pink-100 text-pink-700' :
-                        activity.referrer === 'Facebook' ? 'bg-blue-100 text-blue-700' :
-                        activity.referrer === 'Direct' ? 'bg-gray-100 text-gray-700' :
-                        'bg-green-100 text-green-700'
+                    <td className="py-2.5 px-3">
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                        activity.referrer === 'Google' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                        activity.referrer === 'Instagram' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                        activity.referrer === 'Facebook' ? 'bg-sky-50 text-sky-700 border-sky-200' :
+                        activity.referrer === 'Direct' ? 'bg-neutral-100 text-neutral-700 border-neutral-200' :
+                        'bg-emerald-50 text-emerald-700 border-emerald-200'
                       }`}>
                         {activity.referrer || 'Direct'}
                       </span>
                     </td>
-                    <td className="py-4 text-[#6B6B6B] flex items-center gap-1.5">
-                      <Clock size={12} />
+                    <td className="py-2.5 px-3 text-neutral-400 text-right text-[11px] whitespace-nowrap">
                       {formatRelativeTime(activity.createdAt)}
                     </td>
                   </tr>

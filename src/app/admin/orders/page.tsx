@@ -35,13 +35,13 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_CLASSES: Record<string, string> = {
-  pending: 'bg-stone-100 text-stone-700 border-stone-200',
-  processing: 'bg-slate-100 text-slate-800 border-slate-200',
-  shipped: 'bg-indigo-50 text-indigo-800 border-indigo-200',
-  delivered: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-  refused: 'bg-rose-50 text-rose-800 border-rose-200',
+  pending: 'bg-neutral-100 text-neutral-700 border-neutral-200',
+  processing: 'bg-sky-50 text-sky-700 border-sky-200',
+  shipped: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  delivered: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  refused: 'bg-rose-50 text-rose-700 border-rose-200',
   returned: 'bg-neutral-100 text-neutral-700 border-neutral-300',
-  unconfirmed: 'bg-amber-50 text-amber-800 border-amber-200',
+  unconfirmed: 'bg-amber-50 text-amber-700 border-amber-200',
 };
 
 const formatMAD = (amount: number) => {
@@ -211,19 +211,19 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-neutral-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Commandes</h1>
           <p className="text-[13px] text-neutral-500 mt-1">
-            Suivi des commandes NAY et historique des actions.
+            Suivi des commandes et historique des actions ({orders.length} au total).
           </p>
         </div>
 
         <button
           onClick={fetchOrders}
-          className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+          className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-2xs inline-flex items-center gap-1.5"
         >
           <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
           Actualiser
@@ -231,7 +231,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Clean Horizontal Filter Tabs */}
-      <div className="flex items-center gap-6 overflow-x-auto border-b border-neutral-200 mb-6 scrollbar-none">
+      <div className="flex items-center gap-6 overflow-x-auto border-b border-neutral-200 pb-0 scrollbar-none">
         {[
           { id: 'ALL', label: 'Toutes', count: tabCounts.ALL },
           { id: 'PENDING', label: 'En attente', count: tabCounts.PENDING },
@@ -250,7 +250,7 @@ export default function OrdersPage() {
             }`}
           >
             <span>{tab.label}</span>
-            <span className={`text-[11px] font-mono px-1.5 py-0.2 rounded ${
+            <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded ${
               activeTab === tab.id ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-500'
             }`}>
               {tab.count}
@@ -262,30 +262,27 @@ export default function OrdersPage() {
         ))}
       </div>
 
-      {/* Search Input */}
-      <div className="mb-4">
-        <div className="relative max-w-md">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+      {/* Orders Table Card */}
+      <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-2xs">
+        <div className="p-3.5 border-b border-neutral-100 flex items-center gap-3 bg-white">
+          <Search size={15} className="text-neutral-400 ml-1" />
           <input
             type="text"
             placeholder="Rechercher une commande, client, ville, téléphone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-[13px] bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 placeholder:text-neutral-400"
+            className="flex-1 bg-transparent border-none focus:outline-none text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+              className="text-neutral-400 hover:text-neutral-700 p-1"
             >
               <X size={14} />
             </button>
           )}
         </div>
-      </div>
 
-      {/* Orders Table */}
-      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[13px]">
             <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">

@@ -398,7 +398,7 @@ export default function FinanceClient({
           {/* 4 CORE EXECUTIVE FINANCIAL CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Chiffre d'Affaires Brut */}
-            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs">
+            <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
               <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
                 Chiffre d&apos;affaires brut
               </span>
@@ -411,7 +411,7 @@ export default function FinanceClient({
             </div>
 
             {/* Card 2: Total des Charges (- MAD) */}
-            <div className="bg-white border border-rose-200 rounded-xl p-5 shadow-2xs">
+            <div className="bg-white border border-rose-200 rounded-2xl p-5 shadow-2xs">
               <span className="text-[11px] font-semibold text-rose-700 uppercase tracking-wider">
                 Total des charges
               </span>
@@ -424,7 +424,7 @@ export default function FinanceClient({
             </div>
 
             {/* Card 3: CA NET RÉEL (Bénéfice) */}
-            <div className={`bg-white border rounded-xl p-5 shadow-2xs ${
+            <div className={`bg-white border rounded-2xl p-5 shadow-2xs ${
               netRevenue >= 0 ? 'border-emerald-200' : 'border-rose-200'
             }`}>
               <span className={`text-[11px] font-semibold uppercase tracking-wider ${
@@ -443,7 +443,7 @@ export default function FinanceClient({
             </div>
 
             {/* Card 4: Marge Nette Réelle */}
-            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs">
+            <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-2xs">
               <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
                 Marge nette réelle
               </span>
@@ -457,7 +457,7 @@ export default function FinanceClient({
           </div>
 
           {/* FINANCIAL TIME-SERIES CHART */}
-          <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-2xs">
+          <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-2xs">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-bold text-neutral-900">
@@ -506,7 +506,7 @@ export default function FinanceClient({
           {/* Winning Products & Top Cities */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Top Products (2 cols) */}
-            <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-6 shadow-2xs">
+            <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-2xl p-6 shadow-2xs">
               <h3 className="text-sm font-bold text-neutral-900 mb-4">
                 Parfums les plus vendus
               </h3>
@@ -527,7 +527,7 @@ export default function FinanceClient({
             </div>
 
             {/* Top Cities (1 col) */}
-            <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-2xs">
+            <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-2xs">
               <h3 className="text-sm font-bold text-neutral-900 mb-4">
                 Villes les plus actives
               </h3>
@@ -562,7 +562,7 @@ export default function FinanceClient({
             </div>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-2xs">
+          <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-2xs">
             <table className="w-full text-left text-[13px]">
               <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">
                 <tr>
@@ -636,7 +636,7 @@ export default function FinanceClient({
       {/* Add Expense Modal */}
       {isAddExpenseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-xl border border-neutral-200 shadow-xl max-w-lg w-full p-6 text-neutral-900 animate-in fade-in">
+          <div className="bg-white rounded-2xl border border-neutral-200 shadow-xl max-w-lg w-full p-6 text-neutral-900 animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200 mb-4">
               <h3 className="text-base font-bold text-neutral-900">Ajouter une charge</h3>
               <button onClick={() => setIsAddExpenseModalOpen(false)} className="text-neutral-400 hover:text-neutral-700">

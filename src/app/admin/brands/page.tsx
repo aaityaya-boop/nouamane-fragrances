@@ -128,89 +128,96 @@ export default function AdminBrandsPage() {
   );
 
   return (
-    <div className="p-8 lg:p-12 max-w-[1600px] mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200">
         <div>
-          <h1 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">Marques</h1>
-          <p className="text-[#666] text-[14px]">Gérez vos marques partenaires et fournisseurs ({brands.length} au total)</p>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Marques</h1>
+          <p className="text-[13px] text-neutral-500 mt-1">Gérez vos marques partenaires et fournisseurs ({brands.length} au total).</p>
         </div>
         
         <button 
           onClick={openAddModal}
-          className="flex items-center gap-2 bg-[#111] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium hover:bg-gray-800 transition-colors shadow-sm"
+          className="bg-neutral-900 hover:bg-black text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1.5"
         >
-          <Plus size={16} /> Ajouter une marque
+          <Plus size={14} /> Nouvelle marque
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#eaeaea] overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-[#eaeaea] flex items-center gap-3 bg-white">
-          <Search size={16} className="text-[#999]" />
+      {/* Table Card */}
+      <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-2xs">
+        <div className="p-3.5 border-b border-neutral-100 flex items-center gap-3 bg-white">
+          <Search size={15} className="text-neutral-400 ml-1" />
           <input 
             type="text" 
-            placeholder="Rechercher une marque..." 
-            className="flex-1 bg-transparent border-none focus:outline-none text-[14px] text-[#111] placeholder:text-[#999]"
+            placeholder="Rechercher une marque par nom ou slug..." 
+            className="flex-1 bg-transparent border-none focus:outline-none text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-[#fafafa] border-b border-[#eaeaea]">
+          <table className="w-full text-left text-[13px]">
+            <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">
               <tr>
-                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Marque</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider">Slug (URL)</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-[#666] uppercase tracking-wider text-right">Actions</th>
+                <th className="px-5 py-3">Marque</th>
+                <th className="px-5 py-3">Slug (URL)</th>
+                <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#eaeaea]">
+            <tbody className="divide-y divide-neutral-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={3} className="p-12 text-center text-[#666] text-[13px]">Chargement des marques...</td>
+                  <td colSpan={3} className="px-5 py-12 text-center text-neutral-400 text-xs">Chargement des marques...</td>
                 </tr>
               ) : filteredBrands.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="p-12 text-center text-[#666] text-[13px]">Aucune marque trouvée.</td>
+                  <td colSpan={3} className="px-5 py-12 text-center text-neutral-400 text-xs">Aucune marque trouvée.</td>
                 </tr>
               ) : (
                 filteredBrands.map((b) => (
-                  <tr key={b.id} className="hover:bg-[#fafafa] transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-[14px] font-black text-gray-800 shadow-sm border border-[#eaeaea] shrink-0 font-serif italic overflow-hidden relative">
+                  <tr key={b.id} className="hover:bg-neutral-50/70 transition-colors group">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-[13px] font-bold text-neutral-800 border border-neutral-200 shrink-0 overflow-hidden relative">
                           {b.image ? (
-                            <Image src={b.image} alt={b.name} fill className="object-cover" />
+                            <Image src={b.image} alt={b.name} fill className="object-contain p-1.5" />
                           ) : (
                             b.name.charAt(0).toUpperCase()
                           )}
                         </div>
-                        <span className="text-[14px] font-bold text-[#111]">{b.name}</span>
+                        <div>
+                          <span className="font-semibold text-[13px] text-neutral-900">{b.name}</span>
+                          {b.label && b.label !== b.name && (
+                            <div className="text-[11px] text-neutral-500">{b.label}</div>
+                          )}
+                        </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-[12px] font-mono text-[#666] bg-gray-50 inline-flex px-2 py-1 rounded-md border border-[#eaeaea]">
-                        <Hash size={12} className="text-[#999]" />
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-600 bg-neutral-100 inline-flex px-2 py-0.5 rounded border border-neutral-200">
+                        <Hash size={11} className="text-neutral-400" />
                         {b.slug}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center justify-end gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => openEditModal(b)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-[#0ea5e9] hover:bg-sky-50 transition-colors border border-[#eaeaea] shadow-sm"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors border border-neutral-200 shadow-2xs"
                           aria-label="Modifier"
                           title="Modifier"
                         >
-                          <Edit2 size={14} />
+                          <Edit2 size={13} />
                         </button>
                         <button 
                           onClick={() => handleDelete(b.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-[#666] hover:text-red-500 hover:bg-red-50 transition-colors border border-[#eaeaea] shadow-sm"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white text-neutral-600 hover:text-rose-600 hover:bg-rose-50 transition-colors border border-neutral-200 shadow-2xs"
                           aria-label="Supprimer"
                           title="Supprimer"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </td>
@@ -225,66 +232,66 @@ export default function AdminBrandsPage() {
       {/* MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-white border-b border-[#eaeaea] px-6 py-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#111] tracking-tight">{editingBrand ? 'Modifier la marque' : 'Nouvelle marque'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-[#999] hover:text-[#111] bg-gray-50 hover:bg-gray-100 p-1.5 rounded-full transition-colors">
-                <X size={18} />
+          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-neutral-200">
+            <div className="bg-white border-b border-neutral-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-base font-bold text-neutral-900">{editingBrand ? 'Modifier la marque' : 'Nouvelle marque'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-neutral-400 hover:text-neutral-900 p-1.5 rounded-lg hover:bg-neutral-100 transition-colors">
+                <X size={16} />
               </button>
             </div>
             
-            <form onSubmit={handleSave} className="p-6 space-y-6 bg-[#fafafa]">
-              <div className="bg-white p-5 rounded-xl border border-[#eaeaea] space-y-5 shadow-sm">
+            <form onSubmit={handleSave} className="p-6 space-y-5">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Nom de la marque</label>
-                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-medium text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                  <label className="block text-[11px] font-bold text-neutral-600 uppercase mb-1.5">Nom de la marque</label>
+                  <input required type="text" className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl p-2.5 text-xs sm:text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all font-medium"
                     value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ex: Dior, Chanel..." />
                 </div>
                 
                 <div>
-                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2 flex items-center justify-between gap-2">
+                  <label className="block text-[11px] font-bold text-neutral-600 uppercase mb-1.5 flex items-center justify-between gap-2">
                     <span>Slug (Identifiant URL)</span>
-                    <span className="font-mono text-[10px] text-[#888] normal-case bg-gray-100 px-1.5 py-0.5 rounded">nouamane.ma/fr/brands/<span className="text-[#0ea5e9] font-bold">{formData.slug || 'slug'}</span></span>
+                    <span className="font-mono text-[10px] text-neutral-500 normal-case bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">nouamane.ma/fr/brands/<span className="text-neutral-900 font-bold">{formData.slug || 'slug'}</span></span>
                   </label>
-                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-mono text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                  <input required type="text" className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl p-2.5 text-xs sm:text-[13px] font-mono text-neutral-900 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all"
                     value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} placeholder="Ex: dior" />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Label affiché</label>
-                  <input required type="text" className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-2.5 text-[13px] font-medium text-[#111] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all"
+                  <label className="block text-[11px] font-bold text-neutral-600 uppercase mb-1.5">Label affiché</label>
+                  <input required type="text" className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl p-2.5 text-xs sm:text-[13px] text-neutral-900 focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all font-medium"
                     value={formData.label} onChange={e => setFormData({...formData, label: e.target.value})} placeholder="Ex: Dior" />
                 </div>
                 
                 <div>
-                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Description / Histoire</label>
-                  <textarea className="w-full border border-[#eaeaea] bg-[#fafafa] rounded-lg p-3 text-[13px] text-[#111] min-h-[100px] focus:outline-none focus:ring-2 focus:ring-[#111]/10 focus:border-[#111] transition-all resize-y"
+                  <label className="block text-[11px] font-bold text-neutral-600 uppercase mb-1.5">Description / Histoire</label>
+                  <textarea className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl p-2.5 text-xs sm:text-[13px] text-neutral-900 min-h-[90px] focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all resize-y leading-relaxed"
                     value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Histoire de la marque..." />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-[#666] uppercase tracking-wider mb-2">Logo de la marque</label>
-                  <div className="flex gap-4 items-start">
+                  <label className="block text-[11px] font-bold text-neutral-600 uppercase mb-1.5">Logo de la marque</label>
+                  <div className="flex gap-3 items-start">
                     {formData.image ? (
-                      <div className="relative w-24 h-24 border border-[#eaeaea] rounded-xl overflow-hidden bg-white shadow-sm group">
+                      <div className="relative w-20 h-20 border border-neutral-200 rounded-xl overflow-hidden bg-white shadow-2xs group">
                         <Image src={formData.image} alt="Logo" fill className="object-contain p-2" />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <button
                             type="button"
                             onClick={() => setFormData({...formData, image: ''})}
-                            className="bg-white text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors shadow-sm"
+                            className="bg-white text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors shadow-xs"
                             title="Supprimer l'image"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <label className={`w-24 h-24 border-2 border-dashed border-[#eaeaea] bg-[#fafafa] rounded-xl flex items-center justify-center text-[#999] hover:text-[#111] hover:border-[#111] hover:bg-gray-50 cursor-pointer transition-all ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      <label className={`w-20 h-20 border-2 border-dashed border-neutral-200 bg-[#f8fafc] rounded-xl flex items-center justify-center text-neutral-400 hover:text-neutral-900 hover:border-neutral-400 hover:bg-neutral-50 cursor-pointer transition-all ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         {isUploading ? (
-                          <div className="w-5 h-5 border-2 border-[#111] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-5 h-5 border-2 border-neutral-300 border-t-neutral-900 rounded-full animate-spin" />
                         ) : (
-                          <Upload size={20} />
+                          <Upload size={18} />
                         )}
                         <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                       </label>
@@ -293,9 +300,9 @@ export default function AdminBrandsPage() {
                 </div>
               </div>
               
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-[13px] font-medium text-[#666] hover:text-[#111] bg-white border border-[#eaeaea] rounded-lg hover:bg-gray-50 transition-colors shadow-sm">Annuler</button>
-                <button type="submit" className="bg-[#111] text-white px-6 py-2.5 rounded-lg text-[13px] font-bold hover:bg-gray-800 transition-colors shadow-sm">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-neutral-100">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-3.5 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors shadow-2xs">Annuler</button>
+                <button type="submit" className="bg-neutral-900 hover:bg-black text-white px-4 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-2xs">
                   {editingBrand ? 'Enregistrer les modifications' : 'Créer la marque'}
                 </button>
               </div>
