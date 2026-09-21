@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedAdmin } from '@/lib/auth/adminAuth';
+import { hasPermission } from '@/lib/auth/rbac/accessControl';
 import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
@@ -7,6 +8,15 @@ export async function GET(request: Request) {
     const admin = await getAuthenticatedAdmin(request);
     if (!admin) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    // RBAC: Only Owners and users with 'activity.view_all' can access the global activity audit log
+    const canViewAll = admin.isOwner || hasPermission(admin, 'activity.view_all');
+    if (!canViewAll) {
+      return NextResponse.json({
+        success: false,
+        error: 'Accès refusé. Le journal d\'activité global est réservé aux administrateurs et responsables.',
+      }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

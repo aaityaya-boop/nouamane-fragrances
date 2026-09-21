@@ -79,7 +79,7 @@ export default function AdminActivityPage() {
   // Detail Modal
   const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null);
 
-  // Auto-refresh interval toggle
+  const [isForbidden, setIsForbidden] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   const fetchActivities = useCallback(async (isSilent = false) => {
@@ -96,6 +96,10 @@ export default function AdminActivityPage() {
       if (searchQuery.trim()) params.set('search', searchQuery.trim());
 
       const res = await fetch(`/api/admin/activity?${params.toString()}`);
+      if (res.status === 403) {
+        setIsForbidden(true);
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -104,6 +108,8 @@ export default function AdminActivityPage() {
           setUsers(data.users || []);
           setTotalPages(data.pagination.totalPages || 1);
           setTotalLogs(data.pagination.total || 0);
+        } else {
+          setIsForbidden(true);
         }
       }
     } catch (err) {
@@ -243,6 +249,30 @@ export default function AdminActivityPage() {
     link.click();
     document.body.removeChild(link);
   };
+
+  if (isForbidden) {
+    return (
+      <div className="max-w-md mx-auto my-20 p-8 bg-white border border-slate-200/90 rounded-2xl shadow-xl text-center space-y-4 animate-in fade-in zoom-in-95">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shadow-inner">
+          <ShieldCheck size={28} />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-slate-900">Accès Réservé</h2>
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            Le journal d&apos;activité global et l&apos;audit des actions des employés sont strictement réservés à la <strong>Direction</strong> et aux <strong>Responsables de Département</strong>.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            href="/admin"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
+          >
+            <span>Retour au tableau de bord</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto pb-12">

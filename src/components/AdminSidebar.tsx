@@ -67,7 +67,7 @@ const TEAM_ITEMS: MenuItem[] = [
   { href: '/admin/tasks', label: 'Missions & Tâches', icon: <CheckSquare size={16} />, permission: 'tasks.view' },
   { href: '/admin/chat', label: 'NAY Chat', icon: <MessageSquare size={16} /> },
   { href: '/admin/notifications', label: 'Notifications', icon: <Bell size={16} /> },
-  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={16} />, permission: 'activity.view_own' },
+  { href: '/admin/activity', label: 'Journal d\'Activité', icon: <History size={16} />, permission: 'activity.view_all' },
 ];
 
 const CRM_ITEMS: MenuItem[] = [
