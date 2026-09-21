@@ -757,7 +757,7 @@ export default function AdminReviewsPage() {
               return (
                 <div 
                   key={review.id} 
-                  className="bg-white border border-[#e5e7eb] hover:border-[#0f172a]/40 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group relative"
+                  className="bg-white border border-neutral-200 hover:border-neutral-300 rounded-xl p-5 shadow-2xs transition-all flex flex-col justify-between group relative"
                 >
                   
                   {/* Top Bar: Client & Stars */}
@@ -766,26 +766,26 @@ export default function AdminReviewsPage() {
                       
                       {/* Avatar & Client Info */}
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#334155] text-white flex items-center justify-center text-xs font-bold uppercase shadow-sm">
+                        <div className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-800 border border-neutral-200 flex items-center justify-center text-xs font-semibold uppercase">
                           {review.author?.slice(0, 2) || 'CL'}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-[#0f172a]">{review.author}</span>
+                            <span className="text-xs font-bold text-neutral-900">{review.author}</span>
                             {isRecent && (
-                              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 animate-pulse">
+                              <span className="text-[9px] font-semibold uppercase px-1.5 py-0.2 rounded bg-sky-50 text-sky-700 border border-sky-200">
                                 Nouveau
                               </span>
                             )}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             {review.city && (
-                              <span className="text-[11px] font-medium text-[#64748b] flex items-center gap-1">
-                                <MapPin size={10} className="text-[#0284c7]" /> {review.city}
+                              <span className="text-[11px] font-medium text-neutral-500 flex items-center gap-1">
+                                <MapPin size={10} className="text-neutral-400" /> {review.city}
                               </span>
                             )}
-                            <span className="text-[11px] text-[#94a3b8]">·</span>
-                            <span className="text-[11px] text-[#94a3b8]">
+                            <span className="text-[11px] text-neutral-300">·</span>
+                            <span className="text-[11px] text-neutral-400">
                               {new Date(review.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
                           </div>
@@ -793,44 +793,44 @@ export default function AdminReviewsPage() {
                       </div>
 
                       {/* Star Rating Badge */}
-                      <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200/70">
+                      <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70">
                         <div className="flex">
                           {[1, 2, 3, 4, 5].map((s) => (
                             <Star
                               key={s}
-                              size={13}
-                              className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}
+                              size={12}
+                              className={s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-neutral-200'}
                             />
                           ))}
                         </div>
-                        <span className="text-xs font-black text-amber-700 ml-1">{review.rating}.0</span>
+                        <span className="text-xs font-bold text-amber-800 ml-1">{review.rating}.0</span>
                       </div>
 
                     </div>
 
                     {/* Review Title & Comment Quote */}
-                    <div className="mt-4 space-y-1.5">
+                    <div className="mt-3 space-y-1">
                       {review.title && (
-                        <h4 className="text-sm font-bold text-[#0f172a] tracking-tight">
+                        <h4 className="text-xs font-bold text-neutral-900 tracking-tight">
                           {review.title}
                         </h4>
                       )}
-                      <p className="text-xs lg:text-[13px] text-[#334155] leading-relaxed italic">
+                      <p className="text-xs text-neutral-600 leading-relaxed italic">
                         "{review.comment}"
                       </p>
                     </div>
                   </div>
 
                   {/* Bottom Bar: Associated Product & Actions */}
-                  <div className="mt-6 pt-4 border-t border-[#f1f5f9] flex items-center justify-between gap-4 flex-wrap">
+                  <div className="mt-5 pt-3 border-t border-neutral-100 flex items-center justify-between gap-4 flex-wrap">
                     
                     {/* Product Pill */}
                     <Link
                       href={`/fr/product/${review.productSlug}`}
                       target="_blank"
-                      className="flex items-center gap-2.5 p-1.5 pr-3 rounded-2xl bg-[#f8fafc] hover:bg-[#f1f5f9] border border-[#e2e8f0] transition-all max-w-[240px] group/item"
+                      className="flex items-center gap-2 p-1 pr-2.5 rounded-lg bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 transition-all max-w-[240px] group/item"
                     >
-                      <div className="relative w-8 h-8 rounded-xl overflow-hidden bg-white border border-[#e5e7eb] flex-shrink-0">
+                      <div className="relative w-7 h-7 rounded-md overflow-hidden bg-white border border-neutral-200 flex-shrink-0">
                         <Image
                           src={getProductImage(review.product)}
                           alt={review.product?.name || review.productSlug}
@@ -839,10 +839,10 @@ export default function AdminReviewsPage() {
                         />
                       </div>
                       <div className="overflow-hidden">
-                        <span className="text-[9px] uppercase font-bold text-[#94a3b8] tracking-wider block truncate">
+                        <span className="text-[9px] uppercase font-medium text-neutral-400 tracking-wider block truncate">
                           {review.product?.brandLabel || 'Maison'}
                         </span>
-                        <span className="text-xs font-bold text-[#0f172a] group-hover/item:text-[#0284c7] transition-colors truncate block">
+                        <span className="text-xs font-semibold text-neutral-900 group-hover/item:text-neutral-700 transition-colors truncate block">
                           {review.product?.name || review.productSlug}
                         </span>
                       </div>

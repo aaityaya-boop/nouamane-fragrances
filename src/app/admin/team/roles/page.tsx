@@ -57,26 +57,26 @@ export default function RolesDirectoryPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link
               href="/admin/team"
-              className="inline-flex items-center gap-1.5 text-xs text-[#888888] hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg"
+              className="inline-flex items-center gap-1.5 text-xs text-neutral-600 hover:text-neutral-900 transition-colors bg-white hover:bg-neutral-100 border border-neutral-200 px-2.5 py-1 rounded-lg"
             >
               <ArrowLeft size={13} />
               <span>Retour à l&apos;Équipe</span>
             </Link>
-            <span className="text-xs text-[#555]">•</span>
-            <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+            <span className="text-xs text-neutral-300">•</span>
+            <span className="text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
               26 Rôles Configurés
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <ShieldCheck className="text-sky-400" size={28} />
+          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight flex items-center gap-2.5">
+            <ShieldCheck className="text-neutral-900" size={24} />
             <span>Annuaire des Rôles & Permissions</span>
           </h1>
-          <p className="text-sm text-[#888888]">
+          <p className="text-xs text-neutral-500">
             Matrice des 26 rôles opérationnels NAY Parfum avec leurs attributions et permissions par défaut.
           </p>
         </div>
@@ -84,27 +84,27 @@ export default function RolesDirectoryPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/admin/team?openNew=true"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-xs transition-all shadow-lg shadow-sky-500/20"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-black text-white font-medium text-xs transition-colors shadow-xs"
           >
-            <UserPlus size={15} />
+            <UserPlus size={14} />
             <span>Ajouter un Collaborateur</span>
           </Link>
         </div>
       </div>
 
       {/* Filter Tabs & Search */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Department Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           <button
             onClick={() => setSelectedDept('ALL')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border ${
               selectedDept === 'ALL'
-                ? 'bg-white text-black shadow-md'
-                : 'bg-[#151515] text-[#888888] hover:text-white hover:bg-[#202020]'
+                ? 'bg-neutral-900 text-white border-neutral-900'
+                : 'bg-white text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border-neutral-200'
             }`}
           >
-            Tous les Départements ({ALL_ROLES.length})
+            Tous ({ALL_ROLES.length})
           </button>
           {ROLE_DEPARTMENTS.map((dept) => {
             const count = ALL_ROLES.filter((r) => r.department === dept).length;
@@ -113,14 +113,14 @@ export default function RolesDirectoryPage() {
               <button
                 key={dept}
                 onClick={() => setSelectedDept(dept)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 border ${
                   isSelected
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20'
-                    : 'bg-[#151515] text-[#888888] hover:text-white hover:bg-[#202020]'
+                    ? 'bg-neutral-900 text-white border-neutral-900'
+                    : 'bg-white text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border-neutral-200'
                 }`}
               >
                 <span>{dept}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-white/5 text-[#666]'}`}>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-neutral-600'}`}>
                   {count}
                 </span>
               </button>
@@ -130,19 +130,19 @@ export default function RolesDirectoryPage() {
 
         {/* Search Input */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#666]" size={16} />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" size={15} />
           <input
             type="text"
             placeholder="Rechercher un rôle par titre, identifiant ou description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#121212] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-[#666] focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+            className="w-full bg-white border border-neutral-200 rounded-lg pl-9 pr-4 py-2 text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 transition-colors shadow-2xs"
           />
         </div>
       </div>
 
       {/* Roles Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredRoles.map((role) => {
           const isExpanded = expandedRoleId === role.id;
           const isOwnerRole = role.isOwnerRole;
@@ -160,77 +160,72 @@ export default function RolesDirectoryPage() {
           return (
             <div
               key={role.id}
-              className={`bg-[#111111] border rounded-2xl p-5 flex flex-col justify-between transition-all relative overflow-hidden group ${
+              className={`bg-white border rounded-xl p-5 flex flex-col justify-between transition-shadow shadow-2xs ${
                 isOwnerRole
-                  ? 'border-amber-500/30 hover:border-amber-500/50 shadow-lg shadow-amber-500/5'
-                  : 'border-white/5 hover:border-white/15'
+                  ? 'border-amber-300 ring-1 ring-amber-100'
+                  : 'border-neutral-200 hover:border-neutral-300'
               }`}
             >
-              {/* Glow accent */}
-              {isOwnerRole && (
-                <div className="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-              )}
-
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 {/* Badge Header */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border ${role.badgeBg} ${role.badgeText} ${role.badgeBorder}`}>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${role.badgeBg} ${role.badgeText} ${role.badgeBorder}`}>
                     {role.department}
                   </span>
-                  <span className="text-[10px] font-mono font-semibold text-[#666] bg-white/5 px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-mono text-neutral-400">
                     {role.id}
                   </span>
                 </div>
 
                 {/* Title & Description */}
                 <div>
-                  <h3 className="text-base font-bold text-white group-hover:text-sky-400 transition-colors flex items-center gap-2">
-                    {isOwnerRole && <Sparkles size={16} className="text-amber-400 shrink-0" />}
+                  <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+                    {isOwnerRole && <Sparkles size={14} className="text-amber-600 shrink-0" />}
                     <span>{role.name}</span>
                   </h3>
-                  <p className="text-xs text-[#888888] mt-1.5 leading-relaxed">
+                  <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
                     {role.description}
                   </p>
                 </div>
 
                 {/* Stats / Permissions count */}
-                <div className="bg-[#181818] border border-white/5 rounded-xl p-3 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 text-[#aaa]">
-                    <Key size={14} className="text-sky-400" />
+                <div className="bg-neutral-50 border border-neutral-100 rounded-lg p-2.5 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 text-neutral-600">
+                    <Key size={13} className="text-neutral-400" />
                     <span>Permissions par défaut</span>
                   </div>
-                  <span className="font-bold text-white bg-white/10 px-2 py-0.5 rounded-md">
+                  <span className="font-semibold text-neutral-900 bg-white border border-neutral-200 px-2 py-0.5 rounded text-[11px]">
                     {isOwnerRole ? 'Toutes (49+)' : `${role.defaultPermissions.length} clés`}
                   </span>
                 </div>
 
                 {/* Permissions Breakdown when Expanded */}
                 {isExpanded && (
-                  <div className="pt-2 border-t border-white/5 space-y-3 animate-fadeIn">
-                    <div className="text-[11px] font-bold text-[#888888] uppercase tracking-wider">
+                  <div className="pt-3 border-t border-neutral-100 space-y-2.5">
+                    <div className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">
                       Modules & Actions autorisées :
                     </div>
                     {isOwnerRole ? (
-                      <div className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-lg flex items-center gap-2">
-                        <Sparkles size={14} className="shrink-0" />
+                      <div className="text-xs text-amber-900 bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2">
+                        <Sparkles size={13} className="shrink-0 text-amber-600" />
                         <span>Accès irrévocable à 100% des modules, logs, finances et configuration système.</span>
                       </div>
                     ) : (
-                      <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1 custom-scrollbar text-xs">
+                      <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs">
                         {Object.entries(roleModulesMap).map(([modId, perms]) => {
                           const modMeta = PERMISSION_MODULES.find((m) => m.id === modId);
                           return (
-                            <div key={modId} className="bg-[#161616] p-2 rounded-lg border border-white/5">
-                              <div className="text-[10px] font-bold text-sky-400 uppercase mb-1">
+                            <div key={modId} className="bg-neutral-50 p-2 rounded-lg border border-neutral-200/70">
+                              <div className="text-[10px] font-semibold text-neutral-800 uppercase mb-1">
                                 {modMeta?.label || modId} ({perms.length})
                               </div>
                               <div className="space-y-1">
                                 {perms.map((p) => (
-                                  <div key={p.key} className="flex items-start gap-1.5 text-[11px] text-[#ccc]">
-                                    <Check size={12} className="text-emerald-400 mt-0.5 shrink-0" />
+                                  <div key={p.key} className="flex items-start gap-1.5 text-[11px] text-neutral-700">
+                                    <Check size={12} className="text-emerald-600 mt-0.5 shrink-0" />
                                     <span>{p.label}</span>
                                     {p.isSensitive && (
-                                      <span className="text-[9px] bg-rose-500/20 text-rose-300 px-1 py-0.2 rounded shrink-0">
+                                      <span className="text-[9px] bg-rose-50 text-rose-700 border border-rose-200 px-1 py-0.2 rounded shrink-0">
                                         Sensible
                                       </span>
                                     )}
@@ -247,21 +242,21 @@ export default function RolesDirectoryPage() {
               </div>
 
               {/* Card Footer Actions */}
-              <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between gap-2">
+              <div className="pt-3 mt-4 border-t border-neutral-100 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={() => toggleExpand(role.id)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#888888] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
                 >
-                  <span>{isExpanded ? 'Masquer détails' : 'Voir les permissions'}</span>
-                  {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  <span>{isExpanded ? 'Masquer' : 'Détails permissions'}</span>
+                  {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                 </button>
 
                 <Link
                   href={`/admin/team?role=${role.id}&openNew=true`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-xs transition-colors border border-white/5"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white hover:bg-neutral-50 text-neutral-800 font-medium text-xs transition-colors border border-neutral-300"
                 >
-                  <UserPlus size={13} />
+                  <UserPlus size={12} />
                   <span>Assigner</span>
                 </Link>
               </div>

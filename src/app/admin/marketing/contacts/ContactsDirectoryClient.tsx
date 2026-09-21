@@ -143,72 +143,71 @@ export default function ContactsDirectoryClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Total Clients & Acheteurs</span>
-            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-800">
-              <Users size={16} />
+            <span className="text-[11px] font-medium text-neutral-500">Total Contacts</span>
+            <div className="p-1.5 rounded-lg bg-neutral-100 text-neutral-700">
+              <Users size={14} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-neutral-900">{totalContacts} contacts</div>
-          <p className="text-xs text-neutral-400 mt-1">Extraits des Commandes & Comptes</p>
+          <div className="mt-2 text-xl font-bold text-neutral-900">{totalContacts} contacts</div>
+          <p className="text-[11px] text-neutral-400 mt-0.5">Commandes & Comptes</p>
         </div>
 
-        <div className="bg-[#0A0A0A] text-white rounded-2xl p-5 border border-[#1e1e1e] shadow-xl">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#0ea5e9] uppercase tracking-wider">Téléphones WhatsApp</span>
-            <div className="p-2 rounded-xl bg-[#1c1c1c] text-[#0ea5e9]">
-              <Phone size={16} />
+            <span className="text-[11px] font-medium text-neutral-500">Téléphones WhatsApp</span>
+            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
+              <Phone size={14} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-white">{withPhoneCount} numéros</div>
-          <p className="text-xs text-gray-400 mt-1">Numéros marocains actifs pour relance</p>
+          <div className="mt-2 text-xl font-bold text-neutral-900">{withPhoneCount} numéros</div>
+          <p className="text-[11px] text-neutral-400 mt-0.5">Numéros actifs pour relance</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Clients Ayant Commandé</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
-              <ShoppingBag size={16} />
+            <span className="text-[11px] font-medium text-neutral-500">Clients Acheteurs</span>
+            <div className="p-1.5 rounded-lg bg-neutral-100 text-neutral-700">
+              <ShoppingBag size={14} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-emerald-700">{withOrdersCount} acheteurs</div>
-          <p className="text-xs text-neutral-400 mt-1">Commandes en ligne passées</p>
+          <div className="mt-2 text-xl font-bold text-neutral-900">{withOrdersCount} acheteurs</div>
+          <p className="text-[11px] text-neutral-400 mt-0.5">Ayant passé commande</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-neutral-200/80 shadow-sm">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Chiffre d'Affaires Total</span>
-            <div className="p-2 rounded-xl bg-sky-50 text-[#0ea5e9]">
-              <Sparkles size={16} />
+            <span className="text-[11px] font-medium text-neutral-500">Total Dépenses</span>
+            <div className="p-1.5 rounded-lg bg-neutral-100 text-neutral-700">
+              <Sparkles size={14} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-neutral-900">{formatMAD(totalSpentAll)}</div>
-          <p className="text-xs text-neutral-400 mt-1">Valeur totale des achats</p>
+          <div className="mt-2 text-xl font-bold text-neutral-900">{formatMAD(totalSpentAll)}</div>
+          <p className="text-[11px] text-neutral-400 mt-0.5">Valeur cumulée</p>
         </div>
       </div>
 
       {/* Top Search & Bulk Actions Bar */}
-      <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm p-4 space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-2xs p-3.5 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Instant Search input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={17} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={14} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher par nom, téléphone (ex: 06...), email, ville, adresse..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-200 text-xs md:text-sm font-medium focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none bg-neutral-50/50"
+              placeholder="Rechercher par nom, téléphone (ex: 06...), email, ville..."
+              className="w-full pl-9 pr-4 py-2 rounded-lg border border-neutral-200 text-xs font-medium focus:border-neutral-900 focus:outline-none bg-neutral-50 focus:bg-white transition-colors"
             />
             {searchTerm && (
               <button 
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-neutral-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-neutral-700 cursor-pointer"
               >
                 Effacer
               </button>
@@ -219,41 +218,41 @@ export default function ContactsDirectoryClient({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={copyAllPhones}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition-colors"
-              title="Copier tous les numéros WhatsApp de la base"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-neutral-50 text-neutral-700 text-xs font-medium border border-neutral-200 transition-colors shadow-2xs cursor-pointer"
+              title="Copier tous les numéros WhatsApp"
             >
-              {copiedKey === 'all_phones' ? <Check size={14} className="text-emerald-600" /> : <Phone size={14} />}
-              <span>{copiedKey === 'all_phones' ? 'Numéros Copiés !' : `Copier ${withPhoneCount} Numéros WhatsApp`}</span>
+              {copiedKey === 'all_phones' ? <Check size={13} className="text-emerald-600" /> : <Phone size={13} className="text-neutral-500" />}
+              <span>{copiedKey === 'all_phones' ? 'Copiés !' : `Copier ${withPhoneCount} Numéros`}</span>
             </button>
 
             <button
               onClick={copyAllEmails}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#0ea5e9] text-xs font-bold border border-sky-200 transition-colors"
-              title="Copier toutes les adresses email"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-neutral-50 text-neutral-700 text-xs font-medium border border-neutral-200 transition-colors shadow-2xs cursor-pointer"
+              title="Copier tous les emails"
             >
-              {copiedKey === 'all_emails' ? <Check size={14} className="text-sky-600" /> : <Mail size={14} />}
-              <span>{copiedKey === 'all_emails' ? 'Emails Copiés !' : 'Copier tous les Emails'}</span>
+              {copiedKey === 'all_emails' ? <Check size={13} className="text-emerald-600" /> : <Mail size={13} className="text-neutral-500" />}
+              <span>{copiedKey === 'all_emails' ? 'Copiés !' : 'Copier Emails'}</span>
             </button>
 
             <button
               onClick={exportCSV}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0A0A0A] hover:bg-[#1f1f1f] text-white text-xs font-bold shadow-sm transition-colors border border-white/10"
-              title="Télécharger le fichier CSV complet des contacts"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-black text-white text-xs font-medium shadow-xs transition-colors cursor-pointer"
+              title="Télécharger l'export CSV"
             >
-              <Download size={14} />
+              <Download size={13} />
               <span>Exporter CSV</span>
             </button>
           </div>
         </div>
 
         {/* Filter Badges */}
-        <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <div className="flex items-center justify-between pt-2.5 border-t border-neutral-100">
+          <div className="flex items-center gap-1 overflow-x-auto">
             <button
               onClick={() => setActiveFilter('ALL')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === 'ALL'
-                  ? 'bg-[#0A0A0A] text-white shadow-sm'
+                  ? 'bg-neutral-900 text-white shadow-2xs'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
@@ -261,9 +260,9 @@ export default function ContactsDirectoryClient({
             </button>
             <button
               onClick={() => setActiveFilter('COMMANDES_ONLY')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === 'COMMANDES_ONLY'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-neutral-900 text-white shadow-2xs'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
@@ -271,19 +270,19 @@ export default function ContactsDirectoryClient({
             </button>
             <button
               onClick={() => setActiveFilter('PHONE')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === 'PHONE'
-                  ? 'bg-[#0ea5e9] text-white shadow-sm'
+                  ? 'bg-neutral-900 text-white shadow-2xs'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
-              Avec Téléphone WhatsApp ({withPhoneCount})
+              Avec Téléphone ({withPhoneCount})
             </button>
             <button
               onClick={() => setActiveFilter('VIP')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === 'VIP'
-                  ? 'bg-neutral-950 text-[#0ea5e9] border border-sky-500/40 shadow-sm'
+                  ? 'bg-neutral-900 text-white shadow-2xs'
                   : 'text-neutral-600 hover:bg-neutral-100'
               }`}
             >
@@ -291,33 +290,33 @@ export default function ContactsDirectoryClient({
             </button>
           </div>
 
-          <span className="text-xs text-neutral-500 font-semibold">
-            {filteredContacts.length} contact(s) affiché(s)
+          <span className="text-[11px] text-neutral-400 font-medium">
+            {filteredContacts.length} contact(s)
           </span>
         </div>
       </div>
 
       {/* Full Contacts Table */}
-      <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3.5 px-6">Nom & Client</th>
-                <th className="py-3.5 px-6">Téléphone (WhatsApp Direct)</th>
-                <th className="py-3.5 px-6">Email</th>
-                <th className="py-3.5 px-6">Ville & Adresse de Livraison</th>
-                <th className="py-3.5 px-6">Commandes & Total MAD</th>
-                <th className="py-3.5 px-6 text-right">Actions Directes</th>
+              <tr className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] font-semibold uppercase tracking-wider">
+                <th className="py-3 px-4 sm:px-5">Nom & Client</th>
+                <th className="py-3 px-4">Téléphone</th>
+                <th className="py-3 px-4">Email</th>
+                <th className="py-3 px-4">Ville & Adresse</th>
+                <th className="py-3 px-4">Commandes & MAD</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 text-sm">
+            <tbody className="divide-y divide-neutral-100 text-xs">
               {filteredContacts.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-16 text-center text-neutral-400">
-                    <AlertCircle className="mx-auto text-neutral-300 mb-2" size={32} />
-                    <p className="font-bold text-neutral-800">Aucun contact ne correspond à votre recherche.</p>
-                    <p className="text-xs text-neutral-400 mt-1">Vérifiez les filtres ou le terme recherché.</p>
+                    <AlertCircle className="mx-auto text-neutral-300 mb-1.5" size={24} />
+                    <p className="font-semibold text-neutral-800">Aucun contact ne correspond à votre recherche.</p>
+                    <p className="text-xs text-neutral-400 mt-0.5">Vérifiez les filtres ou le terme recherché.</p>
                   </td>
                 </tr>
               ) : (
@@ -330,38 +329,32 @@ export default function ContactsDirectoryClient({
                       ? cleanPhone
                       : cleanPhone ? `212${cleanPhone}` : '';
 
-                  const whatsappMessage = `Salam ${contact.name} ✨, c'est l'équipe NAY Parfum ! Nous vous remercions pour votre confiance. N'hésitez pas si vous avez la moindre question concernant vos parfums ou une nouvelle commande.`;
+                  const whatsappMessage = `Salam ${contact.name} ✨, c'est l'équipe NAY Parfum ! Nous vous remercions pour votre confiance. N'hésitez pas si vous avez la moindre question.`;
                   const whatsappLink = formattedWhatsapp.length >= 9
                     ? `https://wa.me/${formattedWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`
                     : null;
 
                   return (
-                    <tr key={contact.id} className="hover:bg-neutral-50/70 transition-colors">
+                    <tr key={contact.id} className="hover:bg-neutral-50/60 transition-colors">
                       {/* Name & Avatar */}
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl font-black flex items-center justify-center text-xs shrink-0 shadow-sm border ${
-                            contact.isVip ? 'bg-[#0A0A0A] text-[#0ea5e9] border-sky-500/40' : 'bg-neutral-100 text-neutral-800 border-neutral-200'
-                          }`}>
+                      <td className="py-3 px-4 sm:px-5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-full bg-neutral-900 text-white font-medium flex items-center justify-center text-[10px] shrink-0">
                             {contact.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-neutral-900">
+                              <span className="font-semibold text-neutral-900">
                                 {contact.name}
                               </span>
                               {contact.isVip && (
-                                <span className="p-0.5 rounded bg-sky-50 text-[#0ea5e9]" title={`VIP ${contact.tier}`}>
+                                <span className="text-amber-500" title={`VIP ${contact.tier}`}>
                                   <Crown size={12} />
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-neutral-500 mt-0.5 flex items-center gap-1.5">
-                              <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                                contact.source === 'COMMANDE' ? 'bg-emerald-50 text-emerald-700' :
-                                contact.source === 'COMMANDE_ET_COMPTE' ? 'bg-sky-50 text-sky-700' :
-                                'bg-neutral-100 text-neutral-600'
-                              }`}>
+                            <div className="text-[10px] text-neutral-400 mt-0.5 flex items-center gap-1.5">
+                              <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-neutral-100 text-neutral-600 border border-neutral-200">
                                 {contact.source === 'COMMANDE' ? 'Commande' : contact.source === 'COMMANDE_ET_COMPTE' ? 'Client + Cmd' : 'Compte'}
                               </span>
                               {contact.recentOrderNumber && (
@@ -375,81 +368,81 @@ export default function ContactsDirectoryClient({
                       </td>
 
                       {/* Phone Number */}
-                      <td className="py-4 px-6">
+                      <td className="py-3 px-4">
                         {contact.phone ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <a
                               href={`tel:${contact.phone}`}
-                              className="font-mono text-xs font-bold text-neutral-900 hover:text-[#0ea5e9] bg-neutral-100 hover:bg-neutral-200/80 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1.5"
+                              className="font-mono text-xs font-medium text-neutral-900 hover:underline bg-neutral-50 px-2 py-0.5 rounded border border-neutral-200 inline-flex items-center gap-1"
                             >
-                              <Phone size={12} className="text-neutral-500" />
+                              <Phone size={11} className="text-neutral-400" />
                               <span>{contact.phone}</span>
                             </a>
                             <button
                               onClick={() => handleCopy(contact.phone!, `phone_${contact.id}`)}
                               title="Copier le numéro"
-                              className="text-gray-400 hover:text-neutral-700 transition-colors p-1"
+                              className="text-neutral-400 hover:text-neutral-700 transition-colors p-1 cursor-pointer"
                             >
                               {copiedKey === `phone_${contact.id}` ? (
-                                <Check size={13} className="text-emerald-600" />
+                                <Check size={12} className="text-emerald-600" />
                               ) : (
-                                <Copy size={13} />
+                                <Copy size={12} />
                               )}
                             </button>
                           </div>
                         ) : (
-                          <span className="text-xs text-neutral-400 italic">Non renseigné</span>
+                          <span className="text-xs text-neutral-400 italic">—</span>
                         )}
                       </td>
 
                       {/* Email */}
-                      <td className="py-4 px-6">
+                      <td className="py-3 px-4">
                         {contact.email ? (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <a
                               href={`mailto:${contact.email}`}
-                              className="text-xs text-neutral-700 hover:text-[#0ea5e9] font-medium transition-colors truncate max-w-[180px]"
+                              className="text-xs text-neutral-700 hover:text-neutral-900 font-normal transition-colors truncate max-w-[170px]"
                             >
                               {contact.email}
                             </a>
                             <button
                               onClick={() => handleCopy(contact.email, `email_${contact.id}`)}
                               title="Copier l'email"
-                              className="text-gray-400 hover:text-neutral-700 transition-colors p-1 shrink-0"
+                              className="text-neutral-400 hover:text-neutral-700 transition-colors p-1 shrink-0 cursor-pointer"
                             >
                               {copiedKey === `email_${contact.id}` ? (
-                                <Check size={13} className="text-emerald-600" />
+                                <Check size={12} className="text-emerald-600" />
                               ) : (
-                                <Copy size={13} />
+                                <Copy size={12} />
                               )}
                             </button>
                           </div>
                         ) : (
-                          <span className="text-xs text-neutral-400 italic">-</span>
+                          <span className="text-xs text-neutral-400 italic">—</span>
                         )}
                       </td>
 
                       {/* City & Address */}
-                      <td className="py-4 px-6">
-                        <div className="text-xs font-bold text-neutral-900 flex items-center gap-1">
-                          <MapPin size={12} className="text-[#0ea5e9] shrink-0" />
+                      <td className="py-3 px-4">
+                        <div className="text-xs font-semibold text-neutral-900 flex items-center gap-1">
+                          <MapPin size={11} className="text-neutral-400 shrink-0" />
                           <span>{contact.city || 'Maroc'}</span>
                         </div>
                         {contact.address && (
-                          <p className="text-[11px] text-neutral-500 truncate max-w-[200px] mt-0.5">
+                          <p className="text-[11px] text-neutral-400 truncate max-w-[190px] mt-0.5">
                             {contact.address} {contact.postalCode ? `(${contact.postalCode})` : ''}
                           </p>
                         )}
                       </td>
 
                       {/* Orders & Total Spent */}
-                      <td className="py-4 px-6">
-                        <div className="text-xs font-black text-neutral-900">
+                      <td className="py-3 px-4">
+                        <div className="text-xs font-semibold text-neutral-900">
                           {formatMAD(contact.totalSpent)}
                         </div>
-                        <div className="text-[11px] text-neutral-500 flex items-center gap-1 mt-0.5">
-                          <ShoppingBag size={11} className="text-neutral-400" />
-                          <span>{contact.ordersCount} commande(s)</span>
+                        <div className="text-[10px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                          <ShoppingBag size={10} />
+                          <span>{contact.ordersCount} cmd</span>
                           {contact.lastOrderDate && (
                             <span>• {new Date(contact.lastOrderDate).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })}</span>
                           )}
@@ -457,28 +450,28 @@ export default function ContactsDirectoryClient({
                       </td>
 
                       {/* Actions */}
-                      <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           {whatsappLink && (
                             <a
                               href={whatsappLink}
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Ouvrir WhatsApp direct"
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-sm shadow-emerald-500/20 transition-all active:scale-95"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium text-xs border border-emerald-200 transition-colors"
                             >
-                              <MessageSquare size={13} />
+                              <MessageSquare size={12} />
                               <span>WhatsApp</span>
                             </a>
                           )}
 
                           <Link
                             href={`/admin/customers/${contact.id}`}
-                            title="Voir profil complet du client"
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-semibold text-xs transition-colors"
+                            title="Voir profil client"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200 font-medium text-xs transition-colors shadow-2xs"
                           >
-                            <span>Fiche Client</span>
-                            <ExternalLink size={12} />
+                            <span>Fiche</span>
+                            <ExternalLink size={11} />
                           </Link>
                         </div>
                       </td>

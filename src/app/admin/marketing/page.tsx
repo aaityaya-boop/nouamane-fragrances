@@ -103,134 +103,132 @@ export default async function MarketingDashboardPage() {
   const liveCartsValue = liveSessions.reduce((acc, s) => acc + s.totalValue, 0);
 
   return (
-    <div className="space-y-8">
-      {/* Top Luxury Metric Ribbon */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        
+    <div className="space-y-6">
+      {/* Top Metric Ribbon */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Metric 1: Total Customer Base */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Base Clients & Téléphones</span>
-            <div className="p-2.5 rounded-xl bg-neutral-100 text-neutral-800 group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
-              <Users size={17} />
+            <span className="text-[11px] font-medium text-neutral-500">Base Clients & Contacts</span>
+            <div className="p-2 rounded-lg bg-neutral-100 text-neutral-700">
+              <Users size={15} />
             </div>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900 tracking-tight">{allCustomers.length}</span>
-            <Link href="/admin/marketing/contacts" className="text-[11px] font-bold text-[#0ea5e9] bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200 hover:bg-sky-100 transition-colors">
-              {withPhoneCount} Téléphones WhatsApp →
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{allCustomers.length}</span>
+            <Link href="/admin/marketing/contacts" className="text-[11px] font-medium text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-200 hover:bg-neutral-200 transition-colors">
+              {withPhoneCount} numéros →
             </Link>
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-neutral-100">
-            <span>Nouveaux: <b className="text-neutral-800 font-semibold">{newCustomers}</b></span>
-            <span>Fidélisés: <b className="text-neutral-800 font-semibold">{returningCustomers}</b></span>
+          <div className="mt-2.5 flex items-center justify-between text-xs text-neutral-500 pt-2.5 border-t border-neutral-100">
+            <span>Nouveaux : <b className="text-neutral-800 font-semibold">{newCustomers}</b></span>
+            <span>Fidélisés : <b className="text-neutral-800 font-semibold">{returningCustomers}</b></span>
           </div>
         </div>
 
         {/* Metric 2: Repeat Purchase Rate */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Taux de Réachat</span>
-            <div className="p-2.5 rounded-xl bg-sky-50 text-[#0ea5e9] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
-              <Repeat size={17} />
+            <span className="text-[11px] font-medium text-neutral-500">Taux de Réachat</span>
+            <div className="p-2 rounded-lg bg-sky-50 text-sky-700">
+              <Repeat size={15} />
             </div>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900 tracking-tight">{repeatRate}%</span>
-            <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{repeatRate}%</span>
+            <span className="text-[11px] font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
               Rétention
             </span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-neutral-100">
-            <span>CA Récurrent:</span>
-            <b className="text-neutral-900 font-bold">{formatMAD(repeatRevenue)}</b>
+          <div className="mt-2.5 flex items-center justify-between text-xs text-neutral-500 pt-2.5 border-t border-neutral-100">
+            <span>CA Récurrent :</span>
+            <b className="text-neutral-900 font-semibold">{formatMAD(repeatRevenue)}</b>
           </div>
         </div>
 
         {/* Metric 3: Customer Lifetime Value (LTV) */}
-        <div className="relative overflow-hidden bg-white rounded-2xl p-6 border border-neutral-200/80 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Valeur Vie Client (LTV)</span>
-            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
-              <TrendingUp size={17} />
+            <span className="text-[11px] font-medium text-neutral-500">Valeur Vie Client (LTV)</span>
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">
+              <TrendingUp size={15} />
             </div>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-neutral-900 tracking-tight">{formatMAD(cltv)}</span>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{formatMAD(cltv)}</span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 pt-3 border-t border-neutral-100">
-            <span>Panier Moyen (AOV):</span>
-            <b className="text-neutral-900 font-bold">{formatMAD(aov)}</b>
+          <div className="mt-2.5 flex items-center justify-between text-xs text-neutral-500 pt-2.5 border-t border-neutral-100">
+            <span>Panier Moyen (AOV) :</span>
+            <b className="text-neutral-900 font-semibold">{formatMAD(aov)}</b>
           </div>
         </div>
 
         {/* Metric 4: Recoverable Revenue */}
-        <div className="relative overflow-hidden bg-[#0A0A0A] rounded-2xl p-6 border border-[#1e1e1e] text-white shadow-xl group">
+        <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0ea5e9]">Paniers à Récupérer</span>
-            <div className="p-2.5 rounded-xl bg-[#1c1c1c] text-[#0ea5e9] group-hover:bg-[#0ea5e9] group-hover:text-white transition-colors duration-200">
-              <ShoppingCart size={17} />
+            <span className="text-[11px] font-medium text-neutral-500">Paniers à Récupérer</span>
+            <div className="p-2 rounded-lg bg-amber-50 text-amber-700">
+              <ShoppingCart size={15} />
             </div>
           </div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white tracking-tight">{formatMAD(recoverableMAD)}</span>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-neutral-900 tracking-tight">{formatMAD(recoverableMAD)}</span>
           </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-[#1e1e1e]">
+          <div className="mt-2.5 flex items-center justify-between text-xs text-neutral-500 pt-2.5 border-t border-neutral-100">
             <span>{abandonedCartsCount} paniers en attente</span>
-            <Link href="/admin/marketing/abandoned-carts" className="text-[#0ea5e9] hover:text-sky-300 font-bold flex items-center gap-1">
+            <Link href="/admin/marketing/abandoned-carts" className="text-neutral-900 hover:underline font-medium flex items-center gap-1">
               Relancer <ArrowRight size={12} />
             </Link>
           </div>
         </div>
-
       </div>
 
       {/* Direct Contact Directory Quick Access Banner */}
-      <div className="bg-gradient-to-r from-[#0A0A0A] via-[#141414] to-[#0A0A0A] rounded-2xl p-5 border border-[#1e1e1e] text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#1c1c1c] text-[#0ea5e9] flex items-center justify-center border border-white/10 shrink-0 shadow-sm">
-            <PhoneCall size={20} />
+      <div className="bg-white rounded-xl p-4 border border-neutral-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-neutral-100 text-neutral-800 flex items-center justify-center shrink-0">
+            <PhoneCall size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm text-white">Répertoire Centralisé des Téléphones & Emails</h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#0ea5e9]/20 text-[#0ea5e9] border border-sky-500/30">
-                {withPhoneCount} NUMÉROS PRÊTS
+              <h3 className="font-semibold text-sm text-neutral-900">Répertoire des Téléphones & Emails</h3>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-700 border border-neutral-200">
+                {withPhoneCount} numéros
               </span>
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Accédez à la liste complète de tous vos clients avec copie 1-clic des numéros WhatsApp et export CSV.
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Accédez à la liste complète de vos clients avec copie rapide des numéros et export CSV.
             </p>
           </div>
         </div>
 
         <Link
           href="/admin/marketing/contacts"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold text-xs shadow-md shadow-sky-500/20 transition-all shrink-0 active:scale-95"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-black text-white font-medium text-xs transition-colors shadow-xs shrink-0"
         >
-          <span>Ouvrir le Répertoire Contacts</span>
+          <span>Ouvrir le Répertoire</span>
           <ArrowRight size={13} />
         </Link>
       </div>
 
-      {/* Audience Segmentation & 1-Click Launch Grid */}
-      <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-neutral-50 to-white">
+      {/* Audience Segmentation Grid */}
+      <div className="bg-white rounded-xl border border-neutral-200 shadow-2xs overflow-hidden">
+        <div className="p-4 border-b border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#0ea5e9] uppercase tracking-wider mb-1">
-              <Sparkles size={14} /> Segmentation de Luxe & Ciblage Direct
-            </div>
-            <h2 className="text-lg font-bold text-neutral-900">Segments Clients & Actions 1-Clic</h2>
+            <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider block">
+              Segmentation & Ciblage
+            </span>
+            <h2 className="text-base font-bold text-neutral-900">Segments Clients & Actions Rapides</h2>
           </div>
           <Link
             href="/admin/marketing/campaigns/new"
-            className="inline-flex items-center gap-2 text-xs font-bold text-white bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-sky-500/20 active:scale-95"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-neutral-900 hover:bg-black px-3.5 py-2 rounded-lg transition-colors shadow-xs"
           >
-            <Send size={14} /> Créer Diffusion Personnalisée
+            <Send size={13} /> Créer une Diffusion
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-neutral-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-neutral-200">
           
           {/* Segment 1: VIP */}
           <div className="p-6 hover:bg-neutral-50/50 transition-colors flex flex-col justify-between">
@@ -553,106 +551,103 @@ export default async function MarketingDashboardPage() {
         </div>
 
         {/* Right (1 Col): Automations Engine Cockpit */}
-        <div className="space-y-6">
-          
+        <div className="space-y-5">
           {/* Automated Sequences Card */}
-          <div className="bg-[#0A0A0A] text-white rounded-2xl p-6 border border-[#1e1e1e] shadow-2xl space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-[#1e1e1e]">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[#141414] text-[#0ea5e9] border border-white/10">
-                  <Zap size={18} />
+          <div className="bg-white rounded-xl p-5 border border-neutral-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-neutral-100 text-neutral-800">
+                  <Zap size={15} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-base">Moteur d'Automatisations</h3>
-                  <p className="text-gray-400 text-xs">Séquences programmées NAY Parfum</p>
+                  <h3 className="font-semibold text-neutral-900 text-sm">Automatisations</h3>
+                  <p className="text-neutral-500 text-[11px]">Séquences programmées NAY</p>
                 </div>
               </div>
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Actif
               </span>
             </div>
 
-            {/* Sequence 1: Abandoned Cart H+1 */}
-            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
+            {/* Sequence 1 */}
+            <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-200/70 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Clock size={14} className="text-[#0ea5e9]" /> Relance Panier H+1
+                <span className="font-medium text-xs text-neutral-900 flex items-center gap-1.5">
+                  <Clock size={12} className="text-neutral-500" /> Relance Panier H+1
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
-                  ARMÉ
+                <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                  Prêt
                 </span>
               </div>
-              <p className="text-xs text-gray-400">
-                Notification de rappel douce avec rappel du testeur ou flacon choisi.
+              <p className="text-[11px] text-neutral-500">
+                Rappel automatique avec détail du panier sélectionné.
               </p>
             </div>
 
-            {/* Sequence 2: Welcome VIP Onboarding */}
-            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
+            {/* Sequence 2 */}
+            <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-200/70 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Crown size={14} className="text-[#0ea5e9]" /> Bienvenue Club Privilège
+                <span className="font-medium text-xs text-neutral-900 flex items-center gap-1.5">
+                  <Crown size={12} className="text-neutral-500" /> Bienvenue VIP
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
-                  ARMÉ
+                <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                  Prêt
                 </span>
               </div>
-              <p className="text-xs text-gray-400">
-                Message VIP envoyé dès la 2ème commande avec avantages exclusifs.
+              <p className="text-[11px] text-neutral-500">
+                Message envoyé dès la 2ème commande avec avantages.
               </p>
             </div>
 
-            {/* Sequence 3: Post-Purchase Guide */}
-            <div className="bg-[#141414] rounded-xl p-4 border border-[#222222] space-y-2">
+            {/* Sequence 3 */}
+            <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-200/70 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-white flex items-center gap-2">
-                  <Sparkles size={14} className="text-[#0ea5e9]" /> Conseils d'Application J+3
+                <span className="font-medium text-xs text-neutral-900 flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-neutral-500" /> Conseils d'Application J+3
                 </span>
-                <span className="text-[10px] font-bold text-gray-400 bg-black px-2 py-0.5 rounded border border-[#2a2a2a]">
-                  AUTO
+                <span className="text-[10px] font-medium text-neutral-600 bg-neutral-100 px-1.5 py-0.2 rounded border border-neutral-200">
+                  Auto
                 </span>
               </div>
-              <p className="text-xs text-gray-400">
-                Guide olfactif pour optimiser la tenue de la fragrance sur la peau.
+              <p className="text-[11px] text-neutral-500">
+                Conseils olfactifs pour optimiser la tenue sur la peau.
               </p>
             </div>
 
             <Link
               href="/admin/marketing/settings"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#161616] hover:bg-[#202020] text-gray-200 hover:text-white font-semibold text-xs transition-colors border border-[#2a2a2a]"
+              className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium text-xs transition-colors"
             >
-              <span>Configurer les Règles & Templates</span>
-              <ArrowRight size={13} />
+              <span>Configurer les Règles</span>
+              <ArrowRight size={12} />
             </Link>
           </div>
 
           {/* WhatsApp Direct Recovery Banner */}
-          <div className="bg-gradient-to-br from-[#0c2438] via-[#0A0A0A] to-[#0A0A0A] border border-sky-500/20 rounded-2xl p-6 text-white space-y-4 shadow-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-900/30">
-                <MessageSquare size={20} />
+          <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold border border-emerald-200">
+                <MessageSquare size={16} />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Canal WhatsApp Direct</h4>
-                <p className="text-xs text-[#0ea5e9] font-medium">Taux d'ouverture estimé à 98% au Maroc</p>
+                <h4 className="font-semibold text-xs text-neutral-900">Relances WhatsApp</h4>
+                <p className="text-[11px] text-neutral-500">Taux d'ouverture élevé au Maroc</p>
               </div>
             </div>
-            <p className="text-xs text-gray-300 leading-relaxed">
-              Vos messages sont prêts avec personnalisation du prénom, montant en MAD et lien direct vers le panier.
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              Messages pré-remplis avec prénom client, total en MAD et lien direct vers le panier.
             </p>
-            <div className="pt-2">
+            <div className="pt-1">
               <Link
                 href="/admin/marketing/abandoned-carts"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-md transition-all active:scale-95"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-black text-white font-medium text-xs transition-colors shadow-xs"
               >
-                <span>Accéder aux Relances WhatsApp</span>
-                <ArrowRight size={14} />
+                <span>Accéder aux Relances</span>
+                <ArrowRight size={12} />
               </Link>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   );

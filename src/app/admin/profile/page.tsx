@@ -352,116 +352,113 @@ export default function AdminProfilePage() {
   const passStrength = calculatePasswordStrength(newPassword);
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#0ea5e9]/10 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xl sm:text-2xl font-bold shadow-lg shadow-sky-500/30 ring-4 ring-white/10 shrink-0 overflow-hidden">
-              {avatar || currentUser?.avatar ? (
-                <img src={avatar || currentUser?.avatar || ''} alt={name || 'Avatar'} className="w-full h-full object-cover rounded-2xl" />
-              ) : (
-                <span>{getInitials(name || currentUser?.name)}</span>
-              )}
-            </div>
-            
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-widest bg-[#0ea5e9]/20 text-[#38bdf8] border border-[#0ea5e9]/30">
-                  Propriétaire NAY
-                </span>
-                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Compte Personnel Actif
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                {currentUser?.name || 'Mon Compte Propriétaire'}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-                {currentUser?.email}
-              </p>
-            </div>
+    <div className="space-y-5 max-w-5xl mx-auto pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center text-lg font-bold shrink-0 overflow-hidden shadow-2xs">
+            {avatar || currentUser?.avatar ? (
+              <img src={avatar || currentUser?.avatar || ''} alt={name || 'Avatar'} className="w-full h-full object-cover" />
+            ) : (
+              <span>{getInitials(name || currentUser?.name)}</span>
+            )}
           </div>
-
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2.5 rounded-2xl backdrop-blur-sm text-xs text-slate-300">
-            <Clock size={14} className="text-[#38bdf8]" />
-            <span>Dernière visite : <strong>{formatDate(currentUser?.lastActivityAt || currentUser?.lastLoginAt)}</strong></span>
+          
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                {currentUser?.role === 'OWNER' ? 'Propriétaire' : currentUser?.role || 'Compte'}
+              </span>
+              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Actif
+              </span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+              {currentUser?.name || 'Mon Compte'}
+            </h1>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              {currentUser?.email}
+            </p>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-8 pt-6 border-t border-white/10 overflow-x-auto custom-scrollbar">
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'profile'
-                ? 'bg-[#0ea5e9] text-white shadow-lg shadow-sky-500/30'
-                : 'text-slate-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <User size={15} />
-            <span>Informations Personnelles & Photo</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'security'
-                ? 'bg-[#0ea5e9] text-white shadow-lg shadow-sky-500/30'
-                : 'text-slate-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <ShieldCheck size={15} />
-            <span>Sécurité & Mon Mot de Passe</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('activity')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'activity'
-                ? 'bg-[#0ea5e9] text-white shadow-lg shadow-sky-500/30'
-                : 'text-slate-300 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <History size={15} />
-            <span>Mon Journal d'Activité</span>
-          </button>
+        <div className="flex items-center gap-2 bg-neutral-50 border border-neutral-200 px-3 py-1.5 rounded-lg text-xs text-neutral-600">
+          <Clock size={13} className="text-neutral-400" />
+          <span>Dernière connexion : <strong>{formatDate(currentUser?.lastActivityAt || currentUser?.lastLoginAt)}</strong></span>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-1.5 p-1 bg-neutral-100 rounded-xl max-w-fit border border-neutral-200/70">
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            activeTab === 'profile'
+              ? 'bg-white text-neutral-900 shadow-2xs font-semibold'
+              : 'text-neutral-600 hover:text-neutral-900'
+          }`}
+        >
+          <User size={14} />
+          <span>Informations & Photo</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            activeTab === 'security'
+              ? 'bg-white text-neutral-900 shadow-2xs font-semibold'
+              : 'text-neutral-600 hover:text-neutral-900'
+          }`}
+        >
+          <ShieldCheck size={14} />
+          <span>Sécurité & Mot de Passe</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('activity')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            activeTab === 'activity'
+              ? 'bg-white text-neutral-900 shadow-2xs font-semibold'
+              : 'text-neutral-600 hover:text-neutral-900'
+          }`}
+        >
+          <History size={14} />
+          <span>Mon Activité</span>
+        </button>
       </div>
 
       {/* TAB 1: Mon Profil & Photo */}
       {activeTab === 'profile' && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm animate-in fade-in duration-200">
-          <h2 className="text-lg font-bold text-slate-900 mb-1">Détails de mon compte personnel</h2>
-          <p className="text-xs text-slate-500 mb-6">
-            Ces informations vous identifient de façon unique et personnelle sur le panneau d'administration.
-          </p>
+        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-6">
+          <div>
+            <h2 className="text-base font-bold text-neutral-900">Détails de mon compte</h2>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Ces informations vous identifient sur le panneau d'administration.
+            </p>
+          </div>
 
           {profileMessage && (
-            <div className={`p-4 mb-6 rounded-2xl flex items-center gap-3 text-xs font-medium ${
+            <div className={`p-3 rounded-lg flex items-center gap-2.5 text-xs font-medium ${
               profileMessage.type === 'success' 
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                : 'bg-red-50 text-red-700 border border-red-200'
+                : 'bg-rose-50 text-rose-700 border border-rose-200'
             }`}>
-              {profileMessage.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+              {profileMessage.type === 'success' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               <span>{profileMessage.text}</span>
             </div>
           )}
 
-          <form onSubmit={handleSaveProfile} className="space-y-7 max-w-3xl">
-            
+          <form onSubmit={handleSaveProfile} className="space-y-5 max-w-3xl">
             {/* NAME & EMAIL FIELDS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                   Nom & Prénom
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <User size={16} />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
+                    <User size={14} />
                   </div>
                   <input
                     type="text"
@@ -469,18 +466,18 @@ export default function AdminProfilePage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Nom complet"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                    className="w-full pl-9 pr-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-                  Email de connexion personnel
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                  Email de connexion
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Mail size={16} />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
+                    <Mail size={14} />
                   </div>
                   <input
                     type="email"
@@ -488,21 +485,21 @@ export default function AdminProfilePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nom@nayparfum.ma"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                    className="w-full pl-9 pr-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
                   />
                 </div>
               </div>
             </div>
 
             {/* PHOTO UPLOAD & AVATAR SECTION */}
-            <div className="p-5 sm:p-6 bg-slate-50/80 rounded-3xl border border-slate-200/80 space-y-5">
+            <div className="p-4 bg-neutral-50 rounded-xl border border-neutral-200 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-900">
-                    Photo de profil personnelle
+                  <label className="block text-xs font-medium text-neutral-900">
+                    Photo de profil
                   </label>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Téléversez une photo depuis votre ordinateur ou téléphone (PNG, JPG, WebP jusqu'à 10MB).
+                  <p className="text-[11px] text-neutral-500 mt-0.5">
+                    Téléversez une photo (PNG, JPG, WebP jusqu'à 10MB).
                   </p>
                 </div>
 
@@ -510,10 +507,10 @@ export default function AdminProfilePage() {
                   <button
                     type="button"
                     onClick={() => setAvatar('')}
-                    className="px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg border border-red-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+                    className="px-2.5 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 rounded-lg border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
                   >
-                    <Trash2 size={13} />
-                    <span>Retirer la photo</span>
+                    <Trash2 size={12} />
+                    <span>Retirer</span>
                   </button>
                 )}
               </div>
@@ -528,25 +525,25 @@ export default function AdminProfilePage() {
               />
 
               {uploadError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-xs text-red-700">
-                  <AlertCircle size={15} className="shrink-0" />
+                <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg flex items-center gap-2 text-xs text-rose-700">
+                  <AlertCircle size={14} className="shrink-0" />
                   <span>{uploadError}</span>
                 </div>
               )}
 
               {/* Upload Dropzone & Live Preview */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-center">
                 {/* Preview Circle */}
-                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-slate-200 shadow-sm text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-2xl font-bold shadow-md shadow-sky-500/20 overflow-hidden ring-4 ring-slate-100 mb-2">
+                <div className="flex flex-col items-center justify-center p-3.5 bg-white rounded-xl border border-neutral-200 shadow-2xs text-center">
+                  <div className="w-16 h-16 rounded-xl bg-neutral-900 text-white flex items-center justify-center text-xl font-bold shadow-xs overflow-hidden mb-1.5">
                     {avatar ? (
                       <img src={avatar} alt={name} className="w-full h-full object-cover" />
                     ) : (
                       <span>{getInitials(name)}</span>
                     )}
                   </div>
-                  <span className="text-[11px] font-semibold text-slate-600 truncate max-w-full">
-                    {avatar ? 'Photo actuelle' : 'Initiales par défaut'}
+                  <span className="text-[11px] font-medium text-neutral-500 truncate max-w-full">
+                    {avatar ? 'Photo actuelle' : 'Initiales'}
                   </span>
                 </div>
 
@@ -556,26 +553,26 @@ export default function AdminProfilePage() {
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`sm:col-span-2 p-6 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center group ${
+                  className={`sm:col-span-2 p-5 rounded-xl border-2 border-dashed transition-colors cursor-pointer flex flex-col items-center justify-center text-center group ${
                     isDragging
-                      ? 'border-[#0ea5e9] bg-[#0ea5e9]/10'
-                      : 'border-slate-300 hover:border-[#0ea5e9] bg-white hover:bg-[#0ea5e9]/5'
+                      ? 'border-neutral-900 bg-neutral-100'
+                      : 'border-neutral-300 hover:border-neutral-400 bg-white hover:bg-neutral-50'
                   }`}
                 >
                   {isUploading ? (
-                    <div className="flex flex-col items-center py-2 text-slate-600 gap-2">
-                      <Loader2 size={24} className="animate-spin text-[#0ea5e9]" />
-                      <span className="text-xs font-semibold">Téléversement de l'image en cours...</span>
+                    <div className="flex flex-col items-center py-2 text-neutral-600 gap-2">
+                      <Loader2 size={20} className="animate-spin text-neutral-900" />
+                      <span className="text-xs font-medium">Téléversement...</span>
                     </div>
                   ) : (
                     <>
-                      <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/10 text-[#0ea5e9] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                        <UploadCloud size={20} />
+                      <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-700 flex items-center justify-center mb-1.5">
+                        <UploadCloud size={16} />
                       </div>
-                      <div className="text-xs font-bold text-slate-800 group-hover:text-[#0ea5e9] transition-colors">
-                        Cliquez ici pour choisir une photo ou glissez-déposez
+                      <div className="text-xs font-semibold text-neutral-800">
+                        Cliquez ou glissez une photo ici
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-neutral-400 mt-0.5">
                         PNG, JPG, WebP jusqu'à 10 Mo
                       </p>
                     </>
@@ -583,18 +580,18 @@ export default function AdminProfilePage() {
                 </div>
               </div>
 
-              {/* Presets Avatars (Optional choice) */}
-              <div className="pt-3 border-t border-slate-200/60">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              {/* Presets Avatars */}
+              <div className="pt-2.5 border-t border-neutral-200/70">
+                <span className="block text-[11px] font-medium text-neutral-500 mb-2">
                   Ou choisir parmi nos modèles Haute Parfumerie :
                 </span>
                 
-                <div className="flex items-center gap-2.5 overflow-x-auto py-1 custom-scrollbar">
+                <div className="flex items-center gap-2 overflow-x-auto py-0.5">
                   <button
                     type="button"
                     onClick={() => setAvatar('')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                      !avatar ? 'border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]' : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer ${
+                      !avatar ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-200 text-neutral-600 bg-white hover:bg-neutral-50'
                     }`}
                   >
                     <span>Initiales ({getInitials(name)})</span>
@@ -605,12 +602,12 @@ export default function AdminProfilePage() {
                       key={p.id}
                       type="button"
                       onClick={() => setAvatar(p.url)}
-                      className={`p-1 rounded-xl border flex items-center gap-2 text-xs transition-all shrink-0 bg-white cursor-pointer ${
-                        avatar === p.url ? 'border-[#0ea5e9] ring-2 ring-[#0ea5e9]/30' : 'border-slate-200 hover:border-slate-400'
+                      className={`p-1 rounded-lg border flex items-center gap-1.5 text-xs transition-colors shrink-0 bg-white cursor-pointer ${
+                        avatar === p.url ? 'border-neutral-900 ring-1 ring-neutral-900' : 'border-neutral-200 hover:border-neutral-400'
                       }`}
                     >
-                      <img src={p.url} alt={p.label} className="w-6 h-6 rounded-lg object-cover" />
-                      <span className="pr-2 font-medium text-slate-700 text-[11px]">{p.label}</span>
+                      <img src={p.url} alt={p.label} className="w-5 h-5 rounded object-cover" />
+                      <span className="pr-1.5 text-neutral-700 text-[11px]">{p.label}</span>
                     </button>
                   ))}
                 </div>
@@ -618,21 +615,21 @@ export default function AdminProfilePage() {
             </div>
 
             {/* SAVE BUTTON */}
-            <div className="pt-4 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-neutral-100 flex justify-end">
               <button
                 type="submit"
                 disabled={isSavingProfile || isUploading}
-                className="px-6 py-3 bg-[#0ea5e9] hover:bg-sky-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-sky-500/20 flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {isSavingProfile ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     <span>Enregistrement...</span>
                   </>
                 ) : (
                   <>
-                    <Save size={15} />
-                    <span>Enregistrer mes modifications</span>
+                    <Save size={14} />
+                    <span>Enregistrer</span>
                   </>
                 )}
               </button>
@@ -643,29 +640,31 @@ export default function AdminProfilePage() {
 
       {/* TAB 2: Sécurité & Mot de Passe */}
       {activeTab === 'security' && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm animate-in fade-in duration-200 max-w-2xl">
-          <h2 className="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
-            <Lock size={18} className="text-[#0ea5e9]" />
-            <span>Modifier mon mot de passe personnel</span>
-          </h2>
-          <p className="text-xs text-slate-500 mb-6">
-            Votre mot de passe est strictement personnel. Personne d'autre n'y a accès.
-          </p>
+        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs max-w-xl space-y-5">
+          <div>
+            <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+              <Lock size={16} className="text-neutral-700" />
+              <span>Modifier mon mot de passe</span>
+            </h2>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Votre mot de passe est strictement personnel.
+            </p>
+          </div>
 
           {passwordMessage && (
-            <div className={`p-4 mb-6 rounded-2xl flex items-center gap-3 text-xs font-medium ${
+            <div className={`p-3 rounded-lg flex items-center gap-2.5 text-xs font-medium ${
               passwordMessage.type === 'success' 
                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                : 'bg-red-50 text-red-700 border border-red-200'
+                : 'bg-rose-50 text-rose-700 border border-rose-200'
             }`}>
-              {passwordMessage.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+              {passwordMessage.type === 'success' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               <span>{passwordMessage.text}</span>
             </div>
           )}
 
-          <form onSubmit={handleSavePassword} className="space-y-5">
+          <form onSubmit={handleSavePassword} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label className="block text-xs font-medium text-neutral-700 mb-1">
                 Mot de passe actuel
               </label>
               <div className="relative">
@@ -675,21 +674,21 @@ export default function AdminProfilePage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                  className="w-full pl-3.5 pr-9 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-700 cursor-pointer"
                 >
-                  {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showCurrentPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Nouveau mot de passe personnel
+              <label className="block text-xs font-medium text-neutral-700 mb-1">
+                Nouveau mot de passe
               </label>
               <div className="relative">
                 <input
@@ -698,38 +697,38 @@ export default function AdminProfilePage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                  className="w-full pl-3.5 pr-9 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-700 cursor-pointer"
                 >
-                  {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
 
               {newPassword && (
-                <div className="mt-2.5">
+                <div className="mt-2">
                   <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="text-slate-500">Solidité :</span>
+                    <span className="text-neutral-500">Robustesse :</span>
                     <span className={`font-semibold ${
-                      passStrength <= 2 ? 'text-amber-600' : passStrength <= 4 ? 'text-blue-600' : 'text-emerald-600'
+                      passStrength <= 2 ? 'text-amber-600' : passStrength <= 4 ? 'text-sky-600' : 'text-emerald-600'
                     }`}>
                       {passStrength <= 2 ? 'Moyen' : passStrength <= 4 ? 'Bon' : 'Excellent'}
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex gap-1">
-                    <div className={`h-full flex-1 rounded-full ${passStrength >= 1 ? (passStrength <= 2 ? 'bg-amber-500' : 'bg-[#0ea5e9]') : 'bg-slate-200'}`} />
-                    <div className={`h-full flex-1 rounded-full ${passStrength >= 3 ? (passStrength <= 4 ? 'bg-blue-500' : 'bg-emerald-500') : 'bg-slate-200'}`} />
-                    <div className={`h-full flex-1 rounded-full ${passStrength >= 5 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                  <div className="w-full h-1.5 bg-neutral-100 rounded-full overflow-hidden flex gap-1">
+                    <div className={`h-full flex-1 rounded-full ${passStrength >= 1 ? (passStrength <= 2 ? 'bg-amber-500' : 'bg-neutral-800') : 'bg-neutral-200'}`} />
+                    <div className={`h-full flex-1 rounded-full ${passStrength >= 3 ? (passStrength <= 4 ? 'bg-neutral-700' : 'bg-emerald-500') : 'bg-neutral-200'}`} />
+                    <div className={`h-full flex-1 rounded-full ${passStrength >= 5 ? 'bg-emerald-500' : 'bg-neutral-200'}`} />
                   </div>
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label className="block text-xs font-medium text-neutral-700 mb-1">
                 Confirmer le nouveau mot de passe
               </label>
               <input
@@ -738,25 +737,25 @@ export default function AdminProfilePage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-all"
+                className="w-full px-3.5 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
               />
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-neutral-100 flex justify-end">
               <button
                 type="submit"
                 disabled={isSavingPassword}
-                className="px-6 py-3 bg-[#0ea5e9] hover:bg-sky-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-sky-500/20 flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-medium transition-colors shadow-xs flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {isSavingPassword ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     <span>Modification...</span>
                   </>
                 ) : (
                   <>
-                    <KeyRound size={15} />
-                    <span>Changer mon mot de passe</span>
+                    <KeyRound size={14} />
+                    <span>Changer mot de passe</span>
                   </>
                 )}
               </button>
@@ -767,60 +766,60 @@ export default function AdminProfilePage() {
 
       {/* TAB 3: Mon Activité */}
       {activeTab === 'activity' && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm animate-in fade-in duration-200 space-y-6">
+        <div className="bg-white rounded-xl border border-neutral-200 p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Mon Historique d'Activité Personnel</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Historique des actions que vous avez personnellement enregistrées sur le système.
+              <h2 className="text-base font-bold text-neutral-900">Mon Journal d'Activité Personnel</h2>
+              <p className="text-xs text-neutral-500 mt-0.5">
+                Historique des actions enregistrées sous votre compte.
               </p>
             </div>
 
             <button
               onClick={() => loadActivityLogs(page)}
-              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors self-start sm:self-auto cursor-pointer"
+              className="px-3 py-1.5 bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors self-start sm:self-auto cursor-pointer shadow-2xs"
             >
-              <RefreshCw size={13} className={isLoadingLogs ? 'animate-spin' : ''} />
+              <RefreshCw size={12} className={isLoadingLogs ? 'animate-spin' : ''} />
               <span>Actualiser</span>
             </button>
           </div>
 
           {isLoadingLogs ? (
-            <div className="py-16 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-              <div className="w-6 h-6 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs">Chargement de votre journal d'activité...</span>
+            <div className="py-16 text-center text-neutral-400 flex flex-col items-center justify-center gap-2">
+              <div className="w-6 h-6 border-2 border-neutral-900 border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-neutral-500">Chargement de votre journal...</span>
             </div>
           ) : logs.length === 0 ? (
-            <div className="py-16 text-center text-slate-400 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-              <History size={32} className="mx-auto text-slate-300 mb-2" />
-              <p className="text-sm font-semibold text-slate-600">Aucune activité récente pour votre compte</p>
+            <div className="py-14 text-center text-neutral-400 bg-neutral-50 rounded-xl border border-neutral-200">
+              <History size={24} className="mx-auto text-neutral-300 mb-1.5" />
+              <p className="text-xs font-medium text-neutral-600">Aucune activité récente pour votre compte</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
+            <div className="divide-y divide-neutral-100 border border-neutral-200 rounded-xl overflow-hidden">
               {logs.map((log) => (
-                <div key={log.id} className="p-4 hover:bg-slate-50/80 transition-colors flex items-start gap-4">
+                <div key={log.id} className="p-3.5 hover:bg-neutral-50/60 transition-colors flex items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0ea5e9]/10 text-[#0ea5e9]">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
                         {log.action}
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-100 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider bg-neutral-50 px-1.5 py-0.5 rounded border border-neutral-200/50">
                         {log.entityType}
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-700 leading-relaxed break-words">
+                    <p className="text-xs text-neutral-800 leading-relaxed break-words">
                       {log.description}
                     </p>
 
-                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-3 mt-1 text-[11px] text-neutral-400">
                       <span className="flex items-center gap-1">
-                        <Clock size={12} />
+                        <Clock size={11} />
                         {getRelativeTime(log.createdAt)} ({formatDate(log.createdAt)})
                       </span>
                       {log.ipAddress && (
                         <span className="flex items-center gap-1">
-                          <Globe size={12} />
+                          <Globe size={11} />
                           IP: {log.ipAddress}
                         </span>
                       )}
@@ -832,18 +831,18 @@ export default function AdminProfilePage() {
           )}
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs">
-              <span className="text-slate-500">
+            <div className="flex items-center justify-between pt-3 border-t border-neutral-200 text-xs">
+              <span className="text-neutral-500">
                 Page <strong>{page}</strong> sur <strong>{totalPages}</strong> ({totalLogs} actions)
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   disabled={page <= 1}
                   onClick={() => {
                     setPage(page - 1);
                     loadActivityLogs(page - 1);
                   }}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 rounded-lg font-medium text-slate-700 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 bg-white hover:bg-neutral-50 border border-neutral-200 disabled:opacity-40 rounded-lg text-xs font-medium text-neutral-700 transition-colors cursor-pointer"
                 >
                   Précédent
                 </button>
@@ -853,7 +852,7 @@ export default function AdminProfilePage() {
                     setPage(page + 1);
                     loadActivityLogs(page + 1);
                   }}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 rounded-lg font-medium text-slate-700 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 bg-white hover:bg-neutral-50 border border-neutral-200 disabled:opacity-40 rounded-lg text-xs font-medium text-neutral-700 transition-colors cursor-pointer"
                 >
                   Suivant
                 </button>

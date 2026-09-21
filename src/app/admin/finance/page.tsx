@@ -113,21 +113,14 @@ export default async function FinancePage() {
   });
 
   return (
-    <div className="max-w-[1600px] mx-auto p-4 md:p-8 lg:p-10 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-              Finance & Rentabilité NAY
-            </span>
-            <span className="text-xs text-[#555]">•</span>
-            <span className="text-xs text-[#888888]">Calcul en Dirhams (MAD)</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Pilotage Financier & Rentabilité Réelle
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            Finance & CA Net
           </h1>
-          <p className="text-sm text-[#888888] mt-1">
-            Suivi du chiffre d&apos;affaires brut, déduction automatique des charges (Ads, Hébergement, Salaires) et calcul du CA Net réel.
+          <p className="text-[13px] text-neutral-500 mt-1">
+            Suivi du chiffre d&apos;affaires brut, déduction des charges opérationnelles (Ads, Hébergement, Salaires) et calcul du CA Net réel en MAD.
           </p>
         </div>
       </div>

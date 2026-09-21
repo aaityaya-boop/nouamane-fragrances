@@ -107,33 +107,33 @@ export default function CampaignBuilderClient({
   const previewMessage = message.replace('{{first_name}}', 'Ayoub').replace('{{last_order_date}}', '12 Février');
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-6 max-w-6xl">
       {/* Top Breadcrumb & Title */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3.5">
         <Link 
           href="/admin/marketing/campaigns" 
-          className="text-neutral-600 hover:text-neutral-900 bg-white hover:bg-neutral-100 p-2.5 rounded-xl border border-neutral-200 transition-colors shadow-sm"
+          className="text-neutral-600 hover:text-neutral-900 bg-white hover:bg-neutral-50 p-2 rounded-lg border border-neutral-200 transition-colors shadow-2xs"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={16} />
         </Link>
         <div>
-          <h2 className="text-xl md:text-2xl font-black text-neutral-900 tracking-tight flex items-center gap-2">
-            <Sparkles size={22} className="text-[#0ea5e9]" />
+          <h2 className="text-xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+            <Sparkles size={18} className="text-neutral-700" />
             Créateur de Campagne & Studio de Diffusion
           </h2>
-          <p className="text-xs md:text-sm text-neutral-500 mt-0.5">
-            Sélectionnez un modèle prédéfini ou composez votre message haute conversion pour vos clients marocains.
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Sélectionnez un modèle prédéfini ou composez votre message personnalisé.
           </p>
         </div>
       </div>
 
-      {/* Luxury Template Presets Picker */}
-      <div className="space-y-3">
+      {/* Template Presets Picker */}
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-bold uppercase tracking-wider text-neutral-700 flex items-center gap-1.5">
-            <Sparkles size={14} className="text-[#0ea5e9]" /> Modèles Haute Performance NAY Parfum (1-Clic)
+          <label className="text-xs font-semibold text-neutral-800 flex items-center gap-1.5">
+            <Sparkles size={13} className="text-neutral-500" /> Modèles Prédéfinis (1-Clic)
           </label>
-          <span className="text-xs text-neutral-400">Cliquez pour pré-remplir instantanément</span>
+          <span className="text-[11px] text-neutral-400">Cliquez pour pré-remplir</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -142,22 +142,22 @@ export default function CampaignBuilderClient({
               key={tpl.id}
               type="button"
               onClick={() => applyTemplate(tpl)}
-              className={`p-4 rounded-2xl border text-left transition-all ${
+              className={`p-3.5 rounded-xl border text-left transition-colors cursor-pointer ${
                 selectedTemplate === tpl.id
-                  ? 'border-[#0ea5e9] bg-[#0A0A0A] text-white shadow-xl scale-[1.02] ring-1 ring-[#0ea5e9]/50'
-                  : 'border-neutral-200/80 bg-white hover:border-neutral-300 text-neutral-900'
+                  ? 'border-neutral-900 bg-neutral-900 text-white shadow-xs'
+                  : 'border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-900 shadow-2xs'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                  selectedTemplate === tpl.id ? 'bg-[#0ea5e9] text-white border-[#0ea5e9]' : tpl.badgeColor
+              <div className="flex items-center justify-between mb-1.5">
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                  selectedTemplate === tpl.id ? 'bg-neutral-800 text-white border-neutral-700' : tpl.badgeColor
                 }`}>
                   {tpl.tag}
                 </span>
-                {selectedTemplate === tpl.id && <Check size={14} className="text-[#0ea5e9]" />}
+                {selectedTemplate === tpl.id && <Check size={13} className="text-white" />}
               </div>
-              <h4 className="font-bold text-xs line-clamp-1">{tpl.name}</h4>
-              <p className={`text-[11px] mt-1 line-clamp-2 ${selectedTemplate === tpl.id ? 'text-gray-300' : 'text-neutral-500'}`}>
+              <h4 className="font-semibold text-xs line-clamp-1">{tpl.name}</h4>
+              <p className={`text-[11px] mt-1 line-clamp-2 ${selectedTemplate === tpl.id ? 'text-neutral-300' : 'text-neutral-500'}`}>
                 {tpl.message}
               </p>
             </button>
@@ -166,8 +166,7 @@ export default function CampaignBuilderClient({
       </div>
 
       {/* Main Grid: Left Form | Right Phone Mockup Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Form Container (7 Cols) */}
         <div className="lg:col-span-7">
           <form 
@@ -175,14 +174,13 @@ export default function CampaignBuilderClient({
               setIsSubmitting(true);
               await saveCampaignAction(fd);
             }} 
-            className="space-y-6"
+            className="space-y-5"
           >
-            <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 shadow-sm space-y-5">
-              
+            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-2xs space-y-4">
               {/* Campaign Name & Channel */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">
                     Nom de la Campagne *
                   </label>
                   <input 
@@ -192,133 +190,120 @@ export default function CampaignBuilderClient({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Offre VIP Printemps 2026" 
-                    className="w-full border border-neutral-200 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none" 
+                    className="w-full border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors" 
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">
                     Canal de Diffusion *
                   </label>
-                  <select 
-                    name="channel" 
+                  <select
+                    name="channel"
                     value={channel}
                     onChange={(e) => setChannel(e.target.value as any)}
-                    className="w-full border border-neutral-200 rounded-xl p-3 text-sm font-medium bg-white focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none"
+                    className="w-full border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors cursor-pointer"
                   >
-                    <option value="WHATSAPP">WhatsApp Direct (Recommandé - Maroc)</option>
-                    <option value="EMAIL">E-mail Marketing</option>
+                    <option value="WHATSAPP">WhatsApp Direct (Prioritaire)</option>
+                    <option value="EMAIL">Email Marketing Haute Définition</option>
                   </select>
                 </div>
               </div>
 
-              {/* Type & Audience */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Target Audience & Objective */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
-                    Type de Campagne
-                  </label>
-                  <select 
-                    name="type" 
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
-                    className="w-full border border-neutral-200 rounded-xl p-3 text-sm font-medium bg-white focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none"
-                  >
-                    <option value="VIP">Offre Exclusive VIP</option>
-                    <option value="PROMOTION">Lancement / Promotion Générale</option>
-                    <option value="REACTIVATION">Réactivation & Win-Back</option>
-                    <option value="ABANDONED_CART">Relance Panier Abandonné</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">
                     Audience Cible *
                   </label>
-                  <select 
-                    name="audience" 
+                  <select
+                    name="audience"
                     value={audience}
                     onChange={(e) => setAudience(e.target.value)}
-                    className="w-full border border-neutral-200 rounded-xl p-3 text-sm font-medium bg-white focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none"
+                    className="w-full border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors cursor-pointer"
                   >
                     <option value="ALL">Tous les Clients (Base Complète)</option>
-                    <option value="VIP">Clients VIP (&gt;3 commandes ou &gt;2000 MAD)</option>
-                    <option value="AT_RISK">Clients À Risque (90 à 180 jours sans achat)</option>
-                    <option value="INACTIVE">Clients Inactifs (&gt;180 jours)</option>
-                    <option value="NEW">Nouveaux Inscrits</option>
+                    <option value="VIP">Membres VIP Privilège Seuls</option>
+                    <option value="REPEAT_BUYERS">Acheteurs Récurents (&gt;1 commande)</option>
+                    <option value="ONE_TIME">Premiers Acheteurs (1 commande)</option>
+                    <option value="ABANDONED_CART">Paniers Abandonnés</option>
+                    <option value="AT_RISK">Clients Inactifs (&gt;45 jours)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">
+                    Objectif Stratégique
+                  </label>
+                  <select
+                    name="type"
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    className="w-full border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors cursor-pointer"
+                  >
+                    <option value="VIP">Avantage VIP Privilège</option>
+                    <option value="PROMOTION">Lancement & Promotion Spéciale</option>
+                    <option value="ABANDONED_CART">Relance Panier Incomplet</option>
+                    <option value="REACTIVATION">Réactivation & Win-Back</option>
                   </select>
                 </div>
               </div>
 
-              {/* Subject (if Email) */}
+              {/* Subject (If Email) */}
               {channel === 'EMAIL' && (
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
-                    Objet de l'E-mail
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">
+                    Objet de l'Email *
                   </label>
                   <input 
                     name="subject" 
                     type="text" 
+                    required 
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Ex: Votre privilège exclusif NAY Parfum..." 
-                    className="w-full border border-neutral-200 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none" 
+                    placeholder="Ex: Votre invitation privée NAY Parfum ✨" 
+                    className="w-full border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none transition-colors" 
                   />
                 </div>
               )}
 
               {/* Message Content */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-medium text-neutral-700">
                     Corps du Message *
                   </label>
-                  <div className="text-[11px] text-neutral-500 space-x-1">
+                  <div className="flex items-center gap-1.5 text-[11px] text-neutral-400">
                     <span>Variables :</span>
-                    <button 
-                      type="button" 
-                      onClick={() => setMessage(m => m + ' {{first_name}}')} 
-                      className="text-[#0ea5e9] font-mono font-bold hover:underline"
-                    >
-                      {`{{first_name}}`}
-                    </button>
-                    <span>•</span>
-                    <button 
-                      type="button" 
-                      onClick={() => setMessage(m => m + ' https://nayparfum.ma')} 
-                      className="text-[#0ea5e9] font-mono font-bold hover:underline"
-                    >
-                      lien boutique
-                    </button>
+                    <code className="bg-neutral-100 text-neutral-700 px-1 py-0.5 rounded font-mono">{'{{first_name}}'}</code>
                   </div>
                 </div>
                 <textarea 
                   name="message" 
+                  rows={6}
                   required 
-                  rows={6} 
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Écrivez votre message..." 
-                  className="w-full border border-neutral-200 rounded-xl p-3.5 text-sm font-medium focus:ring-2 focus:ring-[#0ea5e9] focus:outline-none leading-relaxed"
+                  className="w-full border border-neutral-200 rounded-lg p-3 bg-neutral-50 focus:bg-white text-xs font-medium focus:border-neutral-900 focus:outline-none leading-relaxed transition-colors"
                 />
               </div>
-
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:brightness-110 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 transition-all active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-neutral-900 hover:bg-black text-white font-medium text-xs rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
               >
-                <Save size={18} />
-                <span>{isSubmitting ? 'Enregistrement...' : 'Enregistrer la Campagne (Brouillon)'}</span>
+                <Save size={14} />
+                <span>{isSubmitting ? 'Enregistrement...' : 'Enregistrer la Campagne'}</span>
               </button>
 
               <Link
                 href="/admin/marketing/campaigns"
-                className="px-5 py-3 rounded-xl bg-white hover:bg-neutral-100 text-neutral-700 font-semibold text-sm border border-neutral-200 transition-colors"
+                className="px-3.5 py-2 rounded-lg bg-white hover:bg-neutral-50 text-neutral-700 font-medium text-xs border border-neutral-200 transition-colors shadow-2xs"
               >
                 Annuler
               </Link>
@@ -328,61 +313,55 @@ export default function CampaignBuilderClient({
 
         {/* Live Smartphone Simulator Preview (5 Cols) */}
         <div className="lg:col-span-5">
-          <div className="sticky top-20 bg-[#0A0A0A] p-6 rounded-3xl border border-[#1e1e1e] text-white shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#1e1e1e] pb-3">
+          <div className="sticky top-20 bg-white p-5 rounded-xl border border-neutral-200 shadow-2xs space-y-3.5">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
               <div className="flex items-center gap-2">
-                <Smartphone size={16} className="text-[#0ea5e9]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-300">
-                  Aperçu Smartphone Direct
+                <Smartphone size={14} className="text-neutral-500" />
+                <span className="text-xs font-semibold text-neutral-800">
+                  Aperçu Smartphone
                 </span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#0ea5e9]/20 text-[#0ea5e9] border border-sky-500/30">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-700 border border-neutral-200">
                 {channel}
               </span>
             </div>
 
             {/* Simulated Phone Screen */}
-            <div className="bg-[#121212] rounded-2xl p-4 border border-[#222222] space-y-3">
+            <div className="bg-neutral-50 rounded-xl p-3.5 border border-neutral-200 space-y-3">
               {/* Top Contact Bar */}
-              <div className="flex items-center gap-3 pb-3 border-b border-[#222222]">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-blue-600 text-white font-black flex items-center justify-center text-xs shadow-md shadow-sky-500/20">
+              <div className="flex items-center gap-2.5 pb-2.5 border-b border-neutral-200/80">
+                <div className="w-7 h-7 rounded-full bg-neutral-900 text-white font-bold flex items-center justify-center text-[10px]">
                   NAY
                 </div>
                 <div>
-                  <div className="font-bold text-xs text-white">NAY Parfum Officiel</div>
-                  <div className="text-[10px] text-emerald-400">Compte Professionnel Vérifié</div>
+                  <div className="font-semibold text-xs text-neutral-900">NAY Parfum Officiel</div>
+                  <div className="text-[10px] text-emerald-600 font-medium">Compte Professionnel Vérifié</div>
                 </div>
               </div>
 
               {/* Chat Bubble */}
-              <div className="bg-[#1f2c34] text-neutral-100 rounded-2xl rounded-tl-sm p-4 text-xs leading-relaxed space-y-2 border border-neutral-800/80 shadow-md">
+              <div className="bg-white text-neutral-900 rounded-xl rounded-tl-xs p-3.5 text-xs leading-relaxed space-y-1.5 border border-neutral-200 shadow-2xs">
                 {channel === 'EMAIL' && subject && (
-                  <div className="text-[11px] font-bold text-[#0ea5e9] pb-1 border-b border-neutral-700">
+                  <div className="text-[11px] font-semibold text-neutral-800 pb-1 border-b border-neutral-100">
                     Objet : {subject}
                   </div>
                 )}
-                <div className="whitespace-pre-wrap">
+                <div className="whitespace-pre-wrap text-neutral-800">
                   {previewMessage || 'Votre message apparaîtra ici...'}
                 </div>
                 <div className="text-right text-[10px] text-neutral-400">
                   12:45 • Reçu
                 </div>
               </div>
-
-              <div className="text-center pt-2">
-                <span className="text-[11px] text-gray-400 flex items-center justify-center gap-1">
-                  <Info size={12} /> Exemple avec client test <b>Ayoub</b>
-                </span>
-              </div>
             </div>
 
-            <div className="bg-[#151515] rounded-xl p-3 border border-[#222222] text-xs text-gray-400 space-y-1">
-              <p className="font-bold text-gray-200">💡 Conseil d'optimisation :</p>
-              <p>Les messages WhatsApp personnalisés avec code direct et livraison offerte convertissent jusqu'à 3x plus au Maroc.</p>
+            {/* Simulation Info */}
+            <div className="p-2.5 bg-neutral-50 rounded-lg border border-neutral-200/70 text-[11px] text-neutral-500 flex items-center gap-2">
+              <Info size={13} className="shrink-0 text-neutral-400" />
+              <span>Aperçu en temps réel tel que reçu par vos clients.</span>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

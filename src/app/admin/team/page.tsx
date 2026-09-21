@@ -481,53 +481,42 @@ function TeamManagementContent() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-8">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#161616] border border-emerald-500/40 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-slideUp">
-          <CheckCircle2 size={18} className="text-emerald-400" />
-          <span className="text-xs font-semibold">{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2.5 text-xs font-medium animate-in fade-in">
+          <CheckCircle2 size={16} className="text-emerald-400" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-full border border-sky-500/20">
-              Contrôle d&apos;Accès & RBAC Multi-Employés
-            </span>
-            <span className="text-xs text-[#555]">•</span>
-            <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 flex items-center gap-1">
-              <Banknote size={12} />
-              <span>Gestion des Salaires (MAD)</span>
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <ShieldCheck className="text-sky-400" size={28} />
-            <span>Gestion de l&apos;Équipe & Salaires</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            Gestion de l&apos;Équipe & Salaires
           </h1>
-          <p className="text-sm text-[#888888]">
-            Administrez les comptes collaborateurs, rémunérations en Dirhams (MAD), assignez les 26 rôles opérationnels et personnalisez les permissions.
+          <p className="text-[13px] text-neutral-500 mt-1">
+            Gestion des collaborateurs, rémunérations en MAD, attribution des rôles et contrôle des permissions RBAC.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Link
             href="/admin/team/roles"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#181818] hover:bg-[#222222] text-white font-medium text-xs border border-white/10 transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-800 text-xs font-medium transition-colors"
           >
-            <Users size={15} className="text-sky-400" />
+            <Users size={14} />
             <span>Matrice des 26 Rôles</span>
           </Link>
 
           {(currentUser?.isOwner || (currentUser?.effectivePermissions || []).includes('team.create')) && (
             <button
               onClick={() => setIsNewMemberModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-xs transition-all shadow-lg shadow-sky-500/20"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-neutral-900 hover:bg-black text-white text-xs font-medium transition-colors shadow-2xs"
             >
-              <UserPlus size={15} />
-              <span>Ajouter un Collaborateur</span>
+              <UserPlus size={14} />
+              <span>Ajouter un collaborateur</span>
             </button>
           )}
         </div>
@@ -535,64 +524,64 @@ function TeamManagementContent() {
 
       {/* KPI Stats Bar with Payroll */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
-          <div className="text-[11px] font-bold text-[#888888] uppercase tracking-wider">Total Équipe</div>
-          <div className="text-2xl font-black text-white mt-1">{stats.total}</div>
-          <div className="text-[10px] text-[#666] mt-0.5">Comptes configurés</div>
+        <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs">
+          <div className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Total Équipe</div>
+          <div className="text-2xl font-bold text-neutral-900 mt-1">{stats.total}</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5">Comptes configurés</div>
         </div>
 
-        <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
-          <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs">
+          <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span>En Ligne</span>
           </div>
-          <div className="text-2xl font-black text-white mt-1">{stats.online}</div>
-          <div className="text-[10px] text-[#666] mt-0.5">Actifs en ce moment</div>
+          <div className="text-2xl font-bold text-neutral-900 mt-1">{stats.online}</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5">Actifs en ce moment</div>
         </div>
 
-        <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
-          <div className="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Comptes Actifs</div>
-          <div className="text-2xl font-black text-white mt-1">{stats.active}</div>
-          <div className="text-[10px] text-[#666] mt-0.5">Sessions autorisées</div>
+        <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs">
+          <div className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Comptes Actifs</div>
+          <div className="text-2xl font-bold text-neutral-900 mt-1">{stats.active}</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5">Sessions autorisées</div>
         </div>
 
-        <div className="bg-[#111111] border border-white/5 rounded-2xl p-4">
-          <div className="text-[11px] font-bold text-rose-400 uppercase tracking-wider">Désactivés</div>
-          <div className="text-2xl font-black text-white mt-1">{stats.disabled}</div>
-          <div className="text-[10px] text-[#666] mt-0.5">Accès bloqués</div>
+        <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs">
+          <div className="text-[11px] font-semibold text-rose-700 uppercase tracking-wider">Désactivés</div>
+          <div className="text-2xl font-bold text-neutral-900 mt-1">{stats.disabled}</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5">Accès bloqués</div>
         </div>
 
-        <div className="bg-[#111111] border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent rounded-2xl p-4 col-span-2 sm:col-span-1">
-          <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+        <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-2xs col-span-2 sm:col-span-1">
+          <div className="text-[11px] font-semibold text-neutral-700 uppercase tracking-wider flex items-center gap-1">
             <Coins size={13} />
             <span>Masse Salariale</span>
           </div>
-          <div className="text-2xl font-black text-amber-300 mt-1">
-            {(stats.totalPayrollMAD || 0).toLocaleString('fr-FR')} <span className="text-xs font-normal text-amber-400/80">MAD</span>
+          <div className="text-2xl font-bold text-neutral-900 mt-1">
+            {(stats.totalPayrollMAD || 0).toLocaleString('fr-FR')} <span className="text-xs font-normal text-neutral-500">MAD</span>
           </div>
-          <div className="text-[10px] text-[#888] mt-0.5">Total mensuel actif</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5">Total mensuel actif</div>
         </div>
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-[#111111] border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#666]" size={15} />
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={14} />
           <input
             type="text"
             placeholder="Rechercher par nom, email, poste..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#161616] border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-[#666] focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+            className="w-full bg-white border border-neutral-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
           />
         </div>
 
-        <div className="flex items-center gap-2.5 w-full md:w-auto overflow-x-auto">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
           {/* Role Filter */}
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-[#161616] border border-white/10 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+            className="bg-white border border-neutral-200 text-neutral-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-neutral-900"
           >
             <option value="ALL">Tous les Rôles ({members.length})</option>
             {ALL_ROLES.map((r) => (
@@ -606,7 +595,7 @@ function TeamManagementContent() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#161616] border border-white/10 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+            className="bg-white border border-neutral-200 text-neutral-800 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-neutral-900"
           >
             <option value="ALL">Tous les Statuts</option>
             <option value="ACTIVE">Actifs uniquement</option>
@@ -615,30 +604,30 @@ function TeamManagementContent() {
 
           <button
             onClick={() => loadData()}
-            className="p-2 rounded-xl bg-[#161616] hover:bg-[#202020] text-[#888888] hover:text-white border border-white/10 transition-colors"
-            title="Actualiser la liste"
+            className="p-1.5 rounded-lg bg-white hover:bg-neutral-50 text-neutral-600 border border-neutral-200 transition-colors"
+            title="Actualiser"
           >
-            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>
 
       {/* Team Table / List */}
-      <div className="bg-[#111111] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-white/5 bg-[#141414] text-[11px] font-bold text-[#888888] uppercase tracking-wider">
-                <th className="py-3.5 px-4">Collaborateur</th>
-                <th className="py-3.5 px-4">Rôle & Département</th>
-                <th className="py-3.5 px-4">Poste & Spécialité</th>
-                <th className="py-3.5 px-4">Rémunération (MAD)</th>
-                <th className="py-3.5 px-4">Statut & Présence</th>
-                <th className="py-3.5 px-4 text-center">Permissions</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+          <table className="w-full text-left text-[13px]">
+            <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 text-[11px] uppercase tracking-wider font-semibold">
+              <tr>
+                <th className="py-3 px-4">Collaborateur</th>
+                <th className="py-3 px-4">Rôle & Département</th>
+                <th className="py-3 px-4">Poste</th>
+                <th className="py-3 px-4">Rémunération</th>
+                <th className="py-3 px-4">Statut</th>
+                <th className="py-3 px-4 text-center">Permissions</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-xs text-[#ccc]">
+            <tbody className="divide-y divide-neutral-100">
               {loading ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-[#666]">
@@ -667,15 +656,15 @@ function TeamManagementContent() {
                   return (
                     <tr
                       key={member.id}
-                      className={`hover:bg-[#161616]/70 transition-colors ${
-                        member.status === 'DISABLED' ? 'opacity-50 bg-rose-950/5' : ''
+                      className={`hover:bg-neutral-50/70 transition-colors ${
+                        member.status === 'DISABLED' ? 'opacity-50 bg-rose-50/30' : ''
                       }`}
                     >
                       {/* Member Info */}
-                      <td className="py-4 px-4">
+                      <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <div className="relative">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0ea5e9] to-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-md">
+                            <div className="w-9 h-9 rounded-full bg-neutral-900 text-white flex items-center justify-center text-xs font-bold">
                               {member.avatar ? (
                                 <img
                                   src={member.avatar}
@@ -687,42 +676,29 @@ function TeamManagementContent() {
                               )}
                             </div>
                             <span
-                              className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#111111] ${
+                              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
                                 member.status === 'DISABLED'
                                   ? 'bg-rose-500'
                                   : member.isOnline
-                                  ? 'bg-emerald-500 animate-pulse'
-                                  : 'bg-zinc-600'
+                                  ? 'bg-emerald-500'
+                                  : 'bg-neutral-300'
                               }`}
-                              title={
-                                member.status === 'DISABLED'
-                                  ? 'Compte désactivé'
-                                  : member.isOnline
-                                  ? 'En ligne maintenant'
-                                  : 'Hors ligne'
-                              }
                             />
                           </div>
 
                           <div>
-                            <div className="font-bold text-white flex items-center gap-1.5">
+                            <div className="font-semibold text-neutral-900 flex items-center gap-1.5">
                               <span>{member.name}</span>
                               {isSelf && (
-                                <span className="text-[9px] bg-white/10 text-white px-1.5 py-0.2 rounded font-normal">
+                                <span className="text-[10px] bg-neutral-100 text-neutral-600 px-1.5 py-0.2 rounded font-normal">
                                   Vous
                                 </span>
                               )}
                             </div>
-                            <div className="text-[#888888] text-[11px] flex items-center gap-2 mt-0.5">
-                              <span className="flex items-center gap-1">
-                                <Mail size={11} />
-                                {member.email}
-                              </span>
+                            <div className="text-neutral-400 text-[11px] flex items-center gap-2 mt-0.5">
+                              <span>{member.email}</span>
                               {member.phone && (
-                                <span className="flex items-center gap-1 text-[#666]">
-                                  • <Phone size={10} />
-                                  {member.phone}
-                                </span>
+                                <span>• {member.phone}</span>
                               )}
                             </div>
                           </div>
@@ -730,131 +706,116 @@ function TeamManagementContent() {
                       </td>
 
                       {/* Role & Department */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-1">
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-0.5">
                           <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${roleDef.badgeBg} ${roleDef.badgeText} ${roleDef.badgeBorder}`}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${roleDef.badgeBg} ${roleDef.badgeText} ${roleDef.badgeBorder}`}
                           >
-                            {isOwner && <Sparkles size={11} className="text-amber-400" />}
                             <span>{roleDef.name}</span>
                           </span>
-                          <div className="text-[10px] text-[#666] font-medium">
+                          <div className="text-[10px] text-neutral-400 font-medium">
                             {roleDef.department}
                           </div>
                         </div>
                       </td>
 
                       {/* Job Title / Speciality */}
-                      <td className="py-4 px-4">
-                        <div className="text-white font-medium">
+                      <td className="py-3.5 px-4">
+                        <div className="text-neutral-900 font-medium">
                           {member.jobTitle || 'Non spécifié'}
                         </div>
-                        <div className="text-[10px] text-[#666]">
-                          {member._count?.assignedTasks || 0} mission(s) assignée(s)
+                        <div className="text-[10px] text-neutral-400">
+                          {member._count?.assignedTasks || 0} mission(s)
                         </div>
                       </td>
 
                       {/* Salary / Rémunération in MAD */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 font-bold text-amber-400">
-                            <Wallet size={13} className="text-amber-400 shrink-0" />
-                            <span>
-                              {member.salary && member.salary > 0
-                                ? `${member.salary.toLocaleString('fr-FR')} MAD`
-                                : 'Non défini'}
-                            </span>
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-0.5">
+                          <div className="font-semibold text-neutral-900">
+                            {member.salary && member.salary > 0
+                              ? `${member.salary.toLocaleString('fr-FR')} MAD`
+                              : 'Non défini'}
                           </div>
-                          <div className="text-[10px] text-[#666] font-medium">
+                          <div className="text-[10px] text-neutral-400 font-medium">
                             {getSalaryTypeLabel(member.salaryType)}
                           </div>
                         </div>
                       </td>
 
                       {/* Status & Activity */}
-                      <td className="py-4 px-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5">
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-0.5">
+                          <div>
                             {member.status === 'ACTIVE' ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-                                <CheckCircle2 size={12} />
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                                <CheckCircle2 size={11} />
                                 <span>Actif</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-400">
-                                <XCircle size={12} />
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-700">
+                                <XCircle size={11} />
                                 <span>Désactivé</span>
                               </span>
                             )}
                           </div>
-                          <div className="text-[10px] text-[#666] flex items-center gap-1">
-                            <Clock size={10} />
-                            <span>
-                              {member.isOnline
-                                ? 'En ligne'
-                                : member.lastActivityAt
-                                ? `Vu le ${new Date(member.lastActivityAt).toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  })}`
-                                : 'Jamais connecté'}
-                            </span>
+                          <div className="text-[10px] text-neutral-400">
+                            {member.isOnline
+                              ? 'En ligne'
+                              : member.lastActivityAt
+                              ? `Vu le ${new Date(member.lastActivityAt).toLocaleDateString('fr-MA', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}`
+                              : 'Jamais connecté'}
                           </div>
                         </div>
                       </td>
 
                       {/* Permissions Summary */}
-                      <td className="py-4 px-4 text-center">
+                      <td className="py-3.5 px-4 text-center">
                         <div className="inline-flex flex-col items-center">
-                          <span className="font-bold text-white bg-white/10 px-2 py-0.5 rounded-md text-[11px]">
-                            {isOwner ? 'Toutes (49+)' : `${member.effectivePermissionsCount} clés`}
+                          <span className="font-mono text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded text-[11px]">
+                            {isOwner ? 'Toutes' : `${member.effectivePermissionsCount} clés`}
                           </span>
-                          {hasCustomOverrides && !isOwner && (
-                            <span className="text-[9px] text-amber-400 font-semibold mt-1">
-                              Personnalisé
-                            </span>
-                          )}
                         </div>
                       </td>
 
                       {/* Actions */}
-                      <td className="py-4 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         <div className="inline-flex items-center gap-1.5">
-                          {/* Granular Permissions Button */}
                           <button
                             type="button"
                             onClick={() => handleOpenPermissionsDrawer(member)}
-                            className="p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 transition-colors"
-                            title="Gérer les permissions granulaires"
+                            className="p-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors"
+                            title="Permissions"
                           >
-                            <Key size={14} />
+                            <Key size={13} />
                           </button>
 
-                          {/* Edit Profile, Role & Salary Button */}
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(member)}
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white border border-white/5 transition-colors"
-                            title="Modifier le profil, salaire & mot de passe"
+                            className="p-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors"
+                            title="Modifier"
                           >
-                            <Edit3 size={14} />
+                            <Edit3 size={13} />
                           </button>
 
-                          {/* Disable / Enable Toggle Button (Protected against self & owner) */}
                           {!isOwner && !isSelf && (
                             <button
                               type="button"
                               onClick={() => handleToggleStatus(member)}
                               className={`p-1.5 rounded-lg border transition-colors ${
                                 member.status === 'ACTIVE'
-                                  ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/20'
-                                  : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/20'
+                                  ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                                  : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
                               }`}
-                              title={member.status === 'ACTIVE' ? 'Désactiver l\'accès' : 'Réactiver l\'accès'}
+                              title={member.status === 'ACTIVE' ? 'Désactiver' : 'Réactiver'}
                             >
-                              <Power size={14} />
+                              <Power size={13} />
                             </button>
                           )}
                         </div>
@@ -868,47 +829,60 @@ function TeamManagementContent() {
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* MODAL 1: AJOUTER UN COLLABORATEUR AVEC SALAIRE EN MAD     */}
-      {/* ======================================================== */}
+      {/* MODAL: AJOUTER UN COLLABORATEUR */}
       {isNewMemberModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="bg-[#111111] border border-white/10 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8">
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-neutral-200 rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl relative my-8 text-neutral-900 animate-in fade-in">
             <button
               onClick={() => setIsNewMemberModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-white p-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-700 p-1 rounded-lg"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
 
-            <div className="space-y-1">
-              <span className="text-xs font-semibold text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded-full border border-sky-500/20">
-                Nouveau Compte
-              </span>
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <UserPlus size={22} className="text-sky-400" />
-                <span>Ajouter un Collaborateur NAY</span>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                <UserPlus size={18} />
+                <span>Ajouter un collaborateur</span>
               </h2>
-              <p className="text-xs text-[#888888]">
-                Créez les identifiants d&apos;accès, assignez le rôle et fixez la rémunération en Dirhams (MAD).
+              <p className="text-xs text-neutral-500 mt-0.5">
+                Identifiants d&apos;accès, rôle attribué et salaire mensuel en MAD.
               </p>
             </div>
 
             {newMemberError && (
-              <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3.5 rounded-xl text-xs flex items-center gap-2">
-                <AlertCircle size={15} className="shrink-0" />
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-lg text-xs flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0" />
                 <span>{newMemberError}</span>
               </div>
             )}
 
-            <form onSubmit={handleCreateMember} className="space-y-4 text-xs">
+            <form onSubmit={handleCreateMember} className="space-y-3.5 text-xs">
               {/* Avatar Selector */}
               <div>
-                <label className="block text-[#aaa] font-semibold mb-2">Photo de Profil</label>
+                <label className="block text-neutral-700 font-medium mb-1.5">Photo de Profil</label>
                 <div className="flex items-center gap-3">
                   <img
                     src={typeof newMemberForm.avatar === 'string' ? newMemberForm.avatar : ''}
                     alt="Preview"
+                    className="w-10 h-10 rounded-full object-cover border border-neutral-300"
+                  />
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {AVATAR_PRESETS.map((av, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setNewMemberForm({ ...newMemberForm, avatar: av })}
+                        className={`w-7 h-7 rounded-full overflow-hidden border-2 transition-all ${
+                          newMemberForm.avatar === av ? 'border-neutral-900 scale-105' : 'border-transparent opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={av} alt="avatar" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
                     className="w-12 h-12 rounded-full object-cover border-2 border-sky-500 shadow-md"
                   />
                   <div className="flex items-center gap-2 flex-wrap">
@@ -929,39 +903,39 @@ function TeamManagementContent() {
               </div>
 
               {/* Name & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#aaa] font-semibold mb-1.5">Nom Complet *</label>
+                  <label className="block text-neutral-700 font-medium mb-1">Nom Complet *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Yassine Benali"
                     value={newMemberForm.name}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, name: e.target.value })}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white placeholder-[#666] focus:outline-none focus:border-sky-500"
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#aaa] font-semibold mb-1.5">Email Professionnel *</label>
+                  <label className="block text-neutral-700 font-medium mb-1">Email Professionnel *</label>
                   <input
                     type="email"
                     required
                     placeholder="Ex: yassine@nayparfum.ma"
                     value={newMemberForm.email}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, email: e.target.value })}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white placeholder-[#666] focus:outline-none focus:border-sky-500"
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
               </div>
 
               {/* Role Selection */}
               <div>
-                <label className="block text-[#aaa] font-semibold mb-1.5">Rôle Assigné (26 Rôles) *</label>
+                <label className="block text-neutral-700 font-medium mb-1">Rôle Assigné (26 Rôles) *</label>
                 <select
                   value={newMemberForm.role}
                   onChange={(e) => setNewMemberForm({ ...newMemberForm, role: e.target.value })}
-                  className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-sky-500"
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                 >
                   {ROLE_DEPARTMENTS.map((dept) => {
                     const deptRoles = ALL_ROLES.filter((r) => r.department === dept);
@@ -976,46 +950,46 @@ function TeamManagementContent() {
                     );
                   })}
                 </select>
-                <p className="text-[11px] text-sky-400 mt-1">
+                <p className="text-[11px] text-neutral-500 mt-1">
                   {getRoleDefinition(newMemberForm.role).description}
                 </p>
               </div>
 
               {/* Job Title & Phone */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#aaa] font-semibold mb-1.5">Poste / Spécialité</label>
+                  <label className="block text-neutral-700 font-medium mb-1">Poste / Spécialité</label>
                   <input
                     type="text"
                     placeholder="Ex: Confirmateur Casablanca"
                     value={newMemberForm.jobTitle}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, jobTitle: e.target.value })}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white placeholder-[#666] focus:outline-none focus:border-sky-500"
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#aaa] font-semibold mb-1.5">Téléphone / WhatsApp</label>
+                  <label className="block text-neutral-700 font-medium mb-1">Téléphone / WhatsApp</label>
                   <input
                     type="text"
                     placeholder="Ex: +212 6 XX XX XX XX"
                     value={newMemberForm.phone}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, phone: e.target.value })}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 text-white placeholder-[#666] focus:outline-none focus:border-sky-500"
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                   />
                 </div>
               </div>
 
               {/* Salary & Salary Type (MAD) */}
-              <div className="bg-[#161616] p-4 rounded-2xl border border-amber-500/20 space-y-3">
-                <div className="flex items-center gap-2 text-amber-400 font-bold">
-                  <Banknote size={16} />
+              <div className="bg-neutral-50 p-3.5 rounded-xl border border-neutral-200 space-y-2.5">
+                <div className="flex items-center gap-2 text-neutral-900 font-bold">
+                  <Banknote size={15} />
                   <span>Rémunération & Salaire (MAD)</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[#aaa] font-semibold mb-1.5">Montant du Salaire (MAD / DH)</label>
+                    <label className="block text-neutral-700 font-medium mb-1">Montant du Salaire (MAD)</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -1024,20 +998,20 @@ function TeamManagementContent() {
                         placeholder="Ex: 6500"
                         value={newMemberForm.salary}
                         onChange={(e) => setNewMemberForm({ ...newMemberForm, salary: e.target.value })}
-                        className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-amber-300 font-bold placeholder-[#555] focus:outline-none focus:border-amber-500 pr-12"
+                        className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 font-semibold placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 pr-12"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#777]">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-neutral-500">
                         MAD
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[#aaa] font-semibold mb-1.5">Type de Rémunération</label>
+                    <label className="block text-neutral-700 font-medium mb-1">Type de Rémunération</label>
                     <select
                       value={newMemberForm.salaryType}
                       onChange={(e) => setNewMemberForm({ ...newMemberForm, salaryType: e.target.value })}
-                      className="w-full bg-[#111111] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500"
+                      className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
                     >
                       <option value="MONTHLY">Mensuel Fixe</option>
                       <option value="COMMISSION">Fixe + Commission</option>
@@ -1049,14 +1023,14 @@ function TeamManagementContent() {
 
               {/* Password */}
               <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="block text-[#aaa] font-semibold">Mot de Passe Initial *</label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-neutral-700 font-medium">Mot de Passe Initial *</label>
                   <button
                     type="button"
                     onClick={generateRandomPassword}
-                    className="text-[11px] text-sky-400 hover:text-sky-300 font-semibold"
+                    className="text-[11px] text-neutral-700 hover:text-black font-semibold underline"
                   >
-                    Générer mot de passe sécurisé
+                    Générer mot de passe
                   </button>
                 </div>
                 <input
@@ -1065,24 +1039,24 @@ function TeamManagementContent() {
                   placeholder="Minimum 6 caractères"
                   value={newMemberForm.password}
                   onChange={(e) => setNewMemberForm({ ...newMemberForm, password: e.target.value })}
-                  className="w-full bg-[#181818] border border-white/10 rounded-xl px-3.5 py-2.5 font-mono text-white placeholder-[#666] focus:outline-none focus:border-sky-500"
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 font-mono text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900"
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/5">
+              <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-neutral-200">
                 <button
                   type="button"
                   onClick={() => setIsNewMemberModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
+                  className="px-3.5 py-1.5 rounded-lg border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={newMemberLoading}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-sky-500/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-neutral-900 hover:bg-black text-white text-xs font-medium shadow-2xs disabled:opacity-50"
                 >
-                  {newMemberLoading ? <RefreshCw size={14} className="animate-spin" /> : <UserPlus size={14} />}
+                  {newMemberLoading ? <RefreshCw size={13} className="animate-spin" /> : <UserPlus size={13} />}
                   <span>Créer le Compte</span>
                 </button>
               </div>
@@ -1091,39 +1065,161 @@ function TeamManagementContent() {
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* MODAL 2: MODIFIER PROFIL, POSTE, SALAIRE & MOT DE PASSE  */}
-      {/* ======================================================== */}
+      {/* MODAL: MODIFIER COLLABORATEUR */}
       {isEditModalOpen && selectedMember && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-          <div className="bg-[#111111] border border-white/10 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8">
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-neutral-200 rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl relative my-8 text-neutral-900 animate-in fade-in">
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-white p-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-700 p-1 rounded-lg"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
 
-            <div className="space-y-1">
-              <span className="text-xs font-semibold text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded-full border border-sky-500/20">
-                Modification Collaborateur
-              </span>
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <Edit3 size={20} className="text-sky-400" />
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                <Edit3 size={18} />
                 <span>Modifier : {selectedMember.name}</span>
               </h2>
             </div>
 
             {editError && (
-              <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3.5 rounded-xl text-xs flex items-center gap-2">
-                <AlertCircle size={15} className="shrink-0" />
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-lg text-xs flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0" />
                 <span>{editError}</span>
               </div>
             )}
 
-            <form onSubmit={handleSaveEdit} className="space-y-4 text-xs">
+            <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#aaa] font-semibold mb-1.5">Nom Complet</label>
+                <label className="block text-neutral-700 font-medium mb-1">Nom Complet</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-neutral-700 font-medium mb-1">Email Professionnel</label>
+                <input
+                  type="email"
+                  required
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-neutral-700 font-medium mb-1">Rôle Assigné</label>
+                <select
+                  value={editForm.role}
+                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                >
+                  {ROLE_DEPARTMENTS.map((dept) => {
+                    const deptRoles = ALL_ROLES.filter((r) => r.department === dept);
+                    return (
+                      <optgroup key={dept} label={`--- ${dept} ---`}>
+                        {deptRoles.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-neutral-700 font-medium mb-1">Poste</label>
+                  <input
+                    type="text"
+                    value={editForm.jobTitle}
+                    onChange={(e) => setEditForm({ ...editForm, jobTitle: e.target.value })}
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-neutral-700 font-medium mb-1">Téléphone</label>
+                  <input
+                    type="text"
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-neutral-50 p-3.5 rounded-xl border border-neutral-200 space-y-2.5">
+                <div className="flex items-center gap-2 text-neutral-900 font-bold">
+                  <Banknote size={15} />
+                  <span>Rémunération & Salaire (MAD)</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-neutral-700 font-medium mb-1">Salaire (MAD)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={editForm.salary}
+                      onChange={(e) => setEditForm({ ...editForm, salary: e.target.value })}
+                      className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 font-semibold focus:outline-none focus:border-neutral-900"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-neutral-700 font-medium mb-1">Type</label>
+                    <select
+                      value={editForm.salaryType}
+                      onChange={(e) => setEditForm({ ...editForm, salaryType: e.target.value })}
+                      className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 text-neutral-900 focus:outline-none focus:border-neutral-900"
+                    >
+                      <option value="MONTHLY">Mensuel Fixe</option>
+                      <option value="COMMISSION">Fixe + Commission</option>
+                      <option value="HOURLY">Par Heure / Prestation</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-neutral-700 font-medium mb-1">Nouveau mot de passe (laisser vide si inchangé)</label>
+                <input
+                  type="text"
+                  placeholder="Laisser vide pour ne pas modifier"
+                  value={editForm.password}
+                  onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                  className="w-full bg-white border border-neutral-300 rounded-lg px-3 py-2 font-mono text-neutral-900 focus:outline-none focus:border-neutral-900"
+                />
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-neutral-200">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-3.5 py-1.5 rounded-lg border border-neutral-300 hover:bg-neutral-50 text-neutral-700 text-xs font-medium"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-neutral-900 hover:bg-black text-white text-xs font-medium shadow-2xs disabled:opacity-50"
+                >
+                  {editLoading ? <RefreshCw size={13} className="animate-spin" /> : <Save size={13} />}
+                  <span>Enregistrer les modifications</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
                 <input
                   type="text"
                   required
@@ -1272,24 +1368,24 @@ function TeamManagementContent() {
       {/* DRAWER 3: PERSONNALISATION DES PERMISSIONS GRANULAIRES   */}
       {/* ======================================================== */}
       {isPermissionsDrawerOpen && selectedMember && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex justify-end animate-fadeIn">
-          <div className="bg-[#111111] border-l border-white/10 w-full max-w-2xl h-full flex flex-col shadow-2xl animate-slideLeft">
+        <div className="fixed inset-0 bg-neutral-900/40 backdrop-blur-xs z-50 flex justify-end">
+          <div className="bg-white border-l border-neutral-200 w-full max-w-2xl h-full flex flex-col shadow-2xl">
             
             {/* Drawer Header */}
-            <div className="p-6 border-b border-white/5 flex justify-between items-start">
+            <div className="p-5 sm:p-6 border-b border-neutral-200 flex justify-between items-start">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-1">
+                  <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 flex items-center gap-1">
                     <Key size={12} />
                     <span>Permissions Granulaires</span>
                   </span>
-                  <span className="text-xs text-[#666]">•</span>
-                  <span className="text-xs text-[#888888] font-mono">{selectedMember.role}</span>
+                  <span className="text-xs text-neutral-300">•</span>
+                  <span className="text-xs text-neutral-500 font-mono">{selectedMember.role}</span>
                 </div>
-                <h2 className="text-lg font-bold text-white tracking-tight">
+                <h2 className="text-base font-bold text-neutral-900 tracking-tight">
                   {selectedMember.name}
                 </h2>
-                <p className="text-xs text-[#888888]">
+                <p className="text-xs text-neutral-500">
                   {selectedMember.role === 'OWNER' || selectedMember.role === 'CO_OWNER'
                     ? 'Ce collaborateur est Propriétaire (Owner). Il dispose d\'un accès complet et irrévocable à toutes les fonctionnalités.'
                     : 'Le rôle fournit les permissions par défaut. Vous pouvez accorder ou révoquer individuellement chaque droit d\'accès.'}
@@ -1298,29 +1394,29 @@ function TeamManagementContent() {
 
               <button
                 onClick={() => setIsPermissionsDrawerOpen(false)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                className="text-neutral-400 hover:text-neutral-700 p-1.5 rounded-lg bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 transition-colors"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
             {/* Overrides Diff Bar */}
             {selectedMember.role !== 'OWNER' && selectedMember.role !== 'CO_OWNER' && (
-              <div className="bg-[#161616] px-6 py-2.5 border-b border-white/5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3">
-                  <span className="text-[#888888]">Modifications manuelles :</span>
+              <div className="bg-neutral-50 px-6 py-2.5 border-b border-neutral-200 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-neutral-500 text-[11px]">Modifications manuelles :</span>
                   {permissionOverrides.granted.length > 0 && (
-                    <span className="text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                    <span className="text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 text-[11px]">
                       +{permissionOverrides.granted.length} accordée(s)
                     </span>
                   )}
                   {permissionOverrides.revoked.length > 0 && (
-                    <span className="text-rose-400 font-semibold bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">
+                    <span className="text-rose-700 font-medium bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 text-[11px]">
                       -{permissionOverrides.revoked.length} révoquée(s)
                     </span>
                   )}
                   {permissionOverrides.granted.length === 0 && permissionOverrides.revoked.length === 0 && (
-                    <span className="text-[#666] italic">Strictement identique au rôle</span>
+                    <span className="text-neutral-400 italic text-[11px]">Strictement identique au rôle</span>
                   )}
                 </div>
 
@@ -1328,16 +1424,16 @@ function TeamManagementContent() {
                   type="button"
                   onClick={handleResetToRoleDefaults}
                   disabled={savingPermissions}
-                  className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs text-amber-700 hover:text-amber-800 font-medium transition-colors"
                 >
-                  <RotateCcw size={13} />
-                  <span>Réinitialiser au Rôle</span>
+                  <RotateCcw size={12} />
+                  <span>Réinitialiser</span>
                 </button>
               </div>
             )}
 
             {/* Module Tabs */}
-            <div className="px-6 pt-3 flex items-center gap-1.5 overflow-x-auto border-b border-white/5 custom-scrollbar">
+            <div className="px-6 pt-2 flex items-center gap-1.5 overflow-x-auto border-b border-neutral-200">
               {PERMISSION_MODULES.map((mod) => {
                 const isActive = activeModuleTab === mod.id;
                 const modPerms = ALL_PERMISSIONS.filter((p) => p.module === mod.id);
@@ -1345,14 +1441,14 @@ function TeamManagementContent() {
                   <button
                     key={mod.id}
                     onClick={() => setActiveModuleTab(mod.id)}
-                    className={`px-3 py-2 text-xs font-semibold rounded-t-xl transition-all whitespace-nowrap flex items-center gap-1.5 border-b-2 ${
+                    className={`px-3 py-2 text-xs font-medium rounded-t-lg transition-all whitespace-nowrap flex items-center gap-1.5 border-b-2 ${
                       isActive
-                        ? 'border-sky-500 text-white bg-white/5'
-                        : 'border-transparent text-[#888888] hover:text-white hover:bg-white/5'
+                        ? 'border-neutral-900 text-neutral-900 bg-neutral-50'
+                        : 'border-transparent text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
                     }`}
                   >
                     <span>{mod.label}</span>
-                    <span className="text-[10px] text-[#666] bg-white/5 px-1.5 py-0.2 rounded-full">
+                    <span className="text-[10px] text-neutral-500 bg-neutral-200/70 px-1.5 py-0.2 rounded-full">
                       {modPerms.length}
                     </span>
                   </button>
@@ -1361,7 +1457,7 @@ function TeamManagementContent() {
             </div>
 
             {/* Module Permissions List */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-2.5">
               {ALL_PERMISSIONS.filter((p) => p.module === activeModuleTab).map((perm) => {
                 const roleDef = selectedMember.roleDefinition || getRoleDefinition(selectedMember.role);
                 const isRoleDefault = roleDef.defaultPermissions.includes(perm.key);
@@ -1375,53 +1471,53 @@ function TeamManagementContent() {
                 return (
                   <div
                     key={perm.key}
-                    className={`p-4 rounded-2xl border transition-all flex items-start justify-between gap-4 ${
+                    className={`p-3.5 rounded-xl border transition-all flex items-start justify-between gap-4 ${
                       isEffectiveActive
-                        ? 'bg-[#141414] border-white/10'
-                        : 'bg-[#0f0f0f] border-white/5 opacity-60'
+                        ? 'bg-white border-neutral-300 shadow-2xs'
+                        : 'bg-neutral-50/60 border-neutral-200 opacity-60'
                     }`}
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-white text-xs">{perm.label}</span>
+                        <span className="font-semibold text-neutral-900 text-xs">{perm.label}</span>
                         {perm.isSensitive && (
-                          <span className="text-[9px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.2 rounded">
+                          <span className="text-[9px] font-medium bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded">
                             Sensible / Financier
                           </span>
                         )}
                         {isManuallyGranted && (
-                          <span className="text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.2 rounded">
+                          <span className="text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded">
                             Accordé manuellement
                           </span>
                         )}
                         {isManuallyRevoked && (
-                          <span className="text-[9px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.2 rounded">
+                          <span className="text-[9px] font-medium bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded">
                             Révoqué manuellement
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-[#888888] leading-relaxed">
+                      <p className="text-[11px] text-neutral-500 leading-relaxed">
                         {perm.description}
                       </p>
-                      <div className="text-[10px] font-mono text-[#555]">{perm.key}</div>
+                      <div className="text-[10px] font-mono text-neutral-400">{perm.key}</div>
                     </div>
 
                     {/* Switch */}
                     <div className="pt-1">
                       {isOwner ? (
-                        <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                        <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 whitespace-nowrap">
                           Toujours Actif
                         </span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleTogglePermission(perm.key, isRoleDefault)}
-                          className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                            isEffectiveActive ? 'bg-sky-500' : 'bg-[#262626]'
+                          className={`w-10 h-5 rounded-full transition-colors relative p-0.5 ${
+                            isEffectiveActive ? 'bg-neutral-900' : 'bg-neutral-200'
                           }`}
                         >
                           <div
-                            className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                            className={`w-4 h-4 rounded-full bg-white transition-transform ${
                               isEffectiveActive ? 'translate-x-5' : 'translate-x-0'
                             }`}
                           />
@@ -1434,11 +1530,11 @@ function TeamManagementContent() {
             </div>
 
             {/* Drawer Footer */}
-            <div className="p-6 border-t border-white/5 bg-[#141414] flex items-center justify-between">
+            <div className="p-4 sm:p-5 border-t border-neutral-200 bg-neutral-50 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setIsPermissionsDrawerOpen(false)}
-                className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-xs transition-colors"
+                className="px-3.5 py-2 rounded-lg bg-white hover:bg-neutral-50 border border-neutral-200 text-neutral-700 font-medium text-xs transition-colors shadow-2xs"
               >
                 Fermer
               </button>
@@ -1448,12 +1544,12 @@ function TeamManagementContent() {
                   type="button"
                   onClick={handleSavePermissions}
                   disabled={savingPermissions}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#0ea5e9] to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-sky-500/20 disabled:opacity-50 transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-black text-white font-medium text-xs shadow-xs disabled:opacity-50 transition-all"
                 >
                   {savingPermissions ? (
-                    <RefreshCw size={14} className="animate-spin" />
+                    <RefreshCw size={13} className="animate-spin" />
                   ) : (
-                    <Save size={14} />
+                    <Save size={13} />
                   )}
                   <span>Enregistrer les Permissions</span>
                 </button>

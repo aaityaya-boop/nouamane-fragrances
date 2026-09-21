@@ -361,29 +361,29 @@ export default function VitrinePage() {
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-[#fafaf7]">
       {/* Sticky Top Header */}
-      <div className="flex-shrink-0 bg-white/90 backdrop-blur-xl border-b border-black/5 px-6 lg:px-10 py-4 flex items-center justify-between z-20 shadow-sm">
+      <div className="flex-shrink-0 bg-white border-b border-neutral-200 px-6 lg:px-8 py-3.5 flex items-center justify-between z-20 shadow-2xs">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0ea5e9] to-[#0284c7] flex items-center justify-center text-white shadow-lg shadow-[#0ea5e9]/20">
-              <Sparkles size={20} />
+            <div className="w-9 h-9 rounded-lg bg-neutral-100 text-neutral-800 border border-neutral-200 flex items-center justify-center shrink-0">
+              <Sparkles size={18} />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-[#1A1A1A] tracking-tight">Vitrine & Parfums Recommandés</h1>
-              <p className="text-[12px] text-[#666] font-medium">Choisissez et ordonnez les parfums mis en avant pour chaque catégorie</p>
+              <h1 className="text-xl font-bold text-neutral-900 tracking-tight">Vitrine & Parfums Recommandés</h1>
+              <p className="text-xs text-neutral-500 font-normal">Choisissez et ordonnez les parfums mis en avant pour chaque catégorie</p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <AnimatePresence>
             {saveMsg && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className={`flex items-center gap-2 text-[12px] font-bold px-4 py-2.5 rounded-full shadow-sm ${saveMsg.includes('succès') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}
+                className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg shadow-2xs ${saveMsg.includes('succès') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}
               >
-                <Check size={14} />
+                <Check size={13} />
                 {saveMsg}
               </motion.div>
             )}
@@ -391,12 +391,10 @@ export default function VitrinePage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="group relative flex items-center gap-2 bg-[#1A1A1A] text-white px-8 py-3 rounded-full text-[13px] font-bold tracking-wide transition-all hover:bg-[#0ea5e9] hover:shadow-xl hover:shadow-[#0ea5e9]/20 disabled:opacity-60 overflow-hidden cursor-pointer"
+            className="flex items-center gap-1.5 bg-neutral-900 text-white px-4 py-2 rounded-lg text-xs font-medium tracking-wide transition-all hover:bg-black shadow-xs disabled:opacity-60 cursor-pointer"
           >
-            <span className="relative z-10 flex items-center gap-2">
-              {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-              Publier les recommandations
-            </span>
+            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+            <span>Publier les recommandations</span>
           </button>
         </div>
       </div>
