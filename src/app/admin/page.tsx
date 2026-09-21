@@ -97,6 +97,8 @@ export default async function AdminDashboard() {
     _count: { id: true },
     where: { createdAt: { gte: sevenDaysAgo }, referrer: { not: null } },
     orderBy: { _count: { id: 'desc' } },
+    take: 5
+  });
   // Operational Performance Rates for Confirmation & Operations
   const confirmedCount = orders.filter(o => o.status === 'processing' || o.status === 'confirmed' || o.status === 'shipped' || o.status === 'delivered').length;
   const unconfirmedCount = orders.filter(o => o.status === 'unconfirmed').length;
