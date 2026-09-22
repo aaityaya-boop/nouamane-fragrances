@@ -1242,11 +1242,11 @@ function RenderMessageContent({ content, isMe }: { content: string; isMe: boolea
                     </div>
                   </div>
                   <Link
-                    href="/admin/orders"
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] shrink-0 shadow-2xs"
+                    href={`/admin/orders?highlight=${id}&orderNumber=${encodeURIComponent(number)}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shrink-0 shadow-xs transition-all hover:scale-105"
                   >
-                    <span>Gérer</span>
-                    <ChevronRight size={11} />
+                    <span>Gérer la commande</span>
+                    <ChevronRight size={12} />
                   </Link>
                 </div>
               );

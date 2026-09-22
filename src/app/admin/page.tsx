@@ -605,9 +605,9 @@ export default async function AdminDashboard() {
                               </a>
                             )}
                             <Link
-                              href="/admin/orders"
-                              title="Détails"
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                              href={`/admin/orders?highlight=${order.id}`}
+                              title="Gérer la commande"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                             >
                               <ChevronRight size={14} />
                             </Link>

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   Search,
   ChevronDown,
@@ -31,7 +32,8 @@ import {
   ArrowUpRight,
   TrendingUp,
   User,
-  Package
+  Package,
+  Target
 } from 'lucide-react';
 import OrderTimelineStepper from '@/components/OrderTimelineStepper';
 import OrderTimelineFull from '@/components/OrderTimelineFull';
@@ -71,15 +73,26 @@ const formatMAD = (amount: number) => {
   return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
 };
 
-export default function OrdersPage() {
+function OrdersPageContent() {
+  const searchParams = useSearchParams();
+  const highlightParam = searchParams.get('highlight');
+  const orderIdParam = searchParams.get('orderId');
+  const orderNumberParam = searchParams.get('orderNumber');
+  const tabParam = searchParams.get('tab');
+  const searchParam = searchParams.get('search');
+
   const [orders, setOrders] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [editingOrder, setEditingOrder] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<string>('ALL');
+  const [search, setSearch] = useState(searchParam || '');
+  const [activeTab, setActiveTab] = useState<string>(tabParam || 'ALL');
   const [cityFilter, setCityFilter] = useState<string>('ALL');
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
+
+  // 5-second Target Highlight state
+  const [highlightedOrderId, setHighlightedOrderId] = useState<string | null>(null);
+  const [highlightCountdown, setHighlightCountdown] = useState<number>(0);
 
   const fetchCurrentUser = async () => {
     try {
@@ -116,6 +129,52 @@ export default function OrdersPage() {
     fetchOrders();
     fetchCurrentUser();
   }, []);
+
+  // Detect and Highlight Target Order for 5 seconds
+  useEffect(() => {
+    const targetKey = highlightParam || orderIdParam || orderNumberParam;
+    if (!targetKey || orders.length === 0) return;
+
+    const targetLower = targetKey.toLowerCase().trim();
+    const matched = orders.find(
+      (o) =>
+        o.id === targetKey ||
+        (o.orderNumber && o.orderNumber.toLowerCase() === targetLower) ||
+        (o.orderNumber && o.orderNumber.toLowerCase().includes(targetLower))
+    );
+
+    if (matched) {
+      // Ensure target order is visible: reset tabs and city filter
+      setActiveTab('ALL');
+      setCityFilter('ALL');
+      setHighlightedOrderId(matched.id);
+      setHighlightCountdown(5);
+
+      // Smooth scroll to the targeted row
+      const scrollTimer = setTimeout(() => {
+        const rowElement = document.getElementById(`order-row-${matched.id}`);
+        if (rowElement) {
+          rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 200);
+
+      // 5-second countdown timer
+      let remaining = 5;
+      const interval = setInterval(() => {
+        remaining -= 1;
+        setHighlightCountdown(remaining);
+        if (remaining <= 0) {
+          clearInterval(interval);
+          setHighlightedOrderId(null);
+        }
+      }, 1000);
+
+      return () => {
+        clearTimeout(scrollTimer);
+        clearInterval(interval);
+      };
+    }
+  }, [orders, highlightParam, orderIdParam, orderNumberParam]);
 
   const handleStatusChange = async (
     orderId: string,
@@ -822,6 +881,33 @@ export default function OrdersPage() {
 
       </div>
 
+      {/* Active Target Order Banner */}
+      {highlightedOrderId && (
+        <div className="bg-red-50 border-2 border-red-500/80 rounded-2xl p-4 flex items-center justify-between text-xs text-red-900 shadow-lg shadow-red-500/10 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3 font-bold">
+            <div className="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Target size={18} className="animate-spin" style={{ animationDuration: '3s' }} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-red-950 font-extrabold text-sm">🎯 Commande Ciblée</span>
+                <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black uppercase">
+                  Mise en avant
+                </span>
+              </div>
+              <p className="text-[11px] text-red-700 font-medium mt-0.5">
+                La commande demandée est illuminée en <strong className="text-red-950 font-bold">rouge</strong> dans la liste ci-dessous.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-3 py-1.5 rounded-xl bg-red-600 text-white font-mono font-bold text-xs shadow-xs animate-pulse">
+              {highlightCountdown}s restantes
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Orders Table Container */}
       <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
@@ -876,20 +962,34 @@ export default function OrdersPage() {
                   });
 
                   const stConfig = STATUS_CLASSES[order.status] || STATUS_CLASSES.pending;
+                  const isTargetHighlighted = highlightedOrderId === order.id;
 
                   return (
                     <tr
                       key={order.id}
+                      id={`order-row-${order.id}`}
                       onClick={() => setEditingOrder(order)}
-                      className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                      className={`transition-all duration-500 cursor-pointer group relative ${
+                        isTargetHighlighted
+                          ? 'bg-rose-50/95 ring-2 ring-red-500 border-l-4 border-l-red-600 shadow-md shadow-red-500/20'
+                          : 'hover:bg-slate-50/80'
+                      }`}
                     >
                       
                       {/* Ref & Date */}
                       <td className="px-5 py-3.5 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-slate-900 group-hover:text-[#1D9BF0] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono font-bold transition-colors ${
+                            isTargetHighlighted ? 'text-red-700 text-sm font-black scale-105 inline-block' : 'text-slate-900 group-hover:text-[#1D9BF0]'
+                          }`}>
                             {order.orderNumber}
                           </span>
+                          {isTargetHighlighted && (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-600 text-white font-black text-[10px] uppercase tracking-wider animate-pulse shadow-xs">
+                              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                              <span>Cible ({highlightCountdown}s)</span>
+                            </span>
+                          )}
                           <button
                             onClick={(e) => handleCopyRef(order.orderNumber, e)}
                             className="p-1 text-slate-300 hover:text-slate-600 rounded hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
@@ -898,7 +998,7 @@ export default function OrdersPage() {
                             {copiedRef === order.orderNumber ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
                           </button>
                         </div>
-                        <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                        <div className={`text-[11px] font-mono mt-0.5 ${isTargetHighlighted ? 'text-red-600 font-semibold' : 'text-slate-400'}`}>
                           {formattedDate}
                         </div>
                       </td>
@@ -1164,3 +1264,19 @@ export default function OrdersPage() {
     </div>
   );
 }
+
+export default function OrdersPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 text-slate-400">
+          <RefreshCw size={24} className="animate-spin text-[#1D9BF0]" />
+          <span className="text-xs font-semibold text-slate-600">Chargement de la gestion des commandes...</span>
+        </div>
+      }
+    >
+      <OrdersPageContent />
+    </Suspense>
+  );
+}
+
