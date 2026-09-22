@@ -960,6 +960,7 @@ model AdminChatMessage {
   attachments  String?    // JSON string array of URLs
   isRead       Boolean    @default(false)
   readAt       DateTime?
+  readBy       String?    @default("[]") // JSON array: [{"userId": "...", "userName": "...", "readAt": "..."}]
   createdAt    DateTime   @default(now())
 
   sender       AdminUser  @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)

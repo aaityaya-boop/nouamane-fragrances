@@ -52,6 +52,56 @@ export async function GET(request: Request) {
           readAt: new Date(),
         },
       }).catch(() => {});
+
+      // Reflect in returned array
+      messages.forEach((m) => {
+        if (m.senderId === contactId && m.recipientId === admin.id && !m.isRead) {
+          m.isRead = true;
+          m.readAt = new Date();
+        }
+      });
+    } else {
+      // Channel / Group chat: record that current admin has read messages from others
+      const nowIso = new Date().toISOString();
+      const updates: Promise<any>[] = [];
+
+      for (const m of messages) {
+        if (m.senderId !== admin.id) {
+          let readers: Array<{ userId: string; userName: string; readAt: string }> = [];
+          try {
+            if (m.readBy) readers = JSON.parse(m.readBy);
+          } catch {
+            readers = [];
+          }
+
+          const alreadyRead = readers.some((r) => r.userId === admin.id);
+          if (!alreadyRead) {
+            readers.push({
+              userId: admin.id,
+              userName: admin.name,
+              readAt: nowIso,
+            });
+            m.readBy = JSON.stringify(readers);
+            m.isRead = true;
+            m.readAt = new Date();
+
+            updates.push(
+              prisma.adminChatMessage.update({
+                where: { id: m.id },
+                data: {
+                  readBy: m.readBy,
+                  isRead: true,
+                  readAt: new Date(),
+                },
+              }).catch(() => {})
+            );
+          }
+        }
+      }
+
+      if (updates.length > 0) {
+        await Promise.all(updates);
+      }
     }
 
     return NextResponse.json({
@@ -87,6 +137,8 @@ export async function POST(request: Request) {
         channel: recipientId ? 'DIRECT' : channel,
         content: content?.trim() || '',
         attachments: attachments ? (typeof attachments === 'string' ? attachments : JSON.stringify(attachments)) : null,
+        isRead: false,
+        readBy: JSON.stringify([{ userId: admin.id, userName: admin.name, readAt: new Date().toISOString() }]),
       },
       include: {
         sender: {

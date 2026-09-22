@@ -58,6 +58,8 @@ interface ChatMessage {
   content: string;
   attachments?: string | null;
   isRead: boolean;
+  readAt?: string | null;
+  readBy?: string | null;
   createdAt: string;
   sender?: {
     id: string;
@@ -461,6 +463,135 @@ export default function AdminTeamChatPage() {
     c.role.toLowerCase().includes(searchContact.toLowerCase())
   );
 
+  // Render Read Receipts (Vu / Lu par : ...)
+  const renderReadReceipt = (msg: ChatMessage, isMe: boolean) => {
+    if (activeChatType === 'DIRECT') {
+      if (!isMe) return null;
+      if (msg.isRead) {
+        const readTime = msg.readAt
+          ? new Date(msg.readAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+          : '';
+        return (
+          <div
+            className="flex items-center gap-1 text-[10px] text-sky-500 font-semibold mt-0.5 justify-end"
+            title={readTime ? `Vu à ${readTime}` : 'Message vu'}
+          >
+            <CheckCheck size={13} className="text-sky-500 stroke-[2.5]" />
+            <span>Vu {readTime ? `à ${readTime}` : ''}</span>
+          </div>
+        );
+      }
+      return (
+        <div
+          className="flex items-center gap-1 text-[10px] text-slate-400 font-medium mt-0.5 justify-end"
+          title="Message envoyé, en attente de lecture"
+        >
+          <Check size={12} className="stroke-[2]" />
+          <span>Envoyé</span>
+        </div>
+      );
+    }
+
+    // CHANNEL / GROUP CHAT
+    let readers: Array<{ userId: string; userName: string; readAt?: string }> = [];
+    try {
+      if (msg.readBy) {
+        const parsed = JSON.parse(msg.readBy);
+        if (Array.isArray(parsed)) {
+          readers = parsed.filter((r) => r.userId !== msg.senderId);
+        }
+      }
+    } catch {
+      readers = [];
+    }
+
+    if (isMe) {
+      if (readers.length === 0) {
+        return (
+          <div
+            className="flex items-center gap-1 text-[10px] text-slate-400 font-medium mt-0.5 justify-end"
+            title="Message envoyé au groupe, en attente de lecture"
+          >
+            <Check size={12} className="stroke-[2]" />
+            <span>Envoyé</span>
+          </div>
+        );
+      }
+
+      const namesList = readers.map((r) => r.userName);
+      const displayText =
+        namesList.length <= 2
+          ? namesList.join(', ')
+          : `${namesList.slice(0, 2).join(', ')} +${namesList.length - 2}`;
+
+      return (
+        <div
+          className="flex items-center gap-1 text-[10px] text-sky-600 font-semibold mt-0.5 justify-end group/read cursor-help relative"
+          title={`Lu par :\n${readers.map(r => `• ${r.userName} (${r.readAt ? new Date(r.readAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'récemment'})`).join('\n')}`}
+        >
+          <CheckCheck size={13} className="text-sky-500 stroke-[2.5]" />
+          <span>
+            Lu par : <strong className="font-bold text-sky-700">{displayText}</strong>
+          </span>
+
+          {/* Hover Card for complete readers list */}
+          <div className="absolute right-0 bottom-full mb-1 hidden group-hover/read:flex flex-col gap-1 p-2.5 bg-slate-900 text-white rounded-xl shadow-xl z-30 min-w-[190px] text-[10px] font-normal animate-in fade-in zoom-in-95 pointer-events-none">
+            <div className="font-bold text-[10px] text-slate-300 border-b border-slate-800 pb-1 flex items-center justify-between">
+              <span>Membres ayant lu ({readers.length})</span>
+              <CheckCheck size={11} className="text-sky-400" />
+            </div>
+            {readers.map((r, i) => (
+              <div key={i} className="flex items-center justify-between gap-2 text-slate-200">
+                <span className="font-semibold text-white truncate max-w-[110px]">{r.userName}</span>
+                <span className="text-[9px] text-slate-400 font-mono">
+                  {r.readAt ? new Date(r.readAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Vu'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // For received messages from other members in the group
+    if (readers.length > 0) {
+      const namesList = readers.map((r) => r.userName);
+      const displayText =
+        namesList.length <= 2
+          ? namesList.join(', ')
+          : `${namesList.slice(0, 2).join(', ')} +${namesList.length - 2}`;
+
+      return (
+        <div
+          className="flex items-center gap-1 text-[10px] text-slate-400 font-medium mt-0.5 justify-start group/read cursor-help relative"
+          title={`Lu par :\n${readers.map(r => `• ${r.userName}`).join('\n')}`}
+        >
+          <CheckCheck size={12} className="text-sky-500" />
+          <span>
+            Lu par : <strong className="text-slate-600 font-semibold">{displayText}</strong>
+          </span>
+
+          {/* Hover Card for complete readers list */}
+          <div className="absolute left-0 bottom-full mb-1 hidden group-hover/read:flex flex-col gap-1 p-2.5 bg-slate-900 text-white rounded-xl shadow-xl z-30 min-w-[190px] text-[10px] font-normal animate-in fade-in zoom-in-95 pointer-events-none">
+            <div className="font-bold text-[10px] text-slate-300 border-b border-slate-800 pb-1">
+              <span>Lu par ({readers.length})</span>
+            </div>
+            {readers.map((r, i) => (
+              <div key={i} className="flex items-center justify-between gap-2 text-slate-200">
+                <span className="font-semibold text-white truncate max-w-[110px]">{r.userName}</span>
+                <span className="text-[9px] text-slate-400 font-mono">
+                  {r.readAt ? new Date(r.readAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Vu'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="h-[calc(100vh-140px)] flex flex-col font-sans text-slate-900 bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden animate-fadeIn">
       
@@ -757,6 +888,9 @@ export default function AdminTeamChatPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Read Receipts (Vu / Lu par : ...) */}
+                      {renderReadReceipt(msg, isMe)}
                     </div>
                   </div>
                 );
