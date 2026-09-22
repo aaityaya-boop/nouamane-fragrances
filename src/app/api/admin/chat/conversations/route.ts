@@ -10,10 +10,9 @@ export async function GET(request: Request) {
     }
 
     // 1. Get other admin users
-    const otherUsers = await prisma.adminUser.findMany({
+    const allUsers = await prisma.adminUser.findMany({
       where: {
         status: 'ACTIVE',
-        id: { not: admin.id },
       },
       select: {
         id: true,
@@ -21,10 +20,13 @@ export async function GET(request: Request) {
         email: true,
         avatar: true,
         role: true,
+        jobTitle: true,
         lastActivityAt: true,
         lastLoginAt: true,
       },
     });
+
+    const otherUsers = allUsers.filter(u => u.id !== admin.id);
 
     // 2. Compute last message and unread count for each contact
     const contactsWithMeta = await Promise.all(
@@ -55,38 +57,83 @@ export async function GET(request: Request) {
       })
     );
 
-    // 3. Channels overview (GENERAL, STOCK, ORDERS)
-    const channels = [
+    // 3. Default Channels overview (GENERAL, STOCK, ORDERS)
+    const defaultChannels = [
       {
         id: 'GENERAL',
+        slug: 'GENERAL',
         name: 'Salon Général NAY',
         description: 'Discussion libre entre associés et équipe',
         type: 'CHANNEL',
+        color: 'sky',
+        isDefault: true,
+        memberIds: JSON.stringify(allUsers.map(u => u.id)),
       },
       {
         id: 'STOCK',
+        slug: 'STOCK',
         name: 'Canal Stock & Testeurs',
         description: 'Alertes de réassort, flacons et emballages',
         type: 'CHANNEL',
+        color: 'emerald',
+        isDefault: true,
+        memberIds: JSON.stringify(allUsers.map(u => u.id)),
       },
       {
         id: 'ORDERS',
+        slug: 'ORDERS',
         name: 'Canal Commandes & VIP',
         description: 'Suivi des grosses commandes et clients VIP',
         type: 'CHANNEL',
+        color: 'indigo',
+        isDefault: true,
+        memberIds: JSON.stringify(allUsers.map(u => u.id)),
       },
     ];
 
+    // 4. Custom Groups from database
+    const customGroups = await prisma.adminChatGroup.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const customChannels = customGroups.map(g => ({
+      id: g.slug,
+      slug: g.slug,
+      dbId: g.id,
+      name: g.name,
+      description: g.description || 'Groupe de discussion équipe',
+      type: 'CHANNEL',
+      color: g.color || 'purple',
+      isDefault: false,
+      memberIds: g.memberIds || '[]',
+      createdById: g.createdById,
+      creatorName: g.creatorName,
+    }));
+
+    const allChannelsList = [...defaultChannels, ...customChannels];
+
+    // Compute last message and member avatars for all channels
     const channelsWithMeta = await Promise.all(
-      channels.map(async (c) => {
+      allChannelsList.map(async (c) => {
         const lastMsg = await prisma.adminChatMessage.findFirst({
-          where: { channel: c.id, recipientId: null },
+          where: { channel: c.slug, recipientId: null },
           orderBy: { createdAt: 'desc' },
         });
+
+        let parsedMemberIds: string[] = [];
+        try {
+          parsedMemberIds = JSON.parse(c.memberIds);
+        } catch {
+          parsedMemberIds = [];
+        }
+
+        const channelMembers = allUsers.filter(u => parsedMemberIds.includes(u.id));
 
         return {
           ...c,
           lastMessage: lastMsg,
+          members: channelMembers,
+          memberCount: channelMembers.length,
         };
       })
     );
@@ -95,6 +142,7 @@ export async function GET(request: Request) {
       success: true,
       contacts: contactsWithMeta,
       channels: channelsWithMeta,
+      allTeamMembers: allUsers,
     });
   } catch (error) {
     console.error('Error fetching chat conversations:', error);
