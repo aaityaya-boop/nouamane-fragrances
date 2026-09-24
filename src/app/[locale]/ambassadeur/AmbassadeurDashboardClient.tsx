@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Award,
   Copy,
@@ -52,6 +52,13 @@ export default function AmbassadeurDashboardClient({ ambassador: initialAmbassad
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'orders' | 'leads' | 'payouts' | 'marketing'>('orders');
   const [showQr, setShowQr] = useState(false);
+  const [origin, setOrigin] = useState('https://nayparfum.ma');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   // Settings / Profile Modal State
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -82,9 +89,7 @@ export default function AmbassadeurDashboardClient({ ambassador: initialAmbassad
   // Proof image viewer modal
   const [viewProofUrl, setViewProofUrl] = useState<string | null>(null);
 
-  const vipUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/vip/${ambassador.code}`
-    : `https://nayparfum.ma/vip/${ambassador.code}`;
+  const vipUrl = `${origin}/vip/${ambassador.code}`;
 
   const availableBalance = Math.max(0, ambassador.commissionEarned - (ambassador.commissionPaid || 0));
   const conversionRate = ambassador.visits > 0 
@@ -397,7 +402,7 @@ export default function AmbassadeurDashboardClient({ ambassador: initialAmbassad
 
           <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
             <div className="flex-1 bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm font-mono text-neutral-900 overflow-x-auto">
-              <span className="truncate font-semibold">{vipUrl}</span>
+              <span suppressHydrationWarning className="truncate font-semibold">{vipUrl}</span>
             </div>
 
             <button
