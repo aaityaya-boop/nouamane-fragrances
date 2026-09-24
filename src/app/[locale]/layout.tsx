@@ -18,6 +18,7 @@ import Script from "next/script";
 import { GoogleTagManager, GoogleTagManagerNoScript } from "@/components/analytics/GoogleTagManager";
 
 const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'));
+const WelcomePopup = dynamic(() => import('@/components/WelcomePopup'), { ssr: false });
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -167,6 +168,7 @@ export default async function LocaleLayout({
             {/* </SmoothScrollProvider> */}
             <WhatsAppButton />
             <AIChatWidget />
+            <WelcomePopup />
             <CookieConsent />
           </PreferencesProvider>
         </DictionaryProvider>
