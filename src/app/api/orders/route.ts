@@ -68,13 +68,27 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const affiliateRef = cookieStore.get('affiliate_ref')?.value;
     
-    // Calculate Commission (fetch affiliate to get rate)
+    // Calculate Commission (fetch affiliate to check compensation model)
     let affiliate = null;
     let commission = 0;
     if (affiliateRef) {
       affiliate = await prisma.affiliate.findUnique({ where: { code: affiliateRef } });
-      if (affiliate) {
-        commission = Number(total) * (affiliate.commissionRate / 100);
+      if (affiliate && affiliate.status === 'ACTIVE') {
+        const type = affiliate.commissionType || 'PERCENTAGE';
+        const orderTotal = Number(total);
+        
+        if (type === 'PERCENTAGE') {
+          commission = (orderTotal * affiliate.commissionRate) / 100;
+        } else if (type === 'FIXED_PER_ORDER') {
+          commission = affiliate.fixedPerOrder;
+        } else if (type === 'HYBRID') {
+          commission = ((orderTotal * affiliate.commissionRate) / 100) + affiliate.fixedPerOrder;
+        } else if (type === 'PAY_PER_VISIT' || type === 'PAY_PER_LEAD' || type === 'MONTHLY_RETAINER') {
+          // In these models, sales still count to their track record, but order commissions are handled separately or in monthly retainer
+          commission = 0;
+        } else {
+          commission = (orderTotal * affiliate.commissionRate) / 100;
+        }
       }
     }
 

@@ -1,40 +1,71 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import crypto from 'crypto';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ code: string }> }
 ) {
   const { code } = await params;
-  
+  const normalizedCode = (code || '').toLowerCase().trim();
+
   // Find affiliate
   const affiliate = await prisma.affiliate.findUnique({
-    where: { code }
+    where: { code: normalizedCode }
   });
 
   // Always redirect to home if not found
-  if (!affiliate) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (!affiliate || affiliate.status !== 'ACTIVE') {
+    return NextResponse.redirect(new URL('/fr', request.url));
   }
 
-  // Increment visits asynchronously
+  // Extract metadata
+  const userAgent = request.headers.get('user-agent') || '';
+  const referrer = request.headers.get('referer') || 'Direct';
+  const forwardedFor = request.headers.get('x-forwarded-for') || '';
+  const ip = forwardedFor.split(',')[0].trim() || 'unknown';
+  const ipHash = crypto.createHash('md5').update(ip).digest('hex');
+
+  // Detect device
+  let device = 'DESKTOP';
+  if (/mobile|iphone|android|ipad/i.test(userAgent)) {
+    device = /ipad|tablet/i.test(userAgent) ? 'TABLET' : 'MOBILE';
+  }
+
+  // Calculate visit commission if payPerVisit is configured
+  const clickCommission = affiliate.payPerVisit > 0 ? affiliate.payPerVisit : 0;
+
+  // Log real click and increment counters asynchronously
   try {
-    await prisma.affiliate.update({
-      where: { code },
-      data: { visits: { increment: 1 } }
-    });
+    await prisma.$transaction([
+      prisma.affiliateClick.create({
+        data: {
+          affiliateId: affiliate.id,
+          ipHash,
+          device,
+          referrer: referrer.length > 250 ? referrer.slice(0, 250) : referrer,
+          landingPath: '/vip/' + normalizedCode,
+        }
+      }),
+      prisma.affiliate.update({
+        where: { id: affiliate.id },
+        data: {
+          visits: { increment: 1 },
+          ...(clickCommission > 0 ? { commissionEarned: { increment: clickCommission } } : {})
+        }
+      })
+    ]);
   } catch (e) {
-    console.error('Error incrementing affiliate visits:', e);
+    console.error('Error logging affiliate click:', e);
   }
 
-  // Redirect to home and set cookie
-  const response = NextResponse.redirect(new URL('/', request.url));
+  // Redirect to home and set 30-day affiliate cookie
+  const response = NextResponse.redirect(new URL('/fr?ref=' + normalizedCode, request.url));
   
-  // Cookie lasts 30 days
-  response.cookies.set('affiliate_ref', code, {
+  response.cookies.set('affiliate_ref', normalizedCode, {
     path: '/',
-    maxAge: 30 * 24 * 60 * 60,
-    httpOnly: true, // we will read it on server side in API route or via getCookie if not httpOnly, but since we submit order via client fetch, we probably need it non-httpOnly OR the api route reads the cookie directly! Yes, the api/orders route reads cookies on the server!
+    maxAge: 30 * 24 * 60 * 60, // 30 days cookie window
+    httpOnly: false, // Accessible for client widgets and server actions
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   });

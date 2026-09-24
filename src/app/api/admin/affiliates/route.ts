@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
+import { hashPassword } from '@/lib/affiliate-auth';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -10,11 +13,26 @@ export async function GET() {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
   }
 
-  const affiliates = await prisma.affiliate.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
+  try {
+    const affiliates = await prisma.affiliate.findMany({
+      include: {
+        _count: {
+          select: {
+            orders: true,
+            clicks: true,
+            leadsList: true,
+            payouts: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-  return NextResponse.json(affiliates);
+    return NextResponse.json(affiliates);
+  } catch (error) {
+    console.error('Error fetching affiliates:', error);
+    return NextResponse.json({ error: 'Failed to fetch affiliates' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -27,17 +45,98 @@ export async function POST(request: Request) {
 
   try {
     const data = await request.json();
-    const newAffiliate = await prisma.affiliate.create({
-      data: {
-        name: data.name,
-        code: data.code,
-        commissionRate: data.commissionRate || 10,
-      }
+    const {
+      name,
+      code,
+      email,
+      password,
+      phone,
+      instagram,
+      tiktok,
+      commissionType,
+      commissionRate,
+      fixedPerOrder,
+      payPerVisit,
+      payPerLead,
+      monthlyRetainer,
+      paymentMethod,
+      bankName,
+      bankAccountName,
+      bankRib,
+      cinNumber,
+    } = data;
+
+    if (!name || !code) {
+      return NextResponse.json(
+        { error: 'Le nom et le code VIP sont obligatoires.' },
+        { status: 400 }
+      );
+    }
+
+    const cleanCode = code.toLowerCase().trim().replace(/[^a-z0-9_-]/g, '');
+
+    // Check if code or email already exists
+    const existingCode = await prisma.affiliate.findUnique({
+      where: { code: cleanCode },
     });
 
-    return NextResponse.json(newAffiliate);
-  } catch (error) {
+    if (existingCode) {
+      return NextResponse.json(
+        { error: `Le code VIP "/vip/${cleanCode}" est déjà utilisé par un autre partenaire.` },
+        { status: 400 }
+      );
+    }
+
+    if (email) {
+      const existingEmail = await prisma.affiliate.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+      if (existingEmail) {
+        return NextResponse.json(
+          { error: `L'adresse e-mail "${email}" est déjà associée à un compte ambassadeur.` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Hash password if provided
+    let passwordHash: string | null = null;
+    if (password && password.trim().length > 0) {
+      passwordHash = await hashPassword(password.trim());
+    }
+
+    const newAffiliate = await prisma.affiliate.create({
+      data: {
+        name: name.trim(),
+        code: cleanCode,
+        email: email ? email.toLowerCase().trim() : null,
+        passwordHash,
+        phone: phone ? phone.trim() : null,
+        instagram: instagram ? instagram.trim().replace(/^@/, '') : null,
+        tiktok: tiktok ? tiktok.trim().replace(/^@/, '') : null,
+        status: 'ACTIVE',
+        
+        commissionType: commissionType || 'PERCENTAGE',
+        commissionRate: Number(commissionRate) || 10,
+        fixedPerOrder: Number(fixedPerOrder) || 0,
+        payPerVisit: Number(payPerVisit) || 0,
+        payPerLead: Number(payPerLead) || 0,
+        monthlyRetainer: Number(monthlyRetainer) || 0,
+
+        paymentMethod: paymentMethod || 'VIREMENT_BANCAIRE',
+        bankName: bankName ? bankName.trim() : null,
+        bankAccountName: bankAccountName ? bankAccountName.trim() : null,
+        bankRib: bankRib ? bankRib.trim() : null,
+        cinNumber: cinNumber ? cinNumber.trim() : null,
+      },
+    });
+
+    return NextResponse.json({ success: true, affiliate: newAffiliate });
+  } catch (error: any) {
     console.error('Error creating affiliate:', error);
-    return NextResponse.json({ error: 'Failed to create affiliate' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || 'Erreur lors de la création de l\'ambassadeur' },
+      { status: 500 }
+    );
   }
 }

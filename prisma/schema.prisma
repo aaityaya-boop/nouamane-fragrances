@@ -231,17 +231,97 @@ model BlogPost {
 }
 
 model Affiliate {
-  id               String   @id @default(cuid())
+  id               String            @id @default(cuid())
   name             String
-  code             String   @unique
-  commissionRate   Float    @default(10)
-  visits           Int      @default(0)
-  sales            Int      @default(0)
-  revenueGenerated Float    @default(0)
-  commissionEarned Float    @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  code             String            @unique
+  email            String?           @unique
+  passwordHash     String?
+  phone            String?
+  instagram        String?
+  tiktok           String?
+  avatar           String?
+  status           String            @default("ACTIVE") // ACTIVE, PAUSED, BANNED
+  
+  // Compensation Models
+  commissionType   String            @default("PERCENTAGE") // PERCENTAGE, FIXED_PER_ORDER, PAY_PER_VISIT, PAY_PER_LEAD, MONTHLY_RETAINER, HYBRID
+  commissionRate   Float             @default(10) // % per order
+  fixedPerOrder    Float             @default(0) // Fixed MAD per order
+  payPerVisit      Float             @default(0) // Fixed MAD per unique visit
+  payPerLead       Float             @default(0) // Fixed MAD per lead
+  monthlyRetainer  Float             @default(0) // Fixed monthly retainer in MAD
+  
+  // Banking / Payment Information
+  paymentMethod    String            @default("VIREMENT_BANCAIRE") // VIREMENT_BANCAIRE, CIH, ATTIJARI, CASH_PLUS, WAFA_CASH, OTHER
+  bankName         String?           // CIH Bank, Attijariwafa, Bank of Africa, etc.
+  bankAccountName  String?
+  bankRib          String?           // 24-digit RIB
+  cinNumber        String?
+  
+  // Performance Counters
+  visits           Int               @default(0)
+  leads            Int               @default(0)
+  sales            Int               @default(0)
+  revenueGenerated Float             @default(0)
+  commissionEarned Float             @default(0)
+  commissionPaid   Float             @default(0)
+  
+  lastLoginAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
   orders           Order[]
+  clicks           AffiliateClick[]
+  leadsList        AffiliateLead[]
+  payouts          AffiliatePayout[]
+
+  @@index([code])
+  @@index([email])
+  @@index([status])
+}
+
+model AffiliateClick {
+  id          String    @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  ipHash      String?
+  device      String?   @default("MOBILE") // MOBILE, DESKTOP, TABLET
+  referrer    String?   // Instagram, TikTok, Facebook, Direct, etc.
+  landingPath String?   @default("/")
+  createdAt   DateTime  @default(now())
+
+  @@index([affiliateId])
+  @@index([createdAt])
+}
+
+model AffiliateLead {
+  id              String    @id @default(cuid())
+  affiliateId     String
+  affiliate       Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  type            String    @default("NEWSLETTER") // NEWSLETTER, ACCOUNT, CONTACT, INQUIRY
+  email           String?
+  name            String?
+  phone           String?
+  commissionEarned Float    @default(0)
+  createdAt       DateTime  @default(now())
+
+  @@index([affiliateId])
+  @@index([createdAt])
+}
+
+model AffiliatePayout {
+  id          String    @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  amount      Float
+  method      String    @default("VIREMENT_BANCAIRE")
+  reference   String?   // Transaction ref / receipt number
+  notes       String?
+  proofUrl    String?
+  paidAt      DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+
+  @@index([affiliateId])
+  @@index([paidAt])
 }
 
 model SeoSettings {

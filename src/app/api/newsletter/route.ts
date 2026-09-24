@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
@@ -20,6 +21,42 @@ export async function POST(req: Request) {
     await prisma.newsletterSubscriber.create({
       data: { email },
     });
+
+    // Track Affiliate Lead if referral cookie is present
+    try {
+      const cookieStore = await cookies();
+      const affiliateRef = cookieStore.get('affiliate_ref')?.value;
+
+      if (affiliateRef) {
+        const affiliate = await prisma.affiliate.findUnique({
+          where: { code: affiliateRef.toLowerCase().trim() },
+        });
+
+        if (affiliate && affiliate.status === 'ACTIVE') {
+          const leadCommission = affiliate.payPerLead > 0 ? affiliate.payPerLead : 0;
+
+          await prisma.$transaction([
+            prisma.affiliateLead.create({
+              data: {
+                affiliateId: affiliate.id,
+                type: 'NEWSLETTER',
+                email,
+                commissionEarned: leadCommission,
+              },
+            }),
+            prisma.affiliate.update({
+              where: { id: affiliate.id },
+              data: {
+                leads: { increment: 1 },
+                ...(leadCommission > 0 ? { commissionEarned: { increment: leadCommission } } : {}),
+              },
+            }),
+          ]);
+        }
+      }
+    } catch (leadErr) {
+      console.error('Error tracking affiliate lead for newsletter:', leadErr);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
