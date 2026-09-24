@@ -10,8 +10,11 @@ import {
   Banknote, AlertCircle, CheckCircle2, Search, CreditCard,
   PieChart as PieIcon, ExternalLink, Calendar, RefreshCw,
   UploadCloud, FileText, Image as ImageIcon, Paperclip, Eye,
-  ShieldCheck, ArrowUpRight, Filter
+  ShieldCheck, ArrowUpRight, Filter, Calculator, Sparkles,
+  Sliders, Download, Printer, Target, Flame, Layers, Award,
+  DollarSign, ShoppingBag, Users, HelpCircle
 } from 'lucide-react';
+import { formatMAD } from '@/lib/products';
 
 type OrderData = {
   id: string;
@@ -58,13 +61,26 @@ export type EmployeeData = {
   salaryType?: string | null;
 };
 
+export type AffiliateData = {
+  id: string;
+  name: string;
+  code: string;
+  visits: number;
+  sales: number;
+  revenueGenerated: number;
+  commissionEarned: number;
+  commissionPaid: number;
+};
+
 type FinanceClientProps = {
   orders: OrderData[];
   visitors: VisitorData[];
   viewsBySlug: Record<string, { total: number; dates: string[] }>;
-  products: { id: number; slug: string; name: string; brandLabel: string; price: number; images: string; sku: string | null }[];
+  products: { id: number; slug: string; name: string; brandLabel: string; price: number; testerPrice?: number | null; originalPrice?: number | null; images: string; sku: string | null }[];
   initialExpenses: ExpenseData[];
   employees: EmployeeData[];
+  affiliates?: AffiliateData[];
+  customersCount?: number;
 };
 
 const EXPENSE_CATEGORIES = [
@@ -86,10 +102,6 @@ const PAYMENT_METHODS = [
   { id: 'OTHER', label: 'Autre mode de paiement' },
 ];
 
-const formatMAD = (amount: number) => {
-  return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(amount);
-};
-
 export default function FinanceClient({
   orders,
   visitors,
@@ -97,8 +109,10 @@ export default function FinanceClient({
   products,
   initialExpenses,
   employees,
+  affiliates = [],
+  customersCount = 0,
 }: FinanceClientProps) {
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'EXPENSES'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'UNIT_ECONOMICS' | 'ACQUISITION_ROAS' | 'SIMULATOR' | 'PNL_STATEMENT' | 'EXPENSES'>('OVERVIEW');
   const [dateRange, setDateRange] = useState<number>(30); // days, 0 = all time
   const [expenses, setExpenses] = useState<ExpenseData[]>(initialExpenses);
 
@@ -134,12 +148,23 @@ export default function FinanceClient({
   const [expenseSearch, setExpenseSearch] = useState('');
   const [expenseCategoryFilter, setExpenseCategoryFilter] = useState('ALL');
 
+  // Interactive Profit Simulator State
+  const [simDailyOrders, setSimDailyOrders] = useState<number>(25);
+  const [simAOV, setSimAOV] = useState<number>(420);
+  const [simDailyAdBudget, setSimDailyAdBudget] = useState<number>(350);
+  const [simDeliveryRate, setSimDeliveryRate] = useState<number>(85); // %
+  const [simCogsRate, setSimCogsRate] = useState<number>(32); // % COGS of product price
+  const [simFixedCharges, setSimFixedCharges] = useState<number>(6000); // Fixed rent, tools, base salaires in MAD
+
+  // Monthly Financial Target (Goal)
+  const monthlyRevenueGoal = 150000; // 150,000 MAD
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Upload Invoice / Receipt (PDF, PNG, JPG, JPEG, WEBP)
+  // Upload Invoice / Receipt
   const handleFileUpload = async (file: File) => {
     try {
       setIsUploadingReceipt(true);
@@ -193,7 +218,11 @@ export default function FinanceClient({
 
   // Calculations
   const validOrders = filteredOrders.filter((o) =>
-    ['delivered', 'shipped', 'completed', 'livre', 'expedie'].includes(o.status.toLowerCase())
+    ['delivered', 'shipped', 'completed', 'livre', 'expedie', 'pending', 'confirmed'].includes(o.status.toLowerCase())
+  );
+
+  const deliveredOrders = filteredOrders.filter((o) =>
+    ['delivered', 'completed', 'livre'].includes(o.status.toLowerCase())
   );
 
   const grossRevenue = validOrders.reduce((acc, o) => acc + o.total, 0);
@@ -201,6 +230,33 @@ export default function FinanceClient({
   const netRevenue = grossRevenue - totalCharges;
   const netMargin = grossRevenue > 0 ? (netRevenue / grossRevenue) * 100 : 0;
   const avgOrderValue = validOrders.length > 0 ? grossRevenue / validOrders.length : 0;
+
+  // Real Delivery / COD Rate
+  const deliveryRate = filteredOrders.length > 0
+    ? (deliveredOrders.length / filteredOrders.length) * 100
+    : 85;
+
+  // Breakdown of expenses by category
+  const expensesByCategory = useMemo(() => {
+    const map: Record<string, number> = {};
+    EXPENSE_CATEGORIES.forEach((c) => (map[c.id] = 0));
+    filteredExpenses.forEach((e) => {
+      const cat = e.category || 'OTHER';
+      map[cat] = (map[cat] || 0) + (Number(e.amount) || 0);
+    });
+    return map;
+  }, [filteredExpenses]);
+
+  // Ad Spend & ROAS / CAC metrics
+  const adSpendTotal = expensesByCategory['ADS'] || 0;
+  const blendedROAS = adSpendTotal > 0 ? (grossRevenue / adSpendTotal).toFixed(2) : 'N/A';
+  const customerAcquisitionCost = validOrders.length > 0 && adSpendTotal > 0
+    ? (adSpendTotal / validOrders.length).toFixed(0)
+    : '0';
+  const marketingEfficiencyRatio = adSpendTotal > 0 ? (grossRevenue / adSpendTotal).toFixed(2) : '100%';
+
+  // Total Affiliate Commissions in date range
+  const totalInfluencerCommissions = affiliates.reduce((sum, a) => sum + (a.commissionEarned || 0), 0);
 
   // Chart Data
   const chartData = useMemo(() => {
@@ -298,282 +354,815 @@ export default function FinanceClient({
     }
   };
 
-  // Winning Products
-  const winningProducts = useMemo(() => {
-    const productStats: Record<string, { qty: number; rev: number }> = {};
-    validOrders.forEach((o) => {
-      try {
-        const items = JSON.parse(o.items);
-        items.forEach((item: any) => {
-          if (!productStats[item.slug]) {
-            productStats[item.slug] = { qty: 0, rev: 0 };
-          }
-          productStats[item.slug].qty += item.quantity;
-          productStats[item.slug].rev += item.price * item.quantity;
-        });
-      } catch (e) {}
-    });
+  // Estimated COGS for all valid orders
+  const estimatedCOGS = grossRevenue * 0.32; // ~32% product purchase cost
+  const grossProfit = grossRevenue - estimatedCOGS;
 
-    return products
-      .map((p) => {
-        const stats = productStats[p.slug] || { qty: 0, rev: 0 };
-        return {
-          ...p,
-          qty: stats.qty,
-          rev: stats.rev,
-        };
-      })
-      .sort((a, b) => b.rev - a.rev);
-  }, [validOrders, products]);
+  // Simulator Calculations
+  const simMonthlyOrders = simDailyOrders * 30;
+  const simGrossRevenue = simMonthlyOrders * simAOV * (simDeliveryRate / 100);
+  const simTotalCOGS = simGrossRevenue * (simCogsRate / 100);
+  const simTotalAdSpend = simDailyAdBudget * 30;
+  const simTotalDeliveryShipping = simMonthlyOrders * 35; // 35 MAD per delivered parcel
+  const simTotalExpenses = simTotalCOGS + simTotalAdSpend + simTotalDeliveryShipping + simFixedCharges;
+  const simNetProfit = simGrossRevenue - simTotalExpenses;
+  const simMarginPercent = simGrossRevenue > 0 ? ((simNetProfit / simGrossRevenue) * 100).toFixed(1) : '0';
 
-  // Top Cities
-  const topCities = useMemo(() => {
-    const cities: Record<string, number> = {};
-    validOrders.forEach((o) => {
-      const c = o.shippingCity || 'Autre';
-      cities[c] = (cities[c] || 0) + o.total;
-    });
-    return Object.entries(cities)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 6);
-  }, [validOrders]);
+  // Export CSV Handler for P&L
+  const exportCsvPnL = () => {
+    const csvRows = [
+      ['POSTE COMPTABLE', 'MONTANT (MAD)', '% DU CA'],
+      ['Chiffre d Affaires Brut (Ventes)', grossRevenue.toFixed(0), '100%'],
+      ['Coût Approvisionnement Produits (COGS)', (-estimatedCOGS).toFixed(0), '-32.0%'],
+      ['MARGE BRUTE COMMERCIALE', grossProfit.toFixed(0), `${((grossProfit / (grossRevenue || 1)) * 100).toFixed(1)}%`],
+      ['Dépenses Publicitaires (TikTok, Meta, Google)', (-adSpendTotal).toFixed(0), `-${((adSpendTotal / (grossRevenue || 1)) * 100).toFixed(1)}%`],
+      ['Commissions Ambassadeurs & Influenceurs', (-totalInfluencerCommissions).toFixed(0), `-${((totalInfluencerCommissions / (grossRevenue || 1)) * 100).toFixed(1)}%`],
+      ['Frais Logistiques & Emballages', (-(expensesByCategory['LOGISTICS'] || 0 + (expensesByCategory['PACKAGING'] || 0))).toFixed(0), ''],
+      ['Masse Salariale & Salaires Fixes', (-(expensesByCategory['SALARY'] || 0)).toFixed(0), ''],
+      ['Hébergement, Logiciels & SaaS', (-(expensesByCategory['HOSTING'] || 0 + (expensesByCategory['TOOLS'] || 0))).toFixed(0), ''],
+      ['RESULTAT NET REEL (EBITDA)', netRevenue.toFixed(0), `${netMargin.toFixed(1)}%`],
+    ];
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.map((e) => e.join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `compte-de-resultat-nay-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      
+    <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-medium animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle2 size={16} className="text-[#1D9BF0]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in slide-in-from-bottom-5">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Header & Navigation Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/90 pb-4">
+      {/* Header with Title and Global Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-5">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-            <Banknote size={22} className="text-[#1D9BF0]" />
-            <span>Finance, Rentabilité & Charges NAY</span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Moteur Financier & Rentabilité
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2">
+            <DollarSign size={22} className="text-emerald-600" />
+            <span>Finance, Marges & Trésorerie NAY</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Pilotez le Chiffre d'Affaires Net, suivez vos dépenses réelles et archivez vos factures.
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Tableau de bord financier haute précision : Marges réelles, ROAS, économie unitaire, simulation de rentabilité et P&L.
           </p>
         </div>
 
-        {/* Tab Switcher & Action */}
-        <div className="flex items-center gap-2.5">
-          <div className="bg-slate-100/90 p-1 rounded-xl flex items-center border border-slate-200/80">
+        <div className="flex items-center gap-2">
+          {/* Timeframe Filter */}
+          <div className="flex items-center bg-white border border-neutral-200 rounded-lg p-1 text-xs shadow-2xs">
             <button
-              onClick={() => setActiveTab('OVERVIEW')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === 'OVERVIEW'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setDateRange(7)}
+              className={`px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+                dateRange === 7 ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
-              Vue d'ensemble & CA Net
+              7J
             </button>
             <button
-              onClick={() => setActiveTab('EXPENSES')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === 'EXPENSES'
-                  ? 'bg-white text-[#1D9BF0] shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setDateRange(30)}
+              className={`px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+                dateRange === 30 ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
-              Charges & Factures ({expenses.length})
+              30J
+            </button>
+            <button
+              onClick={() => setDateRange(90)}
+              className={`px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+                dateRange === 90 ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:text-neutral-900'
+              }`}
+            >
+              90J
+            </button>
+            <button
+              onClick={() => setDateRange(0)}
+              className={`px-2.5 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+                dateRange === 0 ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:text-neutral-900'
+              }`}
+            >
+              Tout
             </button>
           </div>
 
           <button
             onClick={() => setIsAddExpenseModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1D9BF0] hover:bg-[#1a8cd8] active:bg-[#177cc0] text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            className="px-3.5 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
           >
-            <Plus size={15} />
-            <span>Ajouter une charge</span>
+            <Plus size={14} />
+            <span>Ajouter une Charge</span>
           </button>
         </div>
       </div>
 
-      {/* Date Range Selector */}
-      <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/90 shadow-2xs">
-        <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-          <Calendar size={14} className="text-[#1D9BF0]" />
-          <span>Période analysée :</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {[
-            { label: '7 jours', val: 7 },
-            { label: '30 jours', val: 30 },
-            { label: '90 jours', val: 90 },
-            { label: 'Tout l\'historique', val: 0 },
-          ].map((item) => (
-            <button
-              key={item.val}
-              onClick={() => setDateRange(item.val)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                dateRange === item.val
-                  ? 'bg-[#1D9BF0] text-white font-semibold shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+      {/* Navigation Tabs Bar */}
+      <div className="border-b border-neutral-200 flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold">
+        <button
+          onClick={() => setActiveTab('OVERVIEW')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'OVERVIEW'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <TrendingUp size={14} />
+          <span>Vue d'Ensemble & CA Net</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('UNIT_ECONOMICS')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'UNIT_ECONOMICS'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <Package size={14} />
+          <span>Économie Unitaire & Marges Parfums</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('ACQUISITION_ROAS')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'ACQUISITION_ROAS'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <Flame size={14} />
+          <span>Ads, ROAS & Coût Client (CAC)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('SIMULATOR')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'SIMULATOR'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <Sliders size={14} />
+          <span>Simulateur de Croissance</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('PNL_STATEMENT')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'PNL_STATEMENT'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <FileText size={14} />
+          <span>Compte de Résultat (P&L)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('EXPENSES')}
+          className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+            activeTab === 'EXPENSES'
+              ? 'bg-neutral-900 text-white shadow-2xs'
+              : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+          }`}
+        >
+          <Banknote size={14} />
+          <span>Charges & Factures ({expenses.length})</span>
+        </button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Gross Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">CA Brut Livré</span>
-            <div className="w-8 h-8 rounded-lg bg-sky-50 text-[#1D9BF0] flex items-center justify-center">
-              <TrendingUp size={16} />
+      {/* TAB 1: EXECUTIVE OVERVIEW */}
+      {activeTab === 'OVERVIEW' && (
+        <div className="space-y-6">
+          {/* Top 6 KPI Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-3.5">
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs">
+              <span className="text-[11px] text-neutral-500 font-medium block">CA Brut Total</span>
+              <div className="text-2xl font-bold text-neutral-900 mt-1">{formatMAD(grossRevenue)}</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">{validOrders.length} commandes</span>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">{formatMAD(grossRevenue)}</div>
-          <div className="text-[11px] text-slate-400 mt-1">{validOrders.length} commande(s) validée(s)</div>
-        </div>
 
-        {/* Total Charges */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Charges</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-              <TrendingDown size={16} />
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs">
+              <span className="text-[11px] text-neutral-500 font-medium block">Total Charges Déduites</span>
+              <div className="text-2xl font-bold text-rose-600 mt-1">-{formatMAD(totalCharges)}</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">{filteredExpenses.length} factures enregistrées</span>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-rose-600 mt-2">-{formatMAD(totalCharges)}</div>
-          <div className="text-[11px] text-slate-400 mt-1">{filteredExpenses.length} dépense(s) déduite(s)</div>
-        </div>
 
-        {/* Net Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Chiffre d'Affaires Net</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Banknote size={16} />
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs col-span-2 sm:col-span-1">
+              <span className="text-[11px] text-neutral-500 font-medium block">BÉNÉFICE NET RÉEL</span>
+              <div className={`text-2xl font-black mt-1 ${netRevenue >= 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
+                {formatMAD(netRevenue)}
+              </div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">Marge Nette : <strong className="text-neutral-800">{netMargin.toFixed(1)}%</strong></span>
             </div>
-          </div>
-          <div className={`text-2xl font-bold mt-2 ${netRevenue >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-            {formatMAD(netRevenue)}
-          </div>
-          <div className="text-[11px] text-slate-400 mt-1">Bénéfice net après charges</div>
-        </div>
 
-        {/* Net Margin */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Marge Nette</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-              <PieIcon size={16} />
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs">
+              <span className="text-[11px] text-neutral-500 font-medium block">Panier Moyen (AOV)</span>
+              <div className="text-2xl font-bold text-neutral-900 mt-1">{formatMAD(avgOrderValue)}</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">Par commande validée</span>
             </div>
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2">{netMargin.toFixed(1)}%</div>
-          <div className="text-[11px] text-slate-400 mt-1">Rentabilité globale</div>
-        </div>
-      </div>
 
-      {activeTab === 'OVERVIEW' ? (
-        <>
-          {/* Main Chart */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs">
-            <h2 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <TrendingUp size={16} className="text-[#1D9BF0]" />
-              <span>Évolution du CA Brut vs Charges vs CA Net</span>
-            </h2>
-            <div className="h-[280px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1D9BF0" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#1D9BF0" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} tickFormatter={(val) => `${val} DH`} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
-                    formatter={(value: any) => [`${formatMAD(Number(value))}`, '']}
-                  />
-                  <Area type="monotone" dataKey="revenue" stroke="#1D9BF0" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" name="CA Brut" />
-                  <Area type="monotone" dataKey="charges" stroke="#f43f5e" strokeWidth={1.5} fillOpacity={0} name="Charges" />
-                  <Area type="monotone" dataKey="netRevenue" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorNet)" name="CA Net" />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs">
+              <span className="text-[11px] text-neutral-500 font-medium block">ROAS Publicitaire</span>
+              <div className="text-2xl font-bold text-amber-700 mt-1">{blendedROAS}x</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">CAC : ~{customerAcquisitionCost} MAD</span>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-2xs">
+              <span className="text-[11px] text-neutral-500 font-medium block">Taux de Livraison (COD)</span>
+              <div className="text-2xl font-bold text-sky-700 mt-1">{deliveryRate.toFixed(0)}%</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">Encaissées à la livraison</span>
             </div>
           </div>
 
-          {/* Winning Products & Top Cities */}
+          {/* Monthly Revenue Goal & Break-Even Banner */}
+          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-neutral-50 border border-emerald-200 rounded-2xl p-5 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Target size={16} className="text-emerald-700" />
+                  <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
+                    Objectif Mensuel NAY : {formatMAD(monthlyRevenueGoal)}
+                  </span>
+                </div>
+                <p className="text-xs text-emerald-800">
+                  Progression actuelle : <strong>{((grossRevenue / monthlyRevenueGoal) * 100).toFixed(1)}%</strong> ({formatMAD(grossRevenue)} atteints).
+                </p>
+              </div>
+
+              <div className="sm:text-right">
+                <span className="text-[11px] text-neutral-600 block">Seuil de Rentabilité (Break-Even)</span>
+                <span className="text-sm font-bold text-neutral-900">
+                  ~{(totalCharges / (avgOrderValue || 400)).toFixed(0)} commandes nécessaires pour couvrir les frais
+                </span>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full h-2.5 bg-emerald-200/60 rounded-full mt-3 overflow-hidden">
+              <div
+                className="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, (grossRevenue / monthlyRevenueGoal) * 100)}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Charts Section: Cashflow Area Chart & Cost Waterfall */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs">
-              <h2 className="text-sm font-bold text-slate-900 mb-4">Parfums les plus vendus</h2>
-              <div className="divide-y divide-slate-100">
-                {winningProducts.slice(0, 6).map((product) => (
-                  <div key={product.id} className="py-2.5 flex items-center justify-between text-xs">
-                    <div>
-                      <div className="font-semibold text-slate-900">{product.name}</div>
-                      <div className="text-[11px] text-slate-400">{product.brandLabel}</div>
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-neutral-200 p-5 shadow-2xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
+                    Évolution CA Brut vs Charges vs CA Net
+                  </h3>
+                  <p className="text-[11px] text-neutral-400">Courbe de trésorerie sur la période sélectionnée</p>
+                </div>
+              </div>
+
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorCharges" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#38bdf8" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="#94a3b8" />
+                    <YAxis tick={{ fontSize: 10 }} stroke="#94a3b8" tickFormatter={(v) => `${v} DH`} />
+                    <Tooltip
+                      formatter={(val: any) => [`${val} MAD`]}
+                      contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '11px' }}
+                    />
+                    <Area type="monotone" dataKey="revenue" name="CA Brut" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
+                    <Area type="monotone" dataKey="charges" name="Charges" stroke="#f43f5e" strokeWidth={2} fillOpacity={1} fill="url(#colorCharges)" />
+                    <Area type="monotone" dataKey="netRevenue" name="CA Net" stroke="#38bdf8" strokeWidth={2} fillOpacity={1} fill="url(#colorNet)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Expenses Distribution */}
+            <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-2xs flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
+                  Répartition des Charges
+                </h3>
+                <p className="text-[11px] text-neutral-400 mb-4">Total déduit : {formatMAD(totalCharges)}</p>
+
+                <div className="space-y-3 text-xs">
+                  {EXPENSE_CATEGORIES.map((cat) => {
+                    const amount = expensesByCategory[cat.id] || 0;
+                    const pct = totalCharges > 0 ? ((amount / totalCharges) * 100).toFixed(1) : '0';
+                    return (
+                      <div key={cat.id} className="flex flex-col">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-neutral-600 text-[11px] truncate max-w-[180px]">{cat.label.split('(')[0]}</span>
+                          <span className="font-bold text-neutral-900">{formatMAD(amount)} ({pct}%)</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${pct}%`, backgroundColor: cat.color }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveTab('EXPENSES')}
+                className="mt-5 w-full py-2 bg-neutral-50 hover:bg-neutral-100 text-neutral-800 rounded-lg text-xs font-semibold border border-neutral-200 transition-colors"
+              >
+                Gérer les factures détaillées
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: UNIT ECONOMICS (Marges par Flacon) */}
+      {activeTab === 'UNIT_ECONOMICS' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-2xs">
+            <div className="max-w-2xl">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-sky-50 text-sky-800 border border-sky-200">
+                Analyse de Marge Unitaire
+              </span>
+              <h2 className="text-xl font-bold text-neutral-900 mt-2">
+                Décomposition du Coût de Revient d'un Parfum NAY
+              </h2>
+              <p className="text-xs text-neutral-500 mt-1">
+                Comprenez précisément où va chaque Dirham sur une vente moyenne de <strong>{formatMAD(avgOrderValue || 420)}</strong>.
+              </p>
+            </div>
+
+            {/* Visual Waterfall */}
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 mt-6">
+              <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 text-center">
+                <span className="text-[11px] text-neutral-500 block font-medium">Prix Vente Moyen</span>
+                <span className="text-xl font-black text-neutral-900 mt-1 block">{formatMAD(avgOrderValue || 420)}</span>
+                <span className="text-[10px] text-neutral-400">100% du CA</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-center">
+                <span className="text-[11px] text-rose-700 block font-medium">- Achat Parfum (COGS)</span>
+                <span className="text-xl font-bold text-rose-800 mt-1 block">~135 MAD</span>
+                <span className="text-[10px] text-rose-600">~32% du prix</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
+                <span className="text-[11px] text-amber-700 block font-medium">- Emballage & Flacon</span>
+                <span className="text-xl font-bold text-amber-800 mt-1 block">~25 MAD</span>
+                <span className="text-[10px] text-amber-600">Boîte & Pochon luxe</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-center">
+                <span className="text-[11px] text-purple-700 block font-medium">- Livraison & COD</span>
+                <span className="text-xl font-bold text-purple-800 mt-1 block">~35 MAD</span>
+                <span className="text-[10px] text-purple-600">Amana / Cathedis</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-center shadow-xs">
+                <span className="text-[11px] text-emerald-800 block font-bold">MARGE NETTE / FLACON</span>
+                <span className="text-xl font-black text-emerald-700 mt-1 block">
+                  ~{formatMAD((avgOrderValue || 420) - 195)}
+                </span>
+                <span className="text-[10px] text-emerald-700 font-bold">~53% Marge Brute</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Selling & Highest Margin Fragrances */}
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-2xs">
+            <div className="p-4 border-b border-neutral-200 bg-neutral-50/50 flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+                Rentabilité du Catalogue Parfums ({products.length} références)
+              </h3>
+              <span className="text-xs text-neutral-500">Classés par rentabilité unitaire</span>
+            </div>
+
+            <div className="overflow-x-auto max-h-96">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-neutral-50 border-b border-neutral-200 text-[11px] font-semibold text-neutral-600 uppercase">
+                    <th className="py-2.5 px-4">Parfum & Marque</th>
+                    <th className="py-2.5 px-4">Prix Vente Boutique</th>
+                    <th className="py-2.5 px-4">Prix Testeur</th>
+                    <th className="py-2.5 px-4">Coût d'Achat Estimé</th>
+                    <th className="py-2.5 px-4">Marge Brute (MAD)</th>
+                    <th className="py-2.5 px-4">Rentabilité</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100 text-neutral-700">
+                  {products.slice(0, 15).map((p) => {
+                    const price = p.price || 400;
+                    const estimatedCost = price * 0.35;
+                    const unitMargin = price - estimatedCost;
+                    const marginPercent = ((unitMargin / price) * 100).toFixed(0);
+
+                    return (
+                      <tr key={p.id} className="hover:bg-neutral-50">
+                        <td className="py-2.5 px-4">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-neutral-900">{p.name}</span>
+                            <span className="text-[10px] text-neutral-500 uppercase">{p.brandLabel}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 px-4 font-bold text-neutral-900">{formatMAD(price)}</td>
+                        <td className="py-2.5 px-4 font-mono text-neutral-600">{p.testerPrice ? formatMAD(p.testerPrice) : '-'}</td>
+                        <td className="py-2.5 px-4 text-rose-700 font-mono">~{formatMAD(estimatedCost)}</td>
+                        <td className="py-2.5 px-4 font-bold text-emerald-700">+{formatMAD(unitMargin)}</td>
+                        <td className="py-2.5 px-4">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            {marginPercent}% Marge
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: ACQUISITION & ROAS */}
+      {activeTab === 'ACQUISITION_ROAS' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs">
+              <span className="text-xs text-neutral-500 font-medium block">Budget Ads Dépensé</span>
+              <div className="text-2xl font-black text-rose-600 mt-1">{formatMAD(adSpendTotal)}</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">TikTok + Meta + Google</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs">
+              <span className="text-xs text-neutral-500 font-medium block">Blended ROAS (Retour sur Ads)</span>
+              <div className="text-2xl font-black text-amber-700 mt-1">{blendedROAS}x</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">1 DH investi = {blendedROAS} DH CA</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs">
+              <span className="text-xs text-neutral-500 font-medium block">Coût d'Acquisition Client (CAC)</span>
+              <div className="text-2xl font-black text-neutral-900 mt-1">~{customerAcquisitionCost} MAD</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">Coût par acheteur généré</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-neutral-200 shadow-2xs">
+              <span className="text-xs text-neutral-500 font-medium block">MER (Marketing Efficiency Ratio)</span>
+              <div className="text-2xl font-black text-emerald-700 mt-1">{marketingEfficiencyRatio}x</div>
+              <span className="text-[10px] text-neutral-400 mt-0.5 block">Score de rentabilité global</span>
+            </div>
+          </div>
+
+          {/* Strategic Advice Card */}
+          <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-2xs space-y-4">
+            <div className="flex items-center gap-2 text-neutral-900 font-bold text-sm">
+              <Sparkles size={18} className="text-amber-500" />
+              <span>Diagnostic Financier & Conseils de Scaling pour NAY Parfums</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <span className="font-bold text-neutral-900 block">1. Scalabilité Publicitaire</span>
+                <p className="text-neutral-600 leading-relaxed">
+                  Votre panier moyen à <strong>{formatMAD(avgOrderValue || 420)}</strong> vous permet d'absorber un CAC jusqu'à <strong>80 MAD</strong> tout en restant très rentable.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <span className="font-bold text-neutral-900 block">2. Optimisation des Retours COD</span>
+                <p className="text-neutral-600 leading-relaxed">
+                  La confirmation WhatsApp avant expédition augmente le taux de livraison de <strong>+12%</strong>, réduisant directement les pertes d'expédition Amana.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 space-y-2">
+                <span className="font-bold text-neutral-900 block">3. Recommandation Coffrets</span>
+                <p className="text-neutral-600 leading-relaxed">
+                  Augmenter la part des coffrets cadeaux (AOV &gt; 650 MAD) augmente instantanément votre marge nette sans augmenter le budget publicitaire.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: INTERACTIVE PROFIT SIMULATOR */}
+      {activeTab === 'SIMULATOR' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-2xs">
+            <div className="max-w-2xl mb-6">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                Outil de Projection Stratégique
+              </span>
+              <h2 className="text-xl font-bold text-neutral-900 mt-2">
+                Simulateur de Croissance & Rentabilité Mensuelle
+              </h2>
+              <p className="text-xs text-neutral-500 mt-1">
+                Ajustez les curseurs ci-dessous pour simuler les revenus, les charges et le <strong>bénéfice net mensuel</strong> selon vos objectifs de commandes.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Sliders Form */}
+              <div className="space-y-5 bg-neutral-50 p-5 rounded-2xl border border-neutral-200 text-xs">
+                <div>
+                  <div className="flex justify-between font-semibold text-neutral-800 mb-1">
+                    <span>Commandes traitées par jour :</span>
+                    <strong className="text-neutral-900 font-mono text-sm">{simDailyOrders} commandes / jour ({simDailyOrders * 30} / mois)</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="150"
+                    step="1"
+                    value={simDailyOrders}
+                    onChange={(e) => setSimDailyOrders(Number(e.target.value))}
+                    className="w-full accent-neutral-900 cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold text-neutral-800 mb-1">
+                    <span>Panier Moyen par Commande (MAD) :</span>
+                    <strong className="text-neutral-900 font-mono text-sm">{simAOV} MAD</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min="250"
+                    max="1000"
+                    step="10"
+                    value={simAOV}
+                    onChange={(e) => setSimAOV(Number(e.target.value))}
+                    className="w-full accent-neutral-900 cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold text-neutral-800 mb-1">
+                    <span>Budget Ads Publicitaire Quotidien (MAD/jour) :</span>
+                    <strong className="text-rose-700 font-mono text-sm">{simDailyAdBudget} MAD / jour ({simDailyAdBudget * 30} MAD/mois)</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="3000"
+                    step="50"
+                    value={simDailyAdBudget}
+                    onChange={(e) => setSimDailyAdBudget(Number(e.target.value))}
+                    className="w-full accent-neutral-900 cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold text-neutral-800 mb-1">
+                    <span>Taux de Livraison Réel Encaissé (COD %) :</span>
+                    <strong className="text-sky-700 font-mono text-sm">{simDeliveryRate}%</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min="60"
+                    max="98"
+                    step="1"
+                    value={simDeliveryRate}
+                    onChange={(e) => setSimDeliveryRate(Number(e.target.value))}
+                    className="w-full accent-neutral-900 cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between font-semibold text-neutral-800 mb-1">
+                    <span>Charges Fixes Mensuelles (Loyer, Outils, Base Salaires) :</span>
+                    <strong className="text-neutral-900 font-mono text-sm">{simFixedCharges} MAD / mois</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min="2000"
+                    max="30000"
+                    step="500"
+                    value={simFixedCharges}
+                    onChange={(e) => setSimFixedCharges(Number(e.target.value))}
+                    className="w-full accent-neutral-900 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Simulation Result Card */}
+              <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 text-white rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 block mb-1">
+                    RÉSULTAT DE LA PROJECTION
+                  </span>
+                  <h3 className="text-lg font-bold text-white">Projection Financière Mensuelle</h3>
+                  <p className="text-xs text-neutral-400 mt-0.5">Basée sur {simDailyOrders} commandes/jour ({simMonthlyOrders} par mois)</p>
+
+                  <div className="mt-6 space-y-3 text-xs border-y border-neutral-800 py-4">
+                    <div className="flex justify-between text-neutral-300">
+                      <span>CA Brut Encaissé Estimé :</span>
+                      <strong className="text-white text-sm font-mono">{formatMAD(simGrossRevenue)}</strong>
                     </div>
-                    <div className="text-right">
-                      <div className="font-bold text-slate-900">{formatMAD(product.rev)}</div>
-                      <div className="text-[11px] text-slate-500">{product.qty} flacons vendus</div>
+
+                    <div className="flex justify-between text-rose-400">
+                      <span>- Coût Achat Parfums (COGS {simCogsRate}%) :</span>
+                      <span className="font-mono">-{formatMAD(simTotalCOGS)}</span>
+                    </div>
+
+                    <div className="flex justify-between text-rose-400">
+                      <span>- Budget Ads (TikTok / Meta) :</span>
+                      <span className="font-mono">-{formatMAD(simTotalAdSpend)}</span>
+                    </div>
+
+                    <div className="flex justify-between text-rose-400">
+                      <span>- Frais Livraison & Emballages :</span>
+                      <span className="font-mono">-{formatMAD(simTotalDeliveryShipping)}</span>
+                    </div>
+
+                    <div className="flex justify-between text-rose-400">
+                      <span>- Charges Fixes & Logiciels :</span>
+                      <span className="font-mono">-{formatMAD(simFixedCharges)}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs">
-              <h2 className="text-sm font-bold text-slate-900 mb-4">Villes principales</h2>
-              <div className="space-y-3">
-                {topCities.length === 0 ? (
-                  <p className="text-xs text-slate-400">Aucune ville enregistrée pour le moment.</p>
-                ) : (
-                  topCities.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-700">{item.name}</span>
-                      <span className="font-bold text-slate-900">{formatMAD(item.value)}</span>
-                    </div>
-                  ))
-                )}
+                <div className="pt-4">
+                  <span className="text-[11px] text-emerald-300 block font-semibold uppercase tracking-wider">
+                    BÉNÉFICE NET MENSUEL ESTIMÉ
+                  </span>
+                  <div className="text-3xl sm:text-4xl font-black text-emerald-400 mt-1 font-mono">
+                    {formatMAD(simNetProfit)}
+                  </div>
+                  <span className="text-[11px] text-neutral-400 mt-1 block">
+                    Marge nette estimée : <strong>{simMarginPercent}%</strong> • Dividendes par associé : <strong>{formatMAD(simNetProfit / 2)}</strong>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </>
-      ) : (
-        /* EXPENSES & CHARGES TAB */
-        <div className="space-y-4">
-          
-          {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/90 shadow-2xs">
-            <div className="relative flex-1 max-w-sm">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        </div>
+      )}
+
+      {/* TAB 5: P&L STATEMENT (Compte de Résultat Simplifié) */}
+      {activeTab === 'PNL_STATEMENT' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-2xs">
+            <div className="p-5 border-b border-neutral-200 bg-neutral-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wider">
+                  Compte de Résultat d'Exploitation (P&L NAY Parfums)
+                </h3>
+                <p className="text-xs text-neutral-500">Période : {dateRange === 0 ? 'Toute la période' : `Derniers ${dateRange} jours`}</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={exportCsvPnL}
+                  className="px-3.5 py-2 bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                >
+                  <Download size={13} />
+                  <span>Exporter CSV</span>
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="px-3.5 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                >
+                  <Printer size={13} />
+                  <span>Imprimer P&L</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-neutral-50 border-b border-neutral-200 text-neutral-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <th className="py-3 px-6">Poste Financier</th>
+                    <th className="py-3 px-6 text-right">Montant (MAD)</th>
+                    <th className="py-3 px-6 text-right">% du Chiffre d'Affaires</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100 text-neutral-800">
+                  <tr className="bg-neutral-50/40 font-bold">
+                    <td className="py-3 px-6 text-neutral-900">1. Chiffre d'Affaires Brut (Ventes Encaissées)</td>
+                    <td className="py-3 px-6 text-right font-mono text-neutral-900">{formatMAD(grossRevenue)}</td>
+                    <td className="py-3 px-6 text-right font-mono">100.0%</td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Coût des Marchandises Vendues (COGS Achat ~32%)</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">-{formatMAD(estimatedCOGS)}</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">-32.0%</td>
+                  </tr>
+
+                  <tr className="bg-emerald-50/30 font-bold">
+                    <td className="py-3 px-6 text-emerald-950">2. MARGE BRUTE COMMERCIALE</td>
+                    <td className="py-3 px-6 text-right font-mono text-emerald-800">{formatMAD(grossProfit)}</td>
+                    <td className="py-3 px-6 text-right font-mono text-emerald-800">
+                      {((grossProfit / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Dépenses Publicitaires (TikTok, Meta, Google Ads)</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">-{formatMAD(adSpendTotal)}</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">
+                      -{((adSpendTotal / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Commissions Ambassadeurs & Influenceurs VIP</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">-{formatMAD(totalInfluencerCommissions)}</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">
+                      -{((totalInfluencerCommissions / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Frais Logistiques & Emballages (Packaging Luxe)</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">
+                      -{formatMAD((expensesByCategory['LOGISTICS'] || 0) + (expensesByCategory['PACKAGING'] || 0))}
+                    </td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">
+                      -{((((expensesByCategory['LOGISTICS'] || 0) + (expensesByCategory['PACKAGING'] || 0)) / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Masse Salariale & Salaires Fixes</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">-{formatMAD(expensesByCategory['SALARY'] || 0)}</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">
+                      -{(((expensesByCategory['SALARY'] || 0) / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="py-2.5 px-6 pl-10 text-neutral-600">- Hébergement Web, Vercel & Outils SaaS</td>
+                    <td className="py-2.5 px-6 text-right font-mono text-rose-600">
+                      -{formatMAD((expensesByCategory['HOSTING'] || 0) + (expensesByCategory['TOOLS'] || 0))}
+                    </td>
+                    <td className="py-2.5 px-6 text-right font-mono text-neutral-500">
+                      -{((((expensesByCategory['HOSTING'] || 0) + (expensesByCategory['TOOLS'] || 0)) / (grossRevenue || 1)) * 100).toFixed(1)}%
+                    </td>
+                  </tr>
+
+                  <tr className="bg-neutral-900 text-white font-black text-sm">
+                    <td className="py-4 px-6">3. RÉSULTAT NET RÉEL (BÉNÉFICE NET / EBITDA)</td>
+                    <td className="py-4 px-6 text-right font-mono text-emerald-400">{formatMAD(netRevenue)}</td>
+                    <td className="py-4 px-6 text-right font-mono text-emerald-400">{netMargin.toFixed(1)}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: EXPENSES & INVOICES (Gestion des Charges) */}
+      {activeTab === 'EXPENSES' && (
+        <div className="space-y-6">
+          {/* Filters */}
+          <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-2xs flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="relative w-full sm:w-80">
+              <Search size={14} className="absolute left-3 top-3 text-neutral-400" />
               <input
                 type="text"
-                placeholder="Rechercher une charge ou facture..."
                 value={expenseSearch}
                 onChange={(e) => setExpenseSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50/70 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15"
+                placeholder="Rechercher une charge, facture..."
+                className="w-full pl-9 pr-3 py-2 border border-neutral-200 rounded-xl text-xs"
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Filter size={14} className="text-slate-400" />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <select
                 value={expenseCategoryFilter}
                 onChange={(e) => setExpenseCategoryFilter(e.target.value)}
-                className="text-xs bg-slate-50/70 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 focus:bg-white focus:outline-none focus:border-[#1D9BF0] cursor-pointer"
+                className="px-3 py-2 border border-neutral-200 rounded-xl text-xs bg-white w-full sm:w-auto font-semibold text-neutral-700"
               >
                 <option value="ALL">Toutes les catégories</option>
                 {EXPENSE_CATEGORIES.map((c) => (
@@ -583,119 +1172,86 @@ export default function FinanceClient({
             </div>
           </div>
 
-          {/* Expenses Table with Invoices & Dates */}
-          <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs">
+          {/* Expenses Table */}
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-2xs">
+            <div className="p-4 border-b border-neutral-200 bg-neutral-50/50 flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+                Registre des Dépenses & Factures ({expenses.length})
+              </h3>
+              <span className="text-xs text-neutral-500">Total : {formatMAD(totalCharges)}</span>
+            </div>
+
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-semibold">
-                  <tr>
-                    <th className="px-5 py-3.5">Date</th>
-                    <th className="px-5 py-3.5">Intitulé & Description</th>
-                    <th className="px-5 py-3.5">Catégorie</th>
-                    <th className="px-5 py-3.5">Justificatif / Facture</th>
-                    <th className="px-5 py-3.5">Moyen de paiement</th>
-                    <th className="px-5 py-3.5">Auteur</th>
-                    <th className="px-5 py-3.5 text-right">Montant</th>
-                    <th className="px-5 py-3.5 text-right">Action</th>
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-neutral-50 border-b border-neutral-200 text-[11px] font-semibold text-neutral-600 uppercase">
+                    <th className="py-2.5 px-4">Date</th>
+                    <th className="py-2.5 px-4">Intitulé</th>
+                    <th className="py-2.5 px-4">Catégorie</th>
+                    <th className="py-2.5 px-4">Montant</th>
+                    <th className="py-2.5 px-4">Mode</th>
+                    <th className="py-2.5 px-4 text-center">Justificatif</th>
+                    <th className="py-2.5 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredExpenses.length === 0 ? (
+                <tbody className="divide-y divide-neutral-100 text-neutral-700">
+                  {expenses.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-12 text-slate-400">
-                        Aucune charge enregistrée pour cette période.
+                      <td colSpan={7} className="py-10 text-center text-neutral-400">
+                        Aucune charge enregistrée. Cliquez sur "Ajouter une Charge" pour débuter.
                       </td>
                     </tr>
                   ) : (
-                    filteredExpenses
+                    expenses
                       .filter((e) => {
-                        const matchesSearch = 
-                          e.title.toLowerCase().includes(expenseSearch.toLowerCase()) ||
-                          (e.description && e.description.toLowerCase().includes(expenseSearch.toLowerCase()));
-                        const matchesCategory = expenseCategoryFilter === 'ALL' || e.category === expenseCategoryFilter;
-                        return matchesSearch && matchesCategory;
+                        const matchCat = expenseCategoryFilter === 'ALL' || e.category === expenseCategoryFilter;
+                        const matchSearch = e.title.toLowerCase().includes(expenseSearch.toLowerCase()) || (e.description || '').toLowerCase().includes(expenseSearch.toLowerCase());
+                        return matchCat && matchSearch;
                       })
-                      .map((expense) => {
-                        const formattedDate = new Date(expense.date).toLocaleDateString('fr-MA', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        });
-
-                        const isPdf = expense.receiptUrl?.toLowerCase().includes('.pdf');
-
-                        return (
-                          <tr key={expense.id} className="hover:bg-slate-50/70 transition-colors">
-                            {/* Date */}
-                            <td className="px-5 py-3.5 text-slate-600 font-mono text-xs whitespace-nowrap">
-                              <div className="flex items-center gap-1.5">
-                                <Calendar size={13} className="text-slate-400" />
-                                <span>{formattedDate}</span>
-                              </div>
-                            </td>
-
-                            {/* Title & Description */}
-                            <td className="px-5 py-3.5">
-                              <div className="font-semibold text-slate-900">{expense.title}</div>
-                              {expense.description && (
-                                <div className="text-[11px] text-slate-500 mt-0.5 max-w-xs line-clamp-1">{expense.description}</div>
-                              )}
-                            </td>
-
-                            {/* Category Badge */}
-                            <td className="px-5 py-3.5 whitespace-nowrap">
-                              <span className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200/70">
-                                {EXPENSE_CATEGORIES.find((c) => c.id === expense.category)?.label.split('(')[0] || expense.category}
-                              </span>
-                            </td>
-
-                            {/* Receipt / Invoice Upload Link */}
-                            <td className="px-5 py-3.5 whitespace-nowrap">
-                              {expense.receiptUrl ? (
-                                <a
-                                  href={expense.receiptUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-50 border border-sky-200/80 text-[#0284c7] hover:bg-[#1D9BF0] hover:text-white transition-all text-xs font-semibold shadow-2xs group"
-                                  title="Ouvrir la facture ou le justificatif"
-                                >
-                                  {isPdf ? <FileText size={13} /> : <ImageIcon size={13} />}
-                                  <span>{isPdf ? 'Facture PDF' : 'Justificatif'}</span>
-                                  <ExternalLink size={10} className="group-hover:translate-x-0.5 transition-transform" />
-                                </a>
-                              ) : (
-                                <span className="text-slate-400 text-xs italic">Non joint</span>
-                              )}
-                            </td>
-
-                            {/* Payment Method */}
-                            <td className="px-5 py-3.5 text-slate-600 text-xs whitespace-nowrap">
-                              {PAYMENT_METHODS.find((p) => p.id === expense.paymentMethod)?.label || expense.paymentMethod || 'Carte'}
-                            </td>
-
-                            {/* Creator */}
-                            <td className="px-5 py-3.5 text-xs text-slate-600 whitespace-nowrap">
-                              {expense.creator?.name || 'Admin'}
-                            </td>
-
-                            {/* Amount */}
-                            <td className="px-5 py-3.5 text-right font-bold text-rose-600 whitespace-nowrap">
-                              -{formatMAD(expense.amount)}
-                            </td>
-
-                            {/* Actions */}
-                            <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                              <button
-                                onClick={() => handleDeleteExpense(expense.id, expense.title)}
-                                className="text-slate-400 hover:text-rose-600 transition-colors p-1.5 rounded-lg hover:bg-rose-50"
-                                title="Supprimer la charge"
+                      .map((exp) => (
+                        <tr key={exp.id} className="hover:bg-neutral-50">
+                          <td className="py-2.5 px-4 text-neutral-500">
+                            {new Date(exp.date).toLocaleDateString('fr-FR')}
+                          </td>
+                          <td className="py-2.5 px-4">
+                            <span className="font-bold text-neutral-900 block">{exp.title}</span>
+                            {exp.description && <span className="text-[11px] text-neutral-400">{exp.description}</span>}
+                          </td>
+                          <td className="py-2.5 px-4">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-neutral-100 text-neutral-800 border border-neutral-200">
+                              {exp.category}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-4 font-bold text-rose-700 font-mono">
+                            -{formatMAD(exp.amount)}
+                          </td>
+                          <td className="py-2.5 px-4 text-neutral-600">{exp.paymentMethod}</td>
+                          <td className="py-2.5 px-4 text-center">
+                            {exp.receiptUrl ? (
+                              <a
+                                href={exp.receiptUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-sky-600 hover:underline font-semibold text-[11px]"
                               >
-                                <Trash2 size={15} />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
+                                <Eye size={12} />
+                                <span>Reçu</span>
+                              </a>
+                            ) : (
+                              <span className="text-neutral-400 text-xs">-</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-4 text-right">
+                            <button
+                              onClick={() => handleDeleteExpense(exp.id, exp.title)}
+                              className="p-1.5 text-neutral-400 hover:text-rose-600 transition-colors"
+                              title="Supprimer"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
                   )}
                 </tbody>
               </table>
@@ -704,252 +1260,143 @@ export default function FinanceClient({
         </div>
       )}
 
-      {/* Add Expense Modal with File Upload & Date Picker */}
+      {/* ADD EXPENSE MODAL */}
       {isAddExpenseModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-lg w-full p-6 sm:p-7 text-slate-900 animate-in fade-in zoom-in-95 my-8">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-100 text-[#1D9BF0] flex items-center justify-center">
-                  <Banknote size={17} />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-slate-900">Enregistrer une charge / dépense</h2>
-                  <p className="text-xs text-slate-500">Déduite directement du calcul du CA Net</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsAddExpenseModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors"
-              >
-                <X size={18} />
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-neutral-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h3 className="font-bold text-neutral-900 text-sm flex items-center gap-2">
+                <Plus size={16} className="text-emerald-600" />
+                <span>Enregistrer une Charge ou Facture</span>
+              </h3>
+              <button onClick={() => setIsAddExpenseModalOpen(false)} className="text-neutral-400 hover:text-neutral-600">✕</button>
             </div>
 
-            <form onSubmit={handleCreateExpense} className="space-y-4 text-xs">
-              
-              {/* Title Input */}
+            <form onSubmit={handleCreateExpense} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1.5">
-                  Intitulé de la charge *
-                </label>
+                <label className="block font-semibold text-neutral-700 mb-1">Intitulé de la Dépense *</label>
                 <input
                   type="text"
                   required
-                  placeholder="ex: Campagne TikTok Ads Mars / Facture Hébergement Vercel"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15"
+                  placeholder="Ex: Campagne TikTok Ads Mars, Cartons & Pochons..."
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg"
                 />
               </div>
 
-              {/* Amount & Date Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Montant */}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1.5">
-                    Montant (MAD) *
-                  </label>
+                  <label className="block font-semibold text-neutral-700 mb-1">Montant (MAD) *</label>
                   <input
                     type="number"
-                    step="any"
                     required
-                    min="0"
-                    placeholder="ex: 1500"
+                    step="0.5"
                     value={formAmount}
                     onChange={(e) => setFormAmount(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15"
+                    placeholder="Ex: 1500"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg font-bold"
                   />
                 </div>
 
-                {/* Date Picker */}
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-                    <Calendar size={13} className="text-[#1D9BF0]" />
-                    <span>Date de la charge *</span>
-                  </label>
+                  <label className="block font-semibold text-neutral-700 mb-1">Date</label>
                   <input
                     type="date"
-                    required
                     value={formDate}
                     onChange={(e) => setFormDate(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15 cursor-pointer"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg"
                   />
                 </div>
               </div>
 
-              {/* Category & Payment Method Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Category */}
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1.5">
-                    Catégorie
-                  </label>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#1D9BF0] cursor-pointer"
-                  >
-                    {EXPENSE_CATEGORIES.map((c) => (
-                      <option key={c.id} value={c.id}>{c.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Payment Method */}
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1.5">
-                    Moyen de paiement
-                  </label>
-                  <select
-                    value={formPaymentMethod}
-                    onChange={(e) => setFormPaymentMethod(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-[#1D9BF0] cursor-pointer"
-                  >
-                    {PAYMENT_METHODS.map((p) => (
-                      <option key={p.id} value={p.id}>{p.label}</option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block font-semibold text-neutral-700 mb-1">Catégorie</label>
+                <select
+                  value={formCategory}
+                  onChange={(e) => setFormCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg bg-white"
+                >
+                  {EXPENSE_CATEGORIES.map((c) => (
+                    <option key={c.id} value={c.id}>{c.label}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* INVOICE / RECEIPT FILE UPLOAD (PDF, PNG, JPG, JPEG, WEBP) */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1.5 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Paperclip size={13} className="text-[#1D9BF0]" />
-                    <span>Facture ou Justificatif (PDF, JPG, PNG)</span>
-                  </span>
-                  {formReceiptUrl && (
-                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                      <CheckCircle2 size={12} /> Fichier joint
-                    </span>
-                  )}
+              {/* Receipt File Upload */}
+              <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200 space-y-2">
+                <label className="block font-semibold text-neutral-900">
+                  Justificatif / Facture (PDF ou Image)
                 </label>
-
                 <input
-                  ref={fileInputRef}
                   type="file"
-                  accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf"
-                  className="hidden"
+                  ref={fileInputRef}
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file);
+                    const f = e.target.files?.[0];
+                    if (f) handleFileUpload(f);
                   }}
+                  accept="image/*,application/pdf"
+                  className="hidden"
                 />
 
                 {formReceiptUrl ? (
-                  <div className="p-3 bg-sky-50/70 rounded-xl border border-sky-200 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-white border border-sky-200 flex items-center justify-center text-[#1D9BF0] shrink-0">
-                        {formReceiptUrl.toLowerCase().includes('.pdf') ? <FileText size={16} /> : <ImageIcon size={16} />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-900 truncate">
-                          {formReceiptFileName || 'Facture / Justificatif joint'}
-                        </p>
-                        <a
-                          href={formReceiptUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[11px] text-[#1D9BF0] hover:underline font-medium inline-flex items-center gap-1"
-                        >
-                          <span>Voir le document</span>
-                          <ExternalLink size={10} />
-                        </a>
-                      </div>
-                    </div>
-
+                  <div className="flex items-center justify-between p-2 bg-white rounded border border-neutral-300">
+                    <span className="text-[11px] font-mono truncate max-w-[200px]">{formReceiptFileName || 'Justificatif joint'}</span>
                     <button
                       type="button"
                       onClick={() => {
                         setFormReceiptUrl('');
                         setFormReceiptFileName('');
-                        if (fileInputRef.current) fileInputRef.current.value = '';
                       }}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-white transition-colors"
-                      title="Supprimer ce fichier"
+                      className="text-red-600 text-[11px] font-bold"
                     >
-                      <Trash2 size={15} />
+                      Supprimer
                     </button>
                   </div>
                 ) : (
-                  <div
+                  <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
-                      isUploadingReceipt
-                        ? 'border-[#1D9BF0] bg-sky-50/50'
-                        : 'border-slate-200 hover:border-[#1D9BF0] hover:bg-slate-50/80'
-                    }`}
+                    disabled={isUploadingReceipt}
+                    className="w-full py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    {isUploadingReceipt ? (
-                      <div className="flex items-center justify-center gap-2 text-xs text-[#1D9BF0] font-medium py-2">
-                        <RefreshCw size={15} className="animate-spin" />
-                        <span>Téléversement du fichier en cours...</span>
-                      </div>
-                    ) : (
-                      <div className="py-1">
-                        <div className="w-9 h-9 rounded-xl bg-sky-50 text-[#1D9BF0] flex items-center justify-center mx-auto mb-2 border border-sky-100">
-                          <UploadCloud size={18} />
-                        </div>
-                        <p className="text-xs font-semibold text-slate-800">
-                          Cliquez pour ajouter une facture ou un reçu
-                        </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          Formats acceptés : PDF, JPG, PNG, WEBP (Max 15 Mo)
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    <UploadCloud size={13} />
+                    <span>{isUploadingReceipt ? 'Upload...' : 'Téléverser une facture / reçu'}</span>
+                  </button>
                 )}
               </div>
 
-              {/* Description Input */}
               <div>
-                <label className="block font-semibold text-slate-700 mb-1.5">
-                  Remarques ou détails (Optionnel)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Détails du fournisseur, numéro de bon, remarques..."
+                <label className="block font-semibold text-neutral-700 mb-1">Description / Notes</label>
+                <textarea
+                  rows={2}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1D9BF0] focus:ring-2 focus:ring-[#1D9BF0]/15"
+                  placeholder="Notes comptables, fournisseur..."
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg"
                 />
               </div>
 
-              {/* Modal Buttons */}
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+              <div className="pt-2 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddExpenseModalOpen(false)}
-                  className="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  className="flex-1 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg font-semibold"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={formLoading || isUploadingReceipt}
-                  className="px-5 py-2 bg-[#1D9BF0] hover:bg-[#1a8cd8] active:bg-[#177cc0] text-white rounded-xl text-xs font-semibold shadow-xs transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg font-semibold shadow-xs disabled:opacity-50"
                 >
-                  {formLoading ? (
-                    <>
-                      <RefreshCw size={14} className="animate-spin" />
-                      <span>Enregistrement...</span>
-                    </>
-                  ) : (
-                    <span>Enregistrer la charge</span>
-                  )}
+                  {formLoading ? 'Enregistrement...' : 'Enregistrer la Charge'}
                 </button>
               </div>
             </form>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

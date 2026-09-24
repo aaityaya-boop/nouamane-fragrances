@@ -71,6 +71,20 @@ export default async function FinancePage() {
     },
   });
 
+  // Fetch affiliates for influencer commission costs
+  const affiliates = await prisma.affiliate.findMany({
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      visits: true,
+      sales: true,
+      revenueGenerated: true,
+      commissionEarned: true,
+      commissionPaid: true,
+    },
+  });
+
   // Fetch visitors for conversion rate
   const visitors = await prisma.visitor.findMany({
     select: {
@@ -84,7 +98,7 @@ export default async function FinancePage() {
     createdAt: v.createdAt.toISOString(),
   }));
 
-  // Fetch product page views to calculate "Winning Products" conversion rate
+  // Fetch product page views
   const productViews = await prisma.pageView.findMany({
     where: { pathname: { contains: '/product/' } },
     select: {
@@ -107,7 +121,7 @@ export default async function FinancePage() {
     }
   });
 
-  // Fetch products
+  // Fetch products with tester prices
   const products = await prisma.product.findMany({
     select: {
       id: true,
@@ -115,24 +129,18 @@ export default async function FinancePage() {
       name: true,
       brandLabel: true,
       price: true,
+      originalPrice: true,
+      testerPrice: true,
       images: true,
       sku: true,
     },
   });
 
-  return (
-    <div className="p-6 md:p-10 max-w-[1600px] mx-auto text-neutral-900 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-            Finance & CA Net
-          </h1>
-          <p className="text-[13px] text-neutral-500 mt-1">
-            Suivi du chiffre d&apos;affaires brut, déduction des charges opérationnelles (Ads, Hébergement, Salaires) et calcul du CA Net réel en MAD.
-          </p>
-        </div>
-      </div>
+  // Fetch customers count for CAC & LTV
+  const customersCount = await prisma.customer.count();
 
+  return (
+    <div className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto text-neutral-900 space-y-6">
       <FinanceClient
         orders={serializedOrders}
         visitors={serializedVisitors}
@@ -140,6 +148,8 @@ export default async function FinancePage() {
         products={products as any}
         initialExpenses={serializedExpenses}
         employees={employees}
+        affiliates={affiliates}
+        customersCount={customersCount}
       />
     </div>
   );
