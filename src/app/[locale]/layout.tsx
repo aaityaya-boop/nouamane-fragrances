@@ -18,7 +18,7 @@ import Script from "next/script";
 import { GoogleTagManager, GoogleTagManagerNoScript } from "@/components/analytics/GoogleTagManager";
 
 const AIChatWidget = dynamic(() => import('@/components/AIChatWidget'));
-const WelcomePopup = dynamic(() => import('@/components/WelcomePopup'), { ssr: false });
+const WelcomePopup = dynamic(() => import('@/components/WelcomePopup'));
 
 const montserrat = Montserrat({
   subsets: ['latin'],
