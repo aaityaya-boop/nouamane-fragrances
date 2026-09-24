@@ -40,6 +40,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { formatMAD } from '@/lib/products';
 
+import Image from 'next/image';
+
 interface OrderItem {
   name?: string;
   quantity?: number;
@@ -257,15 +259,25 @@ export default function AmbassadeurDashboardClient({ ambassador: initialAmbassad
       <header className="border-b border-neutral-200 bg-white sticky top-0 z-30 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-neutral-900 text-white flex items-center justify-center font-serif font-black text-xs">
-              N
+            <div className="w-9 h-9 rounded-xl bg-white border border-sky-200 p-1.5 flex items-center justify-center shadow-2xs">
+              <Image 
+                src="/images/nay/nay-logo-blue.png" 
+                alt="NAY Logo" 
+                width={26} 
+                height={26}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-neutral-900 tracking-tight text-sm sm:text-base">NAY PARFUMS</span>
+                <span className="font-bold text-neutral-900 tracking-wider text-xs sm:text-sm">NAY PARFUMS</span>
                 <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full">
                   VIP Ambassadeur
                 </span>
+              </div>
+              <div className="text-[10px] text-neutral-400 font-medium">
+                Maison de Luxe • Espace Partenaires
               </div>
             </div>
           </div>

@@ -43,8 +43,15 @@ export default function AmbassadeurLoginClient() {
       <div className="max-w-md w-full space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 mb-3 shadow-2xs">
-            <Award className="w-7 h-7" />
+          <div className="w-16 h-16 rounded-2xl bg-white border border-sky-200 p-2 flex items-center justify-center shadow-xs mx-auto mb-3">
+            <Image 
+              src="/images/nay/nay-logo-blue.png" 
+              alt="NAY Logo" 
+              width={48} 
+              height={48}
+              className="w-full h-full object-contain"
+              priority
+            />
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-neutral-100 text-neutral-800 border border-neutral-200">
