@@ -56,6 +56,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://nayparfum.ma",
   },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.svg',
+  },
   openGraph: {
     type: "website",
     locale: "fr_MA",
