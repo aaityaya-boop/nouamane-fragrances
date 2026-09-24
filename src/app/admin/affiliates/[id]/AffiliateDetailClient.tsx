@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -19,7 +19,14 @@ import {
   Calendar,
   Layers,
   Sparkles,
-  QrCode
+  QrCode,
+  Upload,
+  Camera,
+  Eye,
+  X,
+  Download,
+  Image as ImageIcon,
+  ShieldCheck
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatMAD } from '@/lib/products';
@@ -29,12 +36,20 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Payout Modal State
   const [payoutModal, setPayoutModal] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState<number>(0);
   const [payoutMethod, setPayoutMethod] = useState(affiliate.paymentMethod || 'VIREMENT_BANCAIRE');
   const [payoutRef, setPayoutRef] = useState('');
   const [payoutNotes, setPayoutNotes] = useState('');
+  const [proofUrl, setProofUrl] = useState('');
+  const [proofUploading, setProofUploading] = useState(false);
   const [payoutLoading, setPayoutLoading] = useState(false);
+  const proofInputRef = useRef<HTMLInputElement>(null);
+
+  // Proof Image Preview Lightbox
+  const [viewProofUrl, setViewProofUrl] = useState<string | null>(null);
 
   const availableBalance = Math.max(0, affiliate.commissionEarned - (affiliate.commissionPaid || 0));
 
@@ -46,6 +61,33 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
     navigator.clipboard.writeText(vipUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleProofUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setProofUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setProofUrl(data.url);
+      } else {
+        alert(data.error || 'Erreur lors de l\'upload du justificatif');
+      }
+    } catch {
+      alert('Erreur de connexion');
+    } finally {
+      setProofUploading(false);
+    }
   };
 
   const handleRecordPayout = async (e: React.FormEvent) => {
@@ -61,13 +103,15 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
           method: payoutMethod,
           reference: payoutRef,
           notes: payoutNotes,
+          proofUrl: proofUrl || null,
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        alert('Virement enregistré avec succès ! La dépense a été ajoutée automatiquement dans les charges NAY.');
+        alert('Virement enregistré avec succès ! La preuve est désormais visible par l\'ambassadeur.');
         setPayoutModal(false);
+        setProofUrl('');
         router.refresh();
       } else {
         alert(data.error || 'Erreur lors de l\'enregistrement du virement');
@@ -132,6 +176,7 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
           <button
             onClick={() => {
               setPayoutAmount(availableBalance);
+              setProofUrl('');
               setPayoutModal(true);
             }}
             disabled={availableBalance <= 0}
@@ -277,11 +322,11 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
         </div>
       </div>
 
-      {/* Payouts History */}
+      {/* Payouts History with Proof of Virement View */}
       <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-2xs">
         <div className="p-4 border-b border-neutral-200 bg-neutral-50/50 flex items-center justify-between">
           <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-            Historique des Règlements & Virements Effectués ({affiliate.payouts?.length || 0})
+            Historique des Règlements & Justificatifs de Virement ({affiliate.payouts?.length || 0})
           </h3>
           <span className="text-xs text-neutral-500">Total versé : {formatMAD(affiliate.commissionPaid || 0)}</span>
         </div>
@@ -294,13 +339,14 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                 <th className="py-2.5 px-4">Mode</th>
                 <th className="py-2.5 px-4">Référence</th>
                 <th className="py-2.5 px-4">Montant</th>
+                <th className="py-2.5 px-4 text-center">Justificatif / Reçu</th>
                 <th className="py-2.5 px-4">Notes</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-100 text-neutral-700">
               {(!affiliate.payouts || affiliate.payouts.length === 0) ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-neutral-400">
+                  <td colSpan={6} className="py-8 text-center text-neutral-400">
                     Aucun virement enregistré.
                   </td>
                 </tr>
@@ -311,6 +357,19 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                     <td className="py-2.5 px-4 font-semibold text-neutral-800">{p.method}</td>
                     <td className="py-2.5 px-4 font-mono text-neutral-700">{p.reference || '-'}</td>
                     <td className="py-2.5 px-4 font-bold text-emerald-700">{formatMAD(p.amount)}</td>
+                    <td className="py-2.5 px-4 text-center">
+                      {p.proofUrl ? (
+                        <button
+                          onClick={() => setViewProofUrl(p.proofUrl)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                        >
+                          <Eye size={12} />
+                          <span>Voir Reçu</span>
+                        </button>
+                      ) : (
+                        <span className="text-neutral-400 text-xs">-</span>
+                      )}
+                    </td>
                     <td className="py-2.5 px-4 text-neutral-500">{p.notes || '-'}</td>
                   </tr>
                 ))
@@ -320,10 +379,10 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
         </div>
       </div>
 
-      {/* Record Payout Modal */}
+      {/* Record Payout Modal with Proof Upload */}
       {payoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-neutral-200 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-neutral-200 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
               <h3 className="font-bold text-neutral-900 text-sm flex items-center gap-2">
                 <Wallet size={16} className="text-emerald-600" />
@@ -332,7 +391,7 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
               <button onClick={() => setPayoutModal(false)} className="text-neutral-400 hover:text-neutral-600">✕</button>
             </div>
 
-            <form onSubmit={handleRecordPayout} className="space-y-4 text-xs">
+            <form onSubmit={handleRecordPayout} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-semibold text-neutral-700 mb-1">Montant à verser (MAD) *</label>
                 <input
@@ -342,7 +401,7 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                   step="5"
                   value={payoutAmount}
                   onChange={(e) => setPayoutAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm font-bold text-neutral-900"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg text-sm font-bold text-neutral-900 focus:outline-none focus:border-neutral-900"
                 />
               </div>
 
@@ -353,7 +412,7 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                   onChange={(e) => setPayoutMethod(e.target.value)}
                   className="w-full px-3 py-2 border border-neutral-200 rounded-lg bg-white"
                 >
-                  <option value="VIREMENT_BANCAIRE">Virement Bancaire (CIH / Attijari / Autre)</option>
+                  <option value="VIREMENT_BANCAIRE">Virement Bancaire (CIH / Attijari / BMCE / Autre)</option>
                   <option value="CASH_PLUS">Cash Plus</option>
                   <option value="WAFA_CASH">Wafacash</option>
                   <option value="ESPECES">Espèces (Remise en mains propres)</option>
@@ -369,6 +428,47 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                   placeholder="Ex: VIR-CIH-849204"
                   className="w-full px-3 py-2 border border-neutral-200 rounded-lg"
                 />
+              </div>
+
+              {/* Photo du Justificatif de Virement (Capture CIH / Reçu) */}
+              <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200 space-y-2">
+                <label className="block font-semibold text-neutral-900">
+                  Photo / Reçu du Virement (Visible par l'ambassadeur)
+                </label>
+                <p className="text-[11px] text-neutral-500">
+                  Capture d'écran du virement CIH/Attijari ou reçu Cash Plus pour preuve.
+                </p>
+
+                <input
+                  type="file"
+                  ref={proofInputRef}
+                  onChange={handleProofUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+
+                {proofUrl ? (
+                  <div className="relative rounded-lg overflow-hidden border border-neutral-300 max-h-36 bg-white flex items-center justify-center">
+                    <img src={proofUrl} alt="Reçu" className="max-h-36 object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => setProofUrl('')}
+                      className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-md text-[10px] font-bold"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => proofInputRef.current?.click()}
+                    disabled={proofUploading}
+                    className="w-full py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Camera size={13} />
+                    <span>{proofUploading ? 'Upload en cours...' : 'Joindre la photo du reçu'}</span>
+                  </button>
+                )}
               </div>
 
               <div>
@@ -392,13 +492,54 @@ export default function AffiliateDetailClient({ affiliate }: { affiliate: any })
                 </button>
                 <button
                   type="submit"
-                  disabled={payoutLoading}
+                  disabled={payoutLoading || proofUploading}
                   className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold shadow-xs disabled:opacity-50"
                 >
                   {payoutLoading ? 'Enregistrement...' : 'Confirmer le Virement'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal for Proof Image */}
+      {viewProofUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xs animate-in fade-in">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 max-w-2xl w-full shadow-2xl border border-neutral-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
+              <div className="flex items-center gap-2 text-neutral-900 font-bold text-xs uppercase tracking-wider">
+                <ImageIcon size={16} className="text-amber-600" />
+                <span>Justificatif de Virement Bancaire</span>
+              </div>
+              <button
+                onClick={() => setViewProofUrl(null)}
+                className="p-1 rounded-md text-neutral-400 hover:text-neutral-600 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="max-h-[70vh] overflow-auto flex items-center justify-center bg-neutral-50 rounded-xl p-2">
+              <img
+                src={viewProofUrl}
+                alt="Reçu de Virement"
+                className="max-w-full max-h-[65vh] object-contain rounded-lg shadow-sm"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <a
+                href={viewProofUrl}
+                download="justificatif-virement.jpg"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 bg-neutral-900 hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <Download size={13} />
+                <span>Télécharger le Justificatif</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
