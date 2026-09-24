@@ -82,6 +82,7 @@ const CRM_ITEMS: MenuItem[] = [
 ];
 
 const MARKETING_ITEMS: MenuItem[] = [
+  { href: '/admin/ads', label: 'Gestionnaire Pubs (Meta, TikTok)', icon: <TrendingUp size={16} />, permission: 'marketing.view_analytics' },
   { href: '/admin/creatives', label: 'Créatifs Pubs (Ads UGC)', icon: <Film size={16} />, permission: 'marketing.manage_creatives' },
   { href: '/admin/marketing', label: 'Marketing & Rétention', icon: <TrendingUp size={16} />, permission: 'marketing.view' },
   { href: '/admin/marketing/campaigns', label: 'Campagnes & SMS', icon: <Mail size={16} />, permission: 'marketing.manage_campaigns' },

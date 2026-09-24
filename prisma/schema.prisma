@@ -1160,3 +1160,97 @@ model AdminChatGroup {
 
   @@index([slug])
 }
+
+// ==========================================
+// AD PLATFORMS & SPEND TRACKING MODELS
+// ==========================================
+
+model AdAccountIntegration {
+  id                String          @id @default(cuid())
+  platform          String          // META, TIKTOK, GOOGLE, SNAPCHAT, INFLUENCE
+  accountName       String?         // e.g. "NAY Parfum Meta Ads", "TikTok Business"
+  accountId         String          // e.g. "act_123456789", "adv_987654"
+  accessToken       String?
+  refreshToken      String?
+  pixelId           String?
+  currency          String          @default("MAD") // MAD, USD, EUR
+  exchangeRateToMAD Float           @default(10.0) // 1 USD = 10 MAD
+  status            String          @default("DISCONNECTED") // CONNECTED, DISCONNECTED, ERROR, MOCK_MODE
+  autoSyncEnabled   Boolean         @default(true)
+  lastSyncAt        DateTime?
+  lastSyncStatus    String?         // SUCCESS, FAILED
+  errorMessage      String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  campaigns         AdCampaign[]
+  dailySpends       AdDailySpend[]
+
+  @@unique([platform, accountId])
+  @@index([platform])
+  @@index([status])
+}
+
+model AdCampaign {
+  id                 String                @id @default(cuid())
+  integrationId      String?
+  integration        AdAccountIntegration? @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  platform           String                // META, TIKTOK, GOOGLE, SNAPCHAT, INFLUENCE
+  externalCampaignId String?               // Meta or TikTok campaign ID
+  name               String
+  status             String                @default("ACTIVE") // ACTIVE, PAUSED, ARCHIVED, DRAFT
+  objective          String?               // CONVERSIONS, TRAFFIC, LEADS, SALES, AWARENESS
+  dailyBudget        Float?                @default(0) // In MAD
+  totalBudget        Float?                @default(0)
+  totalSpend         Float                 @default(0) // In MAD
+  impressions        Int                   @default(0)
+  clicks             Int                   @default(0)
+  ctr                Float                 @default(0) // %
+  cpc                Float                 @default(0) // In MAD
+  conversions        Int                   @default(0) // Purchases/Orders
+  conversionValue    Float                 @default(0) // Revenue in MAD
+  cpa                Float                 @default(0) // Cost per Acquisition in MAD
+  roas               Float                 @default(0) // ROAS multiplier
+  recommendation     String?               // SCALE, OPTIMIZE, PAUSE, LEARNING
+  targetAudience     String?
+  startDate          DateTime?
+  endDate            DateTime?
+  lastSyncedAt       DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  dailyMetrics       AdDailySpend[]
+
+  @@index([platform])
+  @@index([status])
+  @@index([integrationId])
+}
+
+model AdDailySpend {
+  id               String                @id @default(cuid())
+  integrationId    String?
+  integration      AdAccountIntegration? @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  campaignId       String?
+  campaign         AdCampaign?           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  platform         String                // META, TIKTOK, GOOGLE, SNAPCHAT, INFLUENCE
+  date             DateTime              // Day of spend
+  spend            Float                 @default(0) // In MAD
+  impressions      Int                   @default(0)
+  clicks           Int                   @default(0)
+  conversions      Int                   @default(0)
+  revenue          Float                 @default(0)
+  roas             Float                 @default(0)
+  cpa              Float                 @default(0)
+  cpc              Float                 @default(0)
+  notes            String?
+  syncedFromApi    Boolean               @default(false)
+  syncedToExpenses Boolean               @default(false)
+  expenseId        String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@index([platform])
+  @@index([date])
+  @@index([campaignId])
+}
+
