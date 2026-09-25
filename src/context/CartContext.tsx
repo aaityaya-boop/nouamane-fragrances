@@ -24,7 +24,40 @@ export type AppliedPromo = {
   code: string;
   type: string;
   value: number;
+  applicableScope?: string; // 'ALL' | 'SPECIFIC_PRODUCTS'
+  productIds?: number[];
+  minOrderAmount?: number | null;
+  description?: string | null;
 };
+
+export function calculatePromoDiscount(cart: CartItem[], appliedPromo: AppliedPromo | null): number {
+  if (!appliedPromo || !cart || cart.length === 0) return 0;
+
+  let eligibleSubtotal = 0;
+  if (
+    appliedPromo.applicableScope === 'SPECIFIC_PRODUCTS' &&
+    Array.isArray(appliedPromo.productIds) &&
+    appliedPromo.productIds.length > 0
+  ) {
+    const targetIds = new Set(appliedPromo.productIds.map(Number));
+    eligibleSubtotal = cart
+      .filter((item) => targetIds.has(Number(item.id)))
+      .reduce((sum, item) => sum + item.price * item.quantity, 0);
+  } else {
+    eligibleSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }
+
+  if (eligibleSubtotal <= 0) return 0;
+
+  let discount = 0;
+  if (appliedPromo.type === 'percentage') {
+    discount = eligibleSubtotal * (appliedPromo.value / 100);
+  } else if (appliedPromo.type === 'fixed') {
+    discount = Math.min(appliedPromo.value, eligibleSubtotal);
+  }
+
+  return Math.min(Math.round(discount * 100) / 100, eligibleSubtotal);
+}
 
 type AddInput = {
   id: number;

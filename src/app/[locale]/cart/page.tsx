@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-import { useCart } from '@/context/CartContext';
+import { useCart, calculatePromoDiscount } from '@/context/CartContext';
 import { usePathname } from 'next/navigation';
 import { formatMAD } from '@/lib/products';
 import { Plus, Minus, Trash2, ArrowRight, ShoppingBag, Truck, ShieldCheck, Gift, Tag, CheckCircle2, XCircle } from 'lucide-react';
@@ -28,19 +28,8 @@ export default function CartPage() {
   const [promoSuccess, setPromoSuccess] = React.useState('');
   const [isApplyingPromo, setIsApplyingPromo] = React.useState(false);
 
-  // Calculate discount
-  let discount = 0;
-  if (appliedPromo) {
-    if (appliedPromo.type === 'percentage') {
-      discount = subtotal * (appliedPromo.value / 100);
-    } else if (appliedPromo.type === 'fixed') {
-      discount = appliedPromo.value;
-    }
-    if (discount > subtotal) {
-      discount = subtotal;
-    }
-  }
-
+  // Calculate discount using accurate scope and product targeting
+  const discount = calculatePromoDiscount(cart, appliedPromo);
   const total = subtotal - discount + shipping;
 
   const handleApplyPromo = async () => {
@@ -53,7 +42,11 @@ export default function CartPage() {
       const res = await fetch('/api/checkout/validate-promo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: promoInput })
+        body: JSON.stringify({
+          code: promoInput.trim(),
+          items: cart,
+          subtotal,
+        })
       });
       const data = await res.json();
       
@@ -61,16 +54,21 @@ export default function CartPage() {
         applyPromo({
           code: data.code,
           type: data.type,
-          value: data.value
+          value: data.value,
+          applicableScope: data.applicableScope,
+          productIds: data.productIds,
+          minOrderAmount: data.minOrderAmount,
+          description: data.description,
         });
-        setPromoSuccess(`Code ${data.code} appliqué !`);
+        const scopeNotice = data.applicableScope === 'SPECIFIC_PRODUCTS' ? ' (sur produits sélectionnés)' : '';
+        setPromoSuccess(`Code ${data.code} appliqué avec succès${scopeNotice} !`);
         setPromoInput('');
       } else {
-        setPromoError(data.error || 'Code invalide');
+        setPromoError(data.error || 'Code promo invalide');
         removePromo();
       }
     } catch (err) {
-      setPromoError('Erreur de validation');
+      setPromoError('Erreur de validation du code promo');
       removePromo();
     } finally {
       setIsApplyingPromo(false);

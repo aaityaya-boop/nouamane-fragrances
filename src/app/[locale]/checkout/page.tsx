@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useCart } from '@/context/CartContext';
+import { useCart, calculatePromoDiscount } from '@/context/CartContext';
 import { formatMAD, MOROCCAN_CITIES } from '@/lib/products';
 import {
   Lock,
@@ -38,20 +38,8 @@ export default function CheckoutPage() {
   const subtotal = getSubtotal();
   const shipping = shippingFee || 0;
   
-  // Calculate discount
-  let discount = 0;
-  if (appliedPromo) {
-    if (appliedPromo.type === 'percentage') {
-      discount = subtotal * (appliedPromo.value / 100);
-    } else if (appliedPromo.type === 'fixed') {
-      discount = appliedPromo.value;
-    }
-    // Prevent discount from exceeding subtotal
-    if (discount > subtotal) {
-      discount = subtotal;
-    }
-  }
-  
+  // Calculate discount using accurate scope and product targeting
+  const discount = calculatePromoDiscount(cart, appliedPromo);
   const total = subtotal - discount + shipping;
 
   // Form state
@@ -97,7 +85,11 @@ export default function CheckoutPage() {
       const res = await fetch('/api/checkout/validate-promo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: promoInput })
+        body: JSON.stringify({
+          code: promoInput.trim(),
+          items: cart,
+          subtotal,
+        })
       });
       const data = await res.json();
       
@@ -105,16 +97,21 @@ export default function CheckoutPage() {
         applyPromo({
           code: data.code,
           type: data.type,
-          value: data.value
+          value: data.value,
+          applicableScope: data.applicableScope,
+          productIds: data.productIds,
+          minOrderAmount: data.minOrderAmount,
+          description: data.description,
         });
-        setPromoSuccess(`Code ${data.code} appliqué !`);
+        const scopeNotice = data.applicableScope === 'SPECIFIC_PRODUCTS' ? ' (sur produits sélectionnés)' : '';
+        setPromoSuccess(`Code ${data.code} appliqué avec succès${scopeNotice} !`);
         setPromoInput('');
       } else {
-        setPromoError(data.error || 'Code invalide');
+        setPromoError(data.error || 'Code promo invalide');
         removePromo();
       }
     } catch (err) {
-      setPromoError('Erreur de validation');
+      setPromoError('Erreur de validation du code promo');
       removePromo();
     } finally {
       setIsApplyingPromo(false);
