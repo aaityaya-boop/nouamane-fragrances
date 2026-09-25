@@ -99,11 +99,17 @@ export default function CheckoutPage() {
           type: data.type,
           value: data.value,
           applicableScope: data.applicableScope,
+          categories: data.categories,
           productIds: data.productIds,
           minOrderAmount: data.minOrderAmount,
           description: data.description,
         });
-        const scopeNotice = data.applicableScope === 'SPECIFIC_PRODUCTS' ? ' (sur produits sélectionnés)' : '';
+        const scopeNotice =
+          data.applicableScope === 'SPECIFIC_PRODUCTS'
+            ? ' (sur parfums sélectionnés)'
+            : data.applicableScope === 'CATEGORIES'
+            ? ' (sur catégories ciblées)'
+            : '';
         setPromoSuccess(`Code ${data.code} appliqué avec succès${scopeNotice} !`);
         setPromoInput('');
       } else {

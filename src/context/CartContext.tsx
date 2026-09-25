@@ -24,7 +24,8 @@ export type AppliedPromo = {
   code: string;
   type: string;
   value: number;
-  applicableScope?: string; // 'ALL' | 'SPECIFIC_PRODUCTS'
+  applicableScope?: string; // 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'
+  categories?: string[];
   productIds?: number[];
   minOrderAmount?: number | null;
   description?: string | null;
@@ -35,7 +36,7 @@ export function calculatePromoDiscount(cart: CartItem[], appliedPromo: AppliedPr
 
   let eligibleSubtotal = 0;
   if (
-    appliedPromo.applicableScope === 'SPECIFIC_PRODUCTS' &&
+    (appliedPromo.applicableScope === 'SPECIFIC_PRODUCTS' || appliedPromo.applicableScope === 'CATEGORIES') &&
     Array.isArray(appliedPromo.productIds) &&
     appliedPromo.productIds.length > 0
   ) {

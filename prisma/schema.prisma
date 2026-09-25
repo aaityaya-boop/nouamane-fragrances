@@ -204,8 +204,9 @@ model PromoCode {
   code            String    @unique
   type            String
   value           Float
-  applicableScope String    @default("ALL")
-  productIds      String?
+  applicableScope String    @default("ALL") // 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'
+  categories      String?   // JSON array of category keys/names e.g. '["men", "oriental"]'
+  productIds      String?   // JSON array of product IDs e.g. '[1, 2, 5]'
   minOrderAmount  Float?
   maxUses         Int?
   usageCount      Int       @default(0)

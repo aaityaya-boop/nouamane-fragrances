@@ -15,6 +15,7 @@ import {
   Coins,
   Globe,
   Layers,
+  FolderTree,
   Calendar,
   Eye,
   X,
@@ -25,7 +26,14 @@ import {
   CheckSquare,
   Square,
   Power,
-  Package
+  Package,
+  ChevronDown,
+  ChevronUp,
+  User,
+  Users,
+  Gift,
+  Flame,
+  Crown
 } from 'lucide-react';
 
 interface ProductItem {
@@ -33,6 +41,8 @@ interface ProductItem {
   slug: string;
   name: string;
   brandLabel?: string;
+  brandId?: string;
+  subcategory?: string;
   subcategoryLabel?: string;
   gender?: string;
   price: number;
@@ -44,7 +54,8 @@ interface PromoCodeItem {
   code: string;
   type: 'percentage' | 'fixed';
   value: number;
-  applicableScope: 'ALL' | 'SPECIFIC_PRODUCTS';
+  applicableScope: 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS';
+  categories?: string[];
   productIds: number[];
   minOrderAmount?: number | null;
   maxUses?: number | null;
@@ -54,6 +65,15 @@ interface PromoCodeItem {
   isActive: boolean;
   createdAt: string;
 }
+
+const PRESET_CATEGORIES = [
+  { id: 'men', label: 'Parfums Homme', icon: '🧔', desc: 'Tous les parfums pour homme' },
+  { id: 'women', label: 'Parfums Femme', icon: '👩', desc: 'Tous les parfums pour femme' },
+  { id: 'unisex', label: 'Parfums Unisexe', icon: '✨', desc: 'Parfums mixtes & universels' },
+  { id: 'oriental', label: 'Parfums Orientaux', icon: '🕌', desc: 'Notes de oud, ambre & épices' },
+  { id: 'originaux', label: 'Parfums Originaux', icon: '💎', desc: 'Grandes marques & collections luxe' },
+  { id: 'coffrets', label: 'Coffrets & Cadeaux', icon: '🎁', desc: 'Sets découverte & coffrets' },
+];
 
 export default function AdminPromos() {
   const [promos, setPromos] = useState<PromoCodeItem[]>([]);
@@ -65,7 +85,8 @@ export default function AdminPromos() {
   const [code, setCode] = useState('');
   const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
   const [value, setValue] = useState('');
-  const [applicableScope, setApplicableScope] = useState<'ALL' | 'SPECIFIC_PRODUCTS'>('ALL');
+  const [applicableScope, setApplicableScope] = useState<'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'>('ALL');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [minOrderAmount, setMinOrderAmount] = useState('');
   const [maxUses, setMaxUses] = useState('');
@@ -73,10 +94,11 @@ export default function AdminPromos() {
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showBrandSelector, setShowBrandSelector] = useState(false);
 
-  // Product Selector Filter State
+  // Specific Product Selector State
   const [productSearch, setProductSearch] = useState('');
-  const [genderFilter, setGenderFilter] = useState<'all' | 'men' | 'women' | 'unisex'>('all');
+  const [categoryFilterTab, setCategoryFilterTab] = useState<string>('all');
   const [selectionFilter, setSelectionFilter] = useState<'all' | 'selected' | 'unselected'>('all');
 
   // Modal State for Viewing Target Products
@@ -87,7 +109,7 @@ export default function AdminPromos() {
 
   // Promo Search in List
   const [listSearch, setListSearch] = useState('');
-  const [listScopeFilter, setListScopeFilter] = useState<'all' | 'ALL' | 'SPECIFIC_PRODUCTS'>('all');
+  const [listScopeFilter, setListScopeFilter] = useState<'all' | 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'>('all');
 
   const fetchPromos = async () => {
     try {
@@ -136,7 +158,58 @@ export default function AdminPromos() {
     return '/images/nay/nay-logo-blue.png';
   };
 
-  // Filtered Products for the Selector
+  // Distinct Brands list from products
+  const availableBrands = useMemo(() => {
+    const brandsSet = new Set<string>();
+    products.forEach((p) => {
+      if (p.brandLabel) brandsSet.add(p.brandLabel.trim());
+    });
+    return Array.from(brandsSet).sort();
+  }, [products]);
+
+  // Check if a product belongs to a category key
+  const productMatchesCategory = (p: ProductItem, catKey: string): boolean => {
+    const k = catKey.toLowerCase();
+    const pGender = (p.gender || '').toLowerCase();
+    const pSub = (p.subcategory || '').toLowerCase();
+    const pSubLabel = (p.subcategoryLabel || '').toLowerCase();
+    const pBrand = (p.brandLabel || '').toLowerCase();
+
+    if (k === 'men') return pGender === 'men' || pGender === 'homme';
+    if (k === 'women') return pGender === 'women' || pGender === 'femme';
+    if (k === 'unisex') return pGender === 'unisex' || pGender === 'unisexe';
+    if (k === 'oriental') return pSub.includes('oriental') || pSubLabel.includes('oriental') || pSub.includes('arab');
+    if (k === 'originaux') return pSub.includes('origin') || pSubLabel.includes('origin');
+    if (k === 'coffrets') return pSub.includes('coffret') || pSubLabel.includes('coffret') || p.name.toLowerCase().includes('coffret');
+    if (pBrand === k || pBrand.includes(k)) return true;
+    return false;
+  };
+
+  // Calculate count of products for a category key
+  const getCategoryProductCount = (catKey: string): number => {
+    return products.filter((p) => productMatchesCategory(p, catKey)).length;
+  };
+
+  // Total products covered by currently selected categories
+  const coveredByCategoryCount = useMemo(() => {
+    if (selectedCategories.length === 0) return 0;
+    const coveredIds = new Set<number>();
+    products.forEach((p) => {
+      if (selectedCategories.some((cat) => productMatchesCategory(p, cat))) {
+        coveredIds.add(p.id);
+      }
+    });
+    return coveredIds.size;
+  }, [products, selectedCategories]);
+
+  // Toggle Category selection
+  const toggleCategory = (catId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(catId) ? prev.filter((c) => c !== catId) : [...prev, catId]
+    );
+  };
+
+  // Filtered Products for the Specific Product Selector
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       const matchesSearch =
@@ -145,8 +218,8 @@ export default function AdminPromos() {
         (p.brandLabel && p.brandLabel.toLowerCase().includes(productSearch.toLowerCase())) ||
         (p.subcategoryLabel && p.subcategoryLabel.toLowerCase().includes(productSearch.toLowerCase()));
 
-      const matchesGender =
-        genderFilter === 'all' || (p.gender && p.gender.toLowerCase() === genderFilter);
+      const matchesTab =
+        categoryFilterTab === 'all' || productMatchesCategory(p, categoryFilterTab);
 
       const isSelected = selectedProductIds.includes(p.id);
       const matchesSelection =
@@ -154,9 +227,9 @@ export default function AdminPromos() {
         (selectionFilter === 'selected' && isSelected) ||
         (selectionFilter === 'unselected' && !isSelected);
 
-      return matchesSearch && matchesGender && matchesSelection;
+      return matchesSearch && matchesTab && matchesSelection;
     });
-  }, [products, productSearch, genderFilter, selectionFilter, selectedProductIds]);
+  }, [products, productSearch, categoryFilterTab, selectionFilter, selectedProductIds]);
 
   const toggleProductSelection = (id: number) => {
     setSelectedProductIds((prev) =>
@@ -174,12 +247,18 @@ export default function AdminPromos() {
     setSelectedProductIds((prev) => prev.filter((id) => !idsToRemove.has(id)));
   };
 
+  // Form Submission
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code || !value) return;
 
+    if (applicableScope === 'CATEGORIES' && selectedCategories.length === 0) {
+      alert('Veuillez cocher au moins une catégorie pour ce code promo.');
+      return;
+    }
+
     if (applicableScope === 'SPECIFIC_PRODUCTS' && selectedProductIds.length === 0) {
-      alert('Veuillez sélectionner au moins un produit pour ce code promo ciblé.');
+      alert('Veuillez sélectionner au moins un parfum pour ce code promo ciblé.');
       return;
     }
 
@@ -193,6 +272,7 @@ export default function AdminPromos() {
           type,
           value,
           applicableScope,
+          categories: applicableScope === 'CATEGORIES' ? selectedCategories : [],
           productIds: applicableScope === 'SPECIFIC_PRODUCTS' ? selectedProductIds : [],
           minOrderAmount: minOrderAmount ? parseFloat(minOrderAmount) : null,
           maxUses: maxUses ? parseInt(maxUses, 10) : null,
@@ -209,6 +289,7 @@ export default function AdminPromos() {
         setMaxUses('');
         setExpiresAt('');
         setDescription('');
+        setSelectedCategories([]);
         setSelectedProductIds([]);
         setApplicableScope('ALL');
         setShowAdvanced(false);
@@ -288,6 +369,20 @@ export default function AdminPromos() {
     return map;
   }, [products]);
 
+  // Get list of eligible products for any promo code item
+  const getEligibleProductsForPromo = (promo: PromoCodeItem): ProductItem[] => {
+    if (promo.applicableScope === 'ALL') return products;
+    if (promo.applicableScope === 'CATEGORIES' && Array.isArray(promo.categories) && promo.categories.length > 0) {
+      return products.filter((p) =>
+        promo.categories!.some((cat) => productMatchesCategory(p, cat))
+      );
+    }
+    if (promo.applicableScope === 'SPECIFIC_PRODUCTS' && Array.isArray(promo.productIds)) {
+      return promo.productIds.map((id) => productMap.get(id)).filter(Boolean) as ProductItem[];
+    }
+    return [];
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header */}
@@ -296,16 +391,16 @@ export default function AdminPromos() {
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-neutral-100 text-neutral-800 border border-neutral-200 flex items-center gap-1.5">
               <Ticket size={11} className="text-neutral-700" />
-              Marketing & Offres
+              Marketing & Ventes
             </span>
             <span className="text-xs text-neutral-400">•</span>
-            <span className="text-xs text-neutral-500 font-medium">Gestionnaire de Réductions</span>
+            <span className="text-xs text-neutral-500 font-medium">Codes Promo & Réductions</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2.5">
             <span>Codes Promo & Réductions</span>
           </h1>
           <p className="text-xs text-neutral-500 mt-1">
-            Créez des remises globales ou ciblez spécifiquement des parfums précis avec des règles personnalisées.
+            Créez des remises globales, par catégorie (Homme, Femme, Orientaux...) ou sur des parfums spécifiques.
           </p>
         </div>
 
@@ -315,6 +410,12 @@ export default function AdminPromos() {
             <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Actifs</div>
             <div className="text-sm font-bold text-neutral-900">
               {promos.filter((p) => p.isActive).length}
+            </div>
+          </div>
+          <div className="px-3 py-1.5 bg-white border border-neutral-200 rounded-xl shadow-2xs text-center">
+            <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">Catégories</div>
+            <div className="text-sm font-bold text-purple-600">
+              {promos.filter((p) => p.applicableScope === 'CATEGORIES').length}
             </div>
           </div>
           <div className="px-3 py-1.5 bg-white border border-neutral-200 rounded-xl shadow-2xs text-center">
@@ -342,7 +443,7 @@ export default function AdminPromos() {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-neutral-900">Nouveau Code Promo</h2>
-                <p className="text-[11px] text-neutral-500">Configurez le code et sa portée d'application</p>
+                <p className="text-[11px] text-neutral-500">Configurez le code, sa valeur et son ciblage</p>
               </div>
             </div>
 
@@ -357,7 +458,7 @@ export default function AdminPromos() {
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase().replace(/\s/g, ''))}
-                    placeholder="EX: EID2026, SUMMER20, OUD50"
+                    placeholder="EX: EID2026, HOMME20, OUD50"
                     required
                     className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl pl-3.5 pr-10 py-2.5 text-xs font-mono font-bold text-neutral-900 placeholder:font-normal placeholder:font-sans focus:bg-white focus:outline-none focus:border-neutral-900 uppercase transition-colors"
                   />
@@ -375,7 +476,7 @@ export default function AdminPromos() {
                     <button
                       type="button"
                       onClick={() => setType('percentage')}
-                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
                         type === 'percentage'
                           ? 'bg-neutral-900 text-white shadow-xs'
                           : 'text-neutral-600 hover:text-neutral-900'
@@ -387,7 +488,7 @@ export default function AdminPromos() {
                     <button
                       type="button"
                       onClick={() => setType('fixed')}
-                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
                         type === 'fixed'
                           ? 'bg-neutral-900 text-white shadow-xs'
                           : 'text-neutral-600 hover:text-neutral-900'
@@ -422,25 +523,27 @@ export default function AdminPromos() {
               </div>
 
               {/* ============================================================
-                  TARGETING SCOPE (APPLICATION DU CODE)
+                  TARGETING SCOPE (APPLICATION DU CODE - 3 MODES)
                   ============================================================ */}
               <div className="pt-2 border-t border-neutral-100 space-y-2.5">
                 <label className="block font-semibold text-neutral-800">
-                  Portée & Ciblage des Produits <span className="text-rose-500">*</span>
+                  Portée & Ciblage <span className="text-rose-500">*</span>
                 </label>
 
-                <div className="grid grid-cols-2 gap-2">
+                {/* 3 Scope Cards */}
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Mode 1: Tout le catalogue */}
                   <button
                     type="button"
                     onClick={() => setApplicableScope('ALL')}
-                    className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                    className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                       applicableScope === 'ALL'
-                        ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
+                        ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs ring-1 ring-neutral-900'
                         : 'bg-[#f8fafc] hover:bg-neutral-100 text-neutral-700 border-neutral-200'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <Globe size={15} className={applicableScope === 'ALL' ? 'text-white' : 'text-neutral-500'} />
+                      <Globe size={14} className={applicableScope === 'ALL' ? 'text-white' : 'text-neutral-500'} />
                       <div
                         className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
                           applicableScope === 'ALL'
@@ -452,30 +555,72 @@ export default function AdminPromos() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-bold text-[11px]">Tout le catalogue</div>
+                      <div className="font-bold text-[11px] leading-tight">Catalogue</div>
                       <div
-                        className={`text-[10px] leading-tight mt-0.5 ${
-                          applicableScope === 'ALL' ? 'text-neutral-300' : 'text-neutral-500'
+                        className={`text-[9px] mt-0.5 ${
+                          applicableScope === 'ALL' ? 'text-neutral-300' : 'text-neutral-400'
                         }`}
                       >
-                        Tous les parfums du panier
+                        Tous les parfums
                       </div>
                     </div>
                   </button>
 
+                  {/* Mode 2: Par Catégorie */}
+                  <button
+                    type="button"
+                    onClick={() => setApplicableScope('CATEGORIES')}
+                    className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                      applicableScope === 'CATEGORIES'
+                        ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs ring-1 ring-neutral-900'
+                        : 'bg-[#f8fafc] hover:bg-neutral-100 text-neutral-700 border-neutral-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <FolderTree
+                        size={14}
+                        className={applicableScope === 'CATEGORIES' ? 'text-purple-300' : 'text-neutral-500'}
+                      />
+                      <div
+                        className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                          applicableScope === 'CATEGORIES'
+                            ? 'border-white bg-white'
+                            : 'border-neutral-300 bg-transparent'
+                        }`}
+                      >
+                        {applicableScope === 'CATEGORIES' && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold text-[11px] leading-tight">Par Catégories</div>
+                      <div
+                        className={`text-[9px] mt-0.5 ${
+                          applicableScope === 'CATEGORIES' ? 'text-neutral-300' : 'text-neutral-400'
+                        }`}
+                      >
+                        {selectedCategories.length > 0
+                          ? `${selectedCategories.length} catégorie(s)`
+                          : 'Homme, Femme...'}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Mode 3: Par Parfums Spécifiques */}
                   <button
                     type="button"
                     onClick={() => setApplicableScope('SPECIFIC_PRODUCTS')}
-                    className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                    className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                       applicableScope === 'SPECIFIC_PRODUCTS'
-                        ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
+                        ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs ring-1 ring-neutral-900'
                         : 'bg-[#f8fafc] hover:bg-neutral-100 text-neutral-700 border-neutral-200'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <Layers
-                        size={15}
-                        className={applicableScope === 'SPECIFIC_PRODUCTS' ? 'text-white' : 'text-neutral-500'}
+                        size={14}
+                        className={applicableScope === 'SPECIFIC_PRODUCTS' ? 'text-blue-300' : 'text-neutral-500'}
                       />
                       <div
                         className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
@@ -490,21 +635,141 @@ export default function AdminPromos() {
                       </div>
                     </div>
                     <div>
-                      <div className="font-bold text-[11px]">Produits Spécifiques</div>
+                      <div className="font-bold text-[11px] leading-tight">Par Parfums</div>
                       <div
-                        className={`text-[10px] leading-tight mt-0.5 ${
-                          applicableScope === 'SPECIFIC_PRODUCTS' ? 'text-neutral-300' : 'text-neutral-500'
+                        className={`text-[9px] mt-0.5 ${
+                          applicableScope === 'SPECIFIC_PRODUCTS' ? 'text-neutral-300' : 'text-neutral-400'
                         }`}
                       >
                         {selectedProductIds.length > 0
-                          ? `${selectedProductIds.length} parfum(s) choisi(s)`
-                          : 'Choisir les parfums'}
+                          ? `${selectedProductIds.length} sélectionné(s)`
+                          : 'Choisir flacons'}
                       </div>
                     </div>
                   </button>
                 </div>
 
-                {/* SPECIFIC PRODUCTS SELECTOR */}
+                {/* ============================================================
+                    PANEL: CATEGORIES SELECTOR
+                    ============================================================ */}
+                {applicableScope === 'CATEGORIES' && (
+                  <div className="bg-[#f8fafc] border border-purple-200 rounded-xl p-3.5 space-y-3 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
+                        <span className="text-[11px] font-bold text-neutral-900">
+                          Cochez les catégories éligibles
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                        {coveredByCategoryCount} parfums couverts
+                      </span>
+                    </div>
+
+                    {/* Category Checkbox Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {PRESET_CATEGORIES.map((cat) => {
+                        const isChecked = selectedCategories.includes(cat.id);
+                        const count = getCategoryProductCount(cat.id);
+
+                        return (
+                          <div
+                            key={cat.id}
+                            onClick={() => toggleCategory(cat.id)}
+                            className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-start gap-2.5 ${
+                              isChecked
+                                ? 'bg-purple-50/80 border-purple-300 shadow-2xs text-neutral-900'
+                                : 'bg-white border-neutral-200 hover:bg-neutral-50 text-neutral-700'
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded flex items-center justify-center transition-colors flex-shrink-0 mt-0.5 ${
+                                isChecked
+                                  ? 'bg-purple-600 text-white'
+                                  : 'border border-neutral-300 bg-white'
+                              }`}
+                            >
+                              {isChecked && <Check size={11} strokeWidth={3} />}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-bold text-[11px] truncate flex items-center gap-1">
+                                  <span>{cat.icon}</span>
+                                  <span>{cat.label}</span>
+                                </span>
+                                <span className="text-[10px] font-bold text-neutral-500 bg-neutral-100 px-1.5 py-0.2 rounded">
+                                  {count}
+                                </span>
+                              </div>
+                              <p className="text-[9px] text-neutral-400 mt-0.5 truncate">
+                                {cat.desc}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Expandable Brands selector */}
+                    {availableBrands.length > 0 && (
+                      <div className="pt-2 border-t border-neutral-200/80">
+                        <button
+                          type="button"
+                          onClick={() => setShowBrandSelector(!showBrandSelector)}
+                          className="flex items-center justify-between w-full text-[11px] font-semibold text-neutral-700 hover:text-neutral-900 cursor-pointer"
+                        >
+                          <span className="flex items-center gap-1">
+                            <span>🏷️</span>
+                            <span>Cibler par Marque spécifique ({availableBrands.length})</span>
+                          </span>
+                          {showBrandSelector ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        </button>
+
+                        {showBrandSelector && (
+                          <div className="mt-2.5 p-2 bg-white rounded-lg border border-neutral-200 max-h-40 overflow-y-auto space-y-1">
+                            {availableBrands.map((brand) => {
+                              const isChecked = selectedCategories.includes(brand);
+                              const count = products.filter(
+                                (p) => p.brandLabel?.toLowerCase() === brand.toLowerCase()
+                              ).length;
+
+                              return (
+                                <div
+                                  key={brand}
+                                  onClick={() => toggleCategory(brand)}
+                                  className={`flex items-center justify-between p-1.5 rounded-md cursor-pointer text-[11px] transition-colors ${
+                                    isChecked
+                                      ? 'bg-purple-50 text-purple-900 font-bold'
+                                      : 'hover:bg-neutral-50 text-neutral-700'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`w-3.5 h-3.5 rounded flex items-center justify-center ${
+                                        isChecked ? 'bg-purple-600 text-white' : 'border border-neutral-300'
+                                      }`}
+                                    >
+                                      {isChecked && <Check size={9} strokeWidth={3} />}
+                                    </div>
+                                    <span>{brand}</span>
+                                  </div>
+                                  <span className="text-[10px] text-neutral-400 font-semibold">
+                                    {count} parfums
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ============================================================
+                    PANEL: SPECIFIC PRODUCTS SELECTOR WITH CATEGORY TABS
+                    ============================================================ */}
                 {applicableScope === 'SPECIFIC_PRODUCTS' && (
                   <div className="bg-[#f8fafc] border border-blue-200 rounded-xl p-3.5 space-y-3 animate-in fade-in duration-200">
                     <div className="flex items-center justify-between">
@@ -527,29 +792,62 @@ export default function AdminPromos() {
                           type="text"
                           value={productSearch}
                           onChange={(e) => setProductSearch(e.target.value)}
-                          placeholder="Rechercher un parfum par nom..."
+                          placeholder="Rechercher par nom de parfum..."
                           className="w-full bg-white border border-neutral-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900"
                         />
                       </div>
 
+                      {/* Category Filter Chips for fast employee selection */}
+                      <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px] scrollbar-none">
+                        <button
+                          type="button"
+                          onClick={() => setCategoryFilterTab('all')}
+                          className={`px-2 py-0.5 rounded-md font-medium whitespace-nowrap cursor-pointer ${
+                            categoryFilterTab === 'all'
+                              ? 'bg-neutral-800 text-white shadow-2xs'
+                              : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+                          }`}
+                        >
+                          Tous ({products.length})
+                        </button>
+                        {PRESET_CATEGORIES.map((c) => {
+                          const count = getCategoryProductCount(c.id);
+                          return (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => setCategoryFilterTab(c.id)}
+                              className={`px-2 py-0.5 rounded-md font-medium whitespace-nowrap cursor-pointer flex items-center gap-1 ${
+                                categoryFilterTab === c.id
+                                  ? 'bg-blue-700 text-white shadow-2xs'
+                                  : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
+                              }`}
+                            >
+                              <span>{c.icon}</span>
+                              <span>{c.label} ({count})</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
                       {/* Quick filters & Batch buttons */}
-                      <div className="flex items-center justify-between text-[10px]">
+                      <div className="flex items-center justify-between text-[10px] pt-1 border-t border-neutral-200/60">
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => setSelectionFilter('all')}
-                            className={`px-2 py-0.5 rounded-md font-medium ${
+                            className={`px-2 py-0.5 rounded-md font-medium cursor-pointer ${
                               selectionFilter === 'all'
                                 ? 'bg-neutral-800 text-white'
                                 : 'bg-white text-neutral-600 border border-neutral-200'
                             }`}
                           >
-                            Tous ({products.length})
+                            Tous ({filteredProducts.length})
                           </button>
                           <button
                             type="button"
                             onClick={() => setSelectionFilter('selected')}
-                            className={`px-2 py-0.5 rounded-md font-medium ${
+                            className={`px-2 py-0.5 rounded-md font-medium cursor-pointer ${
                               selectionFilter === 'selected'
                                 ? 'bg-blue-700 text-white'
                                 : 'bg-white text-neutral-600 border border-neutral-200'
@@ -563,9 +861,9 @@ export default function AdminPromos() {
                           <button
                             type="button"
                             onClick={handleSelectAllFiltered}
-                            className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer hover:underline"
+                            className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer hover:underline"
                           >
-                            Tout cocher
+                            ⚡ Tout cocher ({filteredProducts.length})
                           </button>
                           <span className="text-neutral-300">|</span>
                           <button
@@ -724,7 +1022,9 @@ export default function AdminPromos() {
                     <Plus size={15} />
                   )}
                   <span>
-                    {applicableScope === 'SPECIFIC_PRODUCTS'
+                    {applicableScope === 'CATEGORIES'
+                      ? `Créer le code (${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''})`
+                      : applicableScope === 'SPECIFIC_PRODUCTS'
                       ? `Créer le code (${selectedProductIds.length} produit${selectedProductIds.length > 1 ? 's' : ''})`
                       : 'Créer le code promo'}
                   </span>
@@ -755,12 +1055,12 @@ export default function AdminPromos() {
                 </div>
               </div>
 
-              {/* Scope filter pill */}
-              <div className="flex items-center gap-1.5 bg-neutral-100 p-1 rounded-xl border border-neutral-200 text-[10px]">
+              {/* Scope filter pills */}
+              <div className="flex items-center gap-1 bg-neutral-100 p-1 rounded-xl border border-neutral-200 text-[10px] overflow-x-auto">
                 <button
                   type="button"
                   onClick={() => setListScopeFilter('all')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     listScopeFilter === 'all'
                       ? 'bg-white text-neutral-900 shadow-2xs'
                       : 'text-neutral-500 hover:text-neutral-800'
@@ -771,7 +1071,7 @@ export default function AdminPromos() {
                 <button
                   type="button"
                   onClick={() => setListScopeFilter('ALL')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     listScopeFilter === 'ALL'
                       ? 'bg-white text-neutral-900 shadow-2xs'
                       : 'text-neutral-500 hover:text-neutral-800'
@@ -781,8 +1081,19 @@ export default function AdminPromos() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setListScopeFilter('CATEGORIES')}
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                    listScopeFilter === 'CATEGORIES'
+                      ? 'bg-white text-purple-700 shadow-2xs'
+                      : 'text-neutral-500 hover:text-neutral-800'
+                  }`}
+                >
+                  Catégories ({promos.filter((p) => p.applicableScope === 'CATEGORIES').length})
+                </button>
+                <button
+                  type="button"
                   onClick={() => setListScopeFilter('SPECIFIC_PRODUCTS')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     listScopeFilter === 'SPECIFIC_PRODUCTS'
                       ? 'bg-white text-blue-700 shadow-2xs'
                       : 'text-neutral-500 hover:text-neutral-800'
@@ -801,7 +1112,7 @@ export default function AdminPromos() {
                   type="text"
                   value={listSearch}
                   onChange={(e) => setListSearch(e.target.value)}
-                  placeholder="Rechercher par nom de code promo ou description..."
+                  placeholder="Rechercher un code ou une description..."
                   className="w-full bg-[#f8fafc] border border-neutral-200 rounded-xl pl-9 pr-3 py-2 text-xs text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900"
                 />
               </div>
@@ -830,7 +1141,9 @@ export default function AdminPromos() {
               <div className="space-y-3">
                 {filteredPromosList.map((promo) => {
                   const isSpecific = promo.applicableScope === 'SPECIFIC_PRODUCTS';
-                  const targetCount = Array.isArray(promo.productIds) ? promo.productIds.length : 0;
+                  const isCategory = promo.applicableScope === 'CATEGORIES';
+                  const targetProductCount = Array.isArray(promo.productIds) ? promo.productIds.length : 0;
+                  const targetCatCount = Array.isArray(promo.categories) ? promo.categories.length : 0;
                   const isExpired = promo.expiresAt && new Date(promo.expiresAt) < new Date();
 
                   return (
@@ -859,7 +1172,7 @@ export default function AdminPromos() {
                               <button
                                 type="button"
                                 onClick={() => copyToClipboard(promo.code)}
-                                className="text-neutral-400 hover:text-neutral-900 p-1 rounded hover:bg-neutral-100 transition-colors"
+                                className="text-neutral-400 hover:text-neutral-900 p-1 rounded hover:bg-neutral-100 transition-colors cursor-pointer"
                                 title="Copier le code"
                               >
                                 {copiedCode === promo.code ? (
@@ -903,14 +1216,24 @@ export default function AdminPromos() {
                             {/* Scope & Rules Pills */}
                             <div className="flex items-center gap-2 flex-wrap pt-0.5">
                               {/* Scope Pill */}
-                              {isSpecific ? (
+                              {isCategory ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingPromo(promo)}
+                                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-colors flex items-center gap-1 cursor-pointer"
+                                >
+                                  <FolderTree size={11} />
+                                  <span>{targetCatCount} catégorie{targetCatCount > 1 ? 's' : ''} ({promo.categories?.slice(0, 2).join(', ')}{promo.categories && promo.categories.length > 2 ? '...' : ''})</span>
+                                  <Eye size={11} className="ml-0.5 text-purple-500" />
+                                </button>
+                              ) : isSpecific ? (
                                 <button
                                   type="button"
                                   onClick={() => setViewingPromo(promo)}
                                   className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-1 cursor-pointer"
                                 >
                                   <Layers size={11} />
-                                  <span>{targetCount} parfum{targetCount > 1 ? 's' : ''} ciblé{targetCount > 1 ? 's' : ''}</span>
+                                  <span>{targetProductCount} parfum{targetProductCount > 1 ? 's' : ''} ciblé{targetProductCount > 1 ? 's' : ''}</span>
                                   <Eye size={11} className="ml-0.5 text-blue-500" />
                                 </button>
                               ) : (
@@ -985,109 +1308,101 @@ export default function AdminPromos() {
       {/* ============================================================
           MODAL: VIEW TARGET PRODUCTS FOR A PROMO CODE
           ============================================================ */}
-      {viewingPromo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl border border-neutral-200 shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
-            {/* Modal Header */}
-            <div className="p-4 border-b border-neutral-150 flex items-center justify-between bg-neutral-50/70">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                  <Layers size={15} />
+      {viewingPromo && (() => {
+        const eligibleList = getEligibleProductsForPromo(viewingPromo);
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
+              {/* Modal Header */}
+              <div className="p-4 border-b border-neutral-150 flex items-center justify-between bg-neutral-50/70">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-neutral-900 text-white flex items-center justify-center">
+                    <Tag size={15} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                      <span>Parfums éligibles pour</span>
+                      <span className="font-mono text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                        {viewingPromo.code}
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-neutral-500">
+                      {eligibleList.length} parfum(s) bénéficieront de la remise de{' '}
+                      {viewingPromo.type === 'percentage'
+                        ? `-${viewingPromo.value}%`
+                        : `-${viewingPromo.value} MAD`}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
-                    <span>Parfums ciblés pour</span>
-                    <span className="font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                      {viewingPromo.code}
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-neutral-500">
-                    Seuls ces {viewingPromo.productIds.length} parfums bénéficieront de la remise de{' '}
-                    {viewingPromo.type === 'percentage'
-                      ? `-${viewingPromo.value}%`
-                      : `-${viewingPromo.value} MAD`}
-                  </p>
-                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setViewingPromo(null)}
+                  className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
+                >
+                  <X size={17} />
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setViewingPromo(null)}
-                className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
-              >
-                <X size={17} />
-              </button>
-            </div>
+              {/* Modal Product List */}
+              <div className="p-4 overflow-y-auto space-y-2 flex-1 max-h-[60vh]">
+                {eligibleList.length === 0 ? (
+                  <div className="py-8 text-center text-neutral-400 text-xs">
+                    Aucun parfum trouvé pour ce ciblage
+                  </div>
+                ) : (
+                  eligibleList.map((prod) => {
+                    const imgUrl = getProductImage(prod.images);
 
-            {/* Modal Product List */}
-            <div className="p-4 overflow-y-auto space-y-2 flex-1 max-h-[60vh]">
-              {viewingPromo.productIds.length === 0 ? (
-                <div className="py-8 text-center text-neutral-400 text-xs">
-                  Aucun parfum sélectionné
-                </div>
-              ) : (
-                viewingPromo.productIds.map((pid) => {
-                  const prod = productMap.get(pid);
-                  if (!prod) {
                     return (
                       <div
-                        key={pid}
-                        className="p-2.5 rounded-xl border border-neutral-200 bg-[#f8fafc] text-xs text-neutral-500"
+                        key={prod.id}
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50/70 transition-colors"
                       >
-                        Produit ID #{pid} (non trouvé ou supprimé)
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-lg bg-neutral-100 border border-neutral-200 overflow-hidden relative flex-shrink-0">
+                            <Image
+                              src={imgUrl}
+                              alt={prod.name}
+                              fill
+                              className="object-cover"
+                              sizes="40px"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-neutral-900 truncate">
+                              {prod.name}
+                            </div>
+                            <div className="text-[11px] text-neutral-400 truncate">
+                              {prod.brandLabel || prod.subcategoryLabel || 'Parfum'}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right pl-3 flex-shrink-0">
+                          <span className="text-xs font-bold text-neutral-900">{prod.price} MAD</span>
+                        </div>
                       </div>
                     );
-                  }
+                  })
+                )}
+              </div>
 
-                  const imgUrl = getProductImage(prod.images);
-
-                  return (
-                    <div
-                      key={prod.id}
-                      className="flex items-center justify-between p-2.5 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50/70 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-lg bg-neutral-100 border border-neutral-200 overflow-hidden relative flex-shrink-0">
-                          <Image
-                            src={imgUrl}
-                            alt={prod.name}
-                            fill
-                            className="object-cover"
-                            sizes="40px"
-                          />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold text-neutral-900 truncate">
-                            {prod.name}
-                          </div>
-                          <div className="text-[11px] text-neutral-400 truncate">
-                            {prod.brandLabel || prod.subcategoryLabel || 'Parfum'}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right pl-3 flex-shrink-0">
-                        <span className="text-xs font-bold text-neutral-900">{prod.price} MAD</span>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-3 border-t border-neutral-150 bg-neutral-50/70 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setViewingPromo(null)}
-                className="px-4 py-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold rounded-xl cursor-pointer"
-              >
-                Fermer
-              </button>
+              {/* Modal Footer */}
+              <div className="p-3 border-t border-neutral-150 bg-neutral-50/70 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setViewingPromo(null)}
+                  className="px-4 py-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold rounded-xl cursor-pointer"
+                >
+                  Fermer
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

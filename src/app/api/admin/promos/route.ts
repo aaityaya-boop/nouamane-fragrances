@@ -7,9 +7,10 @@ export async function GET() {
       orderBy: { createdAt: 'desc' }
     });
 
-    // Parse productIds for each promo if present
+    // Parse productIds & categories for each promo if present
     const formatted = promos.map(p => {
       let parsedProductIds: number[] = [];
+      let parsedCategories: string[] = [];
       if (p.productIds) {
         try {
           parsedProductIds = JSON.parse(p.productIds);
@@ -17,9 +18,17 @@ export async function GET() {
           parsedProductIds = [];
         }
       }
+      if (p.categories) {
+        try {
+          parsedCategories = JSON.parse(p.categories);
+        } catch {
+          parsedCategories = [];
+        }
+      }
       return {
         ...p,
         productIds: parsedProductIds,
+        categories: parsedCategories,
       };
     });
 
@@ -38,6 +47,7 @@ export async function POST(request: Request) {
       type,
       value,
       applicableScope = 'ALL',
+      categories = [],
       productIds = [],
       minOrderAmount,
       maxUses,
@@ -55,11 +65,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Code invalide' }, { status: 400 });
     }
 
-    const normalizedScope = applicableScope === 'SPECIFIC_PRODUCTS' ? 'SPECIFIC_PRODUCTS' : 'ALL';
+    const normalizedScope =
+      applicableScope === 'CATEGORIES'
+        ? 'CATEGORIES'
+        : applicableScope === 'SPECIFIC_PRODUCTS'
+        ? 'SPECIFIC_PRODUCTS'
+        : 'ALL';
+
     const cleanProductIds = Array.isArray(productIds) ? productIds.map(Number).filter(id => !isNaN(id)) : [];
+    const cleanCategories = Array.isArray(categories) ? categories.map(c => String(c).trim()).filter(Boolean) : [];
 
     if (normalizedScope === 'SPECIFIC_PRODUCTS' && cleanProductIds.length === 0) {
       return NextResponse.json({ error: 'Veuillez sélectionner au moins un produit pour ce code promo ciblé' }, { status: 400 });
+    }
+
+    if (normalizedScope === 'CATEGORIES' && cleanCategories.length === 0) {
+      return NextResponse.json({ error: 'Veuillez sélectionner au moins une catégorie pour ce code promo' }, { status: 400 });
     }
 
     const newPromo = await prisma.promoCode.create({
@@ -68,6 +89,7 @@ export async function POST(request: Request) {
         type,
         value: parseFloat(value),
         applicableScope: normalizedScope,
+        categories: normalizedScope === 'CATEGORIES' ? JSON.stringify(cleanCategories) : null,
         productIds: normalizedScope === 'SPECIFIC_PRODUCTS' ? JSON.stringify(cleanProductIds) : null,
         minOrderAmount: minOrderAmount ? parseFloat(minOrderAmount) : null,
         maxUses: maxUses ? parseInt(maxUses, 10) : null,
@@ -79,6 +101,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ...newPromo,
+      categories: cleanCategories,
       productIds: cleanProductIds,
     });
   } catch (error: any) {
@@ -93,7 +116,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, isActive, applicableScope, productIds, value, type, minOrderAmount } = body;
+    const { id, isActive, applicableScope, categories, productIds, value, type, minOrderAmount } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
@@ -102,6 +125,7 @@ export async function PATCH(request: Request) {
     const updateData: any = {};
     if (typeof isActive === 'boolean') updateData.isActive = isActive;
     if (applicableScope) updateData.applicableScope = applicableScope;
+    if (Array.isArray(categories)) updateData.categories = JSON.stringify(categories);
     if (Array.isArray(productIds)) updateData.productIds = JSON.stringify(productIds.map(Number));
     if (value !== undefined) updateData.value = parseFloat(value);
     if (type) updateData.type = type;
