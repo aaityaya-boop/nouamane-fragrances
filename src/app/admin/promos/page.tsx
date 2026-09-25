@@ -66,13 +66,20 @@ interface PromoCodeItem {
   createdAt: string;
 }
 
-const PRESET_CATEGORIES = [
-  { id: 'men', label: 'Parfums Homme', icon: '🧔', desc: 'Tous les parfums pour homme' },
-  { id: 'women', label: 'Parfums Femme', icon: '👩', desc: 'Tous les parfums pour femme' },
-  { id: 'unisex', label: 'Parfums Unisexe', icon: '✨', desc: 'Parfums mixtes & universels' },
-  { id: 'oriental', label: 'Parfums Orientaux', icon: '🕌', desc: 'Notes de oud, ambre & épices' },
-  { id: 'originaux', label: 'Parfums Originaux', icon: '💎', desc: 'Grandes marques & collections luxe' },
-  { id: 'coffrets', label: 'Coffrets & Cadeaux', icon: '🎁', desc: 'Sets découverte & coffrets' },
+interface PresetCategory {
+  id: string;
+  label: string;
+  iconKey: 'men' | 'women' | 'unisex' | 'oriental' | 'originaux' | 'coffrets';
+  desc: string;
+}
+
+const PRESET_CATEGORIES: PresetCategory[] = [
+  { id: 'men', label: 'Parfums Homme', iconKey: 'men', desc: 'Tous les parfums pour homme' },
+  { id: 'women', label: 'Parfums Femme', iconKey: 'women', desc: 'Tous les parfums pour femme' },
+  { id: 'unisex', label: 'Parfums Unisexe', iconKey: 'unisex', desc: 'Parfums mixtes & universels' },
+  { id: 'oriental', label: 'Parfums Orientaux', iconKey: 'oriental', desc: 'Notes de oud, ambre & épices' },
+  { id: 'originaux', label: 'Parfums Originaux', iconKey: 'originaux', desc: 'Grandes marques & collections luxe' },
+  { id: 'coffrets', label: 'Coffrets & Cadeaux', iconKey: 'coffrets', desc: 'Sets découverte & coffrets' },
 ];
 
 export default function AdminPromos() {
@@ -156,6 +163,27 @@ export default function AdminPromos() {
       return images;
     }
     return '/images/nay/nay-logo-blue.png';
+  };
+
+  // Render vector icon for category
+  const renderCategoryIcon = (iconKey: string, isSelected = false, size = 13) => {
+    const iconClass = isSelected ? 'text-purple-700' : 'text-neutral-700';
+    switch (iconKey) {
+      case 'men':
+        return <User size={size} className={iconClass} />;
+      case 'women':
+        return <Sparkles size={size} className={iconClass} />;
+      case 'unisex':
+        return <Users size={size} className={iconClass} />;
+      case 'oriental':
+        return <Flame size={size} className={iconClass} />;
+      case 'originaux':
+        return <Crown size={size} className={iconClass} />;
+      case 'coffrets':
+        return <Gift size={size} className={iconClass} />;
+      default:
+        return <Tag size={size} className={iconClass} />;
+    }
   };
 
   // Distinct Brands list from products
@@ -476,7 +504,7 @@ export default function AdminPromos() {
                     <button
                       type="button"
                       onClick={() => setType('percentage')}
-                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         type === 'percentage'
                           ? 'bg-neutral-900 text-white shadow-xs'
                           : 'text-neutral-600 hover:text-neutral-900'
@@ -488,7 +516,7 @@ export default function AdminPromos() {
                     <button
                       type="button"
                       onClick={() => setType('fixed')}
-                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                      className={`py-1.5 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         type === 'fixed'
                           ? 'bg-neutral-900 text-white shadow-xs'
                           : 'text-neutral-600 hover:text-neutral-900'
@@ -650,7 +678,7 @@ export default function AdminPromos() {
                 </div>
 
                 {/* ============================================================
-                    PANEL: CATEGORIES SELECTOR
+                    PANEL: CATEGORIES SELECTOR (CLEAN VECTOR ICONS)
                     ============================================================ */}
                 {applicableScope === 'CATEGORIES' && (
                   <div className="bg-[#f8fafc] border border-purple-200 rounded-xl p-3.5 space-y-3 animate-in fade-in duration-200">
@@ -694,8 +722,10 @@ export default function AdminPromos() {
 
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-1">
-                                <span className="font-bold text-[11px] truncate flex items-center gap-1">
-                                  <span>{cat.icon}</span>
+                                <span className="font-bold text-[11px] truncate flex items-center gap-1.5">
+                                  <span className="w-4 h-4 rounded bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                                    {renderCategoryIcon(cat.iconKey, isChecked, 11)}
+                                  </span>
                                   <span>{cat.label}</span>
                                 </span>
                                 <span className="text-[10px] font-bold text-neutral-500 bg-neutral-100 px-1.5 py-0.2 rounded">
@@ -719,8 +749,8 @@ export default function AdminPromos() {
                           onClick={() => setShowBrandSelector(!showBrandSelector)}
                           className="flex items-center justify-between w-full text-[11px] font-semibold text-neutral-700 hover:text-neutral-900 cursor-pointer"
                         >
-                          <span className="flex items-center gap-1">
-                            <span>🏷️</span>
+                          <span className="flex items-center gap-1.5">
+                            <Tag size={12} className="text-neutral-500" />
                             <span>Cibler par Marque spécifique ({availableBrands.length})</span>
                           </span>
                           {showBrandSelector ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -812,18 +842,20 @@ export default function AdminPromos() {
                         </button>
                         {PRESET_CATEGORIES.map((c) => {
                           const count = getCategoryProductCount(c.id);
+                          const isTabActive = categoryFilterTab === c.id;
+
                           return (
                             <button
                               key={c.id}
                               type="button"
                               onClick={() => setCategoryFilterTab(c.id)}
-                              className={`px-2 py-0.5 rounded-md font-medium whitespace-nowrap cursor-pointer flex items-center gap-1 ${
-                                categoryFilterTab === c.id
+                              className={`px-2 py-0.5 rounded-md font-medium whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                                isTabActive
                                   ? 'bg-blue-700 text-white shadow-2xs'
                                   : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50'
                               }`}
                             >
-                              <span>{c.icon}</span>
+                              <span>{renderCategoryIcon(c.iconKey, isTabActive, 11)}</span>
                               <span>{c.label} ({count})</span>
                             </button>
                           );
@@ -857,13 +889,14 @@ export default function AdminPromos() {
                           </button>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={handleSelectAllFiltered}
-                            className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer hover:underline"
+                            className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer hover:underline flex items-center gap-1"
                           >
-                            ⚡ Tout cocher ({filteredProducts.length})
+                            <CheckSquare size={11} />
+                            <span>Tout cocher ({filteredProducts.length})</span>
                           </button>
                           <span className="text-neutral-300">|</span>
                           <button
@@ -1220,7 +1253,7 @@ export default function AdminPromos() {
                                 <button
                                   type="button"
                                   onClick={() => setViewingPromo(promo)}
-                                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-colors flex items-center gap-1 cursor-pointer"
+                                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition-colors flex items-center gap-1.5 cursor-pointer"
                                 >
                                   <FolderTree size={11} />
                                   <span>{targetCatCount} catégorie{targetCatCount > 1 ? 's' : ''} ({promo.categories?.slice(0, 2).join(', ')}{promo.categories && promo.categories.length > 2 ? '...' : ''})</span>
@@ -1230,14 +1263,14 @@ export default function AdminPromos() {
                                 <button
                                   type="button"
                                   onClick={() => setViewingPromo(promo)}
-                                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-1 cursor-pointer"
+                                  className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-1.5 cursor-pointer"
                                 >
                                   <Layers size={11} />
                                   <span>{targetProductCount} parfum{targetProductCount > 1 ? 's' : ''} ciblé{targetProductCount > 1 ? 's' : ''}</span>
                                   <Eye size={11} className="ml-0.5 text-blue-500" />
                                 </button>
                               ) : (
-                                <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-neutral-100 text-neutral-700 border border-neutral-200 flex items-center gap-1">
+                                <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-neutral-100 text-neutral-700 border border-neutral-200 flex items-center gap-1.5">
                                   <Globe size={11} />
                                   <span>Tout le catalogue</span>
                                 </span>
