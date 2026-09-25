@@ -217,6 +217,29 @@ model PromoCode {
   updatedAt       DateTime  @updatedAt
 }
 
+model SpecialDeal {
+  id              String    @id @default(cuid())
+  title           String
+  subtitle        String?
+  badgeText       String?
+  dealType        String    @default("BUY_X_GET_Y_FREE") // 'BUY_X_GET_Y_FREE' | 'SECOND_AT_DISCOUNT' | 'BUNDLE_FIXED_PRICE' | 'TIERED_QUANTITY'
+  buyQuantity     Int       @default(2)
+  getQuantity     Int       @default(1)
+  discountPercent Float     @default(100)
+  bundlePrice     Float?
+  applicableScope String    @default("ALL") // 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'
+  categories      String?
+  productIds      String?
+  isActive        Boolean   @default(true)
+  isAutomatic     Boolean   @default(true)
+  promoCode       String?
+  freeShipping    Boolean   @default(false)
+  freeGiftName    String?
+  priority        Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
 model BlogPost {
   id                  String   @id @default(cuid())
   slug                String   @unique

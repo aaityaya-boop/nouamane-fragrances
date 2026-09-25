@@ -15,9 +15,11 @@ import { formatMAD } from '@/lib/products';
 
 export default function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee } = useCart();
+  const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee, appliedDeal, dealDiscount } = useCart();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
+  const subtotal = getSubtotal();
+  const totalAfterDiscount = Math.max(0, subtotal - dealDiscount);
 
   useEffect(() => {
     const handler = () => setIsOpen(true);
@@ -160,25 +162,58 @@ export default function CartDrawer() {
               ))}
             </div>
 
-            <div className="border-t border-[#e0ddd4] p-8 bg-[#fafaf7]">
-              <div className="flex justify-between items-baseline mb-6">
-                <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#9A9A9A]">
-                  Sous-total
-                </span>
-                <span className="text-2xl heading-font font-medium text-[#1A1A1A]">
-                  {formatMAD(getSubtotal())}
-                </span>
+            <div className="border-t border-[#e0ddd4] p-6 bg-[#fafaf7] space-y-4">
+              {appliedDeal && dealDiscount > 0 && (
+                <div className="bg-amber-500/10 border border-amber-300/60 rounded-xl p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">🎉</span>
+                    <div>
+                      <div className="text-xs font-bold text-neutral-900">{appliedDeal.badgeText || appliedDeal.title}</div>
+                      <div className="text-[10px] text-neutral-500">Offre automatique appliquée</div>
+                    </div>
+                  </div>
+                  <div className="text-xs font-bold text-amber-700">-{formatMAD(dealDiscount)}</div>
+                </div>
+              )}
+
+              {appliedDeal?.freeGiftName && (
+                <div className="bg-pink-50 border border-pink-200 rounded-xl p-2.5 flex items-center gap-2 text-pink-700 text-xs font-bold">
+                  <span>🎁</span>
+                  <span>Cadeau offert : {appliedDeal.freeGiftName}</span>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#9A9A9A]">
+                    Sous-total
+                  </span>
+                  <span className={`text-sm ${dealDiscount > 0 ? 'line-through text-neutral-400' : 'heading-font font-medium text-[#1A1A1A]'}`}>
+                    {formatMAD(subtotal)}
+                  </span>
+                </div>
+
+                {dealDiscount > 0 && (
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-emerald-600">
+                      Total avec remise
+                    </span>
+                    <span className="text-2xl heading-font font-medium text-emerald-700">
+                      {formatMAD(totalAfterDiscount)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <Link
                 href={`/${locale}/cart`}
                 onClick={() => setIsOpen(false)}
-                className="btn-blue w-full py-4 text-[11px] rounded-full inline-block text-center"
+                className="btn-blue w-full py-3.5 text-[11px] rounded-full inline-block text-center"
               >
-                Voir le panier
+                Voir le panier & Commander
               </Link>
 
-              <p className="text-center text-[10px] tracking-[0.2em] text-[#C5C5C5] mt-5 uppercase">
+              <p className="text-center text-[10px] tracking-[0.2em] text-[#C5C5C5] uppercase">
                 {shippingFee === 0 ? 'Livraison Gratuite ! 🎉' : `Livraison partout au Maroc avec ${shippingFee}Dh`}
               </p>
             </div>

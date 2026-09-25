@@ -60,6 +60,109 @@ export function calculatePromoDiscount(cart: CartItem[], appliedPromo: AppliedPr
   return Math.min(Math.round(discount * 100) / 100, eligibleSubtotal);
 }
 
+export type ActiveDeal = {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  badgeText?: string | null;
+  dealType: string;
+  buyQuantity: number;
+  getQuantity: number;
+  discountPercent: number;
+  bundlePrice?: number | null;
+  applicableScope: string;
+  categories?: string[];
+  productIds?: number[];
+  isAutomatic: boolean;
+  promoCode?: string | null;
+  freeShipping: boolean;
+  freeGiftName?: string | null;
+};
+
+export function evaluateActiveDeals(
+  cart: CartItem[],
+  deals: ActiveDeal[]
+): { bestDeal: ActiveDeal | null; dealDiscount: number; freeShippingUnlocked: boolean; freeGift?: string | null } {
+  if (!cart || cart.length === 0 || !deals || deals.length === 0) {
+    return { bestDeal: null, dealDiscount: 0, freeShippingUnlocked: false, freeGift: null };
+  }
+
+  let highestDiscount = 0;
+  let chosenDeal: ActiveDeal | null = null;
+  let freeShipping = false;
+  let gift: string | null = null;
+
+  for (const deal of deals) {
+    if (!deal.isAutomatic && !deal.promoCode) continue;
+
+    // Flatten qualifying units
+    const units: { id: number; price: number }[] = [];
+    cart.forEach((item) => {
+      const isEligible =
+        deal.applicableScope === 'ALL' ||
+        (deal.applicableScope === 'SPECIFIC_PRODUCTS' &&
+          Array.isArray(deal.productIds) &&
+          deal.productIds.includes(Number(item.id))) ||
+        (deal.applicableScope === 'CATEGORIES' &&
+          Array.isArray(deal.productIds) &&
+          deal.productIds.includes(Number(item.id)));
+
+      if (isEligible) {
+        for (let i = 0; i < item.quantity; i++) {
+          units.push({ id: item.id, price: item.price });
+        }
+      }
+    });
+
+    if (units.length === 0) continue;
+
+    // Sort cheapest first
+    units.sort((a, b) => a.price - b.price);
+
+    let currentDiscount = 0;
+
+    if (deal.dealType === 'BUY_X_GET_Y_FREE') {
+      const groupSize = deal.buyQuantity + deal.getQuantity;
+      const freeUnitsCount = Math.floor(units.length / groupSize) * deal.getQuantity;
+      if (freeUnitsCount > 0) {
+        const freeUnits = units.slice(0, freeUnitsCount);
+        currentDiscount = freeUnits.reduce((sum, u) => sum + u.price * (deal.discountPercent / 100), 0);
+      }
+    } else if (deal.dealType === 'SECOND_AT_DISCOUNT') {
+      const pairsCount = Math.floor(units.length / 2);
+      if (pairsCount > 0) {
+        const discountedUnits = units.slice(0, pairsCount);
+        currentDiscount = discountedUnits.reduce((sum, u) => sum + u.price * (deal.discountPercent / 100), 0);
+      }
+    } else if (deal.dealType === 'BUNDLE_FIXED_PRICE' && deal.bundlePrice) {
+      const bundlesCount = Math.floor(units.length / deal.buyQuantity);
+      if (bundlesCount > 0) {
+        const bundleUnitsCount = bundlesCount * deal.buyQuantity;
+        const bundleUnits = units.slice(units.length - bundleUnitsCount);
+        const originalBundleSum = bundleUnits.reduce((sum, u) => sum + u.price, 0);
+        const targetBundleSum = deal.bundlePrice * bundlesCount;
+        if (originalBundleSum > targetBundleSum) {
+          currentDiscount = originalBundleSum - targetBundleSum;
+        }
+      }
+    }
+
+    if (currentDiscount > highestDiscount) {
+      highestDiscount = currentDiscount;
+      chosenDeal = deal;
+      if (deal.freeShipping) freeShipping = true;
+      if (deal.freeGiftName) gift = deal.freeGiftName;
+    }
+  }
+
+  return {
+    bestDeal: chosenDeal,
+    dealDiscount: Math.round(highestDiscount * 100) / 100,
+    freeShippingUnlocked: freeShipping,
+    freeGift: gift,
+  };
+}
+
 type AddInput = {
   id: number;
   sku?: string | null;
@@ -83,6 +186,9 @@ type CartContextType = {
   appliedPromo: AppliedPromo | null;
   applyPromo: (promo: AppliedPromo) => void;
   removePromo: () => void;
+  activeDeals: ActiveDeal[];
+  appliedDeal: ActiveDeal | null;
+  dealDiscount: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -92,6 +198,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shippingFee, setShippingFee] = useState(35);
   const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
+  const [activeDeals, setActiveDeals] = useState<ActiveDeal[]>([]);
 
   useEffect(() => {
     // Migration: Read from localStorage first, then fallback to Cookies.
@@ -133,6 +240,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(console.error);
+
+    // Fetch active deals
+    fetch('/api/deals/active')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setActiveDeals(data);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -233,6 +350,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const applyPromo = (promo: AppliedPromo) => setAppliedPromo(promo);
   const removePromo = () => setAppliedPromo(null);
 
+  // Evaluate automatic deals for the current cart
+  const { bestDeal, dealDiscount, freeShippingUnlocked } = evaluateActiveDeals(cart, activeDeals);
+
   return (
     <CartContext.Provider
       value={{
@@ -243,10 +363,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getSubtotal,
         getItemCount,
-        shippingFee: getSubtotal() >= 800 ? 0 : shippingFee,
+        shippingFee: (freeShippingUnlocked || getSubtotal() >= 800) ? 0 : shippingFee,
         appliedPromo,
         applyPromo,
         removePromo,
+        activeDeals,
+        appliedDeal: bestDeal,
+        dealDiscount,
       }}
     >
       {children}

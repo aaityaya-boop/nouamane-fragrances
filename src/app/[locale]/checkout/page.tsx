@@ -25,7 +25,7 @@ import {
    ============================================================ */
 
 export default function CheckoutPage() {
-  const { cart, getSubtotal, clearCart, shippingFee, appliedPromo, applyPromo, removePromo } = useCart();
+  const { cart, getSubtotal, clearCart, shippingFee, appliedPromo, applyPromo, removePromo, appliedDeal, dealDiscount } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,9 +38,10 @@ export default function CheckoutPage() {
   const subtotal = getSubtotal();
   const shipping = shippingFee || 0;
   
-  // Calculate discount using accurate scope and product targeting
-  const discount = calculatePromoDiscount(cart, appliedPromo);
-  const total = subtotal - discount + shipping;
+  // Calculate discount using accurate scope and product targeting + active deals
+  const promoDiscount = calculatePromoDiscount(cart, appliedPromo);
+  const totalDiscount = promoDiscount + dealDiscount;
+  const total = Math.max(0, subtotal - totalDiscount) + shipping;
 
   // Form state
   const [form, setForm] = useState({
@@ -152,8 +153,8 @@ export default function CheckoutPage() {
           subtotal,
           shippingCost: shipping,
           total,
-          promoCode: appliedPromo?.code || null,
-          discount: discount > 0 ? discount : null,
+          promoCode: appliedPromo?.code || (appliedDeal ? `OFFRE:${appliedDeal.badgeText || appliedDeal.title}` : null),
+          discount: totalDiscount > 0 ? totalDiscount : null,
         }),
       });
 
@@ -177,8 +178,8 @@ export default function CheckoutPage() {
         subtotal,
         shippingCost: shipping,
         total,
-        promoCode: appliedPromo?.code || null,
-        discount: discount > 0 ? discount : null,
+        promoCode: appliedPromo?.code || (appliedDeal ? `OFFRE:${appliedDeal.badgeText || appliedDeal.title}` : null),
+        discount: totalDiscount > 0 ? totalDiscount : null,
         createdAt: new Date().toISOString(),
       };
       localStorage.setItem('nouamaneLastOrder', JSON.stringify(confirmationData));
@@ -481,14 +482,35 @@ export default function CheckoutPage() {
                       {formatMAD(subtotal)}
                     </span>
                   </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-[13px] text-green-600">
-                      <span>Remise ({appliedPromo?.code})</span>
-                      <span className="font-medium">
-                        -{formatMAD(discount)}
+
+                  {dealDiscount > 0 && appliedDeal && (
+                    <div className="flex justify-between text-[13px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                      <span className="font-bold flex items-center gap-1">
+                        <span>🎉</span>
+                        <span>{appliedDeal.badgeText || appliedDeal.title}</span>
+                      </span>
+                      <span className="font-bold">
+                        -{formatMAD(dealDiscount)}
                       </span>
                     </div>
                   )}
+
+                  {appliedDeal?.freeGiftName && (
+                    <div className="flex justify-between text-[12px] text-pink-700 bg-pink-50 p-2 rounded-lg border border-pink-200">
+                      <span>🎁 Cadeau offert</span>
+                      <span className="font-bold">{appliedDeal.freeGiftName}</span>
+                    </div>
+                  )}
+
+                  {promoDiscount > 0 && (
+                    <div className="flex justify-between text-[13px] text-green-600">
+                      <span>Remise ({appliedPromo?.code})</span>
+                      <span className="font-medium">
+                        -{formatMAD(promoDiscount)}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between text-[13px]">
                     <span className="text-[#6B6B6B]">Livraison</span>
                     <span className="text-[#1A1A1A] font-medium">

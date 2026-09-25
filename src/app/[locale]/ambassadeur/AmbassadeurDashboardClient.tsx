@@ -22,7 +22,6 @@ import {
   ArrowUpRight,
   Send,
   MessageCircle,
-  Instagram,
   CheckCircle2,
   Clock,
   ChevronRight,

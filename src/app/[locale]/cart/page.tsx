@@ -16,7 +16,7 @@ import { Plus, Minus, Trash2, ArrowRight, ShoppingBag, Truck, ShieldCheck, Gift,
    ============================================================ */
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee, appliedPromo, applyPromo, removePromo } = useCart();
+  const { cart, removeFromCart, updateQuantity, getSubtotal, shippingFee, appliedPromo, applyPromo, removePromo, appliedDeal, dealDiscount } = useCart();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'fr';
   const subtotal = getSubtotal();
@@ -28,9 +28,10 @@ export default function CartPage() {
   const [promoSuccess, setPromoSuccess] = React.useState('');
   const [isApplyingPromo, setIsApplyingPromo] = React.useState(false);
 
-  // Calculate discount using accurate scope and product targeting
-  const discount = calculatePromoDiscount(cart, appliedPromo);
-  const total = subtotal - discount + shipping;
+  // Calculate discount using accurate scope and product targeting + active automatic deals
+  const promoDiscount = calculatePromoDiscount(cart, appliedPromo);
+  const totalDiscount = promoDiscount + dealDiscount;
+  const total = Math.max(0, subtotal - totalDiscount) + shipping;
 
   const handleApplyPromo = async () => {
     if (!promoInput.trim()) return;
@@ -273,14 +274,35 @@ export default function CartPage() {
                         {formatMAD(subtotal)}
                       </span>
                     </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-[14px] text-green-600">
-                        <span>Remise ({appliedPromo?.code})</span>
-                        <span className="font-medium">
-                          -{formatMAD(discount)}
+
+                    {dealDiscount > 0 && appliedDeal && (
+                      <div className="flex justify-between text-[14px] text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                        <div className="flex items-center gap-1.5 font-semibold text-xs">
+                          <span>🎉</span>
+                          <span>{appliedDeal.badgeText || appliedDeal.title}</span>
+                        </div>
+                        <span className="font-bold text-xs">
+                          -{formatMAD(dealDiscount)}
                         </span>
                       </div>
                     )}
+
+                    {appliedDeal?.freeGiftName && (
+                      <div className="flex justify-between text-[12px] text-pink-700 bg-pink-50 p-2 rounded-lg border border-pink-200">
+                        <span>🎁 Cadeau offert</span>
+                        <span className="font-bold">{appliedDeal.freeGiftName}</span>
+                      </div>
+                    )}
+
+                    {promoDiscount > 0 && (
+                      <div className="flex justify-between text-[14px] text-green-600">
+                        <span>Code promo ({appliedPromo?.code})</span>
+                        <span className="font-medium">
+                          -{formatMAD(promoDiscount)}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between text-[14px]">
                       <span className="text-[#6B6B6B]">Livraison</span>
                       <span className="text-[#1A1A1A] font-medium">
