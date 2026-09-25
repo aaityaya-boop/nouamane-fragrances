@@ -200,16 +200,15 @@ export default function AdminPromos() {
     const k = catKey.toLowerCase();
     const pGender = (p.gender || '').toLowerCase();
     const pSub = (p.subcategory || '').toLowerCase();
-    const pSubLabel = (p.subcategoryLabel || '').toLowerCase();
     const pBrand = (p.brandLabel || '').toLowerCase();
 
     if (k === 'men') return pGender === 'men' || pGender === 'homme';
     if (k === 'women') return pGender === 'women' || pGender === 'femme';
     if (k === 'unisex') return pGender === 'unisex' || pGender === 'unisexe';
-    if (k === 'oriental') return pSub.includes('oriental') || pSubLabel.includes('oriental') || pSub.includes('arab');
-    if (k === 'originaux') return pSub.includes('origin') || pSubLabel.includes('origin');
-    if (k === 'coffrets') return pSub.includes('coffret') || pSubLabel.includes('coffret') || p.name.toLowerCase().includes('coffret');
-    if (pBrand === k || pBrand.includes(k)) return true;
+    if (k === 'oriental') return pSub === 'arabic';
+    if (k === 'originaux') return pSub !== 'arabic';
+    if (k === 'coffrets') return pSub === 'coffrets' || p.name.toLowerCase().includes('coffret');
+    if (pBrand === k || pBrand.toLowerCase() === k) return true;
     return false;
   };
 

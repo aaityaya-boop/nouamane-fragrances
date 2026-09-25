@@ -63,20 +63,17 @@ export async function POST(request: Request) {
       const matchingIds = allProducts.filter(p => {
         const pGender = (p.gender || '').toLowerCase();
         const pSub = (p.subcategory || '').toLowerCase();
-        const pSubLabel = (p.subcategoryLabel || '').toLowerCase();
         const pBrand = (p.brandLabel || '').toLowerCase();
 
         return parsedCategories.some(cat => {
           const c = cat.toLowerCase();
-          if (c === pGender) return true;
-          if (c === 'men' && (pGender === 'men' || pGender === 'homme')) return true;
-          if (c === 'women' && (pGender === 'women' || pGender === 'femme')) return true;
-          if (c === 'unisex' && (pGender === 'unisex' || pGender === 'unisexe')) return true;
-          if (c === 'oriental' && (pSub.includes('oriental') || pSubLabel.includes('oriental'))) return true;
-          if (c === 'coffrets' && (pSub.includes('coffret') || pSubLabel.includes('coffret'))) return true;
-          if (c === 'originaux' && (pSub.includes('origin') || pSubLabel.includes('origin'))) return true;
-          if (pBrand === c || pBrand.includes(c)) return true;
-          if (pSub.includes(c) || pSubLabel.includes(c)) return true;
+          if (c === 'men') return pGender === 'men' || pGender === 'homme';
+          if (c === 'women') return pGender === 'women' || pGender === 'femme';
+          if (c === 'unisex') return pGender === 'unisex' || pGender === 'unisexe';
+          if (c === 'oriental') return pSub === 'arabic';
+          if (c === 'originaux') return pSub !== 'arabic';
+          if (c === 'coffrets') return pSub === 'coffrets';
+          if (pBrand === c || pBrand.toLowerCase() === c) return true;
           return false;
         });
       }).map(p => p.id);
