@@ -12,7 +12,6 @@ import {
   Search,
   Check,
   Percent,
-  Coins,
   Globe,
   Layers,
   FolderTree,
@@ -21,14 +20,8 @@ import {
   X,
   Copy,
   CheckCircle2,
-  AlertCircle,
-  Filter,
-  CheckSquare,
-  Square,
   Power,
   Package,
-  ChevronDown,
-  ChevronUp,
   User,
   Users,
   Gift,
@@ -40,8 +33,9 @@ import {
   ArrowRight,
   TrendingUp,
   BadgePercent,
-  HelpCircle,
-  RefreshCw
+  RefreshCw,
+  Sliders,
+  CheckCheck
 } from 'lucide-react';
 
 interface ProductItem {
@@ -104,61 +98,27 @@ interface PresetCategory {
 }
 
 const PRESET_CATEGORIES: PresetCategory[] = [
-  { id: 'men', label: 'Parfums Homme', iconKey: 'men', desc: 'Tous les parfums pour homme' },
-  { id: 'women', label: 'Parfums Femme', iconKey: 'women', desc: 'Tous les parfums pour femme' },
-  { id: 'unisex', label: 'Parfums Unisexe', iconKey: 'unisex', desc: 'Parfums mixtes & universels' },
-  { id: 'oriental', label: 'Parfums Orientaux', iconKey: 'oriental', desc: 'Notes de oud, ambre & épices' },
-  { id: 'testers', label: 'Testeurs Parfums', iconKey: 'testers', desc: 'Flacons testeurs de marques de luxe' },
+  { id: 'men', label: 'Parfums Homme', iconKey: 'men', desc: 'Collection masculine' },
+  { id: 'women', label: 'Parfums Femme', iconKey: 'women', desc: 'Collection féminine' },
+  { id: 'unisex', label: 'Parfums Unisexe', iconKey: 'unisex', desc: 'Parfums mixtes' },
+  { id: 'oriental', label: 'Parfums Orientaux', iconKey: 'oriental', desc: 'Oud, ambre & épices' },
+  { id: 'testers', label: 'Testeurs Parfums', iconKey: 'testers', desc: 'Flacons testeurs de luxe' },
   { id: 'coffrets', label: 'Coffrets & Cadeaux', iconKey: 'coffrets', desc: 'Sets découverte & coffrets' },
 ];
 
 export default function AdminPromos() {
-  const [activeTab, setActiveTab] = useState<'promos' | 'deals'>('deals');
+  const [activeTab, setActiveTab] = useState<'deals' | 'promos'>('deals');
 
   const [promos, setPromos] = useState<PromoCodeItem[]>([]);
   const [deals, setDeals] = useState<SpecialDealItem[]>([]);
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingProducts, setLoadingProducts] = useState(true);
 
   // ==========================================
-  // TAB 1: PROMO CODE FORM STATE
-  // ==========================================
-  const [code, setCode] = useState('');
-  const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
-  const [value, setValue] = useState('');
-  const [applicableScope, setApplicableScope] = useState<'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'>('ALL');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
-  const [minOrderAmount, setMinOrderAmount] = useState('');
-  const [maxUses, setMaxUses] = useState('');
-  const [expiresAt, setExpiresAt] = useState('');
-  const [description, setDescription] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showBrandSelector, setShowBrandSelector] = useState(false);
-
-  // Specific Product Selector State
-  const [productSearch, setProductSearch] = useState('');
-  const [categoryFilterTab, setCategoryFilterTab] = useState<string>('all');
-  const [selectionFilter, setSelectionFilter] = useState<'all' | 'selected' | 'unselected'>('all');
-
-  // Modal State for Viewing Target Products
-  const [viewingPromo, setViewingPromo] = useState<PromoCodeItem | null>(null);
-  const [viewingDeal, setViewingDeal] = useState<SpecialDealItem | null>(null);
-
-  // Copy Feedback State
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-
-  // Promo Search in List
-  const [listSearch, setListSearch] = useState('');
-  const [listScopeFilter, setListScopeFilter] = useState<'all' | 'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'>('all');
-
-  // ==========================================
-  // TAB 2: SPECIAL DEALS / BOGO FORM STATE
+  // TAB 1: SPECIAL DEALS / BOGO FORM STATE
   // ==========================================
   const [dealTitle, setDealTitle] = useState('Achetez 2, le 3ème OFFERT');
-  const [dealSubtitle, setDealSubtitle] = useState('Ajoutez 3 parfums au panier, le 3ème est automatiquement offert !');
+  const [dealSubtitle, setDealSubtitle] = useState('Ajoutez 3 parfums au panier, le 3ème flacon est 100% gratuit !');
   const [dealBadgeText, setDealBadgeText] = useState('2+1 OFFERT');
   const [dealType, setDealType] = useState<'BUY_X_GET_Y_FREE' | 'SECOND_AT_DISCOUNT' | 'BUNDLE_FIXED_PRICE'>('BUY_X_GET_Y_FREE');
   const [buyQuantity, setBuyQuantity] = useState(2);
@@ -184,6 +144,30 @@ export default function AdminPromos() {
   const [simCartCount, setSimCartCount] = useState<number>(3);
   const [simItemPrice, setSimItemPrice] = useState<number>(299);
 
+  // ==========================================
+  // TAB 2: PROMO CODE FORM STATE
+  // ==========================================
+  const [code, setCode] = useState('');
+  const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
+  const [value, setValue] = useState('');
+  const [applicableScope, setApplicableScope] = useState<'ALL' | 'CATEGORIES' | 'SPECIFIC_PRODUCTS'>('ALL');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [minOrderAmount, setMinOrderAmount] = useState('');
+  const [maxUses, setMaxUses] = useState('');
+  const [expiresAt, setExpiresAt] = useState('');
+  const [description, setDescription] = useState('');
+  const [isSubmittingPromo, setIsSubmittingPromo] = useState(false);
+  const [productSearch, setProductSearch] = useState('');
+  const [categoryFilterTab, setCategoryFilterTab] = useState<string>('all');
+  const [selectionFilter, setSelectionFilter] = useState<'all' | 'selected' | 'unselected'>('all');
+
+  // Modal State
+  const [viewingPromo, setViewingPromo] = useState<PromoCodeItem | null>(null);
+  const [viewingDeal, setViewingDeal] = useState<SpecialDealItem | null>(null);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [listSearch, setListSearch] = useState('');
+
   const fetchPromos = async () => {
     try {
       const res = await fetch('/api/admin/promos');
@@ -191,8 +175,6 @@ export default function AdminPromos() {
       setPromos(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching promos:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -214,7 +196,7 @@ export default function AdminPromos() {
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
-      setLoadingProducts(false);
+      setLoading(false);
     }
   };
 
@@ -224,7 +206,6 @@ export default function AdminPromos() {
     fetchProducts();
   }, []);
 
-  // Helper to extract image URL
   const getProductImage = (images: string | string[] | undefined): string => {
     if (!images) return '/images/nay/nay-logo-blue.png';
     if (Array.isArray(images)) return images[0] || '/images/nay/nay-logo-blue.png';
@@ -242,9 +223,8 @@ export default function AdminPromos() {
     return '/images/nay/nay-logo-blue.png';
   };
 
-  // Render vector icon for category
   const renderCategoryIcon = (iconKey: string, isSelected = false, size = 13) => {
-    const iconClass = isSelected ? 'text-purple-700' : 'text-neutral-700';
+    const iconClass = isSelected ? 'text-[#0ea5e9]' : 'text-neutral-600';
     switch (iconKey) {
       case 'men':
         return <User size={size} className={iconClass} />;
@@ -264,16 +244,6 @@ export default function AdminPromos() {
     }
   };
 
-  // Distinct Brands list from products
-  const availableBrands = useMemo(() => {
-    const brandsSet = new Set<string>();
-    products.forEach((p) => {
-      if (p.brandLabel) brandsSet.add(p.brandLabel.trim());
-    });
-    return Array.from(brandsSet).sort();
-  }, [products]);
-
-  // Check if a product belongs to a category key
   const productMatchesCategory = (p: ProductItem, catKey: string): boolean => {
     const k = catKey.toLowerCase();
     const pGender = (p.gender || '').toLowerCase();
@@ -290,12 +260,10 @@ export default function AdminPromos() {
     return false;
   };
 
-  // Calculate count of products for a category key
   const getCategoryProductCount = (catKey: string): number => {
     return products.filter((p) => productMatchesCategory(p, catKey)).length;
   };
 
-  // Lookup map for products
   const productMap = useMemo(() => {
     const map = new Map<number, ProductItem>();
     products.forEach((p) => map.set(p.id, p));
@@ -303,7 +271,7 @@ export default function AdminPromos() {
   }, [products]);
 
   // ==========================================
-  // PRESET DEAL TEMPLATES HANDLERS
+  // PRESET DEAL TEMPLATES
   // ==========================================
   const applyDealTemplate = (templateKey: string) => {
     switch (templateKey) {
@@ -350,8 +318,8 @@ export default function AdminPromos() {
         break;
 
       case 'packDuo':
-        setDealTitle('Pack Duo Luxe : 2 Parfums pour 499 DH');
-        setDealSubtitle('Composez votre coffret de 2 parfums prestigieux au prix exclusif de 499 DH au lieu de 598 DH.');
+        setDealTitle('Pack Duo Prestige : 2 Parfums pour 499 DH');
+        setDealSubtitle('Composez votre pack de 2 parfums prestigieux au prix exclusif de 499 DH au lieu de 598 DH.');
         setDealBadgeText('PACK DUO 499 DH');
         setDealType('BUNDLE_FIXED_PRICE');
         setBuyQuantity(2);
@@ -377,7 +345,7 @@ export default function AdminPromos() {
 
       case 'freeGiftDeal':
         setDealTitle('Cadeau Échantillon Luxe Offert dès 2 Parfums');
-        setDealSubtitle('Recevez un vaporisateur de poche découverte offert dans votre colis dès 2 flacons achetés.');
+        setDealSubtitle('Recevez un vaporisateur nomade de luxe 5ml offert dès 2 flacons achetés.');
         setDealBadgeText('CADEAU OFFERT');
         setDealType('BUY_X_GET_Y_FREE');
         setBuyQuantity(2);
@@ -471,9 +439,7 @@ export default function AdminPromos() {
     if (!confirm('Supprimer définitivement cette offre spéciale ?')) return;
     try {
       const res = await fetch(`/api/admin/deals?id=${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        fetchDeals();
-      }
+      if (res.ok) fetchDeals();
     } catch (err) {
       console.error(err);
     }
@@ -524,7 +490,7 @@ export default function AdminPromos() {
   }, [simCartCount, simItemPrice, dealType, buyQuantity, getQuantity, dealDiscountPercent, bundlePrice]);
 
   // ==========================================
-  // TAB 1: PROMO CREATION
+  // TAB 2: PROMO CREATION
   // ==========================================
   const handleCreatePromo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -540,7 +506,7 @@ export default function AdminPromos() {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsSubmittingPromo(true);
     try {
       const res = await fetch('/api/admin/promos', {
         method: 'POST',
@@ -570,7 +536,6 @@ export default function AdminPromos() {
         setSelectedCategories([]);
         setSelectedProductIds([]);
         setApplicableScope('ALL');
-        setShowAdvanced(false);
         fetchPromos();
       } else {
         const data = await res.json();
@@ -580,7 +545,7 @@ export default function AdminPromos() {
       console.error(error);
       alert('Erreur serveur lors de la création du code promo');
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingPromo(false);
     }
   };
 
@@ -603,7 +568,6 @@ export default function AdminPromos() {
 
   const handleDeletePromo = async (id: string) => {
     if (!confirm('Voulez-vous vraiment supprimer définitivement ce code promo ?')) return;
-
     try {
       const res = await fetch(`/api/admin/promos?id=${id}`, { method: 'DELETE' });
       if (res.ok) fetchPromos();
@@ -624,8 +588,7 @@ export default function AdminPromos() {
       const matchesSearch =
         !productSearch ||
         p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-        (p.brandLabel && p.brandLabel.toLowerCase().includes(productSearch.toLowerCase())) ||
-        (p.subcategoryLabel && p.subcategoryLabel.toLowerCase().includes(productSearch.toLowerCase()));
+        (p.brandLabel && p.brandLabel.toLowerCase().includes(productSearch.toLowerCase()));
 
       const matchesTab =
         categoryFilterTab === 'all' || productMatchesCategory(p, categoryFilterTab);
@@ -646,8 +609,7 @@ export default function AdminPromos() {
       const matchesSearch =
         !dealProductSearch ||
         p.name.toLowerCase().includes(dealProductSearch.toLowerCase()) ||
-        (p.brandLabel && p.brandLabel.toLowerCase().includes(dealProductSearch.toLowerCase())) ||
-        (p.subcategoryLabel && p.subcategoryLabel.toLowerCase().includes(dealProductSearch.toLowerCase()));
+        (p.brandLabel && p.brandLabel.toLowerCase().includes(dealProductSearch.toLowerCase()));
 
       const matchesTab =
         dealCategoryFilterTab === 'all' || productMatchesCategory(p, dealCategoryFilterTab);
@@ -664,39 +626,37 @@ export default function AdminPromos() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
-      {/* Header with Tab Navigation */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-neutral-200 pb-5">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-neutral-100 text-neutral-800 border border-neutral-200 flex items-center gap-1.5">
-              <Zap size={11} className="text-amber-600" />
-              Marketing & Croissance
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-sky-50 text-[#0ea5e9] border border-sky-200 flex items-center gap-1.5">
+              <Sparkles size={11} />
+              NAY Parfums • Ventes & Marketing
             </span>
-            <span className="text-xs text-neutral-400">•</span>
-            <span className="text-xs text-neutral-500 font-medium">Promotions & Bons Plans</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2.5">
-            <span>Promotions, Remises & Offres BOGO</span>
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            Promotions & Offres Spéciales
           </h1>
-          <p className="text-xs text-neutral-500 mt-1">
-            Gérez vos offres automatiques (2+1 Gratuit, -50% sur le 2ème, Packs) et vos codes promos ciblés.
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Configurez vos offres automatiques au panier (2+1 Gratuit, -50% sur le 2ème, Packs) et vos codes promos.
           </p>
         </div>
 
-        {/* Top Tab Switcher */}
-        <div className="flex items-center bg-neutral-100 p-1 rounded-2xl border border-neutral-200 shadow-2xs">
+        {/* Clean Creative Tabs */}
+        <div className="flex items-center bg-neutral-100/80 p-1.5 rounded-xl border border-neutral-200">
           <button
             type="button"
             onClick={() => setActiveTab('deals')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'deals'
-                ? 'bg-white text-neutral-900 shadow-xs'
-                : 'text-neutral-500 hover:text-neutral-900'
+                ? 'bg-[#0ea5e9] text-white shadow-xs'
+                : 'text-neutral-600 hover:text-neutral-900'
             }`}
           >
-            <Gift size={14} className={activeTab === 'deals' ? 'text-amber-600' : 'text-neutral-400'} />
-            <span>Bons Plans & BOGO (2+1)</span>
-            <span className="px-1.5 py-0.2 bg-amber-100 text-amber-800 text-[10px] font-extrabold rounded-md ml-0.5">
+            <Zap size={13} className={activeTab === 'deals' ? 'text-white' : 'text-[#0ea5e9]'} />
+            <span>Offres Spéciales & BOGO</span>
+            <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-extrabold ${activeTab === 'deals' ? 'bg-white/20 text-white' : 'bg-neutral-200 text-neutral-700'}`}>
               {deals.filter(d => d.isActive).length}
             </span>
           </button>
@@ -704,15 +664,15 @@ export default function AdminPromos() {
           <button
             type="button"
             onClick={() => setActiveTab('promos')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'promos'
-                ? 'bg-white text-neutral-900 shadow-xs'
-                : 'text-neutral-500 hover:text-neutral-900'
+                ? 'bg-[#0ea5e9] text-white shadow-xs'
+                : 'text-neutral-600 hover:text-neutral-900'
             }`}
           >
-            <Ticket size={14} className={activeTab === 'promos' ? 'text-purple-600' : 'text-neutral-400'} />
-            <span>Codes Promo Classiques</span>
-            <span className="px-1.5 py-0.2 bg-purple-100 text-purple-800 text-[10px] font-extrabold rounded-md ml-0.5">
+            <Ticket size={13} className={activeTab === 'promos' ? 'text-white' : 'text-[#0ea5e9]'} />
+            <span>Codes Promo</span>
+            <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-extrabold ${activeTab === 'promos' ? 'bg-white/20 text-white' : 'bg-neutral-200 text-neutral-700'}`}>
               {promos.filter(p => p.isActive).length}
             </span>
           </button>
@@ -724,40 +684,40 @@ export default function AdminPromos() {
       {/* ========================================================================= */}
       {activeTab === 'deals' && (
         <div className="space-y-6">
-          {/* 1-Click Preset Templates Banner */}
-          <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-purple-500/10 border border-amber-200/80 rounded-2xl p-5 shadow-2xs">
-            <div className="flex items-center justify-between gap-4 mb-3">
+          {/* 1-Click Preset Templates Grid */}
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-xs">
+            <div className="flex items-center justify-between mb-3.5">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
-                  <Sparkles size={16} />
+                <div className="w-7 h-7 rounded-lg bg-sky-50 text-[#0ea5e9] border border-sky-200 flex items-center justify-center">
+                  <Sparkles size={14} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-neutral-900">
+                  <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wider">
                     Modèles d&apos;Offres Clés en Main (1 Clic)
                   </h3>
                   <p className="text-[11px] text-neutral-500">
-                    Cliquez sur une offre pour pré-remplir instantanément la mécanique promotionnelle.
+                    Cliquez sur un modèle pour appliquer instantanément la formule souhaitée.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Template 1 */}
               <button
                 type="button"
                 onClick={() => applyDealTemplate('buy2get1')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-amber-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-amber-50 text-amber-700 group-hover:bg-amber-100">
-                  <Flame size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-[#0ea5e9] group-hover:border-sky-300 flex items-center justify-center flex-shrink-0">
+                  <Flame size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-amber-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-[#0ea5e9] transition-colors">
                     2 Achetés = 3ème OFFERT
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
-                    Le flacon le moins cher est 100% gratuit au panier.
+                    Le flacon le moins cher est 100% gratuit au panier (2+1).
                   </div>
                 </div>
               </button>
@@ -766,17 +726,17 @@ export default function AdminPromos() {
               <button
                 type="button"
                 onClick={() => applyDealTemplate('second50')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-blue-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-blue-50 text-blue-700 group-hover:bg-blue-100">
-                  <BadgePercent size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-[#0ea5e9] group-hover:border-sky-300 flex items-center justify-center flex-shrink-0">
+                  <BadgePercent size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-blue-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-[#0ea5e9] transition-colors">
                     2ème Parfum à -50%
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
-                    Le 2ème article bénéficie de 50% de remise immédiate.
+                    Le 2ème flacon bénéficie de 50% de remise immédiate.
                   </div>
                 </div>
               </button>
@@ -785,17 +745,17 @@ export default function AdminPromos() {
               <button
                 type="button"
                 onClick={() => applyDealTemplate('buy3get1shipping')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-emerald-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100">
-                  <Truck size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-emerald-600 group-hover:border-emerald-300 flex items-center justify-center flex-shrink-0">
+                  <Truck size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-emerald-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-emerald-700 transition-colors">
                     3 Achetés = 4ème + Livraison 0 DH
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
-                    4ème flacon offert + livraison offerte partout au Maroc.
+                    4ème flacon offert + livraison gratuite partout au Maroc.
                   </div>
                 </div>
               </button>
@@ -804,17 +764,17 @@ export default function AdminPromos() {
               <button
                 type="button"
                 onClick={() => applyDealTemplate('packDuo')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-purple-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-purple-50 text-purple-700 group-hover:bg-purple-100">
-                  <Package size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-[#0ea5e9] group-hover:border-sky-300 flex items-center justify-center flex-shrink-0">
+                  <Package size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-purple-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-[#0ea5e9] transition-colors">
                     Pack Duo : 2 Parfums pour 499 DH
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
-                    Prix groupé fixe pour 2 parfums (au lieu de ~598 DH).
+                    Prix fixe pour 2 parfums (au lieu de 598 DH).
                   </div>
                 </div>
               </button>
@@ -823,13 +783,13 @@ export default function AdminPromos() {
               <button
                 type="button"
                 onClick={() => applyDealTemplate('packTrio')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-pink-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-pink-50 text-pink-700 group-hover:bg-pink-100">
-                  <Crown size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-[#0ea5e9] group-hover:border-sky-300 flex items-center justify-center flex-shrink-0">
+                  <Crown size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-pink-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-[#0ea5e9] transition-colors">
                     Pack Trio : 3 Parfums pour 699 DH
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
@@ -842,17 +802,17 @@ export default function AdminPromos() {
               <button
                 type="button"
                 onClick={() => applyDealTemplate('freeGiftDeal')}
-                className="flex items-start gap-3 p-3 bg-white/90 hover:bg-white border border-neutral-200/80 hover:border-indigo-400 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
+                className="flex items-start gap-3 p-3.5 bg-neutral-50/70 hover:bg-sky-50/50 border border-neutral-200 hover:border-sky-300 rounded-xl text-left transition-all hover:shadow-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-indigo-50 text-indigo-700 group-hover:bg-indigo-100">
-                  <Gift size={16} />
+                <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-[#0ea5e9] group-hover:border-sky-300 flex items-center justify-center flex-shrink-0">
+                  <Gift size={15} />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-neutral-900 group-hover:text-indigo-700">
+                  <div className="text-xs font-bold text-neutral-900 group-hover:text-[#0ea5e9] transition-colors">
                     Cadeau Offert dès 2 Parfums
                   </div>
                   <div className="text-[11px] text-neutral-500 leading-tight mt-0.5">
-                    Vaporisateur ou coffret miniature offert automatiquement.
+                    Vaporisateur ou échantillon offert automatiquement.
                   </div>
                 </div>
               </button>
@@ -861,21 +821,21 @@ export default function AdminPromos() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* LEFT COLUMN: Deal Form (7 cols) */}
-            <div className="lg:col-span-7 bg-white rounded-2xl border border-neutral-200 p-6 shadow-xs space-y-6">
-              <div className="border-b border-neutral-100 pb-4">
-                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                  <Sparkles size={16} className="text-amber-600" />
-                  <span>Configurer une Offre Promotionnelle</span>
+            <div className="lg:col-span-7 bg-white rounded-2xl border border-neutral-200/80 p-6 shadow-xs space-y-5">
+              <div className="border-b border-neutral-150 pb-3.5">
+                <h2 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                  <Sliders size={15} className="text-[#0ea5e9]" />
+                  <span>Paramétrer l&apos;Offre Promotionnelle</span>
                 </h2>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  L&apos;offre sera calculée automatiquement dans le panier de vos clients.
+                <p className="text-[11px] text-neutral-500 mt-0.5">
+                  L&apos;offre s&apos;activera automatiquement dès que le panier du client remplit les conditions.
                 </p>
               </div>
 
-              <form onSubmit={handleCreateDeal} className="space-y-5">
+              <form onSubmit={handleCreateDeal} className="space-y-4">
                 {/* Title & Badge */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="sm:col-span-2 space-y-1.5">
+                  <div className="sm:col-span-2 space-y-1">
                     <label className="text-xs font-bold text-neutral-700">Titre de l&apos;Offre *</label>
                     <input
                       type="text"
@@ -883,50 +843,50 @@ export default function AdminPromos() {
                       value={dealTitle}
                       onChange={(e) => setDealTitle(e.target.value)}
                       placeholder="ex: Achetez 2, le 3ème OFFERT !"
-                      className="w-full px-3.5 py-2.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:bg-white"
+                      className="w-full px-3.5 py-2.5 bg-neutral-50/60 border border-neutral-200 rounded-xl text-xs font-semibold text-neutral-900 focus:outline-none focus:border-[#0ea5e9] focus:bg-white transition-all"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <label className="text-xs font-bold text-neutral-700">Badge / Tag</label>
                     <input
                       type="text"
                       value={dealBadgeText}
                       onChange={(e) => setDealBadgeText(e.target.value)}
                       placeholder="ex: 2+1 OFFERT"
-                      className="w-full px-3.5 py-2.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm font-bold text-amber-700 focus:outline-none focus:border-amber-500 focus:bg-white uppercase"
+                      className="w-full px-3.5 py-2.5 bg-neutral-50/60 border border-neutral-200 rounded-xl text-xs font-black text-[#0ea5e9] focus:outline-none focus:border-[#0ea5e9] focus:bg-white uppercase tracking-wider transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Subtitle */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-neutral-700">Description pour le client (Optionnel)</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-700">Description affichée au client</label>
                   <input
                     type="text"
                     value={dealSubtitle}
                     onChange={(e) => setDealSubtitle(e.target.value)}
-                    placeholder="ex: Ajoutez 3 parfums au panier, le 3ème flacon est 100% gratuit"
-                    className="w-full px-3.5 py-2 bg-neutral-50/50 border border-neutral-200 rounded-xl text-xs focus:outline-none focus:border-amber-500 focus:bg-white"
+                    placeholder="ex: Ajoutez 3 parfums au panier, le 3ème flacon est automatiquement offert"
+                    className="w-full px-3.5 py-2 bg-neutral-50/60 border border-neutral-200 rounded-xl text-xs text-neutral-700 focus:outline-none focus:border-[#0ea5e9] focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* Deal Mechanism Selection */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-700">Mécanique de l&apos;Offre</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-neutral-700">Type de Remise</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
                       type="button"
                       onClick={() => setDealType('BUY_X_GET_Y_FREE')}
                       className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         dealType === 'BUY_X_GET_Y_FREE'
-                          ? 'bg-amber-50/50 border-amber-500 ring-1 ring-amber-500'
+                          ? 'bg-sky-50/70 border-[#0ea5e9] ring-1 ring-[#0ea5e9]'
                           : 'bg-white border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-0.5">
                         <span className="text-xs font-bold text-neutral-900">Achetez X, Offert Y</span>
-                        <Check size={13} className={dealType === 'BUY_X_GET_Y_FREE' ? 'text-amber-600' : 'opacity-0'} />
+                        <Check size={13} className={dealType === 'BUY_X_GET_Y_FREE' ? 'text-[#0ea5e9]' : 'opacity-0'} />
                       </div>
                       <p className="text-[10px] text-neutral-500">Ex: 2 achetés = 1 offert (2+1)</p>
                     </button>
@@ -936,13 +896,13 @@ export default function AdminPromos() {
                       onClick={() => setDealType('SECOND_AT_DISCOUNT')}
                       className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         dealType === 'SECOND_AT_DISCOUNT'
-                          ? 'bg-blue-50/50 border-blue-500 ring-1 ring-blue-500'
+                          ? 'bg-sky-50/70 border-[#0ea5e9] ring-1 ring-[#0ea5e9]'
                           : 'bg-white border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center justify-between mb-0.5">
                         <span className="text-xs font-bold text-neutral-900">2ème à Remise %</span>
-                        <Check size={13} className={dealType === 'SECOND_AT_DISCOUNT' ? 'text-blue-600' : 'opacity-0'} />
+                        <Check size={13} className={dealType === 'SECOND_AT_DISCOUNT' ? 'text-[#0ea5e9]' : 'opacity-0'} />
                       </div>
                       <p className="text-[10px] text-neutral-500">Ex: 2ème flacon à -50%</p>
                     </button>
@@ -952,21 +912,21 @@ export default function AdminPromos() {
                       onClick={() => setDealType('BUNDLE_FIXED_PRICE')}
                       className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         dealType === 'BUNDLE_FIXED_PRICE'
-                          ? 'bg-purple-50/50 border-purple-500 ring-1 ring-purple-500'
+                          ? 'bg-sky-50/70 border-[#0ea5e9] ring-1 ring-[#0ea5e9]'
                           : 'bg-white border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-neutral-900">Pack à Prix Fixe</span>
-                        <Check size={13} className={dealType === 'BUNDLE_FIXED_PRICE' ? 'text-purple-600' : 'opacity-0'} />
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-xs font-bold text-neutral-900">Pack Prix Fixe</span>
+                        <Check size={13} className={dealType === 'BUNDLE_FIXED_PRICE' ? 'text-[#0ea5e9]' : 'opacity-0'} />
                       </div>
-                      <p className="text-[10px] text-neutral-500">Ex: 2 parfums = 499 DH</p>
+                      <p className="text-[10px] text-neutral-500">Ex: 2 parfums pour 499 DH</p>
                     </button>
                   </div>
                 </div>
 
                 {/* Deal Parameters */}
-                <div className="bg-neutral-50/70 border border-neutral-200 rounded-xl p-4 space-y-4">
+                <div className="bg-neutral-50/80 border border-neutral-200/80 rounded-xl p-3.5 space-y-3">
                   {dealType === 'BUY_X_GET_Y_FREE' && (
                     <div className="grid grid-cols-3 gap-3">
                       <div>
@@ -977,7 +937,7 @@ export default function AdminPromos() {
                           max="20"
                           value={buyQuantity}
                           onChange={(e) => setBuyQuantity(parseInt(e.target.value, 10) || 1)}
-                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold"
+                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-neutral-900"
                         />
                         <span className="text-[10px] text-neutral-400">ex: 2 flacons</span>
                       </div>
@@ -990,7 +950,7 @@ export default function AdminPromos() {
                           max="10"
                           value={getQuantity}
                           onChange={(e) => setGetQuantity(parseInt(e.target.value, 10) || 0)}
-                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold"
+                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-neutral-900"
                         />
                         <span className="text-[10px] text-neutral-400">ex: 1 flacon</span>
                       </div>
@@ -1003,7 +963,7 @@ export default function AdminPromos() {
                           max="100"
                           value={dealDiscountPercent}
                           onChange={(e) => setDealDiscountPercent(parseFloat(e.target.value) || 100)}
-                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold"
+                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-[#0ea5e9]"
                         />
                         <span className="text-[10px] text-neutral-400">100% = gratuit</span>
                       </div>
@@ -1020,9 +980,9 @@ export default function AdminPromos() {
                           max="100"
                           value={dealDiscountPercent}
                           onChange={(e) => setDealDiscountPercent(parseFloat(e.target.value) || 50)}
-                          className="w-32 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold"
+                          className="w-32 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-[#0ea5e9]"
                         />
-                        <span className="text-xs font-bold text-blue-700">-{dealDiscountPercent}% appliqué sur le 2ème flacon</span>
+                        <span className="text-xs font-bold text-neutral-700">-{dealDiscountPercent}% appliqué sur le 2ème parfum</span>
                       </div>
                     </div>
                   )}
@@ -1048,7 +1008,7 @@ export default function AdminPromos() {
                           value={bundlePrice}
                           onChange={(e) => setBundlePrice(e.target.value)}
                           placeholder="499"
-                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-purple-700"
+                          className="w-full mt-1 px-3 py-2 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-[#0ea5e9]"
                         />
                       </div>
                     </div>
@@ -1064,7 +1024,7 @@ export default function AdminPromos() {
                       onClick={() => setDealScope('ALL')}
                       className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                         dealScope === 'ALL'
-                          ? 'bg-neutral-900 text-white border-neutral-900'
+                          ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                           : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
@@ -1072,7 +1032,7 @@ export default function AdminPromos() {
                         <Globe size={13} />
                         <span>Tout le Catalogue</span>
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${dealScope === 'ALL' ? 'text-neutral-300' : 'text-neutral-400'}`}>
+                      <div className={`text-[10px] mt-0.5 ${dealScope === 'ALL' ? 'text-sky-100' : 'text-neutral-400'}`}>
                         {products.length} parfums
                       </div>
                     </button>
@@ -1082,7 +1042,7 @@ export default function AdminPromos() {
                       onClick={() => setDealScope('CATEGORIES')}
                       className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                         dealScope === 'CATEGORIES'
-                          ? 'bg-purple-700 text-white border-purple-700'
+                          ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                           : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
@@ -1090,7 +1050,7 @@ export default function AdminPromos() {
                         <FolderTree size={13} />
                         <span>Par Catégories</span>
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${dealScope === 'CATEGORIES' ? 'text-purple-200' : 'text-neutral-400'}`}>
+                      <div className={`text-[10px] mt-0.5 ${dealScope === 'CATEGORIES' ? 'text-sky-100' : 'text-neutral-400'}`}>
                         {dealCategories.length} sélectionnée(s)
                       </div>
                     </button>
@@ -1100,7 +1060,7 @@ export default function AdminPromos() {
                       onClick={() => setDealScope('SPECIFIC_PRODUCTS')}
                       className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                         dealScope === 'SPECIFIC_PRODUCTS'
-                          ? 'bg-blue-700 text-white border-blue-700'
+                          ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                           : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                       }`}
                     >
@@ -1108,7 +1068,7 @@ export default function AdminPromos() {
                         <Layers size={13} />
                         <span>Parfums Spécifiques</span>
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${dealScope === 'SPECIFIC_PRODUCTS' ? 'text-blue-200' : 'text-neutral-400'}`}>
+                      <div className={`text-[10px] mt-0.5 ${dealScope === 'SPECIFIC_PRODUCTS' ? 'text-sky-100' : 'text-neutral-400'}`}>
                         {dealProductIds.length} sélectionné(s)
                       </div>
                     </button>
@@ -1116,7 +1076,7 @@ export default function AdminPromos() {
 
                   {/* Categories picker */}
                   {dealScope === 'CATEGORIES' && (
-                    <div className="mt-3 p-3.5 bg-purple-50/40 border border-purple-200 rounded-xl space-y-2.5 animate-in fade-in">
+                    <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl space-y-2.5 animate-in fade-in">
                       <div className="text-xs font-bold text-neutral-800">Cochez les catégories éligibles à cette offre :</div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {PRESET_CATEGORIES.map((cat) => {
@@ -1133,7 +1093,7 @@ export default function AdminPromos() {
                               }}
                               className={`p-2 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                                 isChecked
-                                  ? 'bg-purple-100/70 border-purple-400 text-purple-900 font-bold'
+                                  ? 'bg-sky-50 border-[#0ea5e9] text-[#0ea5e9] font-bold'
                                   : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
@@ -1153,7 +1113,7 @@ export default function AdminPromos() {
 
                   {/* Specific products picker */}
                   {dealScope === 'SPECIFIC_PRODUCTS' && (
-                    <div className="mt-3 p-3.5 bg-blue-50/40 border border-blue-200 rounded-xl space-y-3 animate-in fade-in">
+                    <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl space-y-3 animate-in fade-in">
                       <div className="flex items-center justify-between">
                         <div className="text-xs font-bold text-neutral-800">
                           Sélectionnez les parfums ({dealProductIds.length} sélectionnés) :
@@ -1165,7 +1125,7 @@ export default function AdminPromos() {
                               const ids = dealFilteredProducts.map(p => p.id);
                               setDealProductIds(prev => Array.from(new Set([...prev, ...ids])));
                             }}
-                            className="text-[10px] text-blue-700 hover:underline font-bold"
+                            className="text-[10px] text-[#0ea5e9] hover:underline font-bold"
                           >
                             Tout cocher ({dealFilteredProducts.length})
                           </button>
@@ -1205,12 +1165,12 @@ export default function AdminPromos() {
                               }}
                               className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-colors cursor-pointer ${
                                 isSel
-                                  ? 'bg-blue-100/70 border-blue-400 text-blue-900 font-bold'
+                                  ? 'bg-sky-50 border-[#0ea5e9] text-[#0ea5e9] font-bold'
                                   : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className={`w-4 h-4 rounded flex items-center justify-center ${isSel ? 'bg-blue-600 text-white' : 'border border-neutral-300'}`}>
+                                <div className={`w-4 h-4 rounded flex items-center justify-center ${isSel ? 'bg-[#0ea5e9] text-white' : 'border border-neutral-300'}`}>
                                   {isSel && <Check size={11} />}
                                 </div>
                                 <span className="text-xs truncate">{prod.name}</span>
@@ -1225,14 +1185,14 @@ export default function AdminPromos() {
                 </div>
 
                 {/* Extra Perks: Free Shipping & Free Gift */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="p-3 bg-neutral-50/70 border border-neutral-200 rounded-xl space-y-1">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={dealFreeShipping}
                         onChange={(e) => setDealFreeShipping(e.target.checked)}
-                        className="rounded text-amber-600 focus:ring-amber-500 w-4 h-4"
+                        className="rounded text-[#0ea5e9] focus:ring-[#0ea5e9] w-4 h-4"
                       />
                       <span className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
                         <Truck size={13} className="text-emerald-600" />
@@ -1240,13 +1200,13 @@ export default function AdminPromos() {
                       </span>
                     </label>
                     <p className="text-[10px] text-neutral-500 pl-6">
-                      Débloque 0 DH de livraison partout au Maroc quand l&apos;offre est remplie.
+                      Débloque 0 DH de livraison partout au Maroc.
                     </p>
                   </div>
 
-                  <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-1.5">
+                  <div className="p-3 bg-neutral-50/70 border border-neutral-200 rounded-xl space-y-1">
                     <label className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
-                      <Gift size={13} className="text-pink-600" />
+                      <Gift size={13} className="text-[#0ea5e9]" />
                       <span>Cadeau / Échantillon Offert</span>
                     </label>
                     <input
@@ -1259,18 +1219,18 @@ export default function AdminPromos() {
                   </div>
                 </div>
 
-                {/* Submit button */}
+                {/* Submit button in Brand Blue */}
                 <div className="pt-2">
                   <button
                     type="submit"
                     disabled={isSubmittingDeal}
-                    className="w-full py-3.5 bg-neutral-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-3 bg-[#0ea5e9] hover:bg-[#0284c7] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {isSubmittingDeal ? (
                       <Loader2 size={15} className="animate-spin" />
                     ) : (
                       <>
-                        <Sparkles size={15} className="text-amber-400" />
+                        <Sparkles size={15} />
                         <span>Publier cette Offre Promotionnelle</span>
                       </>
                     )}
@@ -1279,98 +1239,98 @@ export default function AdminPromos() {
               </form>
             </div>
 
-            {/* RIGHT COLUMN: Live Simulator & Active Deals List (5 cols) */}
+            {/* RIGHT COLUMN: Clean Live Simulator & Active Deals List (5 cols) */}
             <div className="lg:col-span-5 space-y-6">
-              {/* LIVE CART SIMULATOR */}
-              <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white rounded-2xl p-5 shadow-md">
-                <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+              {/* LIVE SIMULATOR (Clean Brand Styled) */}
+              <div className="bg-gradient-to-br from-white to-sky-50/40 border border-sky-200/80 rounded-2xl p-5 shadow-xs">
+                <div className="flex items-center justify-between mb-3.5 border-b border-sky-100 pb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-amber-400 text-neutral-900 flex items-center justify-center font-black text-xs">
+                    <div className="w-7 h-7 rounded-lg bg-sky-100 text-[#0ea5e9] border border-sky-200 flex items-center justify-center font-bold text-xs">
                       ⚡
                     </div>
                     <div>
-                      <h3 className="text-xs font-bold text-white tracking-wide uppercase">
+                      <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wider">
                         Simulateur Panier en Direct
                       </h3>
-                      <p className="text-[10px] text-neutral-400">
-                        Testez en direct la réaction de votre offre !
+                      <p className="text-[10px] text-neutral-500">
+                        Testez en direct la réaction de votre offre client.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  {/* Quantity selector */}
+                  {/* Flacons pill selector */}
                   <div>
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 block mb-1.5">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 block mb-1.5">
                       Articles dans le panier simulé
                     </label>
-                    <div className="flex items-center gap-1.5">
+                    <div className="grid grid-cols-6 gap-1 bg-white p-1 rounded-xl border border-neutral-200">
                       {[1, 2, 3, 4, 5, 6].map((num) => (
                         <button
                           key={num}
                           type="button"
                           onClick={() => setSimCartCount(num)}
-                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          className={`py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             simCartCount === num
-                              ? 'bg-amber-400 text-neutral-900 font-black shadow-xs'
-                              : 'bg-white/10 hover:bg-white/20 text-white'
+                              ? 'bg-[#0ea5e9] text-white shadow-xs'
+                              : 'text-neutral-600 hover:bg-neutral-100'
                           }`}
                         >
-                          {num} {num === 1 ? 'flacon' : 'flacons'}
+                          {num}
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Pricing recap */}
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-3.5 space-y-2 text-xs">
-                    <div className="flex justify-between text-neutral-300">
+                  {/* Receipt breakdown */}
+                  <div className="bg-white border border-neutral-200 rounded-xl p-3.5 space-y-2 text-xs">
+                    <div className="flex justify-between text-neutral-600">
                       <span>Sous-total ({simCartCount} × {simItemPrice} DH)</span>
-                      <span>{simResults.rawTotal} DH</span>
+                      <span className="font-semibold">{simResults.rawTotal} DH</span>
                     </div>
 
                     {simResults.discount > 0 ? (
-                      <div className="flex justify-between font-bold text-emerald-400">
+                      <div className="flex justify-between font-bold text-[#0ea5e9]">
                         <span>Remise débloquée</span>
                         <span>-{simResults.discount.toFixed(0)} DH</span>
                       </div>
                     ) : (
-                      <div className="text-[11px] text-amber-300 italic">
+                      <div className="text-[11px] text-amber-600 italic">
                         {simResults.explanation}
                       </div>
                     )}
 
                     {dealFreeShipping && simResults.discount > 0 && (
-                      <div className="flex justify-between text-[11px] text-emerald-300">
+                      <div className="flex justify-between text-[11px] text-emerald-600 font-semibold">
                         <span>Livraison</span>
-                        <span className="font-bold">GRATUITE (0 DH)</span>
+                        <span>GRATUITE (0 DH)</span>
                       </div>
                     )}
 
                     {dealFreeGiftName && (
-                      <div className="flex justify-between text-[11px] text-pink-300">
+                      <div className="flex justify-between text-[11px] text-[#0ea5e9] font-semibold">
                         <span>Cadeau débloqué</span>
-                        <span className="font-bold">🎁 {dealFreeGiftName}</span>
+                        <span>🎁 {dealFreeGiftName}</span>
                       </div>
                     )}
 
-                    <div className="border-t border-white/10 pt-2 flex justify-between items-baseline">
-                      <span className="text-xs uppercase tracking-wider text-neutral-400 font-bold">Total Client</span>
-                      <span className="text-xl font-bold text-white">{simResults.finalTotal.toFixed(0)} DH</span>
+                    <div className="border-t border-neutral-150 pt-2 flex justify-between items-baseline">
+                      <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">Total Client</span>
+                      <span className="text-xl font-bold text-neutral-900">{simResults.finalTotal.toFixed(0)} DH</span>
                     </div>
                   </div>
 
-                  {/* Customer Badge Preview */}
-                  <div className="bg-amber-400/10 border border-amber-400/30 rounded-xl p-3 text-center">
-                    <div className="text-[10px] uppercase tracking-wider text-amber-400 font-bold mb-1">
-                      Aperçu de la bannière panier :
+                  {/* Customer Banner Preview */}
+                  <div className="bg-sky-50/70 border border-sky-200 rounded-xl p-3 text-center">
+                    <div className="text-[10px] uppercase tracking-wider text-[#0ea5e9] font-bold mb-1">
+                      Aperçu de la bannière au panier :
                     </div>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-neutral-950 font-extrabold text-xs rounded-full">
-                      <Sparkles size={12} />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0ea5e9] text-white font-extrabold text-xs rounded-full shadow-2xs">
+                      <Sparkles size={11} />
                       <span>{dealBadgeText || 'OFFRE SPÉCIALE'}</span>
                     </div>
-                    <div className="text-[11px] text-neutral-300 mt-1.5">
+                    <div className="text-[11px] text-neutral-600 mt-1.5">
                       {dealSubtitle || dealTitle}
                     </div>
                   </div>
@@ -1378,10 +1338,10 @@ export default function AdminPromos() {
               </div>
 
               {/* LIST OF CURRENT ACTIVE DEALS */}
-              <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <div className="bg-white rounded-2xl border border-neutral-200/80 p-5 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-neutral-150 pb-3">
                   <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wider flex items-center gap-2">
-                    <Gift size={14} className="text-amber-600" />
+                    <Zap size={14} className="text-[#0ea5e9]" />
                     <span>Offres Actives ({deals.length})</span>
                   </h3>
                   <button
@@ -1404,15 +1364,15 @@ export default function AdminPromos() {
                         key={deal.id}
                         className={`p-3.5 rounded-xl border transition-all ${
                           deal.isActive
-                            ? 'bg-neutral-50/50 border-neutral-200'
-                            : 'bg-neutral-100/50 border-neutral-200 opacity-60'
+                            ? 'bg-neutral-50/60 border-neutral-200'
+                            : 'bg-neutral-100/60 border-neutral-200 opacity-60'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               {deal.badgeText && (
-                                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-200 uppercase">
+                                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-sky-50 text-[#0ea5e9] border border-sky-200 uppercase">
                                   {deal.badgeText}
                                 </span>
                               )}
@@ -1451,7 +1411,7 @@ export default function AdminPromos() {
                             </div>
                           </div>
 
-                          {/* Quick Actions */}
+                          {/* Actions */}
                           <div className="flex items-center gap-1">
                             <button
                               type="button"
@@ -1492,13 +1452,13 @@ export default function AdminPromos() {
       {activeTab === 'promos' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT COLUMN: Create Promo Form (5 cols) */}
-          <div className="lg:col-span-5 bg-white rounded-2xl border border-neutral-200 p-6 shadow-xs space-y-6">
-            <div className="border-b border-neutral-100 pb-4">
-              <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                <Ticket size={16} className="text-purple-600" />
-                <span>Nouveau Code Promo</span>
+          <div className="lg:col-span-5 bg-white rounded-2xl border border-neutral-200/80 p-6 shadow-xs space-y-5">
+            <div className="border-b border-neutral-150 pb-3.5">
+              <h2 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <Ticket size={15} className="text-[#0ea5e9]" />
+                <span>Créer un Code Promo</span>
               </h2>
-              <p className="text-xs text-neutral-500 mt-0.5">
+              <p className="text-[11px] text-neutral-500 mt-0.5">
                 Créez un coupon à partager avec vos clients ou influenceurs.
               </p>
             </div>
@@ -1506,7 +1466,7 @@ export default function AdminPromos() {
             <form onSubmit={handleCreatePromo} className="space-y-4">
               {/* Code Name & Type */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-neutral-700">Code *</label>
                   <input
                     type="text"
@@ -1514,11 +1474,11 @@ export default function AdminPromos() {
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase().replace(/\s+/g, ''))}
                     placeholder="ex: AID2026"
-                    className="w-full px-3.5 py-2.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm font-black tracking-wider text-neutral-900 focus:outline-none focus:border-purple-500 focus:bg-white uppercase font-mono"
+                    className="w-full px-3.5 py-2.5 bg-neutral-50/60 border border-neutral-200 rounded-xl text-xs font-black tracking-wider text-neutral-900 focus:outline-none focus:border-[#0ea5e9] focus:bg-white uppercase font-mono"
                   />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <label className="text-xs font-bold text-neutral-700">Type de remise</label>
                   <div className="grid grid-cols-2 gap-1 bg-neutral-100 p-1 rounded-xl border border-neutral-200">
                     <button
@@ -1548,7 +1508,7 @@ export default function AdminPromos() {
               </div>
 
               {/* Value */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <label className="text-xs font-bold text-neutral-700">
                   Valeur de la réduction * ({type === 'percentage' ? '%' : 'MAD'})
                 </label>
@@ -1562,7 +1522,7 @@ export default function AdminPromos() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     placeholder={type === 'percentage' ? 'ex: 20 (pour -20%)' : 'ex: 50 (pour -50 MAD)'}
-                    className="w-full px-3.5 py-2.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-900 focus:outline-none focus:border-purple-500 focus:bg-white"
+                    className="w-full px-3.5 py-2.5 bg-neutral-50/60 border border-neutral-200 rounded-xl text-xs font-bold text-neutral-900 focus:outline-none focus:border-[#0ea5e9] focus:bg-white"
                   />
                   <div className="absolute right-3.5 top-2.5 text-neutral-400 font-bold text-xs pointer-events-none">
                     {type === 'percentage' ? '%' : 'MAD'}
@@ -1579,7 +1539,7 @@ export default function AdminPromos() {
                     onClick={() => setApplicableScope('ALL')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       applicableScope === 'ALL'
-                        ? 'bg-neutral-900 text-white border-neutral-900'
+                        ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                         : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                     }`}
                   >
@@ -1592,7 +1552,7 @@ export default function AdminPromos() {
                     onClick={() => setApplicableScope('CATEGORIES')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       applicableScope === 'CATEGORIES'
-                        ? 'bg-purple-700 text-white border-purple-700'
+                        ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                         : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                     }`}
                   >
@@ -1605,7 +1565,7 @@ export default function AdminPromos() {
                     onClick={() => setApplicableScope('SPECIFIC_PRODUCTS')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                       applicableScope === 'SPECIFIC_PRODUCTS'
-                        ? 'bg-blue-700 text-white border-blue-700'
+                        ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-xs'
                         : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
                     }`}
                   >
@@ -1616,8 +1576,8 @@ export default function AdminPromos() {
 
                 {/* Scope: Categories */}
                 {applicableScope === 'CATEGORIES' && (
-                  <div className="p-3 bg-purple-50/50 border border-purple-200 rounded-xl space-y-2 animate-in fade-in">
-                    <div className="text-xs font-bold text-purple-900">Catégories ciblées :</div>
+                  <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-2 animate-in fade-in">
+                    <div className="text-xs font-bold text-neutral-800">Catégories ciblées :</div>
                     <div className="grid grid-cols-2 gap-2">
                       {PRESET_CATEGORIES.map((cat) => {
                         const isChecked = selectedCategories.includes(cat.id);
@@ -1632,7 +1592,7 @@ export default function AdminPromos() {
                             }}
                             className={`p-2 rounded-lg border text-left flex items-center justify-between text-xs cursor-pointer ${
                               isChecked
-                                ? 'bg-purple-100 border-purple-400 text-purple-900 font-bold'
+                                ? 'bg-sky-50 border-[#0ea5e9] text-[#0ea5e9] font-bold'
                                 : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                             }`}
                           >
@@ -1647,8 +1607,8 @@ export default function AdminPromos() {
 
                 {/* Scope: Specific Products */}
                 {applicableScope === 'SPECIFIC_PRODUCTS' && (
-                  <div className="p-3 bg-blue-50/50 border border-blue-200 rounded-xl space-y-2 animate-in fade-in">
-                    <div className="text-xs font-bold text-blue-900">
+                  <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-2 animate-in fade-in">
+                    <div className="text-xs font-bold text-neutral-800">
                       {selectedProductIds.length} parfum(s) sélectionné(s)
                     </div>
                     <div className="relative">
@@ -1674,7 +1634,7 @@ export default function AdminPromos() {
                               );
                             }}
                             className={`w-full flex items-center justify-between p-1.5 rounded border text-xs cursor-pointer ${
-                              isSel ? 'bg-blue-100 border-blue-400 font-bold text-blue-900' : 'bg-white border-neutral-200 text-neutral-700'
+                              isSel ? 'bg-sky-50 border-[#0ea5e9] font-bold text-[#0ea5e9]' : 'bg-white border-neutral-200 text-neutral-700'
                             }`}
                           >
                             <span className="truncate">{prod.name}</span>
@@ -1690,10 +1650,10 @@ export default function AdminPromos() {
               {/* Submit Promo */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 bg-neutral-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                disabled={isSubmittingPromo}
+                className="w-full py-3 bg-[#0ea5e9] hover:bg-[#0284c7] text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-xs"
               >
-                {isSubmitting ? (
+                {isSubmittingPromo ? (
                   <Loader2 size={15} className="animate-spin" />
                 ) : (
                   <>
@@ -1706,10 +1666,10 @@ export default function AdminPromos() {
           </div>
 
           {/* RIGHT COLUMN: Promo Codes List (7 cols) */}
-          <div className="lg:col-span-7 bg-white rounded-2xl border border-neutral-200 p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                <Ticket size={16} className="text-purple-600" />
+          <div className="lg:col-span-7 bg-white rounded-2xl border border-neutral-200/80 p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-150 pb-3">
+              <h2 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+                <Ticket size={15} className="text-[#0ea5e9]" />
                 <span>Codes Promo Actifs ({promos.length})</span>
               </h2>
 
@@ -1736,24 +1696,24 @@ export default function AdminPromos() {
                     key={promo.id}
                     className={`p-4 rounded-xl border transition-all ${
                       promo.isActive
-                        ? 'bg-neutral-50/50 border-neutral-200'
-                        : 'bg-neutral-100/50 border-neutral-200 opacity-60'
+                        ? 'bg-neutral-50/60 border-neutral-200'
+                        : 'bg-neutral-100/60 border-neutral-200 opacity-60'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-sm bg-neutral-100 px-2.5 py-1 rounded-lg border border-neutral-200 select-all">
+                        <span className="font-mono font-black text-sm bg-white px-2.5 py-1 rounded-lg border border-neutral-200 select-all text-neutral-900">
                           {promo.code}
                         </span>
                         <button
                           type="button"
                           onClick={() => copyToClipboard(promo.code)}
-                          className="text-neutral-400 hover:text-neutral-900 p-1"
+                          className="text-neutral-400 hover:text-neutral-900 p-1 cursor-pointer"
                           title="Copier"
                         >
                           {copiedCode === promo.code ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                         </button>
-                        <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-sky-50 text-[#0ea5e9] border border-sky-200">
                           {promo.type === 'percentage' ? `-${promo.value}%` : `-${promo.value} DH`}
                         </span>
                       </div>
