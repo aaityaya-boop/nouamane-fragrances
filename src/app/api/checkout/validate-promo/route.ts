@@ -71,7 +71,7 @@ export async function POST(request: Request) {
           if (c === 'women') return pGender === 'women' || pGender === 'femme';
           if (c === 'unisex') return pGender === 'unisex' || pGender === 'unisexe';
           if (c === 'oriental') return pSub === 'arabic';
-          if (c === 'originaux') return pSub !== 'arabic';
+          if (c === 'testers' || c === 'testeurs' || c === 'originaux') return pSub !== 'arabic';
           if (c === 'coffrets') return pSub === 'coffrets';
           if (pBrand === c || pBrand.toLowerCase() === c) return true;
           return false;

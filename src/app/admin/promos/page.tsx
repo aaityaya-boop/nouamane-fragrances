@@ -69,7 +69,7 @@ interface PromoCodeItem {
 interface PresetCategory {
   id: string;
   label: string;
-  iconKey: 'men' | 'women' | 'unisex' | 'oriental' | 'originaux' | 'coffrets';
+  iconKey: 'men' | 'women' | 'unisex' | 'oriental' | 'testers' | 'coffrets';
   desc: string;
 }
 
@@ -78,7 +78,7 @@ const PRESET_CATEGORIES: PresetCategory[] = [
   { id: 'women', label: 'Parfums Femme', iconKey: 'women', desc: 'Tous les parfums pour femme' },
   { id: 'unisex', label: 'Parfums Unisexe', iconKey: 'unisex', desc: 'Parfums mixtes & universels' },
   { id: 'oriental', label: 'Parfums Orientaux', iconKey: 'oriental', desc: 'Notes de oud, ambre & épices' },
-  { id: 'originaux', label: 'Parfums Originaux', iconKey: 'originaux', desc: 'Grandes marques & collections luxe' },
+  { id: 'testers', label: 'Testeurs Parfums', iconKey: 'testers', desc: 'Flacons testeurs de marques de luxe' },
   { id: 'coffrets', label: 'Coffrets & Cadeaux', iconKey: 'coffrets', desc: 'Sets découverte & coffrets' },
 ];
 
@@ -177,6 +177,7 @@ export default function AdminPromos() {
         return <Users size={size} className={iconClass} />;
       case 'oriental':
         return <Flame size={size} className={iconClass} />;
+      case 'testers':
       case 'originaux':
         return <Crown size={size} className={iconClass} />;
       case 'coffrets':
@@ -206,7 +207,7 @@ export default function AdminPromos() {
     if (k === 'women') return pGender === 'women' || pGender === 'femme';
     if (k === 'unisex') return pGender === 'unisex' || pGender === 'unisexe';
     if (k === 'oriental') return pSub === 'arabic';
-    if (k === 'originaux') return pSub !== 'arabic';
+    if (k === 'testers' || k === 'testeurs' || k === 'originaux') return pSub !== 'arabic';
     if (k === 'coffrets') return pSub === 'coffrets' || p.name.toLowerCase().includes('coffret');
     if (pBrand === k || pBrand.toLowerCase() === k) return true;
     return false;
