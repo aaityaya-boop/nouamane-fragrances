@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
+import { createAdminNotification } from '@/lib/notificationService';
 
 /**
  * POST /api/orders — Create a new order.
@@ -160,16 +161,14 @@ export async function POST(request: Request) {
       console.error('Failed to create order timeline event:', e);
     }
 
-    // Dispatch REAL admin notification for new order
+    // Dispatch REAL admin notification for new order (Instant SSE Broadcast)
     try {
-      await prisma.adminNotification.create({
-        data: {
-          type: 'ORDER',
-          title: `Nouvelle Commande #${created.orderNumber} (${created.total} DH)`,
-          message: `Commande passée par ${created.customerName} (${created.shippingCity})`,
-          link: '/admin/orders',
-          metadata: JSON.stringify({ orderId: created.id, orderNumber: created.orderNumber, total: created.total }),
-        },
+      await createAdminNotification({
+        type: 'ORDER',
+        title: `Nouvelle Commande #${created.orderNumber} (${created.total} DH)`,
+        message: `Commande passée par ${created.customerName} (${created.shippingCity})`,
+        link: '/admin/orders',
+        metadata: { orderId: created.id, orderNumber: created.orderNumber, total: created.total, customerName: created.customerName, city: created.shippingCity },
       });
     } catch (e) {
       console.error('Failed to dispatch order notification:', e);

@@ -10,90 +10,70 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '30', 10), 1), 100);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '50', 10), 1), 100);
+    const type = searchParams.get('type');
+    const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    // Fetch real-time alerts from database
-    const [pendingOrders, lowStockProducts, assignedTasks] = await Promise.all([
-      prisma.order.findMany({
-        where: { status: { in: ['pending', 'unconfirmed'] } },
+    // Build Prisma query
+    const where: any = {
+      OR: [{ userId: null }, { userId: admin.id }],
+    };
+
+    if (type && type !== 'ALL') {
+      where.type = type;
+    }
+
+    if (unreadOnly) {
+      where.isRead = false;
+    }
+
+    // Check if any notifications exist in DB
+    const totalCount = await prisma.adminNotification.count({
+      where: {
+        OR: [{ userId: null }, { userId: admin.id }],
+      },
+    });
+
+    // If completely empty on first run, seed initial real notifications from actual store orders
+    if (totalCount === 0) {
+      const recentOrders = await prisma.order.findMany({
+        take: 8,
         orderBy: { createdAt: 'desc' },
-        take: 10,
+      });
+
+      for (const order of recentOrders) {
+        await prisma.adminNotification.create({
+          data: {
+            type: 'ORDER',
+            title: `Nouvelle commande #${order.orderNumber}`,
+            message: `${order.customerName} a passé commande (${order.shippingCity || 'Maroc'}) - ${order.total} MAD`,
+            link: '/admin/orders',
+            isRead: false,
+            createdAt: order.createdAt,
+          },
+        });
+      }
+    }
+
+    // Fetch real persistent notifications
+    const [notifications, unreadCount] = await Promise.all([
+      prisma.adminNotification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
       }),
-      prisma.product.findMany({
-        where: { stock: { lte: 5 } },
-        orderBy: { stock: 'asc' },
-        take: 10,
-        select: { id: true, name: true, stock: true, updatedAt: true },
-      }),
-      prisma.adminTask.findMany({
+      prisma.adminNotification.count({
         where: {
-          OR: [
-            { assignedToId: admin.id },
-            { assignedToId: null },
-          ],
-          status: { in: ['TODO', 'IN_PROGRESS'] },
+          OR: [{ userId: null }, { userId: admin.id }],
+          isRead: false,
         },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
       }),
     ]);
 
-    const notifications: any[] = [];
-
-    // Map pending orders
-    pendingOrders.forEach((o) => {
-      notifications.push({
-        id: `order_${o.id}`,
-        type: 'ORDER',
-        title: `Nouvelle commande #${o.orderNumber}`,
-        message: `${o.customerName} a passé commande (${o.shippingCity || 'Maroc'}) - ${o.total} MAD`,
-        link: '/admin/orders',
-        isRead: false,
-        createdAt: o.createdAt,
-      });
-    });
-
-    // Map low stock products
-    lowStockProducts.forEach((p) => {
-      notifications.push({
-        id: `stock_${p.id}`,
-        type: 'STOCK',
-        title: p.stock === 0 ? `Rupture de stock : ${p.name}` : `Alerte stock faible : ${p.name}`,
-        message: p.stock === 0 ? `Le produit est épuisé.` : `Plus que ${p.stock} unité(s) en réserve atelier.`,
-        link: '/admin/inventory',
-        isRead: false,
-        createdAt: p.updatedAt,
-      });
-    });
-
-    // Map tasks
-    assignedTasks.forEach((t) => {
-      notifications.push({
-        id: `task_${t.id}`,
-        type: 'TASK',
-        title: `Mission : ${t.title}`,
-        message: `Priorité ${t.priority} • Statut: ${t.status}`,
-        link: '/admin/tasks',
-        isRead: false,
-        createdAt: t.createdAt,
-      });
-    });
-
-    // Sort by date desc
-    notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    const sliced = notifications.slice(0, limit);
-
     return NextResponse.json({
       success: true,
-      notifications: sliced,
-      unreadCount: sliced.length,
-      pagination: {
-        page: 1,
-        limit,
-        total: notifications.length,
-        totalPages: Math.ceil(notifications.length / limit) || 1,
-      },
+      notifications,
+      unreadCount,
     });
   } catch (error) {
     console.error('Error fetching admin notifications:', error);
@@ -112,7 +92,6 @@ export async function PATCH(request: Request) {
     const { id, all } = body;
 
     if (all) {
-      // Mark all as read for this admin / global
       await prisma.adminNotification.updateMany({
         where: {
           OR: [{ userId: null }, { userId: admin.id }],

@@ -68,9 +68,45 @@ export default function AdminNotificationsPage() {
     }
   }, [activeTab]);
 
+  const [isTesting, setIsTesting] = useState(false);
+
   useEffect(() => {
     fetchNotifications();
+
+    const handleRealtimeNotif = (e: any) => {
+      const newNotif = e.detail;
+      if (newNotif && newNotif.id) {
+        setNotifications((prev) => {
+          if (prev.some((n) => n.id === newNotif.id)) return prev;
+          return [newNotif, ...prev];
+        });
+        setUnreadCount((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener('nay_new_notification', handleRealtimeNotif);
+    const interval = setInterval(fetchNotifications, 10000); // 10s auto-refresh
+
+    return () => {
+      window.removeEventListener('nay_new_notification', handleRealtimeNotif);
+      clearInterval(interval);
+    };
   }, [fetchNotifications]);
+
+  const triggerTestNotification = async (type = 'ORDER') => {
+    setIsTesting(true);
+    try {
+      await fetch('/api/admin/notifications/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type }),
+      });
+    } catch (err) {
+      console.error('Test notification error:', err);
+    } finally {
+      setIsTesting(false);
+    }
+  };
 
   const markAllAsRead = async () => {
     try {
@@ -223,7 +259,17 @@ export default function AdminNotificationsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => triggerTestNotification('ORDER')}
+            disabled={isTesting}
+            className="px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+            title="Envoyer une fausse commande test pour écouter le son et voir l'alerte en direct"
+          >
+            <Sparkles size={13} className="text-emerald-600" />
+            <span>{isTesting ? 'Émission...' : 'Tester Commande en Direct (Son + Pop-up)'}</span>
+          </button>
+
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}

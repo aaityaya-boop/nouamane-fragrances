@@ -116,8 +116,25 @@ export default function AdminHeader() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 20000); // 20s poll
-    return () => clearInterval(interval);
+
+    const handleRealtimeNotif = (e: any) => {
+      const newNotif = e.detail;
+      if (newNotif && newNotif.id) {
+        setNotifications((prev) => {
+          if (prev.some((n) => n.id === newNotif.id)) return prev;
+          return [newNotif, ...prev.slice(0, 6)];
+        });
+        setUnreadCount((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener('nay_new_notification', handleRealtimeNotif);
+    const interval = setInterval(fetchNotifications, 10000); // 10s backup poll
+
+    return () => {
+      window.removeEventListener('nay_new_notification', handleRealtimeNotif);
+      clearInterval(interval);
+    };
   }, [fetchNotifications]);
 
   const handleLogout = async () => {
