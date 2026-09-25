@@ -560,9 +560,12 @@ export default function AdsManagerClient({
           {(() => {
             const metaInteg = getIntegration('META');
             const isConn = metaInteg?.status === 'CONNECTED';
+            const isErr = metaInteg?.status === 'ERROR';
 
             return (
-              <div className="bg-white rounded-xl border border-neutral-200 p-4.5 shadow-2xs flex flex-col justify-between space-y-3 hover:border-neutral-300 transition-colors">
+              <div className={`bg-white rounded-xl border p-4.5 shadow-2xs flex flex-col justify-between space-y-3 transition-colors ${
+                isErr ? 'border-rose-300 ring-1 ring-rose-100' : isConn ? 'border-neutral-200 hover:border-neutral-300' : 'border-neutral-200'
+              }`}>
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -576,13 +579,27 @@ export default function AdsManagerClient({
                     </div>
 
                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
-                      isConn ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-neutral-100 text-neutral-600 border-neutral-200'
+                      isConn ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      isErr ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      'bg-neutral-100 text-neutral-600 border-neutral-200'
                     }`}>
-                      {isConn ? 'Connecté' : 'Non lié'}
+                      {isConn ? 'Connecté' : isErr ? 'Erreur Token' : 'Non lié'}
                     </span>
                   </div>
 
-                  <div className="mt-4 space-y-2">
+                  {isErr && (
+                    <div className="mt-3 p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-[11px] text-rose-700 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold">
+                        <AlertTriangle size={13} className="shrink-0 text-rose-600" />
+                        <span>Permission requise</span>
+                      </div>
+                      <p className="leading-snug text-[10.5px]">
+                        Votre jeton Meta nécessite la permission <b className="underline">ads_read</b> pour récupérer les campagnes.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="mt-3 space-y-2">
                     <div className="flex justify-between items-baseline">
                       <span className="text-xs text-neutral-500">Dépense (Charges) :</span>
                       <span className="text-sm font-bold text-neutral-900">{formatMAD(metrics.meta.spend)}</span>
@@ -602,11 +619,18 @@ export default function AdsManagerClient({
                   <button
                     onClick={() => {
                       setConnectPlatform('META');
+                      setConnectAccountId(metaInteg?.accountId || '');
+                      setConnectPixelId(metaInteg?.pixelId || '');
+                      setConnectExchangeRate(metaInteg?.exchangeRateToMAD?.toString() || '10.0');
+                      setConnectCurrency(metaInteg?.currency || 'USD');
+                      setConnectError(metaInteg?.errorMessage || null);
                       setIsConnectModalOpen(true);
                     }}
-                    className="text-xs font-medium text-blue-700 hover:text-blue-900 transition-colors"
+                    className={`text-xs font-medium transition-colors ${
+                      isErr ? 'text-rose-600 hover:text-rose-800 font-bold' : 'text-blue-700 hover:text-blue-900'
+                    }`}
                   >
-                    {isConn ? 'Paramètres API →' : 'Lier le compte →'}
+                    {isErr ? 'Corriger le Token →' : isConn ? 'Paramètres API →' : 'Lier le compte →'}
                   </button>
                   <button
                     onClick={() => setSelectedPlatform(selectedPlatform === 'META' ? 'ALL' : 'META')}
@@ -1085,9 +1109,21 @@ export default function AdsManagerClient({
 
               {/* Access Token */}
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                  Token d'accès (Access Token API)
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-neutral-700">
+                    Token d'accès (Access Token API) *
+                  </label>
+                  {connectPlatform === 'META' && (
+                    <a
+                      href="https://developers.facebook.com/tools/explorer/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-medium text-blue-700 hover:underline flex items-center gap-1"
+                    >
+                      Graph API Explorer <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
                 <input
                   type="password"
                   placeholder="EAA..."
@@ -1095,9 +1131,23 @@ export default function AdsManagerClient({
                   onChange={(e) => setConnectAccessToken(e.target.value)}
                   className="w-full px-3 py-1.5 bg-neutral-50 border border-neutral-200 rounded-lg text-xs font-mono text-neutral-900 focus:bg-white focus:outline-none focus:border-neutral-900"
                 />
-                <p className="text-[10px] text-neutral-400 mt-1">
-                  Généré dans votre Business Manager (Facebook Developers ou TikTok for Business).
-                </p>
+
+                {connectPlatform === 'META' && (
+                  <div className="mt-2 p-2.5 bg-blue-50/70 border border-blue-200 rounded-lg text-[11px] text-blue-900 space-y-1">
+                    <span className="font-bold flex items-center gap-1 text-blue-950">
+                      <Sparkles size={12} className="text-blue-600" />
+                      Permissions Meta Obligatoires :
+                    </span>
+                    <p className="text-[10.5px] leading-relaxed text-blue-800">
+                      Pour que Meta autorise la lecture des campagnes et dépenses, cochez ces 3 permissions dans votre Token :
+                    </p>
+                    <div className="flex flex-wrap gap-1 pt-0.5">
+                      <code className="bg-white px-1.5 py-0.5 rounded border border-blue-200 font-mono font-bold text-blue-900 text-[10px]">ads_read</code>
+                      <code className="bg-white px-1.5 py-0.5 rounded border border-blue-200 font-mono font-bold text-blue-900 text-[10px]">read_insights</code>
+                      <code className="bg-white px-1.5 py-0.5 rounded border border-blue-200 font-mono font-bold text-blue-900 text-[10px]">ads_management</code>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Currency & Exchange Rate */}
